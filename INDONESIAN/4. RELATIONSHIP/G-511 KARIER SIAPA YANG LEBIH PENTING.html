@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DUA KARIER™ — Perangkat Kemitraan Dua-Karier</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #3D5A80;
+            --primary-dark: #2C4260;
+            --primary-light: #EBF1F8;
+            --accent: #EE6C4D;
+            --accent-hover: #D95A3C;
+            --bg-start: #F8F9FA;
+            --bg-end: #FFF5F2;
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --success: #2A9D8F;
+            --warning: #E76F51;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-main); display: flex; min-height: 100vh; line-height: 1.6; }
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; top:0; bottom:0; left:0; z-index:1000; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:transform 0.3s ease; }
+        .sidebar-header { padding:1.5rem; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--accent); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--primary-dark); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+        .nav-item:hover { background-color:rgba(61,90,128,0.08); color:var(--primary); }
+        .nav-item.active { background-color:var(--primary); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:60px; background-color:var(--card-bg); border-bottom:1px solid var(--border-color); padding:0 1.25rem; align-items:center; justify-content:space-between; z-index:900; box-shadow:var(--shadow-sm); }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--primary-dark); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--primary); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.4); z-index:950; }
+        .main-content { margin-left:var(--sidebar-width); flex-grow:1; padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; width:calc(100% - var(--sidebar-width)); }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid rgba(0,0,0,0.03); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--primary-dark); margin-bottom:0.5rem; line-height:1.2; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--accent); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(61,90,128,0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(238,108,77,0.12); color:var(--accent); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--primary-dark); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--primary-dark); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--primary); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:90px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--primary); }
+        .slider-value { font-weight:700; color:var(--primary); min-width:2rem; text-align:center; background:rgba(61,90,128,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--primary); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--primary-dark); }
+        .btn-secondary { background-color:rgba(238,108,77,0.12); color:var(--accent); }
+        .btn-secondary:hover { background-color:rgba(238,108,77,0.22); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:var(--warning); color:#fff; }
+        .btn-danger:hover { background-color:#c0392b; }
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(61,90,128,0.1); color:var(--primary-dark); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--primary); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--accent); }
+        .result-block.success { border-left-color:var(--success); }
+        .result-block.accent { border-left-color:var(--accent); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--primary-dark); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--primary); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--primary-dark); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid rgba(0,0,0,0.05); }
+        .problem-frame { background-color:rgba(238,108,77,0.08); border-left:3px solid var(--accent); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--primary-dark); margin-bottom:1.5rem; font-weight:500; }
+        .partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+        .partner-box { background:#FAFAFA; padding:1rem; border-radius:0.5rem; border:1px solid var(--border-color); }
+        .partner-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+        .checkbox-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .checkbox-grid label { font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; }
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .partner-grid { grid-template-columns:1fr; }
+            .checkbox-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-solid fa-briefcase" style="color:var(--accent);"></i><span>Dua Karier</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-briefcase"></i><h1>Dua Karier</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dasbor</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-chart-simple"></i><span>Audit Karier</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-scale-balanced"></i><span>Kompromi</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-clock-rotate-left"></i><span>Pelacak Pengorbanan</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-handshake"></i><span>Keseimbangan Dukungan</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-code-branch"></i><span>Keputusan Berikutnya</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat Saya</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privasi</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <h2 class="hero-title">Dua Karier</h2>
+                    <p class="hero-tagline">Kedua karier itu penting. Mari bangun sistem yang bertindak seperti itu.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        Perangkat praktis untuk pasangan berkarier ganda. Periksa struktur karier, peluang yang bersaing, pengorbanan, dukungan, dan keputusan masa depan. Beralihlah dari menghitung prestasi ke pengakuan, dari persaingan ke dukungan, dari kompromi satu kali ke sistem keputusan yang dapat diulang.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-chart-simple"></i></div><h3>Audit Karier</h3><p>Petakan peran saat ini, kepuasan, ambisi, leverage pendapatan, dan distribusi pengorbanan.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-scale-balanced"></i></div><h3>Kompromi</h3><p>Evaluasi peluang yang bersaing tanpa secara otomatis mengutamakan yang berpenghasilan lebih tinggi atau pemenang historis.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-clock-rotate-left"></i></div><h3>Pelacak Pengorbanan</h3><p>Sebutkan kompromi yang terlihat dan tidak terlihat sehingga kontribusi masa lalu dapat diakui daripada diam-diam diperhitungkan.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-handshake"></i></div><h3>Keseimbangan Dukungan</h3><p>Terjemahkan preferensi dukungan ke dalam cara konkret masing-masing pasangan dapat mendukung karier yang lain.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-code-branch"></i></div><h3>Sistem Keputusan Berikutnya</h3><p>Bangun pagar pembatas keputusan, klausul tinjauan, jalur keluar, dan pernyataan publik bersama untuk persimpangan besar.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: CAREER AUDIT -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Audit Karier</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> Validasi perasaan Anda dan analisis leverage struktural tanpa menyalahkan diri sendiri secara default.</div>
+                    <form id="form-tool1">
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan A</div>
+                                <div class="form-group"><label class="form-label">Peran / jam / fokus saat ini</label><textarea id="t1_role_a" placeholder="Misalnya, Direktur Pemasaran, 50 jam/minggu, banyak perjalanan"></textarea></div>
+                                <div class="form-group"><label class="form-label">Pendapatan relatif terhadap Pasangan B</label><select id="t1_income_a"><option value="Jauh lebih tinggi">Jauh lebih tinggi</option><option value="Lebih tinggi">Lebih tinggi</option><option value="Serupa">Serupa</option><option value="Lebih rendah">Lebih rendah</option><option value="Jauh lebih rendah">Jauh lebih rendah</option></select></div>
+                                <div class="form-group"><label class="form-label">Kepuasan karier (1-10)</label><div class="slider-container"><input type="range" id="t1_sat_a" min="1" max="10" value="6" oninput="document.getElementById('sat_a_val').innerText=this.value"><span class="slider-value" id="sat_a_val">6</span></div></div>
+                                <div class="form-group"><label class="form-label">Ambisi karier (1-10)</label><div class="slider-container"><input type="range" id="t1_amb_a" min="1" max="10" value="7" oninput="document.getElementById('amb_a_val').innerText=this.value"><span class="slider-value" id="amb_a_val">7</span></div></div>
+                            </div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan B</div>
+                                <div class="form-group"><label class="form-label">Peran / jam / fokus saat ini</label><textarea id="t1_role_b" placeholder="Misalnya, Konsultan lepas, 30 jam/minggu, fleksibel"></textarea></div>
+                                <div class="form-group"><label class="form-label">Pendapatan relatif terhadap Pasangan A</label><select id="t1_income_b"><option value="Jauh lebih tinggi">Jauh lebih tinggi</option><option value="Lebih tinggi">Lebih tinggi</option><option value="Serupa">Serupa</option><option value="Lebih rendah">Lebih rendah</option><option value="Jauh lebih rendah">Jauh lebih rendah</option></select></div>
+                                <div class="form-group"><label class="form-label">Kepuasan karier (1-10)</label><div class="slider-container"><input type="range" id="t1_sat_b" min="1" max="10" value="5" oninput="document.getElementById('sat_b_val').innerText=this.value"><span class="slider-value" id="sat_b_val">5</span></div></div>
+                                <div class="form-group"><label class="form-label">Ambisi karier (1-10)</label><div class="slider-container"><input type="range" id="t1_amb_b" min="1" max="10" value="8" oninput="document.getElementById('amb_b_val').innerText=this.value"><span class="slider-value" id="amb_b_val">8</span></div></div>
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Siapa yang telah melakukan lebih banyak pengorbanan karier sejauh ini?</label><select id="t1_sacrifice"><option value="Pasangan A">Pasangan A</option><option value="Pasangan B">Pasangan B</option><option value="Keduanya sama">Keduanya sama</option><option value="Tidak ada">Tidak ada / Sulit diukur</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-chart-simple"></i> Jalankan Audit</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Hasil Audit Karier</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-map"></i> Lanskap Karier</div><p id="t1-out-landscape">Memetakan struktur...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-arrow-up"></i> Kesenjangan Ambisi</div><p id="t1-out-ambition">Analisis ambisi...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-scale-balanced"></i> Buku Besar Pengorbanan</div><p id="t1-out-sacrifice">Siapa yang menyerap pengorbanan utama...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-fire"></i> Sumber Kebencian</div><p id="t1-out-resentment">Dari mana gesekan mungkin berasal...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-check-circle"></i> Cek Validasi</div><p id="t1-out-validation">Perasaan sebagai data...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gavel"></i> Dinamika Kekuasaan</div><p id="t1-out-power">Leverage dan pola keputusan...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Audit Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Hapus Riwayat</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: THE TRADE-OFF -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Kompromi</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> Evaluasi peluang yang saling bertentangan menggunakan kriteria objektif untuk memutus siklus pengorbanan default.</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">Apa konflik keputusan saat ini?</label><textarea id="t2_conflict" placeholder="Misalnya, Relokasi untuk promosi vs. tetap untuk peran baru pasangan"></textarea></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Peluang Pasangan A</div><textarea id="t2_opp_a" placeholder="Jelaskan peluang, jadwal, dan apa artinya bagi Anda"></textarea></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Peluang Pasangan B</div><textarea id="t2_opp_b" placeholder="Jelaskan peluang, jadwal, dan apa artinya bagi Anda"></textarea></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pola kompromi sebelumnya:</label><select id="t2_pattern"><option value="A biasanya menang">Pasangan A biasanya menang</option><option value="B biasanya menang">Pasangan B biasanya menang</option><option value="Kami bergantian">Kami bergantian</option><option value="Kami menghindari keputusan">Kami menghindari keputusan</option><option value="Yang berpenghasilan lebih tinggi memutuskan">Yang berpenghasilan lebih tinggi memutuskan</option></select></div>
+                        <div class="form-group"><label class="form-label">Tekanan waktu:</label><select id="t2_time"><option value="Putuskan minggu ini">Putuskan minggu ini</option><option value="Putuskan bulan ini">Putuskan bulan ini</option><option value="Dalam 3 bulan">Dalam 3 bulan</option><option value="Tidak ada tenggat">Tidak ada tenggat</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-scale-balanced"></i> Evaluasi Kompromi</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Analisis Kompromi</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-scale-balanced"></i> Penimbangan Peluang</div><p id="t2-out-weigh">Konflik inti dan makna...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-repeat"></i> Pemutus Pola</div><p id="t2-out-pattern">Pola historis dan intervensi...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gavel"></i> Kerangka Keputusan</div><p id="t2-out-framework">Prioritas bergilir, dampak keuangan, keberlanjutan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-calendar"></i> Uji 12 Bulan</div><p id="t2-out-test">Di mana masing-masing karier bisa berada dalam setahun...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-rotate-left"></i> Cek Keterbalikan</div><p id="t2-out-reversibility">Bisakah ini ditunda, dimodifikasi, atau dibalik...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-arrows-left-right"></i> Opsi Kompromi</div><p id="t2-out-compromise">Jalan tengah untuk dieksplorasi...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Kompromi Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Hapus Riwayat</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: SACRIFICE TRACKER -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Pelacak Pengorbanan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> Ekspos kompromi yang tidak terlihat dan beralih dari penghitungan dendam ke pengakuan eksplisit.</div>
+                    <form id="form-tool3">
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pengorbanan Pasangan A</div><textarea id="t3_sac_a" placeholder="Misalnya, Menolak penempatan luar negeri, mengambil jam fleksibel untuk anak, menunda pendidikan lebih lanjut"></textarea></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pengorbanan Pasangan B</div><textarea id="t3_sac_b" placeholder="Misalnya, Beralih ke paruh waktu, melewatkan promosi, pindah untuk karier pasangan"></textarea></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pengorbanan yang diakui dan divalidasi secara eksplisit:</label><textarea id="t3_ack" placeholder="Apa yang telah diakui dengan lantang?"></textarea></div>
+                        <div class="form-group"><label class="form-label">Pengorbanan yang terasa tidak terlihat atau dianggap remeh:</label><textarea id="t3_invisible" placeholder="Apa yang belum diakui?"></textarea></div>
+                        <div class="form-group"><label class="form-label">Apakah Anda menghitung prestasi?</label><select id="t3_score"><option value="Ya secara terbuka">Ya, secara terbuka</option><option value="Ya secara diam-diam">Ya, tetapi secara pribadi</option><option value="Saya berusaha tidak">Saya berusaha tidak</option><option value="Tidak, tapi saya merasakannya">Tidak, tapi saya merasakannya</option><option value="Tidak">Tidak</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-clock-rotate-left"></i> Lacak Pengorbanan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Pelacak Pengorbanan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-eye"></i> Pengorbanan Terlihat vs. Tidak Terlihat</div><p id="t3-out-lists">Pengorbanan kedua pasangan...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-gap"></i> Kesenjangan Pengakuan</div><p id="t3-out-gap">Apa yang diakui vs. apa yang terasa tidak terlihat...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-tally"></i> Jebakan Penghitungan Prestasi</div><p id="t3-out-score">Penghitungan prestasi sebagai sinyal...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Ritual Penamaan</div><div class="script-box"><span id="t3-out-ritual">Naskah pengakuan...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t3-out-ritual')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-rotate-right"></i> Rencana Pembayaran Kembali</div><p id="t3-out-repay">Tindakan konkret untuk menghormati kompromi masa lalu...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-file-signature"></i> Kontrak Masa Depan</div><p id="t3-out-contract">Tidak ada pengorbanan sepihak...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Pelacak Pengorbanan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Hapus Riwayat</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: SUPPORT REBALANCE -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Keseimbangan Dukungan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> Selaraskan dukungan karier timbal balik dan hilangkan persaingan zero-sum.</div>
+                    <form id="form-tool4">
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan A</div>
+                                <div class="form-group"><label class="form-label">Didukung oleh Pasangan B? (1-10)</label><div class="slider-container"><input type="range" id="t4_support_a" min="1" max="10" value="6" oninput="document.getElementById('sup_a_val').innerText=this.value"><span class="slider-value" id="sup_a_val">6</span></div></div>
+                                <div class="form-group"><label class="form-label">Dukungan karier yang berarti bagi Anda:</label><div class="checkbox-grid" id="t4_lang_a"><label><input type="checkbox" value="Mendengarkan"> Mendengarkan cerita kerja</label><label><input type="checkbox" value="Merayakan"> Merayakan kemenangan</label><label><input type="checkbox" value="Logistik"> Membantu logistik</label><label><input type="checkbox" value="Emosional"> Dorongan emosional</label><label><input type="checkbox" value="Jaringan"> Bantuan jaringan</label><label><input type="checkbox" value="Ruang"> Memberi ruang untuk fokus</label></div></div>
+                            </div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan B</div>
+                                <div class="form-group"><label class="form-label">Didukung oleh Pasangan A? (1-10)</label><div class="slider-container"><input type="range" id="t4_support_b" min="1" max="10" value="5" oninput="document.getElementById('sup_b_val').innerText=this.value"><span class="slider-value" id="sup_b_val">5</span></div></div>
+                                <div class="form-group"><label class="form-label">Dukungan karier yang berarti bagi Anda:</label><div class="checkbox-grid" id="t4_lang_b"><label><input type="checkbox" value="Mendengarkan"> Mendengarkan cerita kerja</label><label><input type="checkbox" value="Merayakan"> Merayakan kemenangan</label><label><input type="checkbox" value="Logistik"> Membantu logistik</label><label><input type="checkbox" value="Emosional"> Dorongan emosional</label><label><input type="checkbox" value="Jaringan"> Bantuan jaringan</label><label><input type="checkbox" value="Ruang"> Memberi ruang untuk fokus</label></div></div>
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Seperti apa dukungan sehari-hari dalam praktiknya:</label><textarea id="t4_daily" placeholder="Misalnya, Kami berbagi kalender, kami berbincang saat makan malam, kami memberi satu sama lain waktu tenang..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-handshake"></i> Seimbangkan Dukungan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Keseimbangan Dukungan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gap"></i> Kesenjangan Dukungan</div><p id="t4-out-gap">Tingkat dukungan saat ini...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-people-arrows"></i> Pola Persaingan</div><p id="t4-out-competition">Pembingkaian ulang zero-sum...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-user"></i> Bahasa Dukungan Pasangan A</div><p id="t4-out-lang_a">Perilaku dukungan yang dipilih...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-user"></i> Bahasa Dukungan Pasangan B</div><p id="t4-out-lang_b">Perilaku dukungan yang dipilih...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-star"></i> Ritual Juara</div><p id="t4-out-ritual">Tinjauan Kemenangan 15 Menit...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-house"></i> Batasan Kerja-Rumah</div><p id="t4-out-boundary">Ritual transisi dan izin persetujuan...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Rencana Dukungan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Hapus Riwayat</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: NEXT DECISION SYSTEM -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Sistem Keputusan Berikutnya</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> Bangun sistem keputusan struktural untuk persimpangan yang akan datang dengan perlindungan bawaan.</div>
+                    <form id="form-tool5">
+                        <div class="form-group"><label class="form-label">Keputusan karier atau percabangan yang akan datang:</label><textarea id="t5_fork" placeholder="Misalnya, Haruskah Pasangan A mengambil peran eksekutif dengan perjalanan 30%?"></textarea></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan A</div><div class="form-group"><label class="form-label">Hasil yang diinginkan & alasan</label><textarea id="t5_pref_a" placeholder="Apa yang Anda inginkan dan mengapa?"></textarea></div></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan B</div><div class="form-group"><label class="form-label">Hasil yang diinginkan & alasan</label><textarea id="t5_pref_b" placeholder="Apa yang Anda inginkan dan mengapa?"></textarea></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Risiko jika memilih jalur Pasangan A:</label><textarea id="t5_risk_a" placeholder="Misalnya, Lebih banyak perjalanan, lebih sedikit waktu dengan keluarga"></textarea></div>
+                        <div class="form-group"><label class="form-label">Risiko jika memilih jalur Pasangan B:</label><textarea id="t5_risk_b" placeholder="Misalnya, Pendapatan lebih rendah, kemajuan karier lebih lambat"></textarea></div>
+                        <div class="form-group"><label class="form-label">Siapa yang memiliki prioritas karier utama dalam keputusan besar terakhir?</label><select id="t5_prior"><option value="Pasangan A">Pasangan A</option><option value="Pasangan B">Pasangan B</option><option value="Bersama">Bersama / Dibagi</option><option value="Eksternal">Keadaan eksternal</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-code-branch"></i> Bangun Sistem Keputusan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Sistem Keputusan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-code-branch"></i> Persiapan Keputusan</div><p id="t5-out-prep">Percabangan yang akan datang dan preferensi...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-arrows-rotate"></i> Aturan Prioritas Bergilir</div><p id="t5-out-alternate">Prioritas berdasarkan keputusan terakhir...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Cermin Risiko</div><p id="t5-out-risk">Risiko masing-masing jalur...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Uji Lakmus Hubungan</div><p id="t5-out-litmus">Apakah ini memungkinkan kedua pasangan tetap berkembang...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-calendar-check"></i> Klausul Tinjauan</div><p id="t5-out-review">Cek in 3 bulan dan 6 bulan...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-door-open"></i> Jalur Keluar</div><p id="t5-out-exit">Kondisi pivot objektif...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Pernyataan Persatuan</div><div class="script-box"><span id="t5-out-unity">Pernyataan persatuan...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t5-out-unity')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Sistem Keputusan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Hapus Riwayat</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">Riwayat Saya</h2><p class="hero-tagline">Semua analisis dan rencana Dua Karier Anda yang tersimpan.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Riwayat</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privasi</h2>
+                    <p style="margin-bottom:1rem;">Data karier dan hubungan Anda tetap berada di perangkat Anda. Tidak ada yang dikirim ke server mana pun.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>Semua masukan dan hasil disimpan hanya di penyimpanan lokal browser Anda.</li>
+                        <li>Tanpa akun, tanpa login, tanpa pelacakan, tanpa analitik.</li>
+                        <li>Anda dapat menghapus riwayat kapan saja menggunakan alat di atas.</li>
+                        <li>Aplikasi ini untuk refleksi dan perencanaan—bukan terapi, konseling karier, atau nasihat hukum.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Data Tersimpan</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">Untuk hiburan dan refleksi semata. Bukan terapi atau nasihat profesional. Jika ada paksaan, kekerasan, atau kontrol keuangan parah, carilah dukungan profesional yang sesuai.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:var(--success);"></i><span id="toast-message">Disalin!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Disalin!')).catch(() => fallbackCopy(text));
+        } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Disalin!'); } catch(e) { showToast('Gagal menyalin'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('mobile-open'); });
+    overlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE ---
+    function getHistory(toolId) {
+        const key = `twocareers_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `twocareers_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Hapus semua riwayat untuk alat ini?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('Riwayat dihapus');
+    }
+    function clearAllHistory() {
+        if (!confirm('Hapus SEMUA riwayat Dua Karier?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('Semua riwayat dihapus');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Hapus masukan dan hasil saat ini untuk alat ini?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset selesai');
+    }
+
+    // ========================================
+    // TOOL 1: CAREER AUDIT
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_role_a').value = 'Direktur Pemasaran, 50 jam/minggu, banyak perjalanan, mengelola tim besar.';
+        document.getElementById('t1_income_a').value = 'Lebih tinggi';
+        document.getElementById('t1_sat_a').value = '7'; document.getElementById('sat_a_val').innerText = '7';
+        document.getElementById('t1_amb_a').value = '6'; document.getElementById('amb_a_val').innerText = '6';
+        document.getElementById('t1_role_b').value = 'Konsultan lepas, 25-30 jam/minggu, jadwal fleksibel, mengelola logistik rumah tangga.';
+        document.getElementById('t1_income_b').value = 'Lebih rendah';
+        document.getElementById('t1_sat_b').value = '4'; document.getElementById('sat_b_val').innerText = '4';
+        document.getElementById('t1_amb_b').value = '8'; document.getElementById('amb_b_val').innerText = '8';
+        document.getElementById('t1_sacrifice').value = 'Pasangan B';
+        showToast('Contoh dimuat: Pola ambisi tinggi, kepuasan rendah');
+    }
+
+    function analyzeTool1() {
+        const roleA = document.getElementById('t1_role_a').value || 'Peran A dijelaskan';
+        const roleB = document.getElementById('t1_role_b').value || 'Peran B dijelaskan';
+        const incomeA = document.getElementById('t1_income_a').value;
+        const incomeB = document.getElementById('t1_income_b').value;
+        const satA = parseInt(document.getElementById('t1_sat_a').value) || 5;
+        const satB = parseInt(document.getElementById('t1_sat_b').value) || 5;
+        const ambA = parseInt(document.getElementById('t1_amb_a').value) || 5;
+        const ambB = parseInt(document.getElementById('t1_amb_b').value) || 5;
+        const sacrifice = document.getElementById('t1_sacrifice').value;
+
+        const landscape = `Pasangan A: ${escapeHTML(roleA)}. Pendapatan: ${incomeA}. Kepuasan: ${satA}/10. Ambisi: ${ambA}/10.<br>Pasangan B: ${escapeHTML(roleB)}. Pendapatan: ${incomeB}. Kepuasan: ${satB}/10. Ambisi: ${ambB}/10.`;
+
+        let ambition = '';
+        if (ambB >= 7 && satB <= 4) {
+            ambition = 'Pasangan B menunjukkan ambisi tinggi (8/10) yang dikombinasikan dengan kepuasan rendah (4/10). Ini mungkin menunjukkan pola "penyusutan" struktural di mana ambisi tinggi dibatasi oleh struktur domestik, penjadwalan, atau keuangan.';
+        } else if (Math.abs(ambA - ambB) <= 2) {
+            ambition = `Ambisi selaras erat (A: ${ambA}, B: ${ambB}). Gesekan lebih mungkin bersifat struktural—waktu, logistik, atau tuntutan rumah tangga—bukan perbedaan keinginan atau bakat.`;
+        } else {
+            ambition = `Ada perbedaan ambisi yang berarti (A: ${ambA}, B: ${ambB}). Batasan yang jelas dan perencanaan yang disengaja dapat membantu memastikan bahwa pasangan dengan ambisi lebih tinggi tidak secara otomatis mendominasi penjadwalan atau keputusan rumah tangga.`;
+        }
+
+        const sacrificeText = `Pengorbanan utama sejauh ini telah dilakukan oleh: <strong>${sacrifice}</strong>. Ini adalah titik data kunci untuk memahami leverage saat ini dan kebutuhan penyeimbangan ulang di masa depan.`;
+
+        let resentment = '';
+        if ((incomeA === 'Lebih tinggi' || incomeA === 'Jauh lebih tinggi') && sacrifice === 'Pasangan B') {
+            resentment = 'Leverage Keuangan vs. Dukungan Rumah Tangga Tanpa Bayaran. Pendapatan yang lebih tinggi mungkin menciptakan keunggulan pengambilan keputusan default, sementara kontribusi rumah tangga yang tidak dibayar atau kurang dibayar tetap secara struktural tidak terlihat.';
+        } else if (satA > satB && sacrifice === 'Pasangan B') {
+            resentment = 'Asimetri Pemenuhan. Pasangan A melaporkan kepuasan karier yang lebih tinggi sementara Pasangan B telah menyerap pengorbanan utama dan melaporkan kepuasan yang lebih rendah.';
+        } else {
+            resentment = 'Ketimpangan Waktu & Pertumbuhan Karier. Struktur saat ini mungkin menciptakan akses yang tidak setara ke pengembangan karier, jaringan, atau peluang peningkatan keterampilan.';
+        }
+
+        const validation = 'Perasaan kebencian, kelelahan, atau ketidakterlihatan adalah data tentang struktur—bukan cacat karakter. Emosi ini menandakan bahwa sistem saat ini mungkin memerlukan desain ulang.';
+        const power = `Tingkat pendapatan dan fleksibilitas jadwal dapat menciptakan leverage default. Pendapatan yang lebih tinggi tidak boleh secara otomatis menyelesaikan setiap kebuntuan. Tujuannya adalah sistem eksplisit di mana kedua karier tetap terlihat dan dilindungi seiring waktu.`;
+
+        document.getElementById('t1-out-landscape').innerHTML = landscape;
+        document.getElementById('t1-out-ambition').innerHTML = ambition;
+        document.getElementById('t1-out-sacrifice').innerHTML = sacrificeText;
+        document.getElementById('t1-out-resentment').innerHTML = resentment;
+        document.getElementById('t1-out-validation').innerHTML = validation;
+        document.getElementById('t1-out-power').innerHTML = power;
+        document.getElementById('output-tool1').classList.add('active');
+        saveToHistory('tool1', 'Audit Karier', `<p>${landscape}</p><br><strong>Ambisi:</strong> ${ambition}`);
+    }
+
+    // ========================================
+    // TOOL 2: THE TRADE-OFF
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_conflict').value = 'Pasangan A mendapat promosi VP yang memerlukan relokasi ke Chicago. Pasangan B baru saja mendapatkan peran peneliti senior secara lokal setelah dua tahun mencari.';
+        document.getElementById('t2_opp_a').value = 'Promosi VP, peningkatan gaji 40%, tetapi harus pindah ke Chicago dan meninggalkan jaringan saat ini.';
+        document.getElementById('t2_opp_b').value = 'Peran peneliti senior, lokal, stabil, dengan potensi pertumbuhan, tetapi gaji lebih rendah daripada tawaran Pasangan A.';
+        document.getElementById('t2_pattern').value = 'A biasanya menang';
+        document.getElementById('t2_time').value = 'Putuskan bulan ini';
+        showToast('Contoh dimuat: Relokasi vs. peluang lokal');
+    }
+
+    function analyzeTool2() {
+        const conflict = document.getElementById('t2_conflict').value || 'Konflik keputusan dijelaskan';
+        const oppA = document.getElementById('t2_opp_a').value || 'Peluang A dijelaskan';
+        const oppB = document.getElementById('t2_opp_b').value || 'Peluang B dijelaskan';
+        const pattern = document.getElementById('t2_pattern').value;
+        const time = document.getElementById('t2_time').value;
+
+        const weigh = `Konflik inti: ${escapeHTML(conflict)}.<br>Pasangan A: ${escapeHTML(oppA)}<br>Pasangan B: ${escapeHTML(oppB)}`;
+        const breaker = `Pola historis: ${pattern}. Untuk memutuskan default, tanyakan: "Apakah kita memilih peluang terbaik, atau kita mengikuti pola kita yang biasa?" Pertimbangkan apakah pola ini melayani kedua pasangan dalam jangka panjang.`;
+        const framework = `Kerangka keputusan: <br>1. Prioritas Bergilir: Jika karier yang sama telah memenangkan dua kompromi besar terakhir, prioritas harus bergeser untuk melindungi pertumbuhan pasangan lainnya.<br>2. Dampak Keuangan: Pertimbangkan dampak rumah tangga bersih setelah biaya perjalanan, pengasuhan anak, atau hilangnya momentum karier—bukan hanya gaji utama.<br>3. Keberlanjutan Hubungan: Opsi mana yang meninggalkan lebih sedikit kepahitan residual jangka panjang?`;
+        const test = `Uji 12 Bulan: Di mana kepuasan dan moral karier masing-masing pasangan berada di bawah setiap jalur? Jalur mana yang memungkinkan kedua pasangan tetap berkembang daripada satu pasangan menyusut?`;
+        const reversibility = `Cek Keterbalikan: Dapatkah salah satu opsi ditunda, dimodifikasi, atau dibalik? Apakah ada masa percobaan atau pengaturan jembatan yang tersedia?`;
+        const compromise = `Opsi Jalan Tengah: <br>• Masa percobaan hibrid/jarak jauh<br>• Komitmen terbatas waktu dengan klausul tinjauan<br>• Kompensasi keuangan atau pengembangan karier untuk pasangan yang mundur`;
+
+        document.getElementById('t2-out-weigh').innerHTML = weigh;
+        document.getElementById('t2-out-pattern').innerHTML = breaker;
+        document.getElementById('t2-out-framework').innerHTML = framework;
+        document.getElementById('t2-out-test').innerHTML = test;
+        document.getElementById('t2-out-reversibility').innerHTML = reversibility;
+        document.getElementById('t2-out-compromise').innerHTML = compromise;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', 'Kompromi', `<p>${weigh}</p><br>${framework}`);
+    }
+
+    // ========================================
+    // TOOL 3: SACRIFICE TRACKER
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_sac_a').value = 'Menolak penempatan luar negeri yang akan mempercepat karier saya. Mengambil peran yang kurang menuntut untuk mendukung logistik keluarga.';
+        document.getElementById('t3_sac_b').value = 'Beralih ke pekerjaan kontrak fleksibel untuk mengelola rumah dan anak-anak. Melewatkan promosi yang membutuhkan lebih banyak perjalanan.';
+        document.getElementById('t3_ack').value = 'Kami telah mengakui kesenjangan pendapatan, tetapi belum benar-benar membicarakan hilangnya momentum karier.';
+        document.getElementById('t3_invisible').value = 'Hilangnya momentum karier Pasangan B—jaringan yang terlewat, penurunan keterampilan dari pekerjaan kontrak, kurangnya pengembangan profesional.';
+        document.getElementById('t3_score').value = 'Tidak, tapi saya merasakannya';
+        showToast('Contoh dimuat: Hilangnya momentum karier tidak terlihat');
+    }
+
+    function analyzeTool3() {
+        const sacA = document.getElementById('t3_sac_a').value || 'Pengorbanan Pasangan A dijelaskan';
+        const sacB = document.getElementById('t3_sac_b').value || 'Pengorbanan Pasangan B dijelaskan';
+        const ack = document.getElementById('t3_ack').value || 'Pengakuan dijelaskan';
+        const invisible = document.getElementById('t3_invisible').value || 'Pengorbanan tidak terlihat dijelaskan';
+        const score = document.getElementById('t3_score').value;
+
+        const lists = `<strong>Pasangan A:</strong> ${escapeHTML(sacA)}<br><strong>Pasangan B:</strong> ${escapeHTML(sacB)}`;
+        const gap = `Apa yang telah diakui: ${escapeHTML(ack)}<br>Apa yang terasa tidak terlihat: ${escapeHTML(invisible)}`;
+        const scoreText = `Status penghitungan prestasi: "${score}". Penghitungan prestasi sering menjadi sinyal bahwa nilai atau kontribusi terasa kurang diakui. Tujuannya adalah beralih dari menghitung prestasi ke pengakuan eksplisit.`;
+        const ritual = `Sesi penyelarasan 20 menit triwulanan: <br><br>"Saya mengakui bahwa Anda berkompromi pada [Pengorbanan] sehingga tim kami bisa [Manfaat]. Saya melihatnya, dan saya tidak menganggapnya remeh."`;
+        const repay = `Pertimbangkan tindakan konkret untuk menghormati kompromi tidak terlihat di masa lalu: pelatihan khusus, outsourcing tenaga kerja domestik, waktu fokus yang dilindungi, atau dana pengembangan karier.`;
+        const contract = `Tidak ada pengorbanan sepihak. Penyesuaian karier harus dinegosiasikan secara eksplisit daripada diserap secara diam-diam. Kedua pasangan harus menyetujui dampak karier yang material.`;
+
+        document.getElementById('t3-out-lists').innerHTML = lists;
+        document.getElementById('t3-out-gap').innerHTML = gap;
+        document.getElementById('t3-out-score').innerHTML = scoreText;
+        document.getElementById('t3-out-ritual').innerText = ritual;
+        document.getElementById('t3-out-repay').innerHTML = repay;
+        document.getElementById('t3-out-contract').innerHTML = contract;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', 'Pelacak Pengorbanan', `<p>${lists}</p><br><code>${ritual}</code>`);
+    }
+
+    // ========================================
+    // TOOL 4: SUPPORT REBALANCE
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_support_a').value = '5'; document.getElementById('sup_a_val').innerText = '5';
+        document.getElementById('t4_support_b').value = '4'; document.getElementById('sup_b_val').innerText = '4';
+        document.querySelectorAll('#t4_lang_a input').forEach(cb => cb.checked = false);
+        document.querySelector('#t4_lang_a input[value="Mendengarkan"]').checked = true;
+        document.querySelector('#t4_lang_a input[value="Emosional"]').checked = true;
+        document.querySelectorAll('#t4_lang_b input').forEach(cb => cb.checked = false);
+        document.querySelector('#t4_lang_b input[value="Logistik"]').checked = true;
+        document.querySelector('#t4_lang_b input[value="Ruang"]').checked = true;
+        document.getElementById('t4_daily').value = 'Kami berbincang saat makan malam, tetapi sering berakhir berdebat tentang logistik.';
+        showToast('Contoh dimuat: Kesenjangan dukungan dengan bahasa yang berbeda');
+    }
+
+    function analyzeTool4() {
+        const supA = parseInt(document.getElementById('t4_support_a').value) || 5;
+        const supB = parseInt(document.getElementById('t4_support_b').value) || 5;
+        const langA = [...document.querySelectorAll('#t4_lang_a input:checked')].map(cb => cb.value);
+        const langB = [...document.querySelectorAll('#t4_lang_b input:checked')].map(cb => cb.value);
+        const daily = document.getElementById('t4_daily').value || 'Dukungan harian dijelaskan';
+
+        const gap = `Pasangan A merasa didukung pada ${supA}/10. Pasangan B merasa didukung pada ${supB}/10. Kesenjangannya adalah ${Math.abs(supA - supB)} poin.`;
+        const competition = `Persaingan zero-sum sering muncul ketika kesuksesan karier terasa seperti datang dengan mengorbankan karier pasangan lainnya. Pembingkaian ulang: Rumah tangga adalah satu tim dengan dua karier. Kesuksesan satu pasangan tidak mengurangi nilai pasangan lainnya—itu memperkuat rumah tangga.`;
+        const langAText = langA.length > 0 ? langA.join(', ') : 'Tidak ditentukan. Pertimbangkan untuk mengeksplorasi apa arti dukungan bagi Anda.';
+        const langBText = langB.length > 0 ? langB.join(', ') : 'Tidak ditentukan. Pertimbangkan untuk mengeksplorasi apa arti dukungan bagi Anda.';
+        const ritual = `Tinjauan Kemenangan 15 Menit Mingguan: Masing-masing pasangan membagikan satu kemenangan profesional dari minggu itu. Pasangan lainnya mendengarkan dan merayakan secara eksplisit sebelum beralih ke logistik atau masalah.`;
+        const boundary = `Batasan Kerja-Rumah: Buat ritual transisi (misalnya, 10 menit tenang sebelum berbincang). Gunakan izin persetujuan: "Apakah Anda memiliki kapasitas emosional untuk mendengarkan cerita kerja, atau haruskah kita dekompresi dulu?"`;
+
+        document.getElementById('t4-out-gap').innerHTML = gap;
+        document.getElementById('t4-out-competition').innerHTML = competition;
+        document.getElementById('t4-out-lang_a').innerHTML = `Pasangan A menghargai: ${langAText}`;
+        document.getElementById('t4-out-lang_b').innerHTML = `Pasangan B menghargai: ${langBText}`;
+        document.getElementById('t4-out-ritual').innerHTML = ritual;
+        document.getElementById('t4-out-boundary').innerHTML = boundary;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', 'Keseimbangan Dukungan', `<p>${gap}</p><br>${ritual}`);
+    }
+
+    // ========================================
+    // TOOL 5: NEXT DECISION SYSTEM
+    // ========================================
+    function loadSampleTool5() {
+        document.getElementById('t5_fork').value = 'Pasangan A mempertimbangkan peran Direktur Eksekutif dengan 30% perjalanan. Pasangan B ingin meluncurkan praktik konsultasi.';
+        document.getElementById('t5_pref_a').value = 'Saya ingin peran Direktur Eksekutif. Ini langkah karier besar, tetapi saya khawatir tentang dampak perjalanan pada keluarga kami.';
+        document.getElementById('t5_pref_b').value = 'Saya ingin meluncurkan praktik konsultasi saya. Saya sudah mempersiapkan ini selama dua tahun, dan saya butuh waktu fokus untuk memulainya.';
+        document.getElementById('t5_risk_a').value = 'Lebih banyak perjalanan, lebih sedikit waktu dengan keluarga, potensi kelelahan, Pasangan B harus memegang lebih banyak logistik rumah tangga.';
+        document.getElementById('t5_risk_b').value = 'Pendapatan awal lebih rendah, pertumbuhan praktik lebih lambat, potensi stres meluncurkan sambil memegang logistik rumah tangga.';
+        document.getElementById('t5_prior').value = 'Pasangan A';
+        showToast('Contoh dimuat: Peran eksekutif vs. meluncurkan praktik');
+    }
+
+    function analyzeTool5() {
+        const fork = document.getElementById('t5_fork').value || 'Percabangan keputusan dijelaskan';
+        const prefA = document.getElementById('t5_pref_a').value || 'Preferensi Pasangan A dijelaskan';
+        const prefB = document.getElementById('t5_pref_b').value || 'Preferensi Pasangan B dijelaskan';
+        const riskA = document.getElementById('t5_risk_a').value || 'Risiko A dijelaskan';
+        const riskB = document.getElementById('t5_risk_b').value || 'Risiko B dijelaskan';
+        const prior = document.getElementById('t5_prior').value;
+
+        const prep = `Percabangan yang akan datang: ${escapeHTML(fork)}<br>Pasangan A: ${escapeHTML(prefA)}<br>Pasangan B: ${escapeHTML(prefB)}`;
+        const alternate = `Prioritas keputusan besar terakhir: ${prior}. <br>Aturan: Jika karier yang sama telah memenangkan dua kompromi besar terakhir, prioritas harus bergeser untuk melindungi pertumbuhan pasangan lainnya.`;
+        const risk = `Risiko jika memilih jalur Pasangan A: ${escapeHTML(riskA)}<br>Risiko jika memilih jalur Pasangan B: ${escapeHTML(riskB)}<br>Pertimbangkan kedua risiko—bukan hanya sisi positif dari jalur yang diinginkan.`;
+        const litmus = `Uji Lakmus Hubungan: Apakah jalur ini memungkinkan kedua pasangan tetap berkembang, atau mengharuskan satu pasangan untuk secara permanen menyusutkan ambisi kariernya?`;
+        const review = `Jadwalkan tinjauan 3 bulan dan 6 bulan tentang beban kerja, stres, dan kepuasan karier. Gunakan ini sebagai titik kalibrasi, bukan vonis.`;
+        const exit = `Tentukan kondisi pivot objektif di muka. Contoh: "Jika kelelahan Pasangan B melebihi 8/10 selama dua bulan berturut-turut, atau jika perjalanan Pasangan A melebihi batas yang disepakati, kami pivot."`;
+        const unity = `"Kami membuat keputusan ini bersama sebagai satu tim. Kami telah menimbang peluang, risiko, dan dampaknya pada rumah tangga kami. Kami selaras pada jalur ini, dan kami akan meninjaunya bersama pada 3 dan 6 bulan."`;
+
+        document.getElementById('t5-out-prep').innerHTML = prep;
+        document.getElementById('t5-out-alternate').innerHTML = alternate;
+        document.getElementById('t5-out-risk').innerHTML = risk;
+        document.getElementById('t5-out-litmus').innerHTML = litmus;
+        document.getElementById('t5-out-review').innerHTML = review;
+        document.getElementById('t5-out-exit').innerHTML = exit;
+        document.getElementById('t5-out-unity').innerText = unity;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', 'Sistem Keputusan Berikutnya', `<p>${prep}</p><br><code>${unity}</code>`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solo Life Builder™ - Architecture for Independent Living & Connection</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #C2410C;
+      --primary-hover: #9A3412;
+      --primary-light: #FFEDD5;
+      --primary-border: #FDBA74;
+      --bg-cream-start: #FFFBEB;
+      --bg-cream-end: #FEF3C7;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --card-bg: #FFFFFF;
+      --card-border: #F3F4F6;
+      --sidebar-width: 250px;
+      --radius-xl: 1rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-cream-start), var(--bg-cream-end));
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Layout Structure */
+    #app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Sidebar */
+    aside#sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--primary);
+    }
+
+    .sidebar-header i {
+      font-size: 1.5rem;
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.025em;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0.75rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-item.active {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .nav-item.active i {
+      color: #FFFFFF;
+    }
+
+    .nav-item i {
+      font-size: 1rem;
+      width: 1.25rem;
+      text-align: center;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background-color: var(--card-border);
+      margin: 0.5rem 0;
+    }
+
+    /* Mobile Header & Overlay */
+    .mobile-header {
+      display: none;
+      background-color: #FFFFFF;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Main Content */
+    main#main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 2rem 1.5rem 4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 840px;
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common Card Styles */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(243, 244, 246, 0.8);
+    }
+
+    /* Typography & Headers */
+    .hero-header {
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+
+    .hero-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .problem-banner {
+      background-color: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 1.5rem;
+      color: var(--primary-hover);
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #D1D5DB;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background-color: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.15);
+    }
+
+    .range-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .range-slider-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+    }
+
+    .slider-value {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 2.5rem;
+      text-align: center;
+      background: var(--primary-light);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .radio-label input[type="radio"] {
+      accent-color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.65rem 1.15rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary {
+      background-color: #FFFFFF;
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+    }
+
+    .btn-outline {
+      background-color: #FFFFFF;
+      color: var(--text-main);
+      border: 1px solid #D1D5DB;
+    }
+
+    .btn-outline:hover {
+      background-color: #F3F4F6;
+    }
+
+    .btn-copy {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      background-color: #F3F4F6;
+      color: #374151;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover {
+      background-color: #E5E7EB;
+      color: #111827;
+    }
+
+    /* Outputs & Results */
+    .output-section {
+      margin-top: 2rem;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .output-section.active {
+      display: block;
+    }
+
+    .output-header {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 0.5rem;
+    }
+
+    .output-box {
+      background-color: #FAF9F6;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid #E5E7EB;
+    }
+
+    .output-box h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .output-box ul {
+      list-style-type: none;
+    }
+
+    .output-box li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .output-box li::before {
+      content: "•";
+      position: absolute;
+      left: 0.5rem;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .script-item {
+      background-color: #FFFFFF;
+      border: 1px dashed #D1D5DB;
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      color: #1F2937;
+      position: relative;
+    }
+
+    .script-text {
+      font-style: italic;
+      color: #4B5563;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Dashboard Grid */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .dash-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(243, 244, 246, 0.8);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-border);
+    }
+
+    .dash-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .dash-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .dash-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    /* Daily Connection Pulse */
+    .daily-check-container {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      border: 1px solid var(--primary-light);
+    }
+
+    .daily-check-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .daily-check-header i {
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .rate-btn {
+      flex: 1;
+      min-width: 90px;
+      padding: 0.6rem 0.5rem;
+      border: 1px solid #E5E7EB;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .rate-btn:hover, .rate-btn.selected {
+      background-color: var(--primary-light);
+      border-color: var(--primary-border);
+      color: var(--primary-hover);
+      font-weight: 600;
+    }
+
+    .assessment-feedback {
+      margin-top: 1rem;
+      padding: 0.85rem;
+      background-color: #FFFBEB;
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--primary);
+      font-size: 0.875rem;
+      color: #9A3412;
+      display: none;
+    }
+
+    /* Qualitative Snapshot Grid */
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .snapshot-card {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .snapshot-card-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .snapshot-card-status {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* History Accordion */
+    .history-section {
+      margin-top: 2rem;
+      border-top: 1px solid #E5E7EB;
+      padding-top: 1rem;
+    }
+
+    .history-toggle {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      width: 100%;
+      text-align: left;
+    }
+
+    .history-toggle:hover {
+      color: var(--primary);
+    }
+
+    .history-content {
+      display: none;
+      padding-top: 1rem;
+    }
+
+    .history-content.active {
+      display: block;
+    }
+
+    .history-item {
+      background-color: #FAFAFA;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      position: relative;
+    }
+
+    .history-timestamp {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .clear-history-btn {
+      font-size: 0.75rem;
+      color: #DC2626;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      text-decoration: underline;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: #1F2937;
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    footer.app-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(229, 231, 235, 0.6);
+      background-color: rgba(255, 255, 255, 0.5);
+      margin-top: auto;
+    }
+
+    /* Print Styles */
+    @media print {
+      aside#sidebar, .mobile-header, .btn-group, .history-section, .problem-banner, footer, #toast, .rate-btn {
+        display: none !important;
+      }
+      main#main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .output-section {
+        display: block !important;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      aside#sidebar {
+        transform: translateX(-100%);
+      }
+
+      aside#sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      main#main-content {
+        margin-left: 0;
+        padding: 1.25rem 1rem 3rem 1rem;
+      }
+
+      .hero-header h2 {
+        font-size: 1.5rem;
+      }
+
+      #toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Header -->
+  <div class="mobile-header">
+    <div class="mobile-title">
+      <i class="fa-solid fa-house-user"></i>
+      <span>Solo Life Builder™</span>
+    </div>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Toggle menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+
+  <!-- Sidebar Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div id="app-container">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-house-user"></i>
+        <h1>Solo Life Builder™</h1>
+      </div>
+      <ul class="nav-list">
+        <li>
+          <a class="nav-item active" data-view="dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="reset7">
+            <i class="fa-solid fa-compass"></i>
+            <span>7-Day Solo Reset</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li>
+          <a class="nav-item" data-view="tool1">
+            <i class="fa-solid fa-comments"></i>
+            <span>Connection Designer</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool2">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Household Load Engine</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool3">
+            <i class="fa-solid fa-store"></i>
+            <span>Third Place Finder</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool4">
+            <i class="fa-solid fa-moon"></i>
+            <span>Isolation Breaker</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool5">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Support Network Auditor</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li>
+          <a class="nav-item" data-view="plan">
+            <i class="fa-solid fa-file-contract"></i>
+            <span>My Solo Life Plan</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Unified History</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="privacy">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Privacy & Control</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main id="main-content">
+      <div class="content-wrapper">
+
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="view active">
+          <div class="hero-header">
+            <h2>Solo Life Builder™</h2>
+            <p>Turn solo living into a workable foundation for independence, self-care, and meaningful connection.</p>
+          </div>
+
+          <!-- Daily Connection Assessment Card -->
+          <div class="daily-check-container">
+            <div class="daily-check-header">
+              <i class="fa-solid fa-calendar-check"></i>
+              <div>
+                <h3 style="font-size: 1rem; font-weight: 600;">Daily Connection Pulse</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">A subjective 1-minute check on your social touchpoints today (not a clinical score).</p>
+              </div>
+            </div>
+            <p style="font-size: 0.9rem; font-weight: 500;">How connected do you feel today?</p>
+            <div class="rating-buttons" id="daily-rating-buttons">
+              <button class="rate-btn" data-rate="1">1 - Isolated</button>
+              <button class="rate-btn" data-rate="2">2 - Low</button>
+              <button class="rate-btn" data-rate="3">3 - Moderate</button>
+              <button class="rate-btn" data-rate="4">4 - Connected</button>
+              <button class="rate-btn" data-rate="5">5 - Thriving</button>
+            </div>
+            <div class="assessment-feedback" id="assessment-feedback"></div>
+          </div>
+
+          <!-- Qualitative Snapshot -->
+          <div class="card" style="padding: 1.25rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">Your Solo Life Infrastructure Overview</h3>
+            <div class="snapshot-grid" id="dashboard-snapshot-grid">
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Human Contact</div>
+                <div class="snapshot-card-status" id="snap-contact">Not Assessed</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Household Load</div>
+                <div class="snapshot-card-status" id="snap-load">Not Assessed</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Local Familiarity</div>
+                <div class="snapshot-card-status" id="snap-places">Not Assessed</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Difficult Hours</div>
+                <div class="snapshot-card-status" id="snap-hours">Not Assessed</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Support Network</div>
+                <div class="snapshot-card-status" id="snap-support">Not Assessed</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tool Cards Grid -->
+          <div class="dash-grid">
+            <div class="dash-card" data-target="tool1">
+              <div class="dash-card-icon"><i class="fa-solid fa-comments"></i></div>
+              <h3>Recurring Connection Designer</h3>
+              <p>Design low-friction daily and weekly touchpoints to fit your energy.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool2">
+              <div class="dash-card-icon"><i class="fa-solid fa-list-check"></i></div>
+              <h3>Solo Household Load Engine</h3>
+              <p>Streamline chores, decision fatigue, and single-portion meal routines effortlessly.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool3">
+              <div class="dash-card-icon"><i class="fa-solid fa-store"></i></div>
+              <h3>"Third Place" Engagement Planner</h3>
+              <p>Identify community venue categories to build low-pressure local familiarity.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool4">
+              <div class="dash-card-icon"><i class="fa-solid fa-moon"></i></div>
+              <h3>Isolation Circuit Breaker</h3>
+              <p>Deactivate difficult evening and weekend hours with comforting anchor routines.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool5">
+              <div class="dash-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3>Support Network Auditor</h3>
+              <p>Audit practical/emotional safety nets and script low-awkwardness neighbor contact.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7-DAY SOLO RESET VIEW -->
+        <section id="view-reset7" class="view">
+          <div class="hero-header">
+            <h2>7-Day Solo Life Reset</h2>
+            <p>A structured, day-by-day sequence to establish essential independent-living infrastructure.</p>
+          </div>
+          <div class="card">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 1: Identify Priority & Stabilize</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Complete the Daily Connection Pulse and pick the single largest friction point currently on your mind.</p>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 2: Design Connection Blueprint</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Use the Connection Designer to set up 1–2 repeatable, low-friction social anchors.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool1')">Go to Connection Designer</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 3: Simplify Solo Household Load</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Configure the Household Load Engine to set up a Minimum Viable Routine and meal batching.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool2')">Go to Household Engine</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 4: Test a Third-Place Category</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Select a comfortable venue category and plan a 30-minute low-pressure observation visit.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool3')">Go to Third Place Planner</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 5: Plan for Difficult Hours</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Create a custom Evening or Sunday Reset protocol using the Isolation Circuit Breaker.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool4')">Go to Circuit Breaker</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 6: Audit Support & Emergency Access</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Audit practical backup contacts and prepare a Digital Emergency Card.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool5')">Go to Support Auditor</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Day 7: Consolidate Your Master Plan</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Review your integrated Solo Life Plan, print or copy it, and select your next single experiment.</p>
+                <button class="btn btn-primary" style="margin-top: 0.5rem;" onclick="switchView('plan')">View Master Plan</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1: RECURRING CONNECTION DESIGNER -->
+        <section id="view-tool1" class="view">
+          <div class="hero-header">
+            <h2>Recurring Connection Designer</h2>
+            <p>Architect low-effort social touchpoints seamlessly into your weekly routine.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Living alone can sometimes lead to multi-day stretches without meaningful human contact."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool1">
+              <div class="form-group">
+                <label for="t1-touchpoints">Current weekly social touchpoints:</label>
+                <select id="t1-touchpoints" class="form-control">
+                  <option value="0-1">0-1 times per week</option>
+                  <option value="2-3">2-3 times per week</option>
+                  <option value="4+">4+ times per week</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-style">Preferred connection style:</label>
+                <select id="t1-style" class="form-control">
+                  <option value="low">Low energy (Quick texts, casual coffee counters)</option>
+                  <option value="structured">Structured (Hobby groups, evening classes, book clubs)</option>
+                  <option value="active">Active (Walks, sports, outdoor meetups)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-time">Available free time windows:</label>
+                <select id="t1-time" class="form-control">
+                  <option value="evenings">Weekday evenings</option>
+                  <option value="mornings">Weekend mornings</option>
+                  <option value="lunch">Lunch breaks & mid-day pauses</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Blueprint
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t1">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool1', 'output-t1')">Reset</button>
+              </div>
+            </form>
+
+            <!-- Output Container -->
+            <div id="output-t1" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-calendar-week"></i>
+                <span>Your Connection Architecture</span>
+              </div>
+
+              <div class="output-box">
+                <h4>YOUR CONNECTION SNAPSHOT</h4>
+                <p id="t1-snapshot-text" style="font-size:0.9rem; color:#374151;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>WEEKLY CONNECTION BLUEPRINT</h4>
+                <ul id="t1-blueprint-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>MICRO-CONNECTION OPTIONS (Choose Any 1-2 Daily)</h4>
+                <ul id="t1-micro-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>REACH-OUT TEMPLATES</h4>
+                <div id="t1-templates-list"></div>
+              </div>
+            </div>
+
+            <!-- History Accordion -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t1" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Previous Saved Plans
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t1" class="history-content">
+                <div id="hist-list-tool1"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool1')">Clear Tool History</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: SOLO HOUSEHOLD LOAD & ROUTINE ENGINE -->
+        <section id="view-tool2" class="view">
+          <div class="hero-header">
+            <h2>Solo Household Load Engine</h2>
+            <p>Simplify house management, single cooking, and decisions to prevent solo burnout.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Managing every chore, meal, and decision alone can create cognitive fatigue."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool2">
+              <div class="form-group">
+                <label for="t2-burden">Biggest solo daily burden:</label>
+                <select id="t2-burden" class="form-control">
+                  <option value="cooking">Cooking & meal planning for one</option>
+                  <option value="chores">House chores & daily upkeep</option>
+                  <option value="boredom">Weekend emptiness & boredom</option>
+                  <option value="fatigue">Decision fatigue & executive overload</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t2-structure">Current routine structure:</label>
+                <select id="t2-structure" class="form-control">
+                  <option value="chaotic">Chaotic / Unstructured</option>
+                  <option value="rigid">Overly Rigid / Exhausting</option>
+                  <option value="medium">Somewhere in between</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-gears"></i> Optimize Routine
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t2">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool2', 'output-t2')">Reset</button>
+              </div>
+            </form>
+
+            <div id="output-t2" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Household Routine Strategy</span>
+              </div>
+
+              <div class="output-box">
+                <h4>MINIMUM VIABLE HOUSEHOLD STRATEGY</h4>
+                <p id="t2-strategy-text" style="font-size:0.9rem; color:#374151;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>SOLO-FRIENDLY ROUTINE MAP</h4>
+                <ul id="t2-routine-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>"COOK ONCE, EAT TWICE" MEAL GUIDE</h4>
+                <ul id="t2-meal-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>WEEKEND ANCHOR MATRIX</h4>
+                <ul id="t2-weekend-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>ONE THING TO STOP OPTIMIZING</h4>
+                <p id="t2-stop-optimizing" style="font-size:0.9rem; color:#C2410C; font-weight:600;"></p>
+              </div>
+            </div>
+
+            <!-- History Accordion -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t2" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Previous Saved Routines
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t2" class="history-content">
+                <div id="hist-list-tool2"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool2')">Clear Tool History</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: THIRD PLACE FINDER & ENGAGEMENT PLANNER -->
+        <section id="view-tool3" class="view">
+          <div class="hero-header">
+            <h2>"Third Place" Engagement Planner</h2>
+            <p>Establish welcoming anchor venue categories beyond home and work to cultivate local familiarity.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Restricting movement strictly between home and essential errands can reduce ambient social belonging."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool3">
+              <div class="form-group">
+                <label for="t3-interest">Primary Interest / Vibe:</label>
+                <select id="t3-interest" class="form-control">
+                  <option value="reading">Reading / Quiet Coffee / Writing</option>
+                  <option value="fitness">Fitness / Outdoors / Climbing</option>
+                  <option value="creative">Creative / Arts / Crafting</option>
+                  <option value="tech">Board Games / Tech / Gaming</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t3-comfort">Self-rated social comfort in public spaces (1 = Low Comfort, 10 = High Comfort):</label>
+                <div class="range-slider-container">
+                  <input type="range" id="t3-comfort" min="1" max="10" value="4" class="form-control" oninput="document.getElementById('comfort-val').innerText = this.value">
+                  <span id="comfort-val" class="slider-value">4</span>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-location-dot"></i> Find & Plan Third Places
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t3">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool3', 'output-t3')">Reset</button>
+              </div>
+            </form>
+
+            <div id="output-t3" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span>Your Community Blueprint</span>
+              </div>
+
+              <div class="output-box">
+                <h4>YOUR COMFORT SNAPSHOT</h4>
+                <p id="t3-snapshot-text" style="font-size:0.9rem; color:#374151;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>TOP 3 RECOMMENDED VENUE CATEGORIES</h4>
+                <ul id="t3-places-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>4-WEEK FAMILIARITY EXPERIMENT</h4>
+                <ul id="t3-playbook-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>OPTIONAL LOW-PRESSURE APPROACH SCRIPTS</h4>
+                <div id="t3-scripts-list"></div>
+              </div>
+            </div>
+
+            <!-- History Accordion -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t3" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Previous Saved Spaces
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t3" class="history-content">
+                <div id="hist-list-tool3"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool3')">Clear Tool History</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 4: EVENING & WEEKEND ISOLATION CIRCUIT BREAKER -->
+        <section id="view-tool4" class="view">
+          <div class="hero-header">
+            <h2>Isolation Circuit Breaker</h2>
+            <p>Interrupt uncomfortable loneliness patterns during sensitive evening or weekend hours.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Unstructured evening or weekend hours can sometimes trigger feelings of isolation or dread."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool4">
+              <div class="form-group">
+                <label for="t4-timing">When do difficult hours hit hardest?</label>
+                <select id="t4-timing" class="form-control">
+                  <option value="friday">Friday night shift into weekend</option>
+                  <option value="sunday">Sunday afternoon / evening dread</option>
+                  <option value="late">Late nights before bed</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t4-emotion">Dominant pattern during these hours:</label>
+                <select id="t4-emotion" class="form-control">
+                  <option value="restlessness">Restlessness / Agitation</option>
+                  <option value="sadness">Sadness / Heavy Heart</option>
+                  <option value="dread">Dread / Anticipatory Anxiety</option>
+                  <option value="boredom">Numb Boredom / Aimlessness</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-bolt"></i> Break the Pattern
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t4">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool4', 'output-t4')">Reset</button>
+              </div>
+            </form>
+
+            <div id="output-t4" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>Circuit Breaker Protocol</span>
+              </div>
+
+              <div class="output-box">
+                <h4>FIRST 10-MINUTE RESET</h4>
+                <p id="t4-reset-text" style="font-size:0.9rem; color:#374151; font-weight:600;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>ANCHOR EVENING PROTOCOL</h4>
+                <ul id="t4-protocol-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>DIGITAL BOUNDARY STRATEGY</h4>
+                <ul id="t4-boundary-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>COMFORT MENU (5 Nurturing Alternatives)</h4>
+                <ul id="t4-menu-list"></ul>
+              </div>
+            </div>
+
+            <!-- History Accordion -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t4" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Previous Protocols
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t4" class="history-content">
+                <div id="hist-list-tool4"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool4')">Clear Tool History</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 5: EMERGENCY SUPPORT NETWORK AUDITOR -->
+        <section id="view-tool5" class="view">
+          <div class="hero-header">
+            <h2>Emergency Support Network Auditor</h2>
+            <p>Ensure practical safety, physical backup, and emotional support in times of need.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Living alone makes contingency planning for physical and emotional needs particularly valuable."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool5">
+              <div class="form-group">
+                <label for="t5-physical">Who could help you in a physical emergency? (e.g. urgent hospital ride, key pickup)</label>
+                <input type="text" id="t5-physical" class="form-control" placeholder="Name or 'No one currently'">
+              </div>
+
+              <div class="form-group">
+                <label for="t5-emotional">Who could you call if you felt emotionally overwhelmed late at night?</label>
+                <input type="text" id="t5-emotional" class="form-control" placeholder="Name or 'Unsure'">
+              </div>
+
+              <div class="form-group">
+                <label>Do your key contacts have your spare key or emergency access info?</label>
+                <div class="radio-group" style="margin-top: 0.5rem;">
+                  <label class="radio-label">
+                    <input type="radio" name="t5-key" value="yes"> Yes
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="t5-key" value="no" checked> No
+                  </label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-clipboard-check"></i> Audit Safety Net
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t5">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool5', 'output-t5')">Reset</button>
+              </div>
+            </form>
+
+            <div id="output-t5" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-shield-heart"></i>
+                <span>Safety Net Audit & Action Plan</span>
+              </div>
+
+              <div class="output-box">
+                <h4>SAFETY NET AUDIT REPORT</h4>
+                <ul id="t5-audit-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>NEIGHBOR CONTACT PROTOCOL</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Low-awkwardness template to exchange contacts with a neighbor:</p>
+                <div id="t5-neighbor-template"></div>
+              </div>
+
+              <div class="output-box">
+                <h4>DIGITAL EMERGENCY CARD</h4>
+                <div id="t5-card-preview" style="background:#FFFFFF; border:1px solid #D1D5DB; padding:1rem; border-radius:var(--radius-md); font-size:0.875rem;"></div>
+                <div style="margin-top: 0.75rem;">
+                  <button class="btn btn-copy" onclick="copyEmergencyCard()"><i class="fa-regular fa-copy"></i> Copy Emergency Card</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- History Accordion -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t5" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Previous Audits
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t5" class="history-content">
+                <div id="hist-list-tool5"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool5')">Clear Tool History</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MY SOLO LIFE PLAN (SYNTHESIS VIEW) -->
+        <section id="view-plan" class="view">
+          <div class="hero-header">
+            <h2>My Solo Life Plan</h2>
+            <p>Your integrated architecture for independent living, routines, and connection.</p>
+          </div>
+
+          <div class="card">
+            <div class="btn-group" style="margin-top:0; margin-bottom: 1.5rem;">
+              <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Master Plan</button>
+              <button class="btn btn-secondary" onclick="copyMasterPlan()"><i class="fa-regular fa-copy"></i> Copy Plan Text</button>
+            </div>
+
+            <div id="plan-content">
+              <div class="output-box">
+                <h4>DAILY CONNECTION PULSE STATUS</h4>
+                <p id="plan-pulse-status" style="font-size:0.9rem; color:#374151;">No pulse recorded today.</p>
+              </div>
+
+              <div class="output-box">
+                <h4>RECURRING CONNECTION ANCHOR</h4>
+                <div id="plan-connection-body" style="font-size:0.9rem; color:#374151;">Complete Module 1 to populate.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>HOUSEHOLD MINIMUM VIABLE ROUTINE</h4>
+                <div id="plan-household-body" style="font-size:0.9rem; color:#374151;">Complete Module 2 to populate.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>THIRD-PLACE LOCAL EXPERIMENT</h4>
+                <div id="plan-places-body" style="font-size:0.9rem; color:#374151;">Complete Module 3 to populate.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>DIFFICULT-HOURS PROTOCOL</h4>
+                <div id="plan-hours-body" style="font-size:0.9rem; color:#374151;">Complete Module 4 to populate.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>SUPPORT NETWORK & EMERGENCY BACKUP</h4>
+                <div id="plan-support-body" style="font-size:0.9rem; color:#374151;">Complete Module 5 to populate.</div>
+              </div>
+
+              <div class="output-box" style="border-left: 4px solid var(--primary);">
+                <h4>CROSS-MODULE RECOMMENDATIONS</h4>
+                <ul id="plan-recommendations-list">
+                  <li>Complete individual modules to receive tailored cross-system priorities.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- UNIFIED HISTORY VIEW -->
+        <section id="view-history" class="view">
+          <div class="hero-header">
+            <h2>Unified Activity History</h2>
+            <p>Review all stored reflection sessions across your Solo Life Builder modules.</p>
+          </div>
+
+          <div class="card">
+            <div id="unified-history-container">
+              <p style="color:var(--text-muted); font-size:0.9rem;">No history recorded across modules yet.</p>
+            </div>
+            <div style="margin-top: 1.5rem;">
+              <button class="clear-history-btn" onclick="clearGlobalHistory()">Clear All Application History</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRIVACY & CONTROL VIEW -->
+        <section id="view-privacy" class="view">
+          <div class="hero-header">
+            <h2>Privacy & Data Control</h2>
+            <p>Your data stays completely private and stored locally in your browser.</p>
+          </div>
+
+          <div class="card">
+            <div class="output-box">
+              <h4>100% LOCAL STORAGE</h4>
+              <p style="font-size:0.9rem; color:#374151; margin-bottom:0.5rem;">Solo Life Builder runs entirely in your web browser. No reflections, emergency contacts, or answers are ever transmitted to an external server or database.</p>
+            </div>
+
+            <div class="output-box">
+              <h4>SHARED DEVICE WARNING</h4>
+              <p style="font-size:0.9rem; color:#374151;">If you are using a public or shared computer, remember to clear your history using the button below before closing your session to protect your emergency contacts and personal reflections.</p>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-secondary" onclick="clearGlobalHistory()"><i class="fa-solid fa-trash"></i> Clear All Local Storage Data</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    For personal routine building and social planning. Not clinical therapy, psychological diagnosis, or emergency response care.
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast">
+    <i class="fa-solid fa-check-circle"></i>
+    <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <!-- JavaScript Application Logic -->
+  <script>
+    // --- Safe HTML Sanitization ---
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // --- Global State Architecture ---
+    const STORAGE_KEY = 'sololife_v2_state';
+    const HISTORY_KEY_PREFIX = 'sololife_v2_history_';
+
+    let appState = {
+      dailyPulse: { date: null, value: null },
+      completedTools: [],
+      toolResults: {},
+      currentInputs: {},
+      version: "2.0"
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          appState = Object.assign(appState, JSON.parse(raw));
+        }
+      } catch (e) {
+        console.warn('Failed to parse state from localStorage', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.warn('Failed to save state to localStorage', e);
+      }
+      updateDashboardSnapshot();
+      updateMasterPlan();
+    }
+
+    // --- Navigation Management ---
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+
+      const navItems = document.querySelectorAll('.nav-item');
+      const views = document.querySelectorAll('.view');
+      const dashCards = document.querySelectorAll('.dash-card');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const hamburgerBtn = document.getElementById('hamburger-btn');
+
+      window.switchView = function(viewId) {
+        views.forEach(v => v.classList.remove('active'));
+        navItems.forEach(item => item.classList.remove('active'));
+
+        const targetView = document.getElementById(`view-${viewId}`);
+        if (targetView) {
+          targetView.classList.add('active');
+        }
+
+        const activeNavItem = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+        if (activeNavItem) {
+          activeNavItem.classList.add('active');
+        }
+
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+
+        if (viewId === 'plan') updateMasterPlan();
+        if (viewId === 'history') renderUnifiedHistory();
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const viewId = item.getAttribute('data-view');
+          switchView(viewId);
+        });
+      });
+
+      dashCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const target = card.getAttribute('data-target');
+          switchView(target);
+        });
+      });
+
+      hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('open');
+      });
+
+      sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+      });
+
+      // --- Toast Notification ---
+      window.showToast = function(message = "Copied!") {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2200);
+      };
+
+      window.copyText = function(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!")).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      };
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast("Copied to clipboard!");
+        } catch (e) {
+          showToast("Copy failed");
+        }
+        document.body.removeChild(ta);
+      }
+
+      // --- Daily Connection Pulse Logic ---
+      const rateBtns = document.querySelectorAll('.rate-btn');
+      const feedbackBox = document.getElementById('assessment-feedback');
+
+      const feedbackResponses = {
+        '1': "Today may benefit from just one deliberately chosen, low-effort human touchpoint to break silence.",
+        '2': "Low interaction today. Consider a small, fitting connection action like a short walk or quick voice message.",
+        '3': "Balanced pace today! You've had baseline contact. Protect your restorative solo time or plan one reach-out.",
+        '4': "Solid social touchpoints today! Notice what worked well and preserve that comfortable rhythm.",
+        '5': "Wonderful social energy today! Make sure to recharge your battery with quiet, restorative time."
+      };
+
+      rateBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          rateBtns.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          const val = btn.getAttribute('data-rate');
+          feedbackBox.style.display = 'block';
+          feedbackBox.innerHTML = `<strong>Pulse Guidance:</strong> ${escapeHTML(feedbackResponses[val])}`;
+          
+          appState.dailyPulse = { date: new Date().toLocaleDateString(), value: val };
+          saveState();
+        });
+      });
+
+      // Restore daily pulse if saved today
+      if (appState.dailyPulse && appState.dailyPulse.date === new Date().toLocaleDateString() && appState.dailyPulse.value) {
+        const activeBtn = document.querySelector(`.rate-btn[data-rate="${appState.dailyPulse.value}"]`);
+        if (activeBtn) {
+          activeBtn.classList.add('selected');
+          feedbackBox.style.display = 'block';
+          feedbackBox.innerHTML = `<strong>Pulse Guidance:</strong> ${escapeHTML(feedbackResponses[appState.dailyPulse.value])}`;
+        }
+      }
+
+      // --- Local Storage History Engine ---
+      window.saveToHistory = function(toolId, summaryText, dataObj) {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        let history = [];
+        try {
+          history = JSON.parse(localStorage.getItem(key) || '[]');
+        } catch (e) { history = []; }
+
+        const entry = {
+          timestamp: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          summary: summaryText,
+          data: dataObj
+        };
+
+        history.unshift(entry);
+        if (history.length > 30) history = history.slice(0, 30);
+        
+        try {
+          localStorage.setItem(key, JSON.stringify(history));
+        } catch (e) { console.warn('Failed to save tool history', e); }
+
+        renderToolHistory(toolId);
+      };
+
+      function renderToolHistory(toolId) {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        let history = [];
+        try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { history = []; }
+        
+        const container = document.getElementById(`hist-list-${toolId}`);
+        if (!container) return;
+
+        if (history.length === 0) {
+          container.innerHTML = `<p style="color:var(--text-muted); font-size:0.8rem;">No saved history for this tool.</p>`;
+          return;
+        }
+
+        container.innerHTML = history.map((item, idx) => `
+          <div class="history-item">
+            <div class="history-timestamp">
+              <span><i class="fa-regular fa-clock"></i> ${escapeHTML(item.timestamp)}</span>
+              <button style="background:none; border:none; color:#DC2626; cursor:pointer;" onclick="deleteHistoryItem('${toolId}', ${idx})">Delete</button>
+            </div>
+            <div>${escapeHTML(item.summary)}</div>
+          </div>
+        `).join('');
+      }
+
+      window.deleteHistoryItem = function(toolId, index) {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        let history = JSON.parse(localStorage.getItem(key) || '[]');
+        history.splice(index, 1);
+        localStorage.setItem(key, JSON.stringify(history));
+        renderToolHistory(toolId);
+        showToast("Item deleted");
+      };
+
+      window.clearToolHistory = function(toolId) {
+        if (confirm("Are you sure you want to clear history for this tool?")) {
+          localStorage.removeItem(`${HISTORY_KEY_PREFIX}${toolId}`);
+          renderToolHistory(toolId);
+          showToast("Tool history cleared");
+        }
+      };
+
+      window.clearGlobalHistory = function() {
+        if (confirm("Are you sure you want to clear ALL saved state and history?")) {
+          localStorage.clear();
+          appState = { dailyPulse: { date: null, value: null }, completedTools: [], toolResults: {}, currentInputs: {}, version: "2.0" };
+          location.reload();
+        }
+      };
+
+      // Accordion Toggle
+      document.querySelectorAll('.history-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const targetId = toggle.getAttribute('data-accordion');
+          const content = document.getElementById(targetId);
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-expanded', !expanded);
+          if (content) {
+            content.classList.toggle('active');
+            const icon = toggle.querySelector('.fa-chevron-down, .fa-chevron-up');
+            if (icon) {
+              icon.classList.toggle('fa-chevron-down');
+              icon.classList.toggle('fa-chevron-up');
+            }
+          }
+        });
+      });
+
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderToolHistory);
+      updateDashboardSnapshot();
+
+      // ==========================================
+      // TOOL 1: RECURRING CONNECTION DESIGNER
+      // ==========================================
+      const formT1 = document.getElementById('form-tool1');
+      document.getElementById('btn-sample-t1').addEventListener('click', () => {
+        document.getElementById('t1-touchpoints').value = '0-1';
+        document.getElementById('t1-style').value = 'low';
+        document.getElementById('t1-time').value = 'evenings';
+        generateTool1(true);
+      });
+
+      formT1.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool1(false);
+      });
+
+      function generateTool1(isSample) {
+        const touchpoints = document.getElementById('t1-touchpoints').value;
+        const style = document.getElementById('t1-style').value;
+        const time = document.getElementById('t1-time').value;
+
+        let blueprint = [];
+        if (style === 'low') {
+          blueprint = [
+            "Mon & Wed: Order coffee or lunch in person; exchange 1-2 friendly sentences with the server.",
+            "Tue Evening: Send a brief text, meme, or link to an acquaintance with zero expectation of a long chat.",
+            "Thu Evening: Take a 15-minute neighborhood walk during peak evening outdoor hours.",
+            "Fri Evening: Pick up takeout in person at a lively local counter rather than ordering delivery.",
+            "Weekend: Spend 30 minutes reading at a local café or library."
+          ];
+        } else if (style === 'structured') {
+          blueprint = [
+            "Mon: Participate in a structured online community or asynchronous hobby forum.",
+            "Wed Evening: Attend a local recurring workshop, evening class, or interest group.",
+            "Thu Lunch: Schedule a 20-minute casual coffee check-in with a coworker or neighbor.",
+            "Sat Morning: Join a community library hour or volunteer group.",
+            "Sun Afternoon: Co-working or co-reading session at a quiet local café."
+          ];
+        } else {
+          blueprint = [
+            "Tue Evening: Join a local group fitness class, run club, or outdoor activity.",
+            "Thu Evening: Attend a neighborhood walking group or outdoor meetup.",
+            "Sat Morning: Join a local park run, trail hike, or group workout.",
+            "Sun Morning: Visit an outdoor farmers market during peak active hours.",
+            "Mid-week: 20-minute outdoor stroll during lunch hour."
+          ];
+        }
+
+        const micro = [
+          "Exchange a simple warm greeting or 'Thank you' with 2 service workers today.",
+          "Hold the door or elevator for a neighbor with a warm nod.",
+          "Send a 'Thinking of you, hope your week is smooth' text message.",
+          "Leave a genuine supportive comment on a friend's update.",
+          "Sit near others in a public space for 20 minutes without headphones."
+        ];
+
+        const templates = [
+          { label: "Casual Catch-Up Text", text: "Hey! Was just thinking of you today. Hope your week is going smoothly! Let's grab coffee sometime soon if you have a free moment." },
+          { label: "Neighbor / Local Acquaintance", text: "Hi! Hope you're having a good week. I'm heading out for a walk around the block—let me know if you ever want to join!" },
+          { label: "Low-Pressure Event Invite", text: "Hey! I'm planning to check out the local market this weekend for a bit. No worries if you're busy, but you're super welcome to tag along!" }
+        ];
+
+        const snapText = `Current Level: ${touchpoints} touchpoints/wk | Style: ${style.toUpperCase()} | Free Window: ${time}`;
+        
+        document.getElementById('t1-snapshot-text').innerText = snapText;
+        document.getElementById('t1-blueprint-list').innerHTML = blueprint.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t1-micro-list').innerHTML = micro.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t1-templates-list').innerHTML = templates.map(t => `
+          <div class="script-item">
+            <strong>${escapeHTML(t.label)}</strong>
+            <p class="script-text">"${escapeHTML(t.text)}"</p>
+            <button class="btn-copy" onclick="copyText('${escapeHTML(t.text).replace(/'/g, "\\'")}')">Copy Template</button>
+          </div>
+        `).join('');
+
+        document.getElementById('output-t1').classList.add('active');
+
+        const resultObj = { touchpoints, style, time, blueprint, micro, templates };
+        appState.toolResults['tool1'] = resultObj;
+        if (!appState.completedTools.includes('tool1')) appState.completedTools.push('tool1');
+        saveState();
+
+        const summary = `${isSample ? '[Sample] ' : ''}Style: ${style.toUpperCase()} | Window: ${time}`;
+        saveToHistory('tool1', summary, resultObj);
+      }
+
+      // ==========================================
+      // TOOL 2: SOLO HOUSEHOLD LOAD ENGINE
+      // ==========================================
+      const formT2 = document.getElementById('form-tool2');
+      document.getElementById('btn-sample-t2').addEventListener('click', () => {
+        document.getElementById('t2-burden').value = 'cooking';
+        document.getElementById('t2-structure').value = 'chaotic';
+        generateTool2(true);
+      });
+
+      formT2.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool2(false);
+      });
+
+      function generateTool2(isSample) {
+        const burden = document.getElementById('t2-burden').value;
+        const structure = document.getElementById('t2-structure').value;
+
+        let routines = [];
+        let meals = [];
+        let stopOpt = "";
+
+        if (burden === 'cooking') {
+          routines = [
+            "Set up a 3-meal default weekly menu rotation to eliminate daily menu decisions.",
+            "Establish a fixed 'Prep Hour' on Sunday for chopping and grain prep."
+          ];
+          meals = [
+            "Sheet-Pan Double Portion: Roast protein & veggies; turn second portion into a warm grain bowl.",
+            "Base-Ingredient Batch: Cook a batch of quinoa or rice for stir-fries and cold salads.",
+            "Single-Pan Skillets: Quick 15-minute frittatas or pasta skillets to minimize cleanup."
+          ];
+          stopOpt = "Stop trying to cook complex multi-ingredient recipes every single night.";
+        } else if (burden === 'chores') {
+          routines = [
+            "15-Minute Power Sprints: Set a timer after work for cleaning; stop when it dings.",
+            "The One-Touch Rule: Place shoes and mail in their designated spots immediately."
+          ];
+          meals = [
+            "One-Pot Meals: Minimize dishes with hearty soups, stews, or sheet-pan bakes."
+          ];
+          stopOpt = "Stop aiming for a spotless apartment every day; establish a 'Minimum Standard' instead.";
+        } else {
+          routines = [
+            "Decision Defaults: Pre-assign specific chores to specific days to avoid decision fatigue.",
+            "Sunday Reset: Spend 30 minutes setting up the upcoming week's calendar and grocery list."
+          ];
+          meals = [
+            "Default Lunch Matrix: Eat the same 2-3 simple lunch options throughout the work week."
+          ];
+          stopOpt = "Stop re-evaluating daily routines every morning; follow predefined defaults.";
+        }
+
+        const weekendList = [
+          "Saturday Morning Anchor: Fixed 9:00 AM trip to a local café or bakery.",
+          "Saturday Afternoon Creation Window: 2 dedicated hours for a personal hobby or project.",
+          "Sunday Evening Reset: Prepare tea, review calendar, and set warm lighting by 7 PM."
+        ];
+
+        const stratText = `Primary Burden: ${burden.toUpperCase()} | Current Structure: ${structure.toUpperCase()}`;
+
+        document.getElementById('t2-strategy-text').innerText = stratText;
+        document.getElementById('t2-routine-list').innerHTML = routines.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t2-meal-list').innerHTML = meals.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t2-weekend-list').innerHTML = weekendList.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t2-stop-optimizing').innerText = stopOpt;
+
+        document.getElementById('output-t2').classList.add('active');
+
+        const resultObj = { burden, structure, routines, meals, weekendList, stopOpt };
+        appState.toolResults['tool2'] = resultObj;
+        if (!appState.completedTools.includes('tool2')) appState.completedTools.push('tool2');
+        saveState();
+
+        const summary = `${isSample ? '[Sample] ' : ''}Burden: ${burden.toUpperCase()} | Structure: ${structure}`;
+        saveToHistory('tool2', summary, resultObj);
+      }
+
+      // ==========================================
+      // TOOL 3: THIRD PLACE FINDER
+      // ==========================================
+      const formT3 = document.getElementById('form-tool3');
+      document.getElementById('btn-sample-t3').addEventListener('click', () => {
+        document.getElementById('t3-interest').value = 'reading';
+        document.getElementById('t3-comfort').value = '3';
+        document.getElementById('comfort-val').innerText = '3';
+        generateTool3(true);
+      });
+
+      formT3.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool3(false);
+      });
+
+      function generateTool3(isSample) {
+        const interest = document.getElementById('t3-interest').value;
+        const comfort = parseInt(document.getElementById('t3-comfort').value);
+
+        let places = [];
+        if (interest === 'reading') {
+          places = [
+            "Independent Neighborhood Café with communal tables (Category)",
+            "Public Library Periodical Room or quiet courtyard (Category)",
+            "Local Independent Bookstore with seating (Category)"
+          ];
+        } else if (interest === 'fitness') {
+          places = [
+            "Bouldering/Climbing Gym lounge area (Category)",
+            "Community Outdoor Track or Park Route (Category)",
+            "Local Yoga or Functional Movement Studio (Category)"
+          ];
+        } else if (interest === 'creative') {
+          places = [
+            "Community Art Studio or Pottery space (Category)",
+            "Local Craft/Knitting Circle at a neighborhood shop (Category)",
+            "Museum or Gallery Lounge (Category)"
+          ];
+        } else {
+          places = [
+            "Local Board Game Café open-play space (Category)",
+            "Makerspace / Tech Community Workshop (Category)",
+            "Neighborhood Hobby Shop casual table zone (Category)"
+          ];
+        }
+
+        let playbook = [];
+        if (comfort <= 3) {
+          playbook = [
+            "Week 1 (Observation): Visit for 20 minutes during quiet hours. Find a comfortable seat.",
+            "Week 2 (Repetition): Return at the same time and day. Order or do the same activity.",
+            "Week 3 (Familiarity): Offer a simple nod to staff without requiring conversation.",
+            "Week 4 (Assessment): Notice if the space feels familiar and decide if you'll keep it as an anchor."
+          ];
+        } else {
+          playbook = [
+            "Week 1 (Scouting): Visit during active hours and observe the vibe.",
+            "Week 2 (Anchor Visit): Return and spend 45 minutes enjoying your activity.",
+            "Week 3 (Micro-Interaction): Ask staff a simple question or make a brief comment.",
+            "Week 4 (Regular Status): Attend a recurring public event or open workshop at the venue."
+          ];
+        }
+
+        const scripts = [
+          { label: "Staff Comment", text: "Hi! I really enjoy the atmosphere here—do you happen to know the playlist playing?" },
+          { label: "Shared Seating Icebreaker", text: "Excuse me, is anyone using this chair?" },
+          { label: "Topic Comment", text: "Hey! Sorry to interrupt, but I noticed your book—how do you like it so far?" }
+        ];
+
+        const snapText = `Interest Vibe: ${interest.toUpperCase()} | Self-Rated Comfort: ${comfort}/10`;
+
+        document.getElementById('t3-snapshot-text').innerText = snapText;
+        document.getElementById('t3-places-list').innerHTML = places.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t3-playbook-list').innerHTML = playbook.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t3-scripts-list').innerHTML = scripts.map(s => `
+          <div class="script-item">
+            <strong>${escapeHTML(s.label)}</strong>
+            <p class="script-text">"${escapeHTML(s.text)}"</p>
+            <button class="btn-copy" onclick="copyText('${escapeHTML(s.text).replace(/'/g, "\\'")}')">Copy Icebreaker</button>
+          </div>
+        `).join('');
+
+        document.getElementById('output-t3').classList.add('active');
+
+        const resultObj = { interest, comfort, places, playbook, scripts };
+        appState.toolResults['tool3'] = resultObj;
+        if (!appState.completedTools.includes('tool3')) appState.completedTools.push('tool3');
+        saveState();
+
+        const summary = `${isSample ? '[Sample] ' : ''}Vibe: ${interest.toUpperCase()} | Comfort: ${comfort}/10`;
+        saveToHistory('tool3', summary, resultObj);
+      }
+
+      // ==========================================
+      // TOOL 4: ISOLATION CIRCUIT BREAKER
+      // ==========================================
+      const formT4 = document.getElementById('form-tool4');
+      document.getElementById('btn-sample-t4').addEventListener('click', () => {
+        document.getElementById('t4-timing').value = 'sunday';
+        document.getElementById('t4-emotion').value = 'dread';
+        generateTool4(true);
+      });
+
+      formT4.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool4(false);
+      });
+
+      function generateTool4(isSample) {
+        const timing = document.getElementById('t4-timing').value;
+        const emotion = document.getElementById('t4-emotion').value;
+
+        const resetText = "First 10-Minute Reset: Change physical environment—drink a warm cup of water/tea, wash face, and change into comfortable clothing.";
+
+        const protocol = [
+          "Step 1 (Transition): Dim overhead lights and switch to warm side lamps.",
+          "Step 2 (Audio Grounding): Put on a conversational podcast or soothing acoustic audio.",
+          "Step 3 (Hands-On Task): Engage in a non-screen task (folding laundry, preparing soup).",
+          "Step 4 (Wind Down): Read a narrative chapter or stretch before sleeping."
+        ];
+
+        const boundaries = [
+          "Set app limits for social media starting at 6:00 PM to reduce comparison triggers.",
+          "Avoid checking work email past 6:00 PM on Sunday evening.",
+          "Replace infinite-scroll feeds with a queued audiobook or favorite comfort show."
+        ];
+
+        const comfortMenu = [
+          "Brew a fresh warm herbal tea in your favorite mug.",
+          "Listen to 20 minutes of an engaging narrative audiobook.",
+          "Write down 3 tiny things that went smoothly over the past two days.",
+          "Watch an episode of a gentle, familiar comedy series.",
+          "Apply a warm face towel or scented lotion for physical sensory grounding."
+        ];
+
+        document.getElementById('t4-reset-text').innerText = resetText;
+        document.getElementById('t4-protocol-list').innerHTML = protocol.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t4-boundary-list').innerHTML = boundaries.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t4-menu-list').innerHTML = comfortMenu.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+
+        document.getElementById('output-t4').classList.add('active');
+
+        const resultObj = { timing, emotion, resetText, protocol, boundaries, comfortMenu };
+        appState.toolResults['tool4'] = resultObj;
+        if (!appState.completedTools.includes('tool4')) appState.completedTools.push('tool4');
+        saveState();
+
+        const summary = `${isSample ? '[Sample] ' : ''}Timing: ${timing.toUpperCase()} | Pattern: ${emotion}`;
+        saveToHistory('tool4', summary, resultObj);
+      }
+
+      // ==========================================
+      // TOOL 5: SUPPORT NETWORK AUDITOR
+      // ==========================================
+      const formT5 = document.getElementById('form-tool5');
+      document.getElementById('btn-sample-t5').addEventListener('click', () => {
+        document.getElementById('t5-physical').value = 'No one nearby';
+        document.getElementById('t5-emotional').value = 'Sister (lives 3 hours away)';
+        document.querySelector('input[name="t5-key"][value="no"]').checked = true;
+        generateTool5(true);
+      });
+
+      formT5.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool5(false);
+      });
+
+      function generateTool5(isSample) {
+        const physical = document.getElementById('t5-physical').value.trim() || "Unspecified";
+        const emotional = document.getElementById('t5-emotional').value.trim() || "Unspecified";
+        const keyAccess = document.querySelector('input[name="t5-key"]:checked').value;
+
+        let auditReport = [];
+        if (physical.toLowerCase().includes('no') || physical.toLowerCase().includes('unsure') || physical === "Unspecified") {
+          auditReport.push("Priority Gap: No immediate local physical emergency contact identified. Action: Consider exchanging contacts with a neighbor.");
+        } else {
+          auditReport.push(`Physical Backup Contact: ${physical}`);
+        }
+
+        if (emotional.toLowerCase().includes('no') || emotional.toLowerCase().includes('unsure') || emotional === "Unspecified") {
+          auditReport.push("Emotional Gap: No designated late-night phone contact identified.");
+        } else {
+          auditReport.push(`Emotional Support Contact: ${emotional}`);
+        }
+
+        if (keyAccess === 'no') {
+          auditReport.push("Access Gap: No local person holds a spare key. Consider a secure lockbox or trusted contact arrangement.");
+        } else {
+          auditReport.push("Access Secured: At least one trusted contact holds key access.");
+        }
+
+        const neighborScript = "Hi! I'm [Your Name] from Apt [X]. I'm updating my emergency contacts and realized it's great to have a neighbor's phone number just in case of lockouts or package deliveries! Here's my number if you ever need a hand with anything as well.";
+
+        const cardHTML = `
+          <div style="border-left: 3px solid var(--primary); padding-left: 0.75rem;">
+            <p style="font-weight:700; color:var(--primary); margin-bottom:0.25rem;">EMERGENCY PREPAREDNESS CARD</p>
+            <p><strong>Physical Contact:</strong> ${escapeHTML(physical)}</p>
+            <p><strong>Emotional Support:</strong> ${escapeHTML(emotional)}</p>
+            <p><strong>Key Access:</strong> ${keyAccess === 'yes' ? 'Secured' : 'Needs Lockbox / Contact Setup'}</p>
+          </div>
+        `;
+
+        document.getElementById('t5-audit-list').innerHTML = auditReport.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t5-neighbor-template').innerHTML = `
+          <div class="script-item">
+            <p class="script-text">"${escapeHTML(neighborScript)}"</p>
+            <button class="btn-copy" onclick="copyText('${escapeHTML(neighborScript).replace(/'/g, "\\'")}')">Copy Neighbor Script</button>
+          </div>
+        `;
+        document.getElementById('t5-card-preview').innerHTML = cardHTML;
+
+        document.getElementById('output-t5').classList.add('active');
+
+        const resultObj = { physical, emotional, keyAccess, auditReport, neighborScript };
+        appState.toolResults['tool5'] = resultObj;
+        if (!appState.completedTools.includes('tool5')) appState.completedTools.push('tool5');
+        saveState();
+
+        const summary = `${isSample ? '[Sample] ' : ''}Physical: ${physical} | Key Access: ${keyAccess.toUpperCase()}`;
+        saveToHistory('tool5', summary, resultObj);
+      }
+
+      window.copyEmergencyCard = function() {
+        const res = appState.toolResults['tool5'];
+        if (!res) return;
+        const text = `SOLO LIFE BUILDER - EMERGENCY PREPAREDNESS CARD\nPhysical Backup: ${res.physical}\nEmotional Contact: ${res.emotional}\nKey Access: ${res.keyAccess}`;
+        copyText(text);
+      };
+
+      window.resetToolForm = function(formId, outputId) {
+        document.getElementById(formId).reset();
+        document.getElementById(outputId).classList.remove('active');
+        showToast("Form reset");
+      };
+
+    });
+
+    // --- Dashboard Qualitative Snapshot ---
+    function updateDashboardSnapshot() {
+      const tr = appState.toolResults;
+      
+      document.getElementById('snap-contact').innerText = tr.tool1 ? `${tr.tool1.style.toUpperCase()} (${tr.tool1.touchpoints}/wk)` : 'Not Assessed';
+      document.getElementById('snap-load').innerText = tr.tool2 ? `${tr.tool2.burden.toUpperCase()}` : 'Not Assessed';
+      document.getElementById('snap-places').innerText = tr.tool3 ? `${tr.tool3.interest.toUpperCase()} (${tr.tool3.comfort}/10)` : 'Not Assessed';
+      document.getElementById('snap-hours').innerText = tr.tool4 ? `${tr.tool4.timing.toUpperCase()}` : 'Not Assessed';
+      document.getElementById('snap-support').innerText = tr.tool5 ? (tr.tool5.physical.toLowerCase().includes('no') ? 'Priority Gap' : 'Functional') : 'Not Assessed';
+    }
+
+    // --- Master Plan Synthesis Engine ---
+    function updateMasterPlan() {
+      const tr = appState.toolResults;
+
+      // Pulse
+      if (appState.dailyPulse && appState.dailyPulse.value) {
+        document.getElementById('plan-pulse-status').innerText = `Today's Pulse: ${appState.dailyPulse.value}/5 (Recorded: ${appState.dailyPulse.date})`;
+      }
+
+      // Connection
+      if (tr.tool1) {
+        document.getElementById('plan-connection-body').innerHTML = `
+          <p><strong>Style:</strong> ${escapeHTML(tr.tool1.style.toUpperCase())} | <strong>Window:</strong> ${escapeHTML(tr.tool1.time)}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool1.blueprint.slice(0, 3).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Household
+      if (tr.tool2) {
+        document.getElementById('plan-household-body').innerHTML = `
+          <p><strong>Burden Focus:</strong> ${escapeHTML(tr.tool2.burden.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool2.routines.map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Places
+      if (tr.tool3) {
+        document.getElementById('plan-places-body').innerHTML = `
+          <p><strong>Vibe:</strong> ${escapeHTML(tr.tool3.interest.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool3.places.map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Hours
+      if (tr.tool4) {
+        document.getElementById('plan-hours-body').innerHTML = `
+          <p><strong>Focus Window:</strong> ${escapeHTML(tr.tool4.timing.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool4.protocol.slice(0, 3).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Support
+      if (tr.tool5) {
+        document.getElementById('plan-support-body').innerHTML = `
+          <p><strong>Physical Contact:</strong> ${escapeHTML(tr.tool5.physical)} | <strong>Key Access:</strong> ${escapeHTML(tr.tool5.keyAccess.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool5.auditReport.map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Cross-Module Deterministic Recommendations
+      let recs = [];
+      if (appState.dailyPulse && parseInt(appState.dailyPulse.value) <= 2 && !tr.tool1) {
+        recs.push("Daily pulse is low—prioritize completing Module 1 (Connection Designer) for low-effort touchpoints.");
+      }
+      if (tr.tool1 && tr.tool1.touchpoints === '0-1' && !tr.tool3) {
+        recs.push("Touchpoints are low—try establishing 1 category in Module 3 (Third Places) to build ambient local familiarity.");
+      }
+      if (tr.tool5 && tr.tool5.physical.toLowerCase().includes('no')) {
+        recs.push("Support Auditor identified no local physical emergency contact—prioritize neighbor contact template in Module 5.");
+      }
+      if (recs.length === 0) {
+        recs.push("Your infrastructure is well balanced! Review individual module outputs weekly to refine your routines.");
+      }
+
+      document.getElementById('plan-recommendations-list').innerHTML = recs.map(r => `<li>${escapeHTML(r)}</li>`).join('');
+    }
+
+    window.copyMasterPlan = function() {
+      const el = document.getElementById('plan-content');
+      if (!el) return;
+      copyText(el.innerText);
+    };
+
+    // --- Unified History Renderer ---
+    function renderUnifiedHistory() {
+      const container = document.getElementById('unified-history-container');
+      if (!container) return;
+
+      let allHistory = [];
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        try {
+          const items = JSON.parse(localStorage.getItem(key) || '[]');
+          items.forEach(item => {
+            allHistory.push(Object.assign({ toolId }, item));
+          });
+        } catch (e) {}
+      });
+
+      if (allHistory.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">No reflection sessions recorded yet across any modules.</p>`;
+        return;
+      }
+
+      container.innerHTML = allHistory.map(item => `
+        <div class="history-item" style="margin-bottom: 1rem;">
+          <div class="history-timestamp">
+            <strong style="color:var(--primary);">${escapeHTML(item.toolId.toUpperCase())}</strong>
+            <span>${escapeHTML(item.timestamp)}</span>
+          </div>
+          <p style="font-size:0.9rem; color:#374151;">${escapeHTML(item.summary)}</p>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invisible Work Tracker™ — Sistem Operasi</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --dusty-blue: #5E81AC;
+      --dusty-blue-dark: #4C6A92;
+      --dusty-blue-light: #EBF0F6;
+      --warm-peach: #F4A261;
+      --warm-peach-dark: #E76F51;
+      --warm-peach-light: #FDF0E6;
+      --bg-gradient: linear-gradient(135deg, #F0F4F8 0%, #FFF5E6 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2E3440;
+      --text-muted: #4C566A;
+      --border-color: #E5E9F0;
+      --sidebar-width: 260px;
+      --radius-xl: 0.75rem;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Layout */
+    #app-container {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      border-right: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-header i {
+      font-size: 1.5rem;
+      color: var(--dusty-blue);
+    }
+
+    .sidebar-title {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text-main);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 0.75rem 0;
+      overflow-y: auto;
+    }
+
+    .nav-category {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem 0.25rem;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1.25rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border-left: 4px solid transparent;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+    }
+
+    .nav-item.active {
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+      border-left-color: var(--dusty-blue);
+      font-weight: 600;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    /* Mobile Header & Overlay */
+    #mobile-header {
+      display: none;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.25rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .mobile-logo i {
+      color: var(--dusty-blue);
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 95;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Main Content Area */
+    #main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 2rem 1.5rem;
+      max-width: 920px;
+      width: 100%;
+      margin-right: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .view-container {
+      display: none;
+      flex: 1;
+    }
+
+    .view-container.active {
+      display: block;
+    }
+
+    /* Common Card Styling */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    /* Dashboard Styles */
+    .hero-card {
+      background: linear-gradient(135deg, #5E81AC 0%, #4C6A92 100%);
+      color: #FFFFFF;
+      padding: 2.25rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      right: -20px;
+      bottom: -30px;
+      width: 180px;
+      height: 180px;
+      background: rgba(244, 162, 97, 0.25);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-tagline {
+      font-size: 1.1rem;
+      opacity: 0.92;
+      font-weight: 400;
+      max-width: 620px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .tool-grid-card {
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .tool-grid-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--dusty-blue-light);
+    }
+
+    .tool-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .tool-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .tool-card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    .tool-card-action {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dusty-blue);
+    }
+
+    /* Page Titles & Headers */
+    .page-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .problem-box {
+      background-color: var(--warm-peach-light);
+      border-left: 4px solid var(--warm-peach);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      color: #7A4219;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .problem-box i {
+      margin-top: 0.15rem;
+      color: var(--warm-peach-dark);
+    }
+
+    .orientation-panel {
+      background-color: #FFFFFF;
+      border-left: 4px solid var(--dusty-blue);
+      padding: 1.25rem;
+      border-radius: var(--radius-xl);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .orientation-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--dusty-blue-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .orientation-list {
+      padding-left: 1.2rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.925rem;
+      border: 1px solid #D8DEE9;
+      border-radius: 8px;
+      background-color: #FAFAFA;
+      color: var(--text-main);
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--dusty-blue);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .radio-group, .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.0rem;
+      margin-top: 0.35rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 400;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background-color: var(--dusty-blue);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--dusty-blue-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary {
+      background-color: #E5E9F0;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #D8DEE9;
+    }
+
+    .btn-sample {
+      background-color: var(--warm-peach-light);
+      color: var(--warm-peach-dark);
+      border: 1px solid rgba(244, 162, 97, 0.4);
+    }
+
+    .btn-sample:hover {
+      background-color: #FCE3D0;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+    }
+
+    .btn-copy {
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+    }
+
+    .btn-copy:hover {
+      background-color: #DCE5F0;
+    }
+
+    .btn-danger {
+      background-color: #ECEFF4;
+      color: #BF616A;
+    }
+
+    .btn-danger:hover {
+      background-color: #BF616A;
+      color: #FFFFFF;
+    }
+
+    /* Output Sections */
+    .output-container {
+      margin-top: 1.75rem;
+      display: none;
+    }
+
+    .output-container.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--dusty-blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .output-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      border-left: 4px solid var(--dusty-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .output-card.accent-border {
+      border-left-color: var(--warm-peach);
+    }
+
+    .output-title {
+      font-size: 0.825rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: var(--dusty-blue-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .output-content {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .stat-hero {
+      text-align: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--dusty-blue-light), #F0F4F8);
+      border-radius: 12px;
+      margin: 1rem 0;
+    }
+
+    .stat-number {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: var(--dusty-blue);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 0.4rem;
+    }
+
+    .formatted-list {
+      list-style: none;
+    }
+
+    .formatted-list li {
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .formatted-list li:last-child {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+    }
+
+    .badge-accent {
+      background: var(--warm-peach-light);
+      color: var(--warm-peach-dark);
+    }
+
+    .badge-verdict {
+      font-size: 1.25rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      text-align: center;
+      margin: 0.75rem 0;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    /* Next Steps Experience Card */
+    .completion-experience-card {
+      background: linear-gradient(135deg, #2E3440 0%, #4C566A 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .completion-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #ECEFF4;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .completion-desc {
+      font-size: 0.875rem;
+      color: #D8DEE9;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .completion-priority {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--warm-peach);
+      font-size: 0.9rem;
+    }
+
+    /* History Accordion */
+    .history-section {
+      margin-top: 2.5rem;
+    }
+
+    .history-accordion {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .history-header {
+      padding: 1rem 1.25rem;
+      background: #FAFAFA;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .history-header h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .history-body {
+      display: none;
+      padding: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .history-body.show {
+      display: block;
+    }
+
+    .history-item {
+      padding: 0.85rem;
+      background: #F8FAFC;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .history-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    /* Reset Sequence Timeline */
+    .reset-day-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--dusty-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .reset-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .reset-day-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    /* Print Specific Styling */
+    @media print {
+      #sidebar, #mobile-header, .btn-row, .btn, .history-section, .problem-box, .orientation-panel, #toast, footer {
+        display: none !important;
+      }
+      #main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .card, .output-card {
+        box-shadow: none !important;
+        border: 1px solid #CCC !important;
+        page-break-inside: avoid;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      padding: 1.5rem 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      line-height: 1.4;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: #2E3440;
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 1000;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      #sidebar {
+        transform: translateX(-100%);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      #mobile-header {
+        display: flex;
+      }
+
+      #sidebar-overlay.open {
+        display: block;
+      }
+
+      #main-content {
+        margin-left: 0;
+        padding: 4.5rem 1rem 1.5rem 1rem;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-title {
+        font-size: 1.6rem;
+      }
+
+      .stat-number {
+        font-size: 2.2rem;
+      }
+
+      .btn-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- Header Ponsel -->
+    <header id="mobile-header">
+      <div class="mobile-logo">
+        <i class="fa-solid fa-eye-slash"></i>
+        <span>Invisible Work Tracker™</span>
+      </div>
+      <button class="hamburger-btn" id="hamburger-toggle" aria-label="Buka menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </header>
+
+    <!-- Overlay untuk sidebar ponsel -->
+    <div id="sidebar-overlay"></div>
+
+    <!-- Sidebar Kiri Tetap -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-eye-slash"></i>
+        <div class="sidebar-title">Invisible Work Tracker™</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-category">Mesin Utama</div>
+        <a class="nav-item active" data-view="dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dasbor</span>
+        </a>
+        <a class="nav-item" data-view="tool1">
+          <i class="fa-solid fa-clipboard-check"></i>
+          <span>1. Audit Kerja Tak Terlihat</span>
+        </a>
+        <a class="nav-item" data-view="tool2">
+          <i class="fa-solid fa-language"></i>
+          <span>2. Penerjemah Nilai</span>
+        </a>
+        <a class="nav-item" data-view="tool3">
+          <i class="fa-solid fa-bullhorn"></i>
+          <span>3. Kampanye Visibilitas</span>
+        </a>
+        <a class="nav-item" data-view="tool4">
+          <i class="fa-solid fa-handshake"></i>
+          <span>4. Renegosiasi Beban Kerja</span>
+        </a>
+        <a class="nav-item" data-view="tool5">
+          <i class="fa-solid fa-door-open"></i>
+          <span>5. Keluar atau Tingkatkan</span>
+        </a>
+
+        <div class="nav-category" style="margin-top: 0.5rem;">Program Terpandu</div>
+        <a class="nav-item" data-view="reset">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Reset 7 Hari</span>
+        </a>
+
+        <div class="nav-category" style="margin-top: 0.5rem;">Sintesis & Kontrol</div>
+        <a class="nav-item" data-view="plan">
+          <i class="fa-solid fa-file-contract"></i>
+          <span>Rencana Kerja Tak Terlihat Saya</span>
+        </a>
+        <a class="nav-item" data-view="history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Riwayat Saya</span>
+        </a>
+        <a class="nav-item" data-view="privacy">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Privasi & Keamanan</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Area Konten Utama -->
+    <main id="main-content">
+
+      <!-- TAMPILAN DASBOR -->
+      <div id="view-dashboard" class="view-container active">
+        <div class="card hero-card">
+          <h1 class="hero-title">Invisible Work Tracker™</h1>
+          <p class="hero-tagline">Pekerjaan yang tidak terlihat tetaplah pekerjaan. Mari kita hitung nilainya.</p>
+        </div>
+
+        <!-- Panel Orientasi -->
+        <div class="orientation-panel">
+          <div class="orientation-title">
+            <i class="fa-solid fa-compass"></i> Strategi Sebelum Eskalasi
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            Sebagian besar kontribusi di tempat kerja terjadi di luar deskripsi pekerjaan formal: koordinasi, adaptasi anggota baru (onboarding), pemeliharaan rapat, berbagi pengetahuan, dan pembersihan proses. Namun, pekerjaan tak terlihat tidak secara otomatis bersifat strategis atau bernilai kompensasi.
+          </p>
+          <ul class="orientation-list">
+            <li><strong>Identifikasi:</strong> Audit tenaga kerja yang tak terhitung dan ketergantungan tim yang tersembunyi.</li>
+            <li><strong>Terjemahkan:</strong> Ubah usaha mentah menjadi bukti, istilah bisnis, dan keterampilan yang dapat ditransfer.</li>
+            <li><strong>Munculkan:</strong> Buat pekerjaan mudah ditemukan tanpa perlu terus-menerus mempromosikan diri.</li>
+            <li><strong>Negosiasikan:</strong> Tetapkan batasan yang jelas, kepemilikan formal, atau kompromi cakupan kerja.</li>
+          </ul>
+        </div>
+
+        <div class="grid-2">
+          <div class="card tool-grid-card" onclick="switchView('tool1')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+              <h3 class="tool-card-title">1. Audit Kerja Tak Terlihat</h3>
+              <p class="tool-card-desc">Identifikasi tenaga kerja tak terhitung, perkirakan investasi waktu berulang, dan petakan ketergantungan tim tersembunyi.</p>
+            </div>
+            <div class="tool-card-action">Mulai Audit <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool2')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-language"></i></div>
+              <h3 class="tool-card-title">2. Penerjemah Nilai</h3>
+              <p class="tool-card-desc">Ubah pekerjaan di balik layar menjadi bukti, bahasa bisnis, dan keterampilan yang dapat ditransfer.</p>
+            </div>
+            <div class="tool-card-action">Terjemahkan Kerja <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool3')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-bullhorn"></i></div>
+              <h3 class="tool-card-title">3. Kampanye Visibilitas</h3>
+              <p class="tool-card-desc">Buat kontribusi penting lebih mudah ditemukan tanpa perlu promosi diri secara terus-menerus.</p>
+            </div>
+            <div class="tool-card-action">Rencanakan Kampanye <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool4')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-handshake"></i></div>
+              <h3 class="tool-card-title">4. Renegosiasi Beban Kerja</h3>
+              <p class="tool-card-desc">Putuskan apa yang perlu dipertahankan, dihentikan, diformalisasikan, diakui, atau ditukar dengan pengurangan cakupan.</p>
+            </div>
+            <div class="tool-card-action">Buat Draf Proposal <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool5')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-door-open"></i></div>
+              <h3 class="tool-card-title">5. Keluar atau Tingkatkan</h3>
+              <p class="tool-card-desc">Evaluasi apakah ingin memperluas peran secara internal, merancang ulang cakupan kerja, atau memanfaatkan keterampilan di tempat lain.</p>
+            </div>
+            <div class="tool-card-action">Evaluasi Strategi <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" style="background: linear-gradient(135deg, #FDF0E6, #FFF5E6);" onclick="switchView('reset')">
+            <div>
+              <div class="tool-card-icon" style="background:#F4A261; color:#FFF;"><i class="fa-solid fa-calendar-check"></i></div>
+              <h3 class="tool-card-title">Program Reset 7 Hari</h3>
+              <p class="tool-card-desc">Jalankan kemajuan 7 hari terpandu langkah demi langkah melalui seluruh sistem kerja tak terlihat.</p>
+            </div>
+            <div class="tool-card-action" style="color:#E76F51;">Mulai Reset <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALAT 1: AUDIT KERJA TAK TERLIHAT -->
+      <div id="view-tool1" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-clipboard-check"></i> Alat 1 — Audit Kerja Tak Terlihat</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Masalah:</strong> "Saya tahu saya melakukan banyak hal yang tidak disadari orang lain, tetapi saya tidak bisa menyebutkan semuanya."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool1">
+            <div class="form-group">
+              <label for="t1-tasks">Tugas yang Anda lakukan di luar deskripsi pekerjaan Anda:</label>
+              <div class="form-hint">Masukkan satu tugas per baris (misalnya: Menjadwalkan rapat, onboarding informal, perapihan dokumen)</div>
+              <textarea id="t1-tasks" rows="5" placeholder="Menjadwalkan rapat tim&#10;Melakukan onboarding karyawan baru secara informal&#10;Mencatat notulensi di setiap rapat"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t1-freq">Seberapa sering Anda melakukannya?</label>
+                <select id="t1-freq">
+                  <option value="Harian">Harian</option>
+                  <option value="Mingguan">Mingguan</option>
+                  <option value="Bulanan">Bulanan</option>
+                  <option value="Sesuai kebutuhan">Sesuai kebutuhan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-duration">Rata-rata berapa lama durasi setiap tugas?</label>
+                <select id="t1-duration">
+                  <option value="<15min">&lt;15 menit</option>
+                  <option value="15-30min" selected>15 - 30 menit</option>
+                  <option value="30-60min">30 - 60 menit</option>
+                  <option value="1-2hr">1 - 2 jam</option>
+                  <option value="2hr+">2+ jam</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t1-benefits">Siapa yang diuntungkan dari tugas ini?</label>
+              <textarea id="t1-benefits" rows="2" placeholder="misal: Seluruh tim, insinyur baru, manajemen langsung..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t1-notice">Siapa yang akan menyadarinya jika Anda berhenti?</label>
+              <textarea id="t1-notice" rows="2" placeholder="misal: Tidak ada yang langsung sadar, tetapi penjadwalan rapat akan terhambat dan pertanyaan onboarding akan melonjak ganda..."></textarea>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Jalankan Audit Kerja Tak Terlihat</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool1()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Wadah Output Alat 1 -->
+        <div id="output-tool1" class="output-container">
+          <div class="section-header">
+            <span>Hasil Audit</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool1')"><i class="fa-solid fa-copy"></i> Salin Analisis</button>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-clock"></i> Pengungkapan Total Jam</div>
+            <div class="stat-hero">
+              <div class="stat-number" id="t1-out-hours">0 jam</div>
+              <div class="stat-label">Perkiraan perencanaan per minggu (~<span id="t1-out-annual">0</span> jam/tahun berdasarkan asumsi frekuensi & durasi yang dipilih)</div>
+            </div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-list-check"></i> Daftar Pekerjaan Tak Terlihat</div>
+            <div class="output-content">
+              <ul class="formatted-list" id="t1-out-list"></ul>
+            </div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-sitemap"></i> Peta Ketergantungan</div>
+            <div class="output-content" id="t1-out-deps"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-triangle-exclamation"></i> Celah Cakupan / Pengakuan</div>
+            <div class="output-content" id="t1-out-gap"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title"><i class="fa-solid fa-plug-circle-xmark"></i> Uji Penghentian (Stop Test)</div>
+            <div class="output-content" id="t1-out-stop"></div>
+          </div>
+
+          <!-- Blok Penyelesaian / Langkah Selanjutnya -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Audit Selesai — Apa Langkah Selanjutnya?</div>
+            <p class="completion-desc">Anda tidak perlu menyelesaikan seluruh beban kerja Anda hari ini. Mulailah dengan satu bukti atau keputusan yang membuat percakapan berikutnya menjadi lebih mudah.</p>
+            <div class="completion-priority" id="t1-comp-priority">
+              <strong>Prioritas Anda:</strong> Ubah tugas-tugas mentah ini menjadi bahasa bisnis profesional menggunakan Alat 2.
+            </div>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool2')">Lanjut ke Alat 2: Penerjemah Nilai <i class="fa-solid fa-arrow-right"></i></button>
+              <button class="btn btn-sm btn-secondary" onclick="switchView('plan')">Lihat Rencana Utama</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Akordeon Riwayat -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool1')">
+              <h4><i class="fa-solid fa-history"></i> Riwayat Audit Terakhir</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool1"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool1">
+              <div id="hist-list-tool1">Belum ada riwayat tersimpan.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool1')">Hapus Riwayat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALAT 2: PENERJEMAH NILAI -->
+      <div id="view-tool2" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-language"></i> Alat 2 — Penerjemah Nilai</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Masalah:</strong> "Saya perlu mendeskripsikan pekerjaan tak terlihat ini dengan cara yang penting bagi atasan dan bisnis saya."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool2">
+            <div class="form-group">
+              <label for="t2-task">Tugas tak terlihat Anda:</label>
+              <textarea id="t2-task" rows="2" placeholder="misal: Onboarding informal untuk anggota tim baru"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t2-problem">Masalah apa yang diselesaikannya?</label>
+              <textarea id="t2-problem" rows="2" placeholder="misal: Menghilangkan kebingungan saat penyesuaian awal dan mencegah kesalahan awal dengan klien"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t2-without">Apa yang akan terjadi tanpa tugas ini?</label>
+              <textarea id="t2-without" rows="2" placeholder="misal: Karyawan baru kesulitan selama berminggu-minggu, membuat kesalahan, dan terus-menerus mengganggu pengembang senior"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t2-beneficiary">Siapa penerima manfaat utamanya?</label>
+                <select id="t2-beneficiary">
+                  <option value="Atasan saya">Atasan saya</option>
+                  <option value="Tim saya" selected>Tim saya</option>
+                  <option value="Lintas fungsi">Lintas fungsi</option>
+                  <option value="Klien">Klien</option>
+                  <option value="Perusahaan">Perusahaan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Apakah dapat dikuantifikasi dengan angka faktual?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t2-quant" value="Ya"> Ya (Saya memiliki metrik nyata)</label>
+                  <label class="radio-label"><input type="radio" name="t2-quant" value="Sebagian" checked> Sebagian (Dapat diperkirakan)</label>
+                  <label class="radio-label"><input type="radio" name="t2-quant" value="Tidak"> Tidak (Dampak kualitatif)</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="t2-metric-input-group">
+              <label for="t2-factual-metric">Metrik Faktual / Angka Spesifik (Opsional):</label>
+              <input type="text" id="t2-factual-metric" placeholder="misal: Melakukan onboarding 5 karyawan, menghemat ~3 jam per dokumen onboarding, nol kesalahan kritis">
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic"></i> Terjemahkan Kerja</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool2()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Wadah Output Alat 2 -->
+        <div id="output-tool2" class="output-container">
+          <div class="section-header">
+            <span>Artefak Nilai Terjemahan</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool2')"><i class="fa-solid fa-copy"></i> Salin Semua</button>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title">
+              <span><i class="fa-solid fa-briefcase"></i> Kasus Bisnis (Business Case)</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t2-out-case')"><i class="fa-solid fa-copy"></i> Salin</button>
+            </div>
+            <div class="output-content" id="t2-out-case"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-chart-line"></i> Peluang Metrik Dampak</div>
+            <div class="output-content" id="t2-out-metric"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-coins"></i> Pertimbangan Kapasitas / Sumber Daya</div>
+            <div class="output-content" id="t2-out-comp"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-award"></i> Kapabilitas yang Dapat Ditransfer</div>
+            <div class="output-content" id="t2-out-skill"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-file-lines"></i> Entri Portofolio / Resume</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t2-out-port')"><i class="fa-solid fa-copy"></i> Salin</button>
+            </div>
+            <div class="output-content" id="t2-out-port"></div>
+          </div>
+
+          <!-- Kartu Penyelesaian -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Penerjemahan Selesai</div>
+            <p class="completion-desc">Sekarang setelah Anda menyampaikan nilai bisnisnya, buatlah kontribusi ini mudah ditemukan melalui saluran tim yang biasa.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool3')">Lanjut ke Alat 3: Kampanye Visibilitas <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Akordeon Riwayat -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool2')">
+              <h4><i class="fa-solid fa-history"></i> Riwayat Terjemahan</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool2"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool2">
+              <div id="hist-list-tool2">Belum ada riwayat tersimpan.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool2')">Hapus Riwayat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALAT 3: KAMPANYE VISIBILITAS -->
+      <div id="view-tool3" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-bullhorn"></i> Alat 3 — Kampanye Visibilitas</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Masalah:</strong> "Saya ingin orang-orang melihat pekerjaan ini tanpa saya harus mengumumkannya terus-menerus."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool3">
+            <div class="form-group">
+              <label for="t3-what">Kontribusi apa yang ingin Anda diakui?</label>
+              <textarea id="t3-what" rows="2" placeholder="misal: Koordinasi rapat, perencanaan agenda, dan pencatatan notulensi"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t3-who">Siapa yang perlu tahu?</label>
+                <select id="t3-who">
+                  <option value="Atasan saya" selected>Atasan saya</option>
+                  <option value="Manajer tingkat atas (Skip-level)">Manajer tingkat atas (Skip-level)</option>
+                  <option value="Tim saya">Tim saya</option>
+                  <option value="HR / Pimpinan">HR / Pimpinan</option>
+                  <option value="Pemangku kepentingan lintas fungsi">Pemangku kepentingan lintas fungsi</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t3-flow">Bagaimana informasi mengalir di sini?</label>
+                <select id="t3-flow">
+                  <option value="Pembaruan email">Pembaruan email</option>
+                  <option value="Rapat tim">Rapat tim</option>
+                  <option value="Sesi 1:1" selected>Sesi 1:1</option>
+                  <option value="Dokumen proyek">Dokumen proyek</option>
+                  <option value="Obrolan (Slack/Teams)">Obrolan (Slack/Teams)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t3-comfort">Tingkat kenyamanan Anda dengan promosi diri:</label>
+              <select id="t3-comfort">
+                <option value="Sangat nyaman">Sangat nyaman</option>
+                <option value="Cukup nyaman">Cukup nyaman</option>
+                <option value="Kurang nyaman" selected>Kurang nyaman</option>
+                <option value="Sangat tidak suka">Sangat tidak suka</option>
+              </select>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Buat Kampanye</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool3()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Wadah Output Alat 3 -->
+        <div id="output-tool3" class="output-container">
+          <div class="section-header">
+            <span>Rencana Strategi Visibilitas</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool3')"><i class="fa-solid fa-copy"></i> Salin Kampanye</button>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-satellite-dish"></i> Sinyal Halus (Subtle Signal)</div>
+            <div class="output-content" id="t3-out-signal"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-arrows-rotate"></i> Proposal Kapasitas & Rotasi</div>
+            <div class="output-content" id="t3-out-rotation"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-folder-open"></i> Strategi Dokumentasi Bersama</div>
+            <div class="output-content" id="t3-out-doc"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-comments"></i> Skrip Percakapan 1:1</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t3-out-script')"><i class="fa-solid fa-copy"></i> Salin Skrip</button>
+            </div>
+            <div class="output-content" id="t3-out-script"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-diagram-project"></i> Standardisasi Proses Tim</div>
+            <div class="output-content" id="t3-out-process"></div>
+          </div>
+
+          <!-- Kartu Penyelesaian -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Rencana Visibilitas Siap</div>
+            <p class="completion-desc">Dengan adanya mekanisme keterlihatan, bersiaplah untuk menegosiasikan batasan cakupan kerja formal atau penyesuaian kompensasi.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool4')">Lanjut ke Alat 4: Renegosiasi <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Akordeon Riwayat -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool3')">
+              <h4><i class="fa-solid fa-history"></i> Riwayat Kampanye</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool3"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool3">
+              <div id="hist-list-tool3">Belum ada riwayat tersimpan.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool3')">Hapus Riwayat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALAT 4: RENEGOSIASI BEBAN KERJA -->
+      <div id="view-tool4" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-handshake"></i> Alat 4 — Renegosiasi Beban Kerja</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Masalah:</strong> "Saya ingin dibayar atas pekerjaan tambahan ini atau berhenti melakukannya terlalu banyak."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool4">
+            <div class="form-group">
+              <label for="t4-hours">Total perkiraan jam kerja tak terlihat per minggu:</label>
+              <input type="number" id="t4-hours" min="1" max="40" value="8">
+            </div>
+
+            <div class="form-group">
+              <label for="t4-keep">Tugas mana yang ingin Anda pertahankan & formalisasikan?</label>
+              <textarea id="t4-keep" rows="2" placeholder="misal: Mentoring anggota tim junior dan onboarding teknis"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t4-drop">Tugas mana yang ingin Anda lepas, rotasikan, atau kurangi?</label>
+              <textarea id="t4-drop" rows="2" placeholder="misal: Semua penjadwalan rapat ad-hoc, pencatatan notulensi, dan reformat dokumen"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t4-return">Apa yang Anda harapkan sebagai imbalannya?</label>
+                <select id="t4-return">
+                  <option value="Kenaikan gaji / Kenaikan kompensasi">Kenaikan gaji / Kenaikan kompensasi</option>
+                  <option value="Perubahan jabatan">Perubahan jabatan</option>
+                  <option value="Pengurangan pekerjaan lain" selected>Pengurangan pekerjaan lain</option>
+                  <option value="Pengakuan Formal / Masuk dalam OKR">Pengakuan Formal / Masuk dalam OKR</option>
+                  <option value="Peran formal / Kepemilikan tanggung jawab">Peran formal / Kepemilikan tanggung jawab</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Kemungkinan reaksi manajer:</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Menerima"> Menerima</label>
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Netral" checked> Netral</label>
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Defensif"> Defensif</label>
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Akan mengabaikan"> Akan mengabaikan</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Hasilkan Proposal Renegosiasi</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool4()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Wadah Output Alat 4 -->
+        <div id="output-tool4" class="output-container">
+          <div class="section-header">
+            <span>Rencana Strategi Renegosiasi</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool4')"><i class="fa-solid fa-copy"></i> Salin Proposal</button>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-scroll"></i> Skrip Proposal Kolaboratif</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t4-out-prop')"><i class="fa-solid fa-copy"></i> Salin Skrip</button>
+            </div>
+            <div class="output-content" id="t4-out-prop"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-scale-balanced"></i> Peta Kompromi Cakupan Kerja</div>
+            <div class="output-content" id="t4-out-trade"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-route"></i> Jalur Formalisasi</div>
+            <div class="output-content" id="t4-out-path"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-shield-halved"></i> Prioritas Kapasitas & Strategi Batasan</div>
+            <div class="output-content" id="t4-out-refuse"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title">
+              <span><i class="fa-solid fa-file-contract"></i> Email Ringkasan Pasca Rapat</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t4-out-doc')"><i class="fa-solid fa-copy"></i> Salin Email</button>
+            </div>
+            <div class="output-content" id="t4-out-doc"></div>
+          </div>
+
+          <!-- Kartu Penyelesaian -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Rencana Negosiasi Siap</div>
+            <p class="completion-desc">Evaluasi apakah ingin memanfaatkan keterampilan yang dikembangkan secara internal atau mengevaluasi opsi pasar jika pengakuan mandek.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool5')">Lanjut ke Alat 5: Keluar atau Tingkatkan <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Akordeon Riwayat -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool4')">
+              <h4><i class="fa-solid fa-history"></i> Riwayat Proposal</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool4"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool4">
+              <div id="hist-list-tool4">Belum ada riwayat tersimpan.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool4')">Hapus Riwayat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ALAT 5: KELUAR ATAU TINGKATKAN -->
+      <div id="view-tool5" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-door-open"></i> Alat 5 — Keluar atau Tingkatkan</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Masalah:</strong> "Jika pekerjaan ini tetap tidak terlihat, saya perlu tahu apakah harus pergi atau mencari tempat yang menghargainya."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool5">
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t5-duration">Berapa lama pekerjaan tak terlihat Anda diabaikan?</label>
+                <select id="t5-duration">
+                  <option value="<3mo">&lt; 3 bulan</option>
+                  <option value="3-6mo">3 - 6 bulan</option>
+                  <option value="6mo-1yr">6 bulan - 1 tahun</option>
+                  <option value="1yr+" selected>1 tahun +</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Apakah Anda pernah mencoba meningkatkan visibilitas secara sistematis?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-tried" value="Ya, berkali-kali" checked> Ya, berkali-kali</label>
+                  <label class="radio-label"><input type="radio" name="t5-tried" value="Pernah sekali"> Pernah sekali</label>
+                  <label class="radio-label"><input type="radio" name="t5-tried" value="Belum pernah"> Belum pernah</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Apakah keterampilan ini dihargai di peran/departemen lain?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Ya" checked> Ya</label>
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Mungkin"> Mungkin</label>
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Tidak"> Tidak</label>
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Tidak yakin"> Tidak yakin</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Apakah Anda sedang membangun keterampilan atau mengalami kelelahan (burnout)?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-status" value="Membangun keterampilan"> Membangun keterampilan</label>
+                  <label class="radio-label"><input type="radio" name="t5-status" value="Jalan di tempat"> Jalan di tempat</label>
+                  <label class="radio-label"><input type="radio" name="t5-status" value="Mengalami burnout" checked> Mengalami burnout</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t5-flex">Pertimbangan fleksibilitas keuangan & dana cadangan:</label>
+              <select id="t5-flex">
+                <option value="Fleksibilitas tinggi">Fleksibilitas tinggi / Tabungan sangat aman</option>
+                <option value="Butuh 3-6 bln" selected>Butuh perencanaan cadangan 3-6 bulan</option>
+                <option value="Butuh 6+ bln">Butuh perencanaan cadangan 6+ bulan</option>
+                <option value="Terbatas secara finansial">Terbatas secara finansial / Linimasa konservatif</option>
+              </select>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Hitung Arah Karier</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool5()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Wadah Output Alat 5 -->
+        <div id="output-tool5" class="output-container">
+          <div class="section-header">
+            <span>Arah Evaluasi Karier</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool5')"><i class="fa-solid fa-copy"></i> Salin Evaluasi</button>
+          </div>
+
+          <div class="card output-card" style="text-align: center;">
+            <div class="output-title" style="justify-content: center;"><i class="fa-solid fa-compass"></i> Arah Strategis Karier</div>
+            <div id="t5-out-verdict"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-arrow-up-right-dots"></i> Peluang Internal / Perancangan Ulang Peran</div>
+            <div class="output-content" id="t5-out-internal"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-briefcase"></i> Kemungkinan Pasar Eksternal</div>
+            <div class="output-content" id="t5-out-external"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-id-card"></i> Penataan Ulang Resume / Profil</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t5-out-resume')"><i class="fa-solid fa-copy"></i> Salin Poin</button>
+            </div>
+            <div class="output-content" id="t5-out-resume"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-timeline"></i> Linimasa Tindakan</div>
+            <div class="output-content" id="t5-out-timeline"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-piggy-bank"></i> Perencanaan Keuangan & Praktis</div>
+            <div class="output-content" id="t5-out-fin"></div>
+          </div>
+
+          <!-- Kartu Penyelesaian -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-clipboard-check"></i> Evaluasi Sistem Selesai</div>
+            <p class="completion-desc">Anda telah menyelesaikan evaluasi. Hasilkan Rencana Utama terkonsolidasi untuk memandu diskusi karier Anda.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('plan')"><i class="fa-solid fa-file-contract"></i> Buka Rencana Kerja Saya</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Akordeon Riwayat -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool5')">
+              <h4><i class="fa-solid fa-history"></i> Riwayat Evaluasi</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool5"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool5">
+              <div id="hist-list-tool5">Belum ada riwayat tersimpan.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool5')">Hapus Riwayat</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAMPILAN: PROGRAM RESET 7 HARI -->
+      <div id="view-reset" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-calendar-check"></i> Reset Kerja Tak Terlihat 7 Hari</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.35rem;">
+            Progres langkah demi langkah terpandu melalui sistem operasi untuk mengubah pekerjaan tak terhitung menjadi cakupan yang jelas, visibilitas, dan arah karier.
+          </p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-magnifying-glass"></i> Hari 1 — Temukan Pekerjaannya</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool1')">Jalankan Audit</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Audit tenaga kerja tak terhitung, perkirakan jam berulang yang dihabiskan, dan petakan siapa yang bergantung pada pekerjaan pendukung Anda.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-pen-to-square"></i> Hari 2 — Beri Nama Nilainya</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool2')">Terjemahkan</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Ubah tugas mentah menjadi pernyataan masalah bisnis, mitigasi risiko, dan kapabilitas yang dapat ditransfer.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-eye"></i> Hari 3 — Buat Menjadi Terlihat</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool3')">Rencanakan Visibilitas</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Tetapkan atribusi alami tanpa hambatan melalui dokumentasi bersama, SOP, dan sinyal-sinyal halus.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-scale-balanced"></i> Hari 4 — Atur Ulang Cakupan Kerja</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool4')">Buat Draf Proposal</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Buat draf proposal kolaboratif yang merinci tugas yang dipertahankan, dilepas, dan titik komprominya.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-flask"></i> Hari 5 — Uji Sistemnya</span>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Mulai pengarahan 1:1 awal Anda atau publikasikan dokumen proses bersama Anda. Amati respons manajer & tim.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-comments"></i> Hari 6 — Tinjau Respons</span>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Evaluasi penerimaan manajer, hambatan operasional tim, dan penyesuaian cakupan kerja awal.</p>
+        </div>
+
+        <div class="reset-day-card" style="border-left-color: var(--warm-peach);">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-compass"></i> Hari 7 — Tingkatkan atau Jelajahi Opsi</span>
+            <button class="btn btn-sm btn-primary" onclick="switchView('tool5')">Evaluasi Karier</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Sintesiskan temuan ke dalam peta jalan karier 30 hari: perluasan peran internal atau penjelajahan pasar eksternal.</p>
+        </div>
+      </div>
+
+      <!-- TAMPILAN: RENCANA KERJA TAK TERLIHAT SAYA (SINTESIS) -->
+      <div id="view-plan" class="view-container">
+        <div class="page-header">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="page-title"><i class="fa-solid fa-file-contract"></i> Rencana Kerja Tak Terlihat Saya</h2>
+            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Ekspor Rencana</button>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top:0.35rem;">Sintesis utama konsolidasi yang dihasilkan dari masukan alat dan analisis tersimpan Anda saat ini.</p>
+        </div>
+
+        <div class="card" id="plan-synthesis-content">
+          <p style="color:var(--text-muted); font-style:italic;">Memuat analisis konsolidasi...</p>
+        </div>
+      </div>
+
+      <!-- TAMPILAN: RIWAYAT TERPADU -->
+      <div id="view-history" class="view-container">
+        <div class="page-header">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="page-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Analisis Terpadu</h2>
+            <button class="btn btn-danger btn-sm" onclick="clearAllHistoryGlobal()"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div id="unified-history-list">Memuat catatan riwayat tersimpan...</div>
+        </div>
+      </div>
+
+      <!-- TAMPILAN: PRIVASI & KEAMANAN -->
+      <div id="view-privacy" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-shield-halved"></i> Privasi & Kontrol Data</h2>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 1.1rem; font-weight:700; margin-bottom: 0.75rem;"><i class="fa-solid fa-lock" style="color:var(--dusty-blue);"></i> Arsitektur Lokal Utamakan Privasi (Local-First)</h3>
+          <p style="font-size: 0.925rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 1rem;">
+            Invisible Work Tracker™ beroperasi sebagai aplikasi berbasis lokal yang berjalan sepenuhnya di dalam peramban web Anda. 
+            Tidak ada data yang dikirimkan ke basis data server eksternal atau jaringan pelacak.
+          </p>
+
+          <ul style="padding-left: 1.25rem; font-size: 0.9rem; color: var(--text-main); line-height: 1.7; margin-bottom: 1.5rem;">
+            <li><strong>Penyimpanan Peramban:</strong> Riwayat yang tersimpan dan daftar tugas kustom tetap disimpan di <code>localStorage</code> peramban Anda.</li>
+            <li><strong>Kontrol Penuh:</strong> Anda dapat menghapus catatan alat individu atau mengatur ulang seluruh status aplikasi kapan saja.</li>
+            <li><strong>Keamanan Input:</strong> Kolom teks bebas dibersihkan untuk mencegah kerentanan skrip.</li>
+          </ul>
+
+          <button class="btn btn-secondary" onclick="clearAllHistoryGlobal()"><i class="fa-solid fa-broom"></i> Reset Penyimpanan Lokal Aplikasi</button>
+        </div>
+      </div>
+
+      <!-- FOOTER PADA SETIAP TAMPILAN -->
+      <footer>
+        Invisible Work Tracker™ — Hanya untuk visibilitas beban kerja dan perencanaan karier. Bukan saran hukum, HR, atau keuangan.
+      </footer>
+    </main>
+  </div>
+
+  <!-- Elemen Notifikasi Toast -->
+  <div id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-message">Berhasil disalin!</span>
+  </div>
+
+  <script>
+    /* ARSITEKTUR STATUS GLOBAL & PENYIMPANAN */
+    const STATE_KEY = 'invisiblework_v2_state';
+    const HISTORY_KEY = 'invisiblework_v2_history';
+
+    let appState = {
+      completedTools: [],
+      toolResults: {},
+      lastUpdated: null
+    };
+
+    /* Utilitas Keamanan: HTML Escaping */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /* Logika Navigasi Global */
+    function switchView(viewId) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      const targetView = document.getElementById(`view-${viewId}`);
+      if (targetView) targetView.classList.add('active');
+
+      const targetNav = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+      if (targetNav) targetNav.classList.add('active');
+
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (viewId === 'plan') renderMasterPlanView();
+      if (viewId === 'history') renderUnifiedHistoryView();
+    }
+
+    function setupNavigation() {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const view = item.getAttribute('data-view');
+          switchView(view);
+        });
+      });
+
+      const burger = document.getElementById('hamburger-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      burger.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+      });
+
+      overlay.addEventListener('click', closeMobileSidebar);
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+
+    /* Pembantu Toast */
+    function showToast(message = "Berhasil disalin!") {
+      const toast = document.getElementById('toast');
+      const msgSpan = document.getElementById('toast-message');
+      msgSpan.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    /* Pembantu Salin Aman */
+    function copyText(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText || el.textContent;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast("Tersalin ke papan klip!")).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Tersalin ke papan klip!");
+      } catch (err) {
+        showToast("Gagal menyalin");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function copySection(sectionId) {
+      copyText(sectionId);
+    }
+
+    /* Pengelola Penyimpanan & Riwayat Terpadu */
+    function saveHistory(toolId, data) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const timestamp = new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+      const record = { id: Date.now(), toolId, timestamp, data };
+      
+      history.unshift(record);
+      if (history.length > 50) history = history.slice(0, 50);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+
+      // Perbarui status
+      appState.toolResults[toolId] = data;
+      if (!appState.completedTools.includes(toolId)) {
+        appState.completedTools.push(toolId);
+      }
+      appState.lastUpdated = timestamp;
+      localStorage.setItem(STATE_KEY, JSON.stringify(appState));
+
+      renderToolHistoryAccordion(toolId);
+    }
+
+    function renderToolHistoryAccordion(toolId) {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const toolRecords = history.filter(h => h.toolId === toolId);
+      const container = document.getElementById(`hist-list-${toolId}`);
+      if (!container) return;
+
+      if (toolRecords.length === 0) {
+        container.innerHTML = '<em>Belum ada riwayat tersimpan.</em>';
+        return;
+      }
+
+      container.innerHTML = toolRecords.map((item, idx) => {
+        let summary = '';
+        if (toolId === 'tool1') summary = `${item.data.taskCount} tugas diaudit (${item.data.weeklyHours} jam/mg)`;
+        else if (toolId === 'tool2') summary = `Tugas: "${escapeHTML(item.data.task.substring(0, 35))}..."`;
+        else if (toolId === 'tool3') summary = `Target: ${escapeHTML(item.data.who)} via ${escapeHTML(item.data.flow)}`;
+        else if (toolId === 'tool4') summary = `Merenegosiasikan ${item.data.hours} jam/mg untuk ${escapeHTML(item.data.desiredReturn)}`;
+        else if (toolId === 'tool5') summary = `Arah: ${escapeHTML(item.data.verdictTitle)}`;
+
+        return `
+          <div class="history-item">
+            <div class="history-meta">
+              <span><strong>#${toolRecords.length - idx}</strong> — ${escapeHTML(item.timestamp)}</span>
+              <button class="btn btn-sm btn-danger" style="padding:0.1rem 0.4rem; font-size:0.7rem;" onclick="deleteHistoryItem(${item.id}, '${toolId}')">Hapus</button>
+            </div>
+            <div>${summary}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteHistoryItem(id, toolId) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history = history.filter(h => h.id !== id);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      if (toolId) renderToolHistoryAccordion(toolId);
+      renderUnifiedHistoryView();
+      showToast("Catatan dihapus");
+    }
+
+    function clearToolHistory(toolId) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history = history.filter(h => h.toolId !== toolId);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderToolHistoryAccordion(toolId);
+      showToast("Riwayat alat dibersihkan");
+    }
+
+    function clearAllHistoryGlobal() {
+      if (confirm("Apakah Anda yakin ingin menghapus semua riwayat tersimpan dan status aplikasi?")) {
+        localStorage.removeItem(HISTORY_KEY);
+        localStorage.removeItem(STATE_KEY);
+        appState = { completedTools: [], toolResults: {}, lastUpdated: null };
+        ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderToolHistoryAccordion);
+        renderUnifiedHistoryView();
+        showToast("Semua data dibersihkan");
+      }
+    }
+
+    function toggleHistory(toolId) {
+      const body = document.getElementById(`hist-body-${toolId}`);
+      const icon = document.getElementById(`hist-icon-${toolId}`);
+      if (body) {
+        body.classList.toggle('show');
+        if (icon) {
+          icon.className = body.classList.contains('show') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+        }
+      }
+    }
+
+    function migrateLegacyHistory() {
+      let unifiedHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      let migratedCount = 0;
+
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(tKey => {
+        const legacyKey = `invisible_history_${tKey}`;
+        const legacyData = localStorage.getItem(legacyKey);
+        if (legacyData) {
+          try {
+            const parsed = JSON.parse(legacyData);
+            if (Array.isArray(parsed)) {
+              parsed.forEach(item => {
+                unifiedHistory.push({
+                  id: Date.now() + Math.random(),
+                  toolId: tKey,
+                  timestamp: item.timestamp || new Date().toLocaleString(),
+                  data: item.data || {}
+                });
+                migratedCount++;
+              });
+            }
+          } catch(e){}
+          localStorage.removeItem(legacyKey);
+        }
+      });
+
+      if (migratedCount > 0) {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(unifiedHistory));
+      }
+    }
+
+    /* LOGIKA ALAT 1 & CONTOH */
+    function loadSampleTool1() {
+      document.getElementById('t1-tasks').value =
+        "Menjadwalkan rapat tim\nOnboarding informal anggota tim baru\nMencatat notulensi di rapat-rapat penting\nPerapihan dan pemformatan dokumen\nMengingatkan anggota tim tentang tenggat waktu mendatang";
+      document.getElementById('t1-freq').value = "Harian";
+      document.getElementById('t1-duration').value = "15-30min";
+      document.getElementById('t1-benefits').value = "Tim langsung, pimpinan proyek, karyawan baru yang masuk";
+      document.getElementById('t1-notice').value = "Konflik penjadwalan akan bermunculan, durasi onboarding akan memanjang, dan kesadaran akan tenggat waktu akan menurun.";
+      showToast("Skenario Contoh Dimuat");
+    }
+
+    document.getElementById('form-tool1').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const rawTasks = document.getElementById('t1-tasks').value.trim();
+      if (!rawTasks) return alert("Silakan masukkan setidaknya satu tugas.");
+
+      const tasks = rawTasks.split('\n').filter(t => t.trim().length > 0);
+      const freq = document.getElementById('t1-freq').value;
+      const durationStr = document.getElementById('t1-duration').value;
+      const benefits = document.getElementById('t1-benefits').value.trim() || "Tim yang lebih luas dan pemangku kepentingan proyek";
+      const notice = document.getElementById('t1-notice').value.trim() || "Proses operasional akan mengalami hambatan dan penundaan.";
+
+      let durHours = 0.375;
+      if (durationStr === '<15min') durHours = 0.2;
+      else if (durationStr === '15-30min') durHours = 0.375;
+      else if (durationStr === '30-60min') durHours = 0.75;
+      else if (durationStr === '1-2hr') durHours = 1.5;
+      else if (durationStr === '2hr+') durHours = 2.5;
+
+      let freqMult = 5;
+      if (freq === 'Mingguan') freqMult = 1;
+      else if (freq === 'Bulanan') freqMult = 0.25;
+      else if (freq === 'Sesuai kebutuhan') freqMult = 1.5;
+
+      const totalWeeklyHours = Math.round((tasks.length * durHours * freqMult) * 10) / 10;
+      const totalAnnualHours = Math.round(totalWeeklyHours * 48);
+
+      document.getElementById('t1-out-hours').innerText = `${totalWeeklyHours} jam/mg`;
+      document.getElementById('t1-out-annual').innerText = totalAnnualHours;
+
+      const listEl = document.getElementById('t1-out-list');
+      listEl.innerHTML = tasks.map(t => `
+        <li>
+          <span><i class="fa-solid fa-check text-muted" style="margin-right:8px;"></i>${escapeHTML(t.trim())}</span>
+          <span class="badge">${escapeHTML(freq)} • ~${Math.round(durHours * 60)}m</span>
+        </li>
+      `).join('');
+
+      document.getElementById('t1-out-deps').innerHTML = `
+        <p><strong>Penerima Manfaat Utama:</strong> ${escapeHTML(benefits)}</p>
+        <p style="margin-top:0.5rem;"><strong>Ketergantungan Operasional:</strong> <span class="badge badge-accent">Ketergantungan Signifikan</span></p>
+        <p style="margin-top:0.5rem; font-size: 0.9rem; color: var(--text-muted);">Tim Anda mengandalkan pekerjaan ini untuk menjaga momentum alur kerja harian tanpa alokasi peran formal.</p>
+      `;
+
+      document.getElementById('t1-out-gap').innerHTML = `
+        <p>Anda mengidentifikasi <strong>${tasks.length} tugas berulang</strong> di luar deskripsi pekerjaan utama Anda. Ini menunjukkan pertanyaan tentang visibilitas cakupan kerja yang perlu didiskusikan dengan manajemen untuk menetapkan batasan kepemilikan yang jelas.</p>
+      `;
+
+      document.getElementById('t1-out-stop').innerHTML = `
+        <p><strong>Dampak Menghentikan:</strong> "${escapeHTML(notice)}"</p>
+        <div style="background: rgba(244,162,97,0.15); padding: 0.75rem; border-radius:6px; margin-top:0.75rem; font-size:0.875rem;">
+          <i class="fa-solid fa-lightbulb" style="color:var(--warm-peach-dark);"></i> <strong>Wawasan Uji Penghentian:</strong> Hambatan operasional saat dihentikan menunjukkan bahwa pekerjaan ini adalah ketergantungan proses fungsional, bukan sekadar usaha opsional.
+        </div>
+      `;
+
+      const outContainer = document.getElementById('output-tool1');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool1', {
+        taskCount: tasks.length,
+        weeklyHours: totalWeeklyHours,
+        tasks: tasks,
+        benefits: benefits,
+        notice: notice
+      });
+    });
+
+    /* LOGIKA ALAT 2 & CONTOH */
+    function loadSampleTool2() {
+      document.getElementById('t2-task').value = "Onboarding informal untuk karyawan baru dan pemeliharaan dokumentasi";
+      document.getElementById('t2-problem').value = "Menghilangkan kebingungan saat penyesuaian awal, menjawab pertanyaan berulang, dan mencegah kesalahan operasional awal";
+      document.getElementById('t2-without').value = "Karyawan baru kesulitan selama berminggu-minggu, membuat kesalahan yang dapat dicegah, dan mengganggu insinyur senior";
+      document.getElementById('t2-beneficiary').value = "Tim saya";
+      document.getElementById('t2-factual-metric').value = "Melakukan onboarding 4 anggota tim; mengurangi pertanyaan dukungan awal";
+      showToast("Skenario Contoh Dimuat");
+    }
+
+    document.getElementById('form-tool2').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const task = document.getElementById('t2-task').value.trim();
+      const problem = document.getElementById('t2-problem').value.trim();
+      const without = document.getElementById('t2-without').value.trim();
+      const beneficiary = document.getElementById('t2-beneficiary').value;
+      const quantType = document.querySelector('input[name="t2-quant"]:checked')?.value || "Sebagian";
+      const factualMetric = document.getElementById('t2-factual-metric').value.trim();
+
+      if (!task || !problem) return alert("Silakan isi kolom tugas dan masalah.");
+
+      const businessCase = `Secara proaktif mendukung efisiensi operasional untuk ${escapeHTML(beneficiary.toLowerCase())} dengan mengelola ${escapeHTML(task.toLowerCase())}, mengatasi hambatan operasional ("${escapeHTML(problem)}") dan melindungi kapasitas inti tim.`;
+
+      let metricContent = '';
+      if (quantType === 'Ya' && factualMetric) {
+        metricContent = `<p><strong>Hasil Terukur:</strong> ${escapeHTML(factualMetric)}</p>`;
+      } else if (quantType === 'Sebagian') {
+        metricContent = `
+          <ul style="padding-left:1.25rem; line-height:1.7;">
+            <li><strong>Peluang Waktu menuju Produktivitas:</strong> Membantu menyederhanakan onboarding tim dan waktu penyesuaian awal.</li>
+            <li><strong>Mitigasi Risiko:</strong> Mengurangi kemungkinan kesalahan berulang ("${escapeHTML(without.substring(0, 70))}...").</li>
+            <li><strong>Perlindungan Kapasitas:</strong> Melindungi kapasitas senior dengan menyerap pertanyaan dukungan ad-hoc.</li>
+          </ul>
+        `;
+      } else {
+        metricContent = `<p><strong>Dampak Kualitatif:</strong> Meningkatkan keberlanjutan proses, koordinasi tim, dan stabilitas operasional di seluruh ${escapeHTML(beneficiary.toLowerCase())}.</p>`;
+      }
+
+      const comparison = `
+        <p>Jika diformalisasikan sebagai fungsi khusus, pelaksanaan <strong>${escapeHTML(task)}</strong> akan memerlukan alokasi kapasitas eksplisit, label kepemilikan formal, atau manajemen proses khusus.</p>
+      `;
+
+      const skillRecognition = `
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+          <span class="badge">Koordinasi Operasional</span>
+          <span class="badge">Manajemen Pengetahuan</span>
+          <span class="badge">Dukungan Proses</span>
+          <span class="badge">Penyelarasan Pemangku Kepentingan</span>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-muted);">Menunjukkan koordinasi proaktif, organisasi sistem, dan pengelolaan proses.</p>
+      `;
+
+      const portfolioEntry = `• Memelopori ${escapeHTML(task.toLowerCase())} di seluruh ${escapeHTML(beneficiary)}, menyelesaikan hambatan operasional utama ("${escapeHTML(problem)}").`;
+
+      document.getElementById('t2-out-case').innerText = businessCase;
+      document.getElementById('t2-out-metric').innerHTML = metricContent;
+      document.getElementById('t2-out-comp').innerHTML = comparison;
+      document.getElementById('t2-out-skill').innerHTML = skillRecognition;
+      document.getElementById('t2-out-port').innerText = portfolioEntry;
+
+      const outContainer = document.getElementById('output-tool2');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool2', { task, problem, beneficiary, businessCase, portfolioEntry });
+    });
+
+    /* LOGIKA ALAT 3 & CONTOH */
+    function loadSampleTool3() {
+      document.getElementById('t3-what').value = "Koordinasi rapat, penyusunan agenda, dan pelacakan item tindakan pasca-rapat";
+      document.getElementById('t3-who').value = "Atasan saya";
+      document.getElementById('t3-flow').value = "Sesi 1:1";
+      document.getElementById('t3-comfort').value = "Kurang nyaman";
+      showToast("Skenario Contoh Dimuat");
+    }
+
+    document.getElementById('form-tool3').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const what = document.getElementById('t3-what').value.trim();
+      const who = document.getElementById('t3-who').value;
+      const flow = document.getElementById('t3-flow').value;
+      const comfort = document.getElementById('t3-comfort').value;
+
+      if (!what) return alert("Silakan tentukan kontribusi apa yang ingin Anda diakui.");
+
+      const subtleSignal = `
+        <p>Pelihara <strong>Pusat Artefak Kerja</strong> terpusat dan tersentralisasi di ${escapeHTML(flow)}. Cantumkan nama Anda sebagai pemilik atau kurator pada dokumentasi bersama sehingga atribusi terjadi secara alami selama referensi harian.</p>
+      `;
+
+      const rotationProposal = `
+        <p>Usulkan jadwal bergilir untuk aspek administratif atau koordinasi dari <em>${escapeHTML(what)}</em>. Bingkai ini sebagai praktik kapasitas tim bersama, sehingga ${escapeHTML(who.toLowerCase())} dapat melihat usaha yang dibutuhkan secara langsung.</p>
+      `;
+
+      const docStrategy = `
+        <p>Buat daftar periksa standar berjudul <code>[SOP] ${escapeHTML(what.substring(0, 30))}</code>. Pelihara catatan pembaruan 2 baris yang ringkas untuk membuat rekam jejak yang terlihat dan dapat diaudit.</p>
+      `;
+
+      const script1on1 = `"Dalam sesi 1:1 kita, saya ingin memberi tahu Anda tentang sistem koordinasi yang telah saya kelola terkait ${escapeHTML(what)}. Ini memakan waktu sekitar 2-3 jam mingguan, dan saya ingin menyelaraskan untuk memformalisasikannya dalam alur kerja tim kita."`;
+
+      const teamProcess = `
+        <p>Kembangkan Prosedur Operasional Standar (SOP) 1 halaman untuk ${escapeHTML(what)} untuk merubah kerja pendukung individu menjadi proses tim yang terstandardisasi.</p>
+      `;
+
+      document.getElementById('t3-out-signal').innerHTML = subtleSignal;
+      document.getElementById('t3-out-rotation').innerHTML = rotationProposal;
+      document.getElementById('t3-out-doc').innerHTML = docStrategy;
+      document.getElementById('t3-out-script').innerText = script1on1;
+      document.getElementById('t3-out-process').innerHTML = teamProcess;
+
+      const outContainer = document.getElementById('output-tool3');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool3', { what, who, flow, comfort, script1on1 });
+    });
+
+    /* LOGIKA ALAT 4 & CONTOH */
+    function loadSampleTool4() {
+      document.getElementById('t4-hours').value = 8;
+      document.getElementById('t4-keep').value = "Mentoring anggota tim junior dan onboarding teknis";
+      document.getElementById('t4-drop').value = "Penjadwalan rapat ad-hoc, pencatatan notulensi, dan reformat dokumen";
+      document.getElementById('t4-return').value = "Pengurangan pekerjaan lain";
+      document.querySelectorAll('input[name="t4-react"]').forEach(r => { if (r.value === 'Netral') r.checked = true; });
+      showToast("Skenario Contoh Dimuat");
+    }
+
+    document.getElementById('form-tool4').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const hours = document.getElementById('t4-hours').value;
+      const keep = document.getElementById('t4-keep').value.trim() || "mentoring/koordinasi berdampak tinggi";
+      const drop = document.getElementById('t4-drop').value.trim() || "tugas-tugas administratif ad-hoc";
+      const desiredReturn = document.getElementById('t4-return').value;
+      const react = document.querySelector('input[name="t4-react"]:checked')?.value || "Netral";
+
+      const propScript = `"Dalam beberapa bulan terakhir, saya mengalokasikan sekitar ${escapeHTML(hours)} jam seminggu untuk pekerjaan koordinasi di luar deskripsi tugas—khususnya ${escapeHTML(keep)} dan ${escapeHTML(drop)}. Untuk mempertahankan kualitas tinggi pada tujuan utama saya, saya mengusulkan untuk memformalisasikan ${escapeHTML(keep)} sambil mengalihkan ${escapeHTML(drop)} ke rotasi bersama atau alur kerja otomatis sebagai imbalan atas ${escapeHTML(desiredReturn.toLowerCase())}. Bagaimana menurut Anda mengenai kompromi ini?"`;
+
+      const tradeOff = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; font-size:0.9rem;">
+          <div style="background:#EBF0F6; padding:0.75rem; border-radius:6px;">
+            <strong style="color:var(--dusty-blue-dark);">Pertahankan & Formalisasikan:</strong><br>${escapeHTML(keep)}
+          </div>
+          <div style="background:#FDF0E6; padding:0.75rem; border-radius:6px;">
+            <strong style="color:var(--warm-peach-dark);">Alihkan, Rotasikan, atau Hentikan:</strong><br>${escapeHTML(drop)}
+          </div>
+        </div>
+      `;
+
+      const formalPath = `
+        <ol style="padding-left:1.25rem; line-height:1.7; font-size:0.9rem;">
+          <li>Masukkan <strong>${escapeHTML(keep)}</strong> ke dalam ekspektasi peran resmi atau sasaran triwulanan (OKR).</li>
+          <li>Perbarui deskripsi peran selama siklus evaluasi untuk mencerminkan kepemilikan resmi.</li>
+          <li>Tetapkan ekspektasi kapasitas sehingga beban kerja diperhitungkan dalam perencanaan tim.</li>
+        </ol>
+      `;
+
+      let refuseAdvice = "";
+      if (react === "Defensif" || react === "Akan mengabaikan") {
+        refuseAdvice = `<p style="color:#C53030;"><strong>Strategi Batasan Kapasitas:</strong> Jika manajer Anda menolak, jangan menahan pekerjaan penting tanpa pemberitahuan. Sebaliknya, mintalah panduan prioritas yang eksplisit: <em>"Saya ingin memastikan hasil kerja utama tetap sesuai jadwal. Prioritas mana yang harus digeser untuk mengakomodasi tugas-tugas koordinasi ekstra ini?"</em></p>`;
+      } else {
+        refuseAdvice = `<p>Jika ditunda, mintalah titik tinjauan 30 hari: <em>"Mari kita tinjau kembali dalam 30 hari setelah saya melacak jam mingguan terhadap hasil kerja utama."</em></p>`;
+      }
+
+      const emailDoc = `Subjek: Ringkasan & Tindak Lanjut Penyelarasan Beban Kerja
+
+Halo [Nama Manajer],
+
+Terima kasih telah mendiskusikan kapasitas beban kerja saya hari ini. Seperti yang telah dibahas, saya menghabiskan ~${escapeHTML(hours)} jam seminggu untuk tugas-tugas koordinasi di luar peran utama.
+
+Ke depannya, kita sepakat untuk memprioritaskan ${escapeHTML(keep)} sambil mengevaluasi opsi untuk mengalihkan ${escapeHTML(drop)} guna membebaskan kapasitas utama.
+
+Salam hangat,
+[Nama Anda]`;
+
+      document.getElementById('t4-out-prop').innerText = propScript;
+      document.getElementById('t4-out-trade').innerHTML = tradeOff;
+      document.getElementById('t4-out-path').innerHTML = formalPath;
+      document.getElementById('t4-out-refuse').innerHTML = refuseAdvice;
+      document.getElementById('t4-out-doc').innerText = emailDoc;
+
+      const outContainer = document.getElementById('output-tool4');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool4', { hours, keep, drop, desiredReturn, propScript, emailDoc });
+    });
+
+    /* LOGIKA ALAT 5 & CONTOH */
+    function loadSampleTool5() {
+      document.getElementById('t5-duration').value = "1yr+";
+      document.querySelectorAll('input[name="t5-tried"]').forEach(r => { if (r.value === 'Ya, berkali-kali') r.checked = true; });
+      document.querySelectorAll('input[name="t5-valued"]').forEach(r => { if (r.value === 'Ya') r.checked = true; });
+      document.querySelectorAll('input[name="t5-status"]').forEach(r => { if (r.value === 'Mengalami burnout') r.checked = true; });
+      document.getElementById('t5-flex').value = "Butuh 3-6 bln";
+      showToast("Skenario Contoh Dimuat");
+    }
+
+    document.getElementById('form-tool5').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const duration = document.getElementById('t5-duration').value;
+      const tried = document.querySelector('input[name="t5-tried"]:checked')?.value || "Belum pernah";
+      const valued = document.querySelector('input[name="t5-valued"]:checked')?.value || "Tidak yakin";
+      const status = document.querySelector('input[name="t5-status"]:checked')?.value || "Jalan di tempat";
+      const flex = document.getElementById('t5-flex').value;
+
+      let verdict = "RENEGOSIASIKAN BATASAN";
+      let verdictClass = "background:#EBF0F6; color:var(--dusty-blue-dark);";
+      let reason = "";
+
+      if (status === "Mengalami burnout" && (duration === "1yr+" || duration === "6mo-1yr") && tried === "Ya, berkali-kali") {
+        verdict = "JELAJAHI OPSI EKSTERNAL";
+        verdictClass = "background:#FCE3D0; color:#C53030;";
+        reason = "Upaya sistematis selama jangka waktu yang lama tidak membuahkan penyesuaian cakupan kerja. Pola ini mendukung untuk memulai pencarian kerja eksternal secara terstruktur sambil tetap mempertahankan tanggung jawab utama saat ini.";
+      } else if (tried === "Belum pernah" || tried === "Pernah sekali") {
+        verdict = "TINGKATKAN & ADVISI";
+        verdictClass = "background:#EBF0F6; color:var(--dusty-blue-dark);";
+        reason = "Pekerjaan belum ditangani terutama karena kurangnya dokumentasi sistematis. Jalankan Alat 2 & 3 sebelum mengevaluasi opsi keluar dari peran.";
+      } else if (valued === "Ya" && status !== "Mengalami burnout") {
+        verdict = "MUTASI INTERNAL";
+        verdictClass = "background:#FEFCBF; color:#744210;";
+        reason = "Kapabilitas koordinasi dan kepemimpinan Anda memiliki nilai pasar yang kuat di bagian lain organisasi. Jelajahi peluang transfer peran secara internal.";
+      } else {
+        verdict = "RENEGOSIASIKAN BATASAN";
+        verdictClass = "background:#EBF0F6; color:var(--dusty-blue-dark);";
+        reason = "Atur ulang cakupan kerja menggunakan Alat 4 sambil terus mengevaluasi keselarasan pasar.";
+      }
+
+      const verdictHtml = `
+        <div class="badge-verdict" style="${verdictClass}">${escapeHTML(verdict)}</div>
+        <p style="font-size:0.925rem; color:var(--text-muted); margin-top:0.5rem;">${escapeHTML(reason)}</p>
+      `;
+
+      const internalPath = `
+        <p>Jelajahi penyesuaian peran internal menuju fungsi operasional formal (misal: Program Manager, Operations Lead, Enablement Specialist) di mana pekerjaan koordinasi terstruktur secara eksplisit.</p>
+      `;
+
+      const externalPath = `
+        <p>Targetkan peran eksternal dengan penyesuaian jabatan yang eksplisit:</p>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+          <span class="badge">Operations Manager</span>
+          <span class="badge">Technical Program Manager</span>
+          <span class="badge">Customer Success Lead</span>
+          <span class="badge">Enablement Lead</span>
+        </div>
+      `;
+
+      const resumeReframe = `• Memimpin inisiatif efisiensi lintas fungsi, mengoptimalkan alur kerja operasional dan mengurangi hambatan administratif.
+• Mengembangkan kerangka kerja onboarding tim yang terstandardisasi, mempercepat waktu menuju produktivitas bagi staf teknis.`;
+
+      const timeline = `
+        <ul style="padding-left:1.25rem; line-height:1.7; font-size:0.9rem;">
+          <li><strong>Bulan 1:</strong> Dokumentasikan pencapaian saat ini menggunakan Alat 2.</li>
+          <li><strong>Bulan 2:</strong> Tetapkan batasan cakupan kerja yang ketat; mulai jejaring internal atau eksternal.</li>
+          <li><strong>Bulan 3-4:</strong> Kirimkan lamaran target atau permintaan mutasi internal formal.</li>
+        </ul>
+      `;
+
+      const finPrep = `
+        <p>Strategi Keuangan: <strong>${escapeHTML(flex)}</strong>.</p>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin-top:0.35rem;">Tentukan dana cadangan pribadi yang nyaman yang mendukung transisi bebas stres tanpa keputusan terburu-buru.</p>
+      `;
+
+      document.getElementById('t5-out-verdict').innerHTML = verdictHtml;
+      document.getElementById('t5-out-internal').innerHTML = internalPath;
+      document.getElementById('t5-out-external').innerHTML = externalPath;
+      document.getElementById('t5-out-resume').innerText = resumeReframe;
+      document.getElementById('t5-out-timeline').innerHTML = timeline;
+      document.getElementById('t5-out-fin').innerHTML = finPrep;
+
+      const outContainer = document.getElementById('output-tool5');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool5', { verdictTitle: verdict, duration, status, reason });
+    });
+
+    /* TAMPILAN SINTESIS RENCANA UTAMA */
+    function renderMasterPlanView() {
+      const container = document.getElementById('plan-synthesis-content');
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding: 2rem 1rem;">
+            <i class="fa-solid fa-clipboard-list" style="font-size: 2.5rem; color: var(--dusty-blue); margin-bottom: 1rem;"></i>
+            <h3>Tidak Ada Riwayat Analisis Ditemukan</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem; max-width:450px; margin-left:auto; margin-right:auto;">
+              Selesaikan satu atau beberapa alat (Audit, Penerjemah, Visibilitas, Renegosiasi, atau Keluar/Tingkatkan) untuk menghasilkan Rencana Utama Anda secara konsolidasi.
+            </p>
+            <button class="btn btn-primary" style="margin-top:1.25rem;" onclick="switchView('tool1')">Mulai Audit Kerja Tak Terlihat</button>
+          </div>
+        `;
+        return;
+      }
+
+      const latestT1 = history.find(h => h.toolId === 'tool1')?.data;
+      const latestT2 = history.find(h => h.toolId === 'tool2')?.data;
+      const latestT3 = history.find(h => h.toolId === 'tool3')?.data;
+      const latestT4 = history.find(h => h.toolId === 'tool4')?.data;
+      const latestT5 = history.find(h => h.toolId === 'tool5')?.data;
+
+      container.innerHTML = `
+        <div style="margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid var(--dusty-blue-light);">
+          <h3 style="font-size:1.25rem; font-weight:700;">Ringkasan Eksekutif & Sintesis Strategi</h3>
+          <p style="font-size:0.875rem; color:var(--text-muted);">Dihasilkan pada ${escapeHTML(new Date().toLocaleDateString('id-ID'))}</p>
+        </div>
+
+        ${latestT1 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-clock"></i> 1. Ringkasan Audit Beban Kerja</h4>
+            <p style="font-size:0.9rem; margin-top:0.35rem;">
+              Mendata <strong>${latestT1.taskCount} tugas berulang</strong> yang mewakili ~<strong>${latestT1.weeklyHours} jam/minggu</strong> tenaga kerja tak terhitung (~${Math.round(latestT1.weeklyHours * 48)} jam/tahun).
+            </p>
+          </div>
+        ` : ''}
+
+        ${latestT2 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-briefcase"></i> 2. Posisi Nilai Utama</h4>
+            <p style="font-size:0.9rem; margin-top:0.35rem;">${escapeHTML(latestT2.businessCase)}</p>
+          </div>
+        ` : ''}
+
+        ${latestT3 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-comments"></i> 3. Skrip Visibilitas</h4>
+            <blockquote style="background:#F8FAFC; padding:0.75rem; border-left:3px solid var(--dusty-blue); font-size:0.875rem; font-style:italic; margin-top:0.35rem;">
+              ${escapeHTML(latestT3.script1on1)}
+            </blockquote>
+          </div>
+        ` : ''}
+
+        ${latestT4 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-scale-balanced"></i> 4. Penyelarasan Renegosiasi Cakupan Kerja</h4>
+            <p style="font-size:0.9rem; margin-top:0.35rem;">
+              <strong>Pertahankan:</strong> ${escapeHTML(latestT4.keep)}<br>
+              <strong>Alihkan/Kurangi:</strong> ${escapeHTML(latestT4.drop)}
+            </p>
+          </div>
+        ` : ''}
+
+        ${latestT5 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-compass"></i> 5. Arah Strategis Karier</h4>
+            <div class="badge" style="background:#EBF0F6; color:var(--dusty-blue-dark); font-size:0.9rem; margin-top:0.35rem;">${escapeHTML(latestT5.verdictTitle)}</div>
+            <p style="font-size:0.875rem; color:var(--text-muted); margin-top:0.35rem;">${escapeHTML(latestT5.reason)}</p>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    /* TAMPILAN RIWAYAT TERPADU */
+    function renderUnifiedHistoryView() {
+      const container = document.getElementById('unified-history-list');
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = '<em>Tidak ada catatan riwayat tersimpan. Jalankan alat apa saja untuk menyimpan hasil secara otomatis.</em>';
+        return;
+      }
+
+      container.innerHTML = history.map((item) => {
+        let toolName = 'Analisis Alat';
+        if (item.toolId === 'tool1') toolName = 'Audit Kerja Tak Terlihat';
+        else if (item.toolId === 'tool2') toolName = 'Penerjemah Nilai';
+        else if (item.toolId === 'tool3') toolName = 'Kampanye Visibilitas';
+        else if (item.toolId === 'tool4') toolName = 'Renegosiasi Beban Kerja';
+        else if (item.toolId === 'tool5') toolName = 'Keluar atau Tingkatkan';
+
+        return `
+          <div class="history-item" style="margin-bottom:1rem;">
+            <div class="history-meta">
+              <span><strong>${toolName}</strong> — ${escapeHTML(item.timestamp)}</span>
+              <button class="btn btn-sm btn-danger" style="padding:0.1rem 0.5rem; font-size:0.75rem;" onclick="deleteHistoryItem(${item.id})">Hapus</button>
+            </div>
+            <div style="font-size:0.875rem; color:var(--text-main);">
+              ${item.data.businessCase ? escapeHTML(item.data.businessCase) : ''}
+              ${item.data.weeklyHours ? `Mendata ${item.data.taskCount} tugas (${item.data.weeklyHours} jam/mg)` : ''}
+              ${item.data.verdictTitle ? `Arah Karier: ${escapeHTML(item.data.verdictTitle)}` : ''}
+              ${item.data.propScript ? `Skrip dihasilkan untuk ${item.data.hours} jam/mg` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* INISIALISASI */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupNavigation();
+      migrateLegacyHistory();
+
+      // Muat appState jika tersimpan
+      const savedState = localStorage.getItem(STATE_KEY);
+      if (savedState) {
+        try { appState = JSON.parse(savedState); } catch(e){}
+      }
+
+      // Tampilkan riwayat akordeon alat
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderToolHistoryAccordion);
+    });
+  </script>
+</body>
+</html>

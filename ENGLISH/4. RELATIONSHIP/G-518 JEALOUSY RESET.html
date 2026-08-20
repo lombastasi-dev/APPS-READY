@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jealousy Reset™ — Security Without Surveillance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6A040F;
+      --primary-light: #9D0208;
+      --primary-subtle: #F5E6E8;
+      --gold: #D4A373;
+      --gold-light: #FAEDCD;
+      --bg-gradient: linear-gradient(135deg, #FFF8F5 0%, #FDF2E9 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2B2D42;
+      --text-muted: #6C757D;
+      --border-color: #E9ECEF;
+      --sidebar-width: 260px;
+      --radius-xl: 1rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 15px -3px rgba(106,4,15,0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; }
+    .app-container { display: flex; flex: 1; position: relative; }
+
+    .sidebar { width: var(--sidebar-width); background: #FFFFFF; border-right: 1px solid var(--border-color); position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); transition: transform 0.3s ease; }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; }
+    .brand-logo { width: 38px; height: 38px; background: var(--primary); color: #FFF; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .brand-title { font-weight: 700; font-size: 1.15rem; color: var(--primary); letter-spacing: -0.02em; }
+    .sidebar-nav { padding: 1rem 0.75rem; flex: 1; overflow-y: auto; }
+    .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; color: var(--text-muted); border-radius: var(--radius-md); margin-bottom: 0.25rem; font-weight: 500; font-size: 0.925rem; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; width: 100%; text-align: left; }
+    .nav-item:hover { background: var(--primary-subtle); color: var(--primary); }
+    .nav-item.active { background: var(--primary); color: #FFFFFF; }
+    .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+
+    .mobile-header { display: none; background: #FFFFFF; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90; }
+    .mobile-menu-btn { background: none; border: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 95; backdrop-filter: blur(2px); }
+
+    .main-wrapper { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; }
+    .main-content { padding: 2.5rem 1.5rem; max-width: 800px; width: 100%; margin: 0 auto; flex: 1; }
+    .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-sm); border: 1px solid rgba(212,163,115,0.2); margin-bottom: 1.5rem; }
+
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.85rem; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .page-subtitle { color: var(--text-muted); font-size: 1rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--text-main); }
+    .form-control, .form-select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.95rem; color: var(--text-main); background: #FAFAFA; transition: all 0.2s ease; }
+    .form-control:focus, .form-select:focus { outline: none; border-color: var(--gold); background: #FFFFFF; box-shadow: 0 0 0 3px rgba(212,163,115,0.25); }
+    textarea.form-control { min-height: 100px; resize: vertical; }
+    .checkbox-grid, .radio-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+    .custom-check, .custom-radio { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.8rem; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; user-select: none; transition: background 0.15s; }
+    .custom-check:hover, .custom-radio:hover { background: #F0F0F0; }
+    .custom-check input, .custom-radio input { accent-color: var(--primary); width: 16px; height: 16px; }
+
+    .btn-group { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; font-weight: 600; font-size: 0.95rem; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; border: none; }
+    .btn-primary { background: var(--primary); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--primary-light); box-shadow: 0 4px 12px rgba(106,4,15,0.2); }
+    .btn-secondary { background: var(--gold-light); color: #5A3E1B; border: 1px solid var(--gold); }
+    .btn-secondary:hover { background: var(--gold); color: #FFFFFF; }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); }
+    .btn-outline:hover { background: #F8F9FA; color: var(--text-main); }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+    .output-container { margin-top: 2.5rem; display: none; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .output-card { background: #FFFFFF; border-radius: var(--radius-xl); border-left: 5px solid var(--primary); padding: 2rem; box-shadow: var(--shadow-md); }
+    .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+    .output-title { color: var(--primary); font-size: 1.4rem; font-weight: 700; }
+    .result-section { margin-bottom: 1.5rem; }
+    .result-section:last-child { margin-bottom: 0; }
+    .result-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--gold); margin-bottom: 0.35rem; }
+    .result-content { font-size: 1rem; color: var(--text-main); background: #FAF7F5; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #F0E6DF; }
+    .script-box { background: #FFF8F5; border: 1px dashed var(--primary); padding: 1.25rem; border-radius: var(--radius-md); position: relative; margin-top: 0.5rem; }
+    .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; }
+
+    .history-section { margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .history-item { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; overflow: hidden; }
+    .history-summary { padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; background: #FAFAFA; }
+    .history-summary:hover { background: #F0F0F0; }
+    .history-details { padding: 1.25rem; border-top: 1px solid var(--border-color); display: none; background: #FFFFFF; }
+
+    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 1000; display: none; align-items: center; gap: 0.5rem; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .app-footer { background: #FFFFFF; border-top: 1px solid var(--border-color); padding: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: auto; }
+
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+    .dash-card { background: #FFFFFF; border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid rgba(212,163,115,0.3); box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .dash-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .dash-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--primary-subtle); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 1rem; }
+    .dash-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+    .dash-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .dash-link { font-size: 0.875rem; font-weight: 600; color: var(--gold); display: flex; align-items: center; gap: 0.35rem; }
+    .dash-card:hover .dash-link { color: var(--primary); }
+
+    .reset-progress { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .reset-day { background: var(--primary-subtle); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; color: var(--primary); }
+    .reset-day.done { background: var(--primary); color: white; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .mobile-header { display: flex; }
+      .main-wrapper { margin-left: 0; }
+      .main-content { padding: 1.5rem 1rem; }
+      .checkbox-grid, .radio-group { grid-template-columns: 1fr; }
+      .btn-group { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mobile-header">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div class="brand-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="brand-title">JealousyReset™</span>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuToggle"><i class="fa-solid fa-bars"></i></button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="brand-title">JealousyReset™</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="switchView('dashboard')"><i class="fa-solid fa-house"></i> Home</button>
+      <button class="nav-item" onclick="switchView('tool1')"><i class="fa-solid fa-arrows-spin"></i> Spiral Stopper</button>
+      <button class="nav-item" onclick="switchView('tool2')"><i class="fa-solid fa-magnifying-glass"></i> Evidence vs Story</button>
+      <button class="nav-item" onclick="switchView('tool3')"><i class="fa-solid fa-comments"></i> The Conversation</button>
+      <button class="nav-item" onclick="switchView('tool4')"><i class="fa-solid fa-handshake"></i> Boundary Builder</button>
+      <button class="nav-item" onclick="switchView('tool5')"><i class="fa-solid fa-user-shield"></i> Self-Security Check</button>
+      <button class="nav-item" onclick="switchView('reset')"><i class="fa-solid fa-rotate"></i> 7-Day Reset</button>
+      <button class="nav-item" onclick="switchView('plan')"><i class="fa-solid fa-list-check"></i> My Security Plan</button>
+      <button class="nav-item" onclick="switchView('history')"><i class="fa-solid fa-clock-rotate-left"></i> My History</button>
+      <button class="nav-item" onclick="switchView('privacy')"><i class="fa-solid fa-lock"></i> Privacy & Safety</button>
+    </nav>
+  </aside>
+
+  <div class="main-wrapper">
+    <main class="main-content">
+      <div id="contentArea"></div>
+      <footer class="app-footer"><p>For self-guided reflection and communication support only. Not therapy or professional advice. For trust or safety concerns, consult a licensed professional.</p></footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> <span id="toast-message">Copied!</span></div>
+
+  <script>
+    /* ===== STATE & STORAGE ===== */
+    function getHistory(toolId) {
+      try { return JSON.parse(localStorage.getItem(`jr_history_${toolId}`) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, item) {
+      let h = getHistory(toolId);
+      h.unshift({ ...item, timestamp: new Date().toLocaleString() });
+      if (h.length > 30) h = h.slice(0, 30);
+      localStorage.setItem(`jr_history_${toolId}`, JSON.stringify(h));
+    }
+    function clearHistory(toolId) {
+      localStorage.removeItem(`jr_history_${toolId}`);
+      renderTool(toolId);
+    }
+    function clearAllHistory() {
+      ['tool1','tool2','tool3','tool4','tool5','reset'].forEach(id => localStorage.removeItem(`jr_history_${id}`));
+      renderTool('history');
+      showToast('All history cleared');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = msg;
+      t.style.display = 'flex';
+      setTimeout(() => t.style.display = 'none', 2000);
+    }
+    function copyToClipboard(text) {
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => fallbackCopy(text));
+      else fallbackCopy(text);
+    }
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('Copied!');
+    }
+
+    /* ===== NAVIGATION ===== */
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const menuBtn = document.getElementById('mobileMenuToggle');
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('open'); }
+    menuBtn.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    function switchView(viewId) {
+      closeSidebar();
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.getAttribute('onclick').includes(viewId)));
+      renderTool(viewId);
+    }
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const match = btn.getAttribute('onclick').match(/switchView\('([^']+)'\)/);
+        if (match) switchView(match[1]);
+      });
+    });
+
+    /* ===== RENDER ENGINE ===== */
+    function renderTool(viewId) {
+      const container = document.getElementById('contentArea');
+      switch (viewId) {
+        case 'dashboard': container.innerHTML = renderDashboard(); break;
+        case 'tool1': container.innerHTML = renderTool1(); break;
+        case 'tool2': container.innerHTML = renderTool2(); break;
+        case 'tool3': container.innerHTML = renderTool3(); break;
+        case 'tool4': container.innerHTML = renderTool4(); break;
+        case 'tool5': container.innerHTML = renderTool5(); break;
+        case 'reset': container.innerHTML = renderReset(); break;
+        case 'plan': container.innerHTML = renderPlan(); break;
+        case 'history': container.innerHTML = renderHistoryView(); break;
+        case 'privacy': container.innerHTML = renderPrivacy(); break;
+        default: container.innerHTML = renderDashboard();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function renderHistoryAccordion(toolId, history, label) {
+      if (!history || history.length === 0) return '';
+      return `
+        <div class="history-section">
+          <div class="history-header">
+            <span style="font-weight:600;color:var(--primary);"><i class="fa-solid fa-clock-rotate-left"></i> Previous ${label} (${history.length})</span>
+            <button class="btn btn-outline btn-sm" onclick="clearHistory('${toolId}')">Clear History</button>
+          </div>
+          ${history.map((item, idx) => `
+            <div class="history-item">
+              <div class="history-summary" onclick="toggleHistoryItem('${toolId}', ${idx})">
+                <span>${item.timestamp}</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-${toolId}-${idx}"></i>
+              </div>
+              <div class="history-details" id="hist-body-${toolId}-${idx}">${item.outputHTML || item.summary}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleHistoryItem(toolId, idx) {
+      const body = document.getElementById(`hist-body-${toolId}-${idx}`);
+      const icon = document.getElementById(`hist-icon-${toolId}-${idx}`);
+      if (body.style.display === 'block') {
+        body.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      } else {
+        body.style.display = 'block';
+        icon.className = 'fa-solid fa-chevron-up';
+      }
+    }
+
+    /* ===== DASHBOARD ===== */
+    function renderDashboard() {
+      return `
+        <div class="card" style="background:linear-gradient(135deg,#6A040F 0%,#9D0208 100%);color:white;">
+          <h1 style="font-size:2.2rem;font-weight:700;margin-bottom:0.5rem;letter-spacing:-0.02em;">Jealousy Reset™</h1>
+          <p style="font-size:1.1rem;color:#FAEDCD;font-weight:300;">Build security without turning love into surveillance.</p>
+        </div>
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="switchView('tool1')"><div class="dash-icon"><i class="fa-solid fa-arrows-spin"></i></div><div class="dash-title">Spiral Stopper</div><div class="dash-desc">Break impulsive surveillance loops, phone checking, and compulsions.</div><div class="dash-link">Open <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool2')"><div class="dash-icon"><i class="fa-solid fa-magnifying-glass"></i></div><div class="dash-title">Evidence vs Story</div><div class="dash-desc">Separate actual observable facts from anxiety-driven assumptions.</div><div class="dash-link">Open <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool3')"><div class="dash-icon"><i class="fa-solid fa-comments"></i></div><div class="dash-title">The Conversation</div><div class="dash-desc">Script non-accusatory openings that minimize defensiveness and seek clarity.</div><div class="dash-link">Open <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool4')"><div class="dash-icon"><i class="fa-solid fa-handshake"></i></div><div class="dash-title">Boundary Builder</div><div class="dash-desc">Establish fair, reciprocal agreements without falling into control or surveillance.</div><div class="dash-link">Open <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool5')"><div class="dash-icon"><i class="fa-solid fa-user-shield"></i></div><div class="dash-title">Self-Security Check</div><div class="dash-desc">Map internal insecurities, past trauma, and cultivate independent self-worth.</div><div class="dash-link">Open <i class="fa-solid fa-arrow-right"></i></div></div>
+        </div>
+      `;
+    }
+
+    /* ===== TOOL 1: SPIRAL STOPPER ===== */
+    function renderTool1() {
+      const h = getHistory('tool1');
+      return `
+        <div class="page-header"><h2 class="page-title">Spiral Stopper</h2><p class="page-subtitle">"I can't stop checking their phone, location, or social media."</p></div>
+        <div class="card">
+          <form id="form-tool1" onsubmit="event.preventDefault(); processTool1();">
+            <div class="form-group"><label class="form-label">What do you check?</label><div class="checkbox-grid">
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Phone"> Phone</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Location"> Location</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Social media"> Social media</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Messages"> Messages</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Photos"> Photos</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Who they follow"> Who they follow</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Their friends"> Their friends</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Their exes"> Their exes</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Everything"> Everything</label>
+            </div></div>
+            <div class="form-group"><label class="form-label">How often?</label><select class="form-select" id="t1_freq"><option value="">Select...</option><option value="Multiple times daily">Multiple times daily</option><option value="Daily">Daily</option><option value="Few times a week">A few times a week</option><option value="Only when anxious">Only when anxious</option></select></div>
+            <div class="form-group"><label class="form-label">What triggers the urge?</label><textarea class="form-control" id="t1_trigger" placeholder="e.g., When they get a text and turn screen away..."></textarea></div>
+            <div class="form-group"><label class="form-label">What do you hope to find?</label><select class="form-select" id="t1_hope"><option value="">Select...</option><option value="Proof they're faithful">Proof they're faithful</option><option value="Proof they're not">Proof they're not</option><option value="Reassurance">Reassurance</option><option value="Something to confront them with">Something to confront them with</option><option value="I don't know">I don't know</option></select></div>
+            <div class="form-group"><label class="form-label">What happens after you check?</label><select class="form-select" id="t1_after"><option value="">Select...</option><option value="Relief">Relief</option><option value="More anxiety">More anxiety</option><option value="Guilt">Guilt</option><option value="Fight">A fight occurs</option><option value="Temporary calm then repeat">Temporary calm, then urge repeats</option></select></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Analyze Spiral</button><button type="button" class="btn btn-secondary" onclick="loadSample(1)">Load Sample</button></div>
+          </form>
+        </div>
+        <div id="output-tool1" class="output-container"></div>
+        ${renderHistoryAccordion('tool1', h, 'Spiral Analyses')}
+      `;
+    }
+
+    function loadSample(toolId) {
+      if (toolId === 1) {
+        document.querySelectorAll('input[name="t1_check"]').forEach(cb => cb.checked = ['Social media','Messages'].includes(cb.value));
+        document.getElementById('t1_freq').value = 'Daily';
+        document.getElementById('t1_trigger').value = 'When they get a text notification late at night and smile at their phone.';
+        document.getElementById('t1_hope').value = 'Reassurance';
+        document.getElementById('t1_after').value = 'Temporary calm then repeat';
+      } else if (toolId === 2) {
+        document.getElementById('t2_event').value = 'Partner came home two hours later than usual from work smelling like perfume.';
+        document.getElementById('t2_observed').value = 'Arrived at 8:30 PM instead of 6:30 PM. Strong floral perfume scent on coat. Did not text prior.';
+        document.getElementById('t2_assumed').value = 'They went out on a secret date with someone from their office and forgot about me.';
+        document.querySelector('input[name="t2_asked"][value="No"]').checked = true;
+        document.getElementById('t2_response').value = '';
+      } else if (toolId === 3) {
+        document.getElementById('t3_know').value = 'I feel deeply disconnected and anxious when you maintain private, daily text streaks with your ex-partner.';
+        document.getElementById('t3_fear').value = 'You are just insecure, dramatic, and trying to control who I talk to.';
+        document.getElementById('t3_need').value = 'Transparency';
+        document.querySelector('input[name="t3_history"][value="Never"]').checked = true;
+      } else if (toolId === 4) {
+        document.getElementById('t4_worry').value = 'Going out for late-night drinks with colleagues without any updates or estimated return time.';
+        document.getElementById('t4_secure').value = 'A brief text before leaving the office and a quick update if staying out past midnight.';
+        document.getElementById('t4_controlling').value = 'Demanding live GPS location tracking or requiring photo evidence of who they are with.';
+        document.getElementById('t4_offer').value = 'I will give full space without spam-calling or demanding instant replies while they are out.';
+      } else if (toolId === 5) {
+        document.getElementById('t5_life').value = 'Struggling with body image issues and recent career stagnation compared to peers.';
+        document.querySelector('input[name="t5_pattern"][value="Only when I was cheated on before"]').checked = true;
+        document.getElementById('t5_partner').value = 'Feeling grounded in my own value, trusting my instincts, and having independent hobbies.';
+        document.getElementById('t5_solo').value = 'No current solo hobbies or separate friend hangouts; mostly watch TV together.';
+      }
+      showToast('Sample loaded');
+    }
+
+    function processTool1() {
+      const checked = Array.from(document.querySelectorAll('input[name="t1_check"]:checked')).map(c => c.value);
+      const freq = document.getElementById('t1_freq').value;
+      const trigger = document.getElementById('t1_trigger').value;
+      const hope = document.getElementById('t1_hope').value;
+      const after = document.getElementById('t1_after').value;
+      const checks = checked.length ? checked.join(', ') : 'general behaviors';
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-arrows-spin"></i> Your Checking Loop</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString()}</span></div>
+          <div class="result-section"><div class="result-label">Your Spiral Pattern</div><div class="result-content">You are monitoring <strong>${checks}</strong> on a <strong>${freq.toLowerCase()}</strong> basis, triggered by: <em>"${escapeHtml(trigger)}"</em>.</div></div>
+          <div class="result-section"><div class="result-label">What the Checking Is Trying to Solve</div><div class="result-content">You seek <strong>${hope.toLowerCase()}</strong>, but the post-checking effect is <strong>${after.toLowerCase()}</strong>.</div></div>
+          <div class="result-section"><div class="result-label">The Loop</div><div class="result-content"><strong>Trigger → Urge → Checking → ${after} → Renewed uncertainty</strong>. This cycle reinforces the urge rather than resolving it.</div></div>
+          <div class="result-section"><div class="result-label">One Self-Boundary</div><div class="result-content">Try a structured limit: check once per day at a specific time (e.g., 8:00 PM) for 3 minutes. No checking while in bed or during work.</div></div>
+          <div class="result-section"><div class="result-label">The Real Question</div><div class="result-content"><em>"Am I looking for safety in a screen, or do I need an honest conversation about emotional closeness?"</em></div></div>
+          <div class="result-section"><div class="result-label">Alternative Action</div><div class="result-content">When the urge strikes: Set a 15-minute timer. Put the device away. Go outside or drink cold water. If the urge remains, write it down instead of searching.</div></div>
+          <div class="result-section"><div class="result-label">If You Found Something</div><div class="result-content"><strong>Ambiguous:</strong> Pause. Ambiguity is often distorted by anxiety. <strong>Clear evidence:</strong> Document facts objectively. Plan a calm, structured discussion focused on boundary breaches.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool1').innerHTML = html;
+      document.getElementById('output-tool1').style.display = 'block';
+      setHistory('tool1', { summary: `Spiral Analysis (${freq})`, outputHTML: html });
+      renderTool1();
+    }
+
+    /* ===== TOOL 2: EVIDENCE VS STORY ===== */
+    function renderTool2() {
+      const h = getHistory('tool2');
+      return `
+        <div class="page-header"><h2 class="page-title">Evidence vs Story</h2><p class="page-subtitle">"I have 'proof' but I don't know if I'm making it up."</p></div>
+        <div class="card">
+          <form id="form-tool2" onsubmit="event.preventDefault(); processTool2();">
+            <div class="form-group"><label class="form-label">What specifically happened?</label><textarea class="form-control" id="t2_event" placeholder="Describe the incident that triggered your suspicion..."></textarea></div>
+            <div class="form-group"><label class="form-label">What did you observe? (Facts ONLY)</label><textarea class="form-control" id="t2_observed" placeholder="What literally happened without interpretation?"></textarea></div>
+            <div class="form-group"><label class="form-label">What did you assume? (The Story)</label><textarea class="form-control" id="t2_assumed" placeholder="What narrative did your mind create?"></textarea></div>
+            <div class="form-group"><label class="form-label">Have you asked them about it?</label><div class="radio-group">
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="Yes, directly"> Yes, directly</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="Yes, indirectly"> Yes, indirectly</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="No" checked> No</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="I tested them"> I tested them</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="I accused them"> I accused them</label>
+            </div></div>
+            <div class="form-group"><label class="form-label">Their response (if applicable):</label><textarea class="form-control" id="t2_response" placeholder="What did they say or how did they react?"></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-scale-balanced"></i> Separate Facts from Story</button><button type="button" class="btn btn-secondary" onclick="loadSample(2)">Load Sample</button></div>
+          </form>
+        </div>
+        <div id="output-tool2" class="output-container"></div>
+        ${renderHistoryAccordion('tool2', h, 'Reality Deconstructions')}
+      `;
+    }
+
+    function processTool2() {
+      const observed = document.getElementById('t2_observed').value;
+      const assumed = document.getElementById('t2_assumed').value;
+      const asked = document.querySelector('input[name="t2_asked"]:checked')?.value || 'Not specified';
+      const response = document.getElementById('t2_response').value;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-scale-balanced"></i> Reality Deconstruction</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString()}</span></div>
+          <div class="result-section"><div class="result-label">The Facts</div><div class="result-content">"${escapeHtml(observed)}"</div></div>
+          <div class="result-section"><div class="result-label">Your Story</div><div class="result-content">"${escapeHtml(assumed)}"</div></div>
+          <div class="result-section"><div class="result-label">The Gap</div><div class="result-content">The gap between observation and assumption is where anxiety thrives. You observed an event, but you filled missing context with catastrophe.</div></div>
+          <div class="result-section"><div class="result-label">3 Possible Alternative Explanations</div><div class="result-content"><ol style="padding-left:1.2rem;"><li>An awkward or mismanaged situation that has nothing to do with betrayal.</li><li>Work stress, personal distraction, or family obligations consuming their attention.</li><li>Poor communication or lapse in judgment without malicious intent.</li></ol></div></div>
+          <div class="result-section"><div class="result-label">One Question to Ask</div><div class="script-box">"I noticed ${escapeHtml(observed.substring(0, 60))}... and my mind started creating a stressed story. Can you help me understand what happened from your side?"<button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('I noticed ${escapeHtml(observed.substring(0, 60))}... and my mind started creating a stressed story. Can you help me understand what happened from your side?')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+          <div class="result-section"><div class="result-label">Red Flag Check</div><div class="result-content">Is this an isolated event or part of a documented pattern of secrecy? Isolated events warrant curious dialogue; documented patterns warrant structural boundary decisions.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool2').innerHTML = html;
+      document.getElementById('output-tool2').style.display = 'block';
+      setHistory('tool2', { summary: `Evidence vs Story Analysis`, outputHTML: html });
+      renderTool2();
+    }
+
+    /* ===== TOOL 3: THE CONVERSATION ===== */
+    function renderTool3() {
+      const h = getHistory('tool3');
+      return `
+        <div class="page-header"><h2 class="page-title">The Conversation</h2><p class="page-subtitle">"I want to talk about it without starting a fight."</p></div>
+        <div class="card">
+          <form id="form-tool3" onsubmit="event.preventDefault(); processTool3();">
+            <div class="form-group"><label class="form-label">What do you want them to know?</label><textarea class="form-control" id="t3_know" placeholder="What internal feeling or situational reality do you want to convey?"></textarea></div>
+            <div class="form-group"><label class="form-label">What are you afraid they'll say?</label><textarea class="form-control" id="t3_fear" placeholder="e.g., 'You're crazy', 'I can't take this anymore'"></textarea></div>
+            <div class="form-group"><label class="form-label">What do you need from them?</label><select class="form-select" id="t3_need"><option value="">Select...</option><option value="Reassurance">Reassurance</option><option value="Transparency">Transparency</option><option value="Boundaries">Boundaries</option><option value="Time">Time / Presence</option><option value="Explanation">Explanation</option><option value="Change in behavior">Change in behavior</option></select></div>
+            <div class="form-group"><label class="form-label">Have you brought this up before?</label><div class="radio-group">
+              <label class="custom-radio"><input type="radio" name="t3_history" value="Never" checked> Never</label>
+              <label class="custom-radio"><input type="radio" name="t3_history" value="Once"> Once</label>
+              <label class="custom-radio"><input type="radio" name="t3_history" value="Multiple times"> Multiple times</label>
+              <label class="custom-radio"><input type="radio" name="t3_history" value="They know but we avoid it"> They know but we avoid it</label>
+            </div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-comment-dots"></i> Generate Blueprint</button><button type="button" class="btn btn-secondary" onclick="loadSample(3)">Load Sample</button></div>
+          </form>
+        </div>
+        <div id="output-tool3" class="output-container"></div>
+        ${renderHistoryAccordion('tool3', h, 'Dialogue Blueprints')}
+      `;
+    }
+
+    function processTool3() {
+      const know = document.getElementById('t3_know').value;
+      const fear = document.getElementById('t3_fear').value;
+      const need = document.getElementById('t3_need').value;
+      const history = document.querySelector('input[name="t3_history"]:checked')?.value || 'Never';
+      const script = `When ${know.toLowerCase().replace(/^when\s*/, '')}, I feel anxious and disconnected, and I need ${need.toLowerCase()} so we can stay secure together.`;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-comments"></i> Dialogue Blueprint</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString()}</span></div>
+          <div class="result-section"><div class="result-label">Your Opening</div><div class="script-box">"${escapeHtml(script)}"<button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHtml(script)}')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+          <div class="result-section"><div class="result-label">What You Are Actually Asking For</div><div class="result-content"><strong>${need}</strong> — this is a concrete request, not a vague demand.</div></div>
+          <div class="result-section"><div class="result-label">What Not to Say</div><div class="result-content"><ul style="padding-left:1.2rem;color:#850000;"><li>"You always make me feel paranoid." (Accusatory blanket statement)</li><li>"Why are you hiding things from me?" (Assumes guilt)</li><li>"If you cared, you wouldn't do this." (Emotional manipulation)</li></ul></div></div>
+          <div class="result-section"><div class="result-label">If They Get Defensive</div><div class="result-content"><em>"I'm not attacking you. I'm sharing my internal feeling so we can solve this together. I want to hear your perspective."</em></div></div>
+          <div class="result-section"><div class="result-label">If They Reassure You</div><div class="result-content"><em>"Thank you for reassuring me. That helps. Let's agree on a simple habit so I stay feeling grounded."</em></div></div>
+          <div class="result-section"><div class="result-label">One Agreement to Propose</div><div class="result-content">Propose a measurable step tailored to <strong>${need}</strong>: e.g., "Instead of secrecy, let's agree to open communication when plans change unexpectedly."</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool3').innerHTML = html;
+      document.getElementById('output-tool3').style.display = 'block';
+      setHistory('tool3', { summary: `Conversation Blueprint (${need})`, outputHTML: html });
+      renderTool3();
+    }
+
+    /* ===== TOOL 4: BOUNDARY BUILDER ===== */
+    function renderTool4() {
+      const h = getHistory('tool4');
+      return `
+        <div class="page-header"><h2 class="page-title">Boundary Builder</h2><p class="page-subtitle">"We need rules that protect both of us without controlling each other."</p></div>
+        <div class="card">
+          <form id="form-tool4" onsubmit="event.preventDefault(); processTool4();">
+            <div class="form-group"><label class="form-label">What behavior worries you?</label><textarea class="form-control" id="t4_worry" placeholder="Describe the specific recurring action causing distress..."></textarea></div>
+            <div class="form-group"><label class="form-label">What would actually help you feel secure?</label><textarea class="form-control" id="t4_secure" placeholder="Describe realistic actions..."></textarea></div>
+            <div class="form-group"><label class="form-label">What would feel controlling to you if they asked it of you?</label><textarea class="form-control" id="t4_controlling" placeholder="Where is the line into overreach?"></textarea></div>
+            <div class="form-group"><label class="form-label">What are you willing to offer in return?</label><textarea class="form-control" id="t4_offer" placeholder="How will you reciprocate transparency or offer freedom?"></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-handshake"></i> Build Agreement</button><button type="button" class="btn btn-secondary" onclick="loadSample(4)">Load Sample</button></div>
+          </form>
+        </div>
+        <div id="output-tool4" class="output-container"></div>
+        ${renderHistoryAccordion('tool4', h, 'Agreements')}
+      `;
+    }
+
+    function processTool4() {
+      const worry = document.getElementById('t4_worry').value;
+      const secure = document.getElementById('t4_secure').value;
+      const controlling = document.getElementById('t4_controlling').value;
+      const offer = document.getElementById('t4_offer').value;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-handshake"></i> Reciprocal Agreement Model</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString()}</span></div>
+          <div class="result-section"><div class="result-label">The Concern</div><div class="result-content">"${escapeHtml(worry)}"</div></div>
+          <div class="result-section"><div class="result-label">The Security Need</div><div class="result-content">"${escapeHtml(secure)}"</div></div>
+          <div class="result-section"><div class="result-label">The Fair Boundary</div><div class="result-content"><strong>Agreement:</strong> ${escapeHtml(secure)}. This protects transparency without imposing surveillance.</div></div>
+          <div class="result-section"><div class="result-label">Your Offer</div><div class="result-content">"${escapeHtml(offer)}"</div></div>
+          <div class="result-section"><div class="result-label">The Check-In</div><div class="result-content">Set a review date in <strong>2 weeks</strong>. Ask: <em>"Is this agreement helping our trust without making either of us feel controlled?"</em></div></div>
+          <div class="result-section"><div class="result-label">If They Refuse</div><div class="result-content">If reasonable transparency is refused as "controlling," investigate whether they resist accountability or if past approaches have made them defensive.</div></div>
+          <div class="result-section"><div class="result-label">If You Can't Agree</div><div class="result-content">Fundamental incompatibility occurs when one partner requires complete privacy without accountability while the other requires constant verification. Healthy relationships require shared standards of consideration.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool4').innerHTML = html;
+      document.getElementById('output-tool4').style.display = 'block';
+      setHistory('tool4', { summary: `Boundary Agreement`, outputHTML: html });
+      renderTool4();
+    }
+
+    /* ===== TOOL 5: SELF-SECURITY CHECK ===== */
+    function renderTool5() {
+      const h = getHistory('tool5');
+      return `
+        <div class="page-header"><h2 class="page-title">Self-Security Check</h2><p class="page-subtitle">"Even if they're faithful, I don't feel safe in my own head."</p></div>
+        <div class="card">
+          <form id="form-tool5" onsubmit="event.preventDefault(); processTool5();">
+            <div class="form-group"><label class="form-label">Where else in your life do you feel insecure?</label><textarea class="form-control" id="t5_life" placeholder="e.g., Body image, career standing, social status..."></textarea></div>
+            <div class="form-group"><label class="form-label">Has jealousy been a pattern in past relationships?</label><div class="radio-group">
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="Yes, always"> Yes, always</label>
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="Sometimes"> Sometimes</label>
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="This is new" checked> This is new</label>
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="Only when I was cheated on before"> Only when cheated on previously</label>
+            </div></div>
+            <div class="form-group"><label class="form-label">What would make YOU feel like a secure partner?</label><textarea class="form-control" id="t5_partner" placeholder="What personal qualities or behaviors would give you confidence in yourself?"></textarea></div>
+            <div class="form-group"><label class="form-label">What do you do for yourself that has nothing to do with them?</label><textarea class="form-control" id="t5_solo" placeholder="Independent hobbies, solo routines, goals, or friendships..."></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-heart-pulse"></i> Analyze Internal Security</button><button type="button" class="btn btn-secondary" onclick="loadSample(5)">Load Sample</button></div>
+          </form>
+        </div>
+        <div id="output-tool5" class="output-container"></div>
+        ${renderHistoryAccordion('tool5', h, 'Internal Security Maps')}
+      `;
+    }
+
+    function processTool5() {
+      const life = document.getElementById('t5_life').value;
+      const pattern = document.querySelector('input[name="t5_pattern"]:checked')?.value || 'Not specified';
+      const partner = document.getElementById('t5_partner').value;
+      const solo = document.getElementById('t5_solo').value;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-user-shield"></i> Internal Security Map</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString()}</span></div>
+          <div class="result-section"><div class="result-label">Your Insecurity Map</div><div class="result-content">Jealousy often projects externalized vulnerabilities. Your reported life stresses—<strong>"${escapeHtml(life)}"</strong>—can bleed into relationship fears.</div></div>
+          <div class="result-section"><div class="result-label">Past vs Present</div><div class="result-content">History Profile: <strong>${pattern}</strong>. If you carry past relational trauma, your brain may treat current neutral moments as active threats.</div></div>
+          <div class="result-section"><div class="result-label">What a Secure Version of You Would Practice</div><div class="result-content">"${escapeHtml(partner)}"</div></div>
+          <div class="result-section"><div class="result-label">One Solo Build</div><div class="result-content">Commit to 2 hours per week dedicated entirely to independent growth: <strong>"${escapeHtml(solo.length > 5 ? solo : 'Develop a new solo hobby, fitness routine, or skill')}"</strong>.</div></div>
+          <div class="result-section"><div class="result-label">The Partnership Reality</div><div class="result-content">A partner can provide reassurance, warmth, and honesty, but they cannot cure internal self-worth deficits. External validation is a mirror; if the inner foundation feels broken, no amount of reassurance will feel like enough.</div></div>
+          <div class="result-section"><div class="result-label">When Extra Support May Help</div><div class="result-content">Consider professional support if checking or rumination consumes over an hour daily, causes severe panic, or leads to frequent explosive arguments despite partner reassurance.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool5').innerHTML = html;
+      document.getElementById('output-tool5').style.display = 'block';
+      setHistory('tool5', { summary: `Self-Security Analysis (${pattern})`, outputHTML: html });
+      renderTool5();
+    }
+
+    /* ===== 7-DAY RESET ===== */
+    let resetDays = JSON.parse(localStorage.getItem('jr_reset_days') || '{"day":0}');
+    function renderReset() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">7-Day Jealousy Reset</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">A guided journey through all five tools to build relational security.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+            <span class="reset-day" id="resetDay1">Day 1: Spiral</span>
+            <span class="reset-day" id="resetDay2">Day 2: Evidence</span>
+            <span class="reset-day" id="resetDay3">Day 3: Conversation</span>
+            <span class="reset-day" id="resetDay4">Day 4: Boundary</span>
+            <span class="reset-day" id="resetDay5">Day 5: Self-Security</span>
+            <span class="reset-day" id="resetDay6">Day 6: Synthesize</span>
+            <span class="reset-day" id="resetDay7">Day 7: Plan</span>
+          </div>
+          <div id="resetContent">
+            <p style="color:#718096;">Start with Day 1: Spiral Stopper. Complete each tool in order to build your Relational Security Plan.</p>
+            <button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Start Day 1</button>
+          </div>
+          <div id="resetPlanOutput" class="output-card" style="margin-top:1.5rem;display:none;">
+            <div class="result-section"><div class="result-title"><i class="fa-solid fa-list-check"></i> Your Relational Security Plan</div></div>
+            <div id="resetPlanContent"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function startReset() {
+      const day = resetDays.day || 0;
+      const tools = ['tool1','tool2','tool3','tool4','tool5'];
+      if (day < 5) {
+        switchView(tools[day]);
+        showToast(`Starting Day ${day+1}`);
+        resetDays.day = day + 1;
+        localStorage.setItem('jr_reset_days', JSON.stringify(resetDays));
+      } else if (day === 5) {
+        synthesizeReset();
+        resetDays.day = 6;
+        localStorage.setItem('jr_reset_days', JSON.stringify(resetDays));
+      } else if (day === 6) {
+        showToast('Reset complete! View your plan in My Security Plan.');
+        switchView('plan');
+      }
+      updateResetUI();
+    }
+
+    function synthesizeReset() {
+      const plan = {
+        tool1: getHistory('tool1')[0]?.summary || 'Reflect on your checking pattern.',
+        tool2: getHistory('tool2')[0]?.summary || 'Reflect on evidence vs story.',
+        tool3: getHistory('tool3')[0]?.summary || 'Reflect on your communication needs.',
+        tool4: getHistory('tool4')[0]?.summary || 'Reflect on reciprocal agreements.',
+        tool5: getHistory('tool5')[0]?.summary || 'Reflect on internal security.'
+      };
+      document.getElementById('resetPlanContent').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>My Main Triggers</strong><br>${plan.tool1}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>What I Actually Know</strong><br>${plan.tool2}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>What I Need</strong><br>${plan.tool3}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Our Fair Agreements</strong><br>${plan.tool4}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;grid-column:1/-1;"><strong>What I Can Build Myself</strong><br>${plan.tool5}</div>
+        </div>
+        <div style="margin-top:1rem;padding:1rem;background:#F5E6E8;border-radius:8px;"><strong>My First 30-Day Action:</strong> Choose one: pause and observe, communicate a need, set a boundary, or build an independent habit.</div>
+      `;
+      document.getElementById('resetPlanOutput').style.display = 'block';
+      setHistory('reset', { summary: '7-Day Jealousy Reset Completed', outputHTML: document.getElementById('resetPlanContent').innerHTML });
+      updateFriendshipPlan();
+    }
+
+    function updateResetUI() {
+      const day = resetDays.day || 0;
+      for (let i=1; i<=7; i++) {
+        const el = document.getElementById(`resetDay${i}`);
+        if (el) el.classList.toggle('done', i <= day);
+      }
+      const content = document.getElementById('resetContent');
+      if (day === 0) content.innerHTML = '<p style="color:#718096;">Start with Day 1: Spiral Stopper. Complete each tool in order to build your Relational Security Plan.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Start Day 1</button>';
+      else if (day < 5) content.innerHTML = `<p>Day ${day+1} of 7: Complete the ${['Spiral Stopper','Evidence vs Story','The Conversation','Boundary Builder','Self-Security Check'][day]}.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-arrow-right"></i> Continue</button>`;
+      else if (day === 5) content.innerHTML = `<p>You've completed all tools. Ready to synthesize your Relational Security Plan?</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-list-check"></i> Synthesize Plan</button>`;
+      else if (day === 6) content.innerHTML = `<p>✅ Reset complete. View your plan in My Security Plan.</p><button class="btn btn-secondary" onclick="switchView('plan')">View Plan</button>`;
+    }
+
+    /* ===== MY RELATIONAL SECURITY PLAN ===== */
+    function renderPlan() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">My Relational Security Plan</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">Synthesized from your completed tools.</p>
+          <div id="planDisplay"><p style="color:#718096;">Complete the 7-Day Jealousy Reset or run individual tools to build your plan.</p></div>
+        </div>
+      `;
+    }
+
+    function updateFriendshipPlan() {
+      const container = document.getElementById('planDisplay');
+      if (!container) return;
+      const t1 = getHistory('tool1')[0]?.summary || '—';
+      const t2 = getHistory('tool2')[0]?.summary || '—';
+      const t3 = getHistory('tool3')[0]?.summary || '—';
+      const t4 = getHistory('tool4')[0]?.summary || '—';
+      const t5 = getHistory('tool5')[0]?.summary || '—';
+      const hasData = t1 !== '—' || t2 !== '—' || t3 !== '—' || t4 !== '—' || t5 !== '—';
+      if (!hasData) {
+        container.innerHTML = '<p style="color:#718096;">Complete the 7-Day Jealousy Reset or run individual tools to build your plan.</p>';
+        return;
+      }
+      container.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>My Main Triggers</strong><br>${t1}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>What I Actually Know</strong><br>${t2}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>What I Need</strong><br>${t3}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Our Fair Agreements</strong><br>${t4}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;grid-column:1/-1;"><strong>What I Can Build Myself</strong><br>${t5}</div>
+        </div>
+        <div style="margin-top:1rem;padding:1rem;background:#F5E6E8;border-radius:8px;"><strong>My First Action:</strong> Choose one: pause and observe, communicate a need, set a boundary, or build an independent habit.</div>
+      `;
+    }
+
+    /* ===== HISTORY VIEW ===== */
+    function renderHistoryView() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">My History</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">All your saved reflections in one place.</p>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="renderAllHistory()">Refresh</button>
+            <button class="btn btn-secondary btn-sm" onclick="if(confirm('Clear all history?')){clearAllHistory();}">Clear All History</button>
+          </div>
+          <div id="allHistoryContainer"></div>
+        </div>
+      `;
+    }
+
+    function renderAllHistory() {
+      const container = document.getElementById('allHistoryContainer');
+      if (!container) return;
+      const modules = ['tool1','tool2','tool3','tool4','tool5','reset'];
+      let html = '';
+      modules.forEach(m => {
+        const h = getHistory(m);
+        if (!h.length) return;
+        const label = { tool1:'Spiral Stopper', tool2:'Evidence vs Story', tool3:'The Conversation', tool4:'Boundary Builder', tool5:'Self-Security Check', reset:'7-Day Reset' }[m] || m;
+        html += `<h4 style="margin:1rem 0 0.5rem;color:var(--primary);">${label}</h4>`;
+        html += h.map(item => `
+          <div class="history-item">
+            <div class="history-summary" style="cursor:default;">
+              <span>${item.timestamp}</span>
+              <span style="font-weight:400;color:var(--text-muted);">${item.summary}</span>
+            </div>
+          </div>
+        `).join('');
+      });
+      container.innerHTML = html || '<p style="color:#718096;">No history found.</p>';
+    }
+
+    /* ===== PRIVACY ===== */
+    function renderPrivacy() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">Privacy & Safety</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">Your data stays on your device.</p>
+          <p><strong>Private by design.</strong> Your reflections remain on your device. We do not send your data to any server.</p>
+          <p style="margin-top:1rem;"><strong>Important:</strong> Jealousy Reset is a self-guided reflection and communication toolkit. It is not therapy, diagnosis, crisis intervention, or professional relationship counseling.</p>
+          <p style="margin-top:1rem;">If a relationship involves threats, coercive control, stalking, harassment, violence or another situation where direct communication could increase danger, do not use these exercises as the primary safety plan. Prioritize safety and appropriate professional support.</p>
+          <p style="margin-top:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--primary);"></i> Never confront an unsafe person based on a generated script.</p>
+        </div>
+      `;
+    }
+
+    /* ===== HELPERS ===== */
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    /* ===== INIT ===== */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const match = btn.getAttribute('onclick').match(/switchView\('([^']+)'\)/);
+          if (match) switchView(match[1]);
+        });
+      });
+      renderTool('dashboard');
+      updateResetUI();
+      updateFriendshipPlan();
+    });
+  </script>
+</body>
+</html>

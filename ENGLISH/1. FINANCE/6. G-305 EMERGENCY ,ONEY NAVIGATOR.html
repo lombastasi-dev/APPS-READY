@@ -1,0 +1,2320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emergency Money Navigator™</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  
+  <style>
+    :root {
+      --primary-red: #DC2626;
+      --primary-red-hover: #B91C1C;
+      --bg-red-light: #FEF2F2;
+      --slate-dark: #1E293B;
+      --slate-body: #475569;
+      --slate-light: #F8FAFC;
+      --slate-border: #E2E8F0;
+      --slate-muted: #94A3B8;
+      --emerald: #059669;
+      --amber: #D97706;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --radius-xl: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #FEF2F2 0%, #F8FAFC 100%);
+      color: var(--slate-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Layout Components */
+    .app-container {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* Mobile Nav Header */
+    .mobile-header {
+      display: none;
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-border);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--primary-red);
+      font-size: 1.1rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: var(--slate-dark);
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* Fixed Left Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #ffffff;
+      border-right: 1px solid var(--slate-border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 50;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--slate-border);
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary-red);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .sidebar-nav {
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--slate-body);
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .nav-btn:hover {
+      background: var(--slate-light);
+      color: var(--slate-dark);
+    }
+
+    .nav-btn.active {
+      background: var(--bg-red-light);
+      color: var(--primary-red);
+      font-weight: 600;
+    }
+
+    .nav-btn i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background: var(--slate-border);
+      margin: 8px 4px;
+    }
+
+    /* Main Content Wrapper */
+    .content-wrapper {
+      flex: 1;
+      margin-left: 250px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: calc(100% - 250px);
+    }
+
+    .main-body {
+      max-width: 840px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      flex: 1;
+    }
+
+    /* Footer */
+    .app-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--slate-border);
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--slate-muted);
+      margin-top: auto;
+    }
+
+    /* Cards & Containers */
+    .card {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--slate-border);
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, #ffffff 0%, #FEF2F2 100%);
+      border-left: 4px solid var(--primary-red);
+    }
+
+    .hero-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--slate-dark);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--slate-body);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .problem-box {
+      background: var(--bg-red-light);
+      border-left: 3px solid var(--primary-red);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      color: #991B1B;
+      font-style: italic;
+    }
+
+    .orientation-box {
+      background: #F0F9FF;
+      border-left: 3px solid #0284C7;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #075985;
+    }
+
+    /* Dashboard Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .tool-grid-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-border);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tool-grid-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #FCA5A5;
+    }
+
+    .tool-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--bg-red-light);
+      color: var(--primary-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .tool-grid-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+    }
+
+    .tool-grid-card p {
+      font-size: 0.85rem;
+      color: var(--slate-body);
+      line-height: 1.4;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--slate-dark);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--slate-dark);
+      background-color: #ffffff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-red);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .radio-option:hover {
+      background: var(--slate-light);
+    }
+
+    .radio-option input[type="radio"] {
+      accent-color: var(--primary-red);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-red);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-red-hover);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--slate-dark);
+      border: 1px solid var(--slate-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--slate-light);
+    }
+
+    .btn-copy {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      background: var(--slate-light);
+      border: 1px solid var(--slate-border);
+      color: var(--slate-dark);
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-copy:hover {
+      background: #E2E8F0;
+    }
+
+    /* Output Results Styling */
+    .results-panel {
+      margin-top: 28px;
+      border-top: 2px dashed var(--slate-border);
+      padding-top: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-critical {
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+    }
+
+    .badge-warning {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+
+    .badge-success {
+      background: #D1FAE5;
+      color: #065F46;
+      border: 1px solid #6EE7B7;
+    }
+
+    .badge-info {
+      background: #E0F2FE;
+      color: #075985;
+      border: 1px solid #7DD3FC;
+    }
+
+    .stat-callout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--slate-light);
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 16px 0;
+      border: 1px solid var(--slate-border);
+    }
+
+    .stat-amount {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-red);
+    }
+
+    .script-box {
+      background: #F8FAFC;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: var(--slate-dark);
+      white-space: pre-wrap;
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .script-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .script-header h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+    }
+
+    .warning-box {
+      background: #FFFBEB;
+      border-left: 4px solid #D97706;
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: #78350F;
+    }
+
+    .warning-box h4 {
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .step-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--slate-dark);
+      margin-bottom: 4px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary-red);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .history-section {
+      margin-top: 32px;
+      border-top: 1px solid var(--slate-border);
+      padding-top: 20px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 0;
+    }
+
+    .history-header h4 {
+      font-size: 0.95rem;
+      color: var(--slate-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      background: #ffffff;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .recommendation-card {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .day-step-card {
+      background: #ffffff;
+      border-left: 4px solid var(--primary-red);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--slate-dark);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .mobile-header, .btn-row, .btn-copy, .hamburger-btn, .history-section, .toast, .nav-btn {
+        display: none !important;
+      }
+      .content-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      .main-body {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+      }
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header {
+        display: flex;
+      }
+      .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .content-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+      .main-body {
+        padding: 20px 14px 32px;
+      }
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 45;
+        display: none;
+      }
+      .sidebar-overlay.open {
+        display: block;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+    .text-red { color: var(--primary-red); }
+    .text-slate { color: var(--slate-body); }
+    .font-bold { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="mobile-brand">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Emergency Money</span>
+    </div>
+    <button class="hamburger-btn" id="sidebarToggle" aria-label="Toggle Menu" aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- Fixed Left Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-brand" onclick="navTo('dashboard')">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Money Navigator™</span>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-tool="dashboard" onclick="navTo('dashboard')">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-btn" data-tool="tool1" onclick="navTo('tool1')">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>1. Financial Triage</span>
+        </button>
+        <button class="nav-btn" data-tool="tool2" onclick="navTo('tool2')">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>2. Payment Matrix</span>
+        </button>
+        <button class="nav-btn" data-tool="tool3" onclick="navTo('tool3')">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>3. Bill Negotiator</span>
+        </button>
+        <button class="nav-btn" data-tool="tool4" onclick="navTo('tool4')">
+          <i class="fa-solid fa-hands-holding-child"></i>
+          <span>4. Help Request Script</span>
+        </button>
+        <button class="nav-btn" data-tool="tool5" onclick="navTo('tool5')">
+          <i class="fa-solid fa-heart-pulse"></i>
+          <span>5. Recovery Roadmap</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <button class="nav-btn" data-tool="reset7day" onclick="navTo('reset7day')">
+          <i class="fa-solid fa-calendar-week"></i>
+          <span>7-Day Reset Sequence</span>
+        </button>
+        <button class="nav-btn" data-tool="plan" onclick="navTo('plan')">
+          <i class="fa-solid fa-print"></i>
+          <span>Printable Plan</span>
+        </button>
+        <button class="nav-btn" data-tool="history" onclick="navTo('history')">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>My Saved History</span>
+        </button>
+        <button class="nav-btn" data-tool="privacy" onclick="navTo('privacy')">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Privacy & Safety</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="content-wrapper">
+      <main class="main-body">
+
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="view-section">
+          <div class="card hero-card">
+            <h1 class="hero-title">
+              <i class="fa-solid fa-shield-halved text-red"></i>
+              Emergency Money Navigator™
+            </h1>
+            <p class="hero-subtitle">Triage sudden financial shocks without ruining your long-term security.</p>
+          </div>
+
+          <div class="orientation-box">
+            <strong><i class="fa-solid fa-compass"></i> Emergency Orientation Principles:</strong>
+            <ul style="margin-left: 18px; margin-top: 6px; line-height: 1.5;">
+              <li>Financial shocks are sequencing problems before they are budgeting problems.</li>
+              <li>Protect essential shelter, food, work transportation, and healthcare obligations first.</li>
+              <li>Explore non-debt payment plans and negotiations before taking on high-cost borrowing.</li>
+            </ul>
+          </div>
+
+          <!-- Quick Triage Calculator -->
+          <div class="card">
+            <h2 class="section-title">
+              <i class="fa-solid fa-bolt text-red"></i>
+              Quick Shortfall Calculator
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="dash-bill">Total Emergency Bill ($)</label>
+                <input type="number" id="dash-bill" class="form-control" placeholder="e.g. 1500" min="0" oninput="calcQuickTriage()">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="dash-cash">Available Liquid Funds ($)</label>
+                <input type="number" id="dash-cash" class="form-control" placeholder="e.g. 400" min="0" oninput="calcQuickTriage()">
+              </div>
+            </div>
+
+            <div id="dash-triage-output" class="stat-callout hidden" style="margin-top:20px;">
+              <div>
+                <span style="font-size:0.85rem; text-transform:uppercase; font-weight:700; color:var(--slate-muted);">Calculated Shortfall</span>
+                <div id="dash-gap-val" class="stat-amount">$0</div>
+              </div>
+              <div id="dash-gap-status" style="text-align:right;">
+                <span class="badge badge-critical">Needs Funding Plan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Combined Snapshot Summary -->
+          <div id="dashboard-snapshot-container"></div>
+
+          <!-- 5 Tools Grid -->
+          <h2 class="section-title">Action Toolkit</h2>
+          <div class="tools-grid">
+            <div class="tool-grid-card" onclick="navTo('tool1')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <h3>1. Financial Shock Triage</h3>
+              <p>Assess bill urgency vs cash on hand and form an immediate allocation plan.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool2')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
+              <h3>2. Payment Method Matrix</h3>
+              <p>Rank funding choices by financial cost & emotional risk to find the safest mix.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool3')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-file-signature"></i></div>
+              <h3>3. Hardship & Bill Negotiator</h3>
+              <p>Generate audit scripts, discount calls, and written hardship request letters.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool4')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-hands-holding-child"></i></div>
+              <h3>4. Help Request Scriptwriter</h3>
+              <p>Dignified scripts for asking friends, family, or community for help with clean boundaries.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool5')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-heart-pulse"></i></div>
+              <h3>5. Recovery Roadmap</h3>
+              <p>Post-crisis plan to repay debt, cut budget temp-lines, and reset stress levels.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1 VIEW -->
+        <section id="view-tool1" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-triangle-exclamation text-red"></i> Financial Shock Triage</h2>
+            <div class="problem-box">
+              "I just got hit with an unexpected bill and I have no idea how I'm going to pay it."
+            </div>
+
+            <form id="form-tool1" onsubmit="runTool1(event)">
+              <div class="form-group">
+                <label class="form-label" for="t1-type">Type of emergency:</label>
+                <select id="t1-type" class="form-control" required>
+                  <option value="Car Repair">Car Repair</option>
+                  <option value="Medical Bill">Medical Bill</option>
+                  <option value="Urgent Home Repair">Urgent Home Repair</option>
+                  <option value="Legal/Government Fee">Legal/Government Fee</option>
+                  <option value="Other Emergency">Other Emergency</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-amount">Total bill amount ($):</label>
+                <input type="number" id="t1-amount" class="form-control" placeholder="1400" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-due">Due date / Payment window:</label>
+                <select id="t1-due" class="form-control" required>
+                  <option value="Immediate">Immediate (Due today / Required now)</option>
+                  <option value="7 Days">7 Days</option>
+                  <option value="30 Days">30 Days</option>
+                  <option value="60+ Days">60+ Days</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-cash">Available cash/savings right now ($):</label>
+                <input type="number" id="t1-cash" class="form-control" placeholder="300" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-reserve">Minimum Cash Buffer to Hold ($):</label>
+                <input type="number" id="t1-reserve" class="form-control" value="100" min="0" step="any" required />
+                <span style="font-size: 0.75rem; color: var(--slate-muted);">Reserve retained for essential food, fuel, or medications.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Is this bill necessary for basic survival or ability to work?</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="t1-survival" value="Yes" checked>
+                    <span><strong>Yes</strong> (Needed for work transport, essential healthcare, or habitable shelter)</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t1-survival" value="No">
+                    <span><strong>No</strong> (Can be delayed without immediate loss of shelter, work, or physical safety)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Run Triage Analysis</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool1')"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              </div>
+            </form>
+
+            <div id="t1-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool1')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Tool History (<span id="t1-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t1-hist-icon"></i>
+              </div>
+              <div id="t1-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 2 VIEW -->
+        <section id="view-tool2" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-layer-group text-red"></i> Payment Method Ranking Matrix</h2>
+            <div class="problem-box">
+              "Should I use my credit card, borrow from family, take a payment plan, or sell things?"
+            </div>
+
+            <form id="form-tool2" onsubmit="runTool2(event)">
+              <div class="form-group">
+                <label class="form-label" for="t2-shortfall">Shortfall amount needed ($):</label>
+                <input type="number" id="t2-shortfall" class="form-control" placeholder="1000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t2-credit">Credit card balance & interest rate available:</label>
+                <input type="text" id="t2-credit" class="form-control" placeholder="e.g. $1,500 limit available at 22% APR" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Family / Friends loan availability:</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="t2-family" value="low" checked>
+                    <span>Available with low relational tension</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-family" value="high">
+                    <span>Available with high relational tension / strain</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-family" value="none">
+                    <span>Not an option / Not available</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Lender payment plan option:</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="t2-plan" value="zero" checked>
+                    <span>0% Interest payment plan available</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-plan" value="fee">
+                    <span>Fee-based or interest-bearing payment plan</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-plan" value="none">
+                    <span>No payment plan offered</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t2-items">Personal items available to sell fast:</label>
+                <select id="t2-items" class="form-control" required>
+                  <option value="High">High value (Electronics, non-essential gear - fast $500+)</option>
+                  <option value="Moderate">Moderate value (Tools, collectibles - $100-$400)</option>
+                  <option value="None">None available</option>
+                </select>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-ranking-star"></i> Rank Payment Paths</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool2')"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              </div>
+            </form>
+
+            <div id="t2-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool2')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Tool History (<span id="t2-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t2-hist-icon"></i>
+              </div>
+              <div id="t2-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 3 VIEW -->
+        <section id="view-tool3" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-file-signature text-red"></i> Hardship & Bill Negotiator</h2>
+            <div class="problem-box">
+              "I need to get the service provider to lower this bill or give me a payment plan."
+            </div>
+
+            <form id="form-tool3" onsubmit="runTool3(event)">
+              <div class="form-group">
+                <label class="form-label" for="t3-provider">Provider Name:</label>
+                <input type="text" id="t3-provider" class="form-control" placeholder="e.g. City General Hospital or Apex Auto Repair" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3-amount">Original Bill Amount ($):</label>
+                <input type="number" id="t3-amount" class="form-control" placeholder="2200" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3-deposit">Can you pay a small deposit today? ($):</label>
+                <input type="number" id="t3-deposit" class="form-control" placeholder="200" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3-reason">Hardship Reason:</label>
+                <select id="t3-reason" class="form-control" required>
+                  <option value="Job Loss / Reduced Hours">Job Loss / Reduced Hours</option>
+                  <option value="Low Income / Fixed Budget">Low Income / Fixed Budget</option>
+                  <option value="Sudden Multi-Emergency">Sudden Multi-Emergency Stack</option>
+                  <option value="Uninsured / Out-of-Pocket Shock">Uninsured / High Deductible</option>
+                </select>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Generate Negotiation Scripts</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool3')"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              </div>
+            </form>
+
+            <div id="t3-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool3')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Tool History (<span id="t3-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t3-hist-icon"></i>
+              </div>
+              <div id="t3-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 4 VIEW -->
+        <section id="view-tool4" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-hands-holding-child text-red"></i> Emergency Help Request Scriptwriter</h2>
+            <div class="problem-box">
+              "I have to ask relatives or a community group for money and I feel sick to my stomach."
+            </div>
+
+            <form id="form-tool4" onsubmit="runTool4(event)">
+              <div class="form-group">
+                <label class="form-label" for="t4-target">Who are you asking?</label>
+                <select id="t4-target" class="form-control" required>
+                  <option value="Parent">Parent</option>
+                  <option value="Sibling">Sibling</option>
+                  <option value="Close Friend">Close Friend</option>
+                  <option value="Community/Religious Org">Community / Religious Org</option>
+                  <option value="GoFundMe / Peer Audience">GoFundMe / Online Network</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4-amount">Amount needed ($):</label>
+                <input type="number" id="t4-amount" class="form-control" placeholder="400" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4-purpose">Exact purpose of funds:</label>
+                <input type="text" id="t4-purpose" class="form-control" placeholder="e.g. Fixing brake pads to keep working shift job" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4-terms">Repayment terms offered:</label>
+                <select id="t4-terms" class="form-control" required>
+                  <option value="Weekly Payments">Will pay back weekly ($50/week starting next Friday)</option>
+                  <option value="Tax Refund / Bonus">Will pay back in full when tax refund/bonus arrives</option>
+                  <option value="Asking as Gift">Asking as a gift/favor (unable to repay financially right now)</option>
+                </select>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i> Draft Outreach Scripts</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool4')"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              </div>
+            </form>
+
+            <div id="t4-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool4')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Tool History (<span id="t4-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t4-hist-icon"></i>
+              </div>
+              <div id="t4-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 5 VIEW -->
+        <section id="view-tool5" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-heart-pulse text-red"></i> Recovery Roadmap (Post-Crisis)</h2>
+            <div class="problem-box">
+              "The emergency is handled, but my finances and mind are completely drained."
+            </div>
+
+            <form id="form-tool5" onsubmit="runTool5(event)">
+              <div class="form-group">
+                <label class="form-label" for="t5-debt">Total new debt incurred from emergency ($):</label>
+                <input type="number" id="t5-debt" class="form-control" placeholder="800" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t5-monthly">Monthly payment committed toward emergency debt ($):</label>
+                <input type="number" id="t5-monthly" class="form-control" placeholder="100" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t5-savings">Remaining cash savings left ($):</label>
+                <input type="number" id="t5-savings" class="form-control" placeholder="150" min="0" step="any" required />
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Generate Recovery Plan</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool5')"><i class="fa-solid fa-rotate-left"></i> Reset</button>
+              </div>
+            </form>
+
+            <div id="t5-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool5')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Tool History (<span id="t5-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t5-hist-icon"></i>
+              </div>
+              <div id="t5-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7-DAY RESET SEQUENCE VIEW -->
+        <section id="view-reset7day" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-calendar-week text-red"></i> 7-Day Emergency Money Reset</h2>
+            <p style="margin-bottom: 20px; font-size: 0.95rem;">A structured, step-by-step 7-day protocol to stabilize your emergency, negotiate terms, protect essential assets, and execute a post-crisis recovery plan.</p>
+
+            <div class="day-step-card">
+              <h3>Day 1 — Triage Urgency & Cash Allocation</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Determine whether the bill affects essential survival/work and calculate your true shortfall.</p>
+              <button class="btn btn-secondary" onclick="navTo('tool1')">Go to Tool 1: Triage</button>
+            </div>
+
+            <div class="day-step-card">
+              <h3>Day 2 — Compare Payment Paths & Tradeoffs</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Evaluate 0% provider options, personal item sales, and credit tools against relational risk.</p>
+              <button class="btn btn-secondary" onclick="navTo('tool2')">Go to Tool 2: Payment Matrix</button>
+            </div>
+
+            <div class="day-step-card">
+              <h3>Day 3 — Request Itemization & Provider Hardship</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Call or write your provider to request line-item audits, prompt-pay discounts, or hardship waivers.</p>
+              <button class="btn btn-secondary" onclick="navTo('tool3')">Go to Tool 3: Bill Negotiator</button>
+            </div>
+
+            <div class="day-step-card">
+              <h3>Day 4 — Seek Dignified Assistance if Needed</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Use transparent, bounded outreach scripts to ask family, friends, or local organizations for assistance.</p>
+              <button class="btn btn-secondary" onclick="navTo('tool4')">Go to Tool 4: Help Request</button>
+            </div>
+
+            <div class="day-step-card">
+              <h3>Day 5 — Establish Post-Crisis Debt & Budget Plan</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Model realistic debt payoff timelines and enforce temporary 90-day budget reductions.</p>
+              <button class="btn btn-secondary" onclick="navTo('tool5')">Go to Tool 5: Recovery Roadmap</button>
+            </div>
+
+            <div class="day-step-card">
+              <h3>Day 6 — Synthesize Combined Emergency Plan</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Review your overall position across all completed modules in one cohesive view.</p>
+              <button class="btn btn-secondary" onclick="navTo('plan')">View Combined Printable Plan</button>
+            </div>
+
+            <div class="day-step-card">
+              <h3>Day 7 — Establish 30-Day Review Date & Reset Mindset</h3>
+              <p style="font-size: 0.875rem; margin: 6px 0 12px;">Set your next check-in milestone, step away from daily financial anxiety, and allow recovery to proceed.</p>
+              <button class="btn btn-primary" onclick="navTo('dashboard')">Return to Main Dashboard</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRINTABLE PLAN VIEW -->
+        <section id="view-plan" class="view-section hidden">
+          <div class="card">
+            <div style="display:flex; justify-style:space-between; align-items:center; margin-bottom:16px;">
+              <h2 class="section-title" style="margin-bottom:0;"><i class="fa-solid fa-print text-red"></i> My Emergency Money Plan</h2>
+              <button class="btn btn-primary btn-copy" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Plan</button>
+            </div>
+            <p style="font-size: 0.875rem; margin-bottom: 20px;">Synthesized summary of your active financial shock triage, negotiation status, and post-crisis plan.</p>
+
+            <div id="printable-plan-content">
+              <div class="stat-callout">
+                <p>No active analyses found. Complete the tools to generate your printable emergency plan.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MY HISTORY VIEW -->
+        <section id="view-history" class="view-section hidden">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <h2 class="section-title" style="margin-bottom:0;"><i class="fa-solid fa-clock-rotate-left text-red"></i> Saved Analyses & History</h2>
+              <button class="btn btn-secondary" style="font-size:0.8rem;" onclick="confirmDestructiveAction('clearAllHistory')">Clear All History</button>
+            </div>
+            <div id="unified-history-container"></div>
+          </div>
+        </section>
+
+        <!-- PRIVACY & SAFETY VIEW -->
+        <section id="view-privacy" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-user-shield text-red"></i> Privacy & Safety Commitments</h2>
+            <div style="font-size:0.9rem; line-height:1.6; color:var(--slate-body);">
+              <p style="margin-bottom:12px;"><strong>Local Browser Storage:</strong> Emergency Money Navigator™ operates entirely within your client web browser. All entered numbers, notes, and generated scripts are saved strictly to your device's <code>localStorage</code>.</p>
+              <p style="margin-bottom:12px;"><strong>No Data Transmission:</strong> Zero financial, debt, billing, or personal details are transmitted over the internet or sent to external servers or analytics platforms.</p>
+              <p style="margin-bottom:12px;"><strong>Decision Support Only:</strong> This software provides illustrative decision-planning frameworks and generic script templates. It does not provide regulated financial advice, legal counsel, or official medical billing representation.</p>
+              <p style="margin-bottom:12px;"><strong>Data Removal:</strong> You can completely clear all saved records at any time from the "Saved History" tab or via browser settings.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Fixed Footer -->
+      <footer class="app-footer">
+        Emergency Money Navigator™ &copy; 2026. For emergency decision planning only. Not financial, legal, or medical billing advice. Terms and hardship policies vary by provider and jurisdiction.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast Element -->
+  <div class="toast" id="toast" role="status" aria-live="polite">
+    <i class="fa-solid fa-circle-check text-red"></i>
+    <span id="toast-msg">Copied to clipboard!</span>
+  </div>
+
+  <script>
+    // --- CENTRAL STATE MODEL ---
+    let emergencyMoneyState = {
+      completedTools: [],
+      toolResults: {},
+      historyMeta: {},
+      currentInputs: {},
+      recommendations: [],
+      dashboardSnapshot: null,
+      recoveryPlan: null,
+      lastUpdated: null
+    };
+
+    const STORAGE_KEY_STATE = 'emergencymoney_v2_state';
+    const STORAGE_KEY_HISTORY = 'emergencymoney_v2_history';
+
+    // --- ESCAPE HTML SAFETY UTILITY ---
+    function escapeHTML(str) {
+      if (str === null || str === undefined) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    // --- STATE & STORAGE MANAGERS ---
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_STATE);
+        if (saved) {
+          emergencyMoneyState = Object.assign(emergencyMoneyState, JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error("Error loading state:", e);
+      }
+    }
+
+    function saveState() {
+      try {
+        emergencyMoneyState.lastUpdated = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(emergencyMoneyState));
+        renderDashboardSnapshot();
+      } catch (e) {
+        console.error("Error saving state:", e);
+      }
+    }
+
+    // --- NAVIGATION ---
+    function navTo(toolId) {
+      document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+      const activeSec = document.getElementById(`view-${toolId}`);
+      if (activeSec) activeSec.classList.remove('hidden');
+
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.tool === toolId);
+      });
+
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (toolId === 'plan') renderPrintablePlan();
+      if (toolId === 'history') renderUnifiedHistory();
+    }
+
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    if (sidebarToggle) {
+      sidebarToggle.addEventListener('click', () => {
+        const isOpen = sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('open');
+        sidebarToggle.setAttribute('aria-expanded', isOpen);
+      });
+    }
+
+    if (sidebarOverlay) {
+      sidebarOverlay.addEventListener('click', closeMobileSidebar);
+    }
+
+    function closeMobileSidebar() {
+      if (sidebar) sidebar.classList.remove('open');
+      if (sidebarOverlay) sidebarOverlay.classList.remove('open');
+      if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    // --- TOAST & CLIPBOARD ---
+    function showToast(msg = "Copied to clipboard!") {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      if (toastMsg) toastMsg.textContent = msg;
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text)
+          .then(() => showToast("Copied to clipboard!"))
+          .catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        showToast("Copied to clipboard!");
+      } catch (err) {
+        showToast("Copy failed. Please manually select text.");
+      }
+      document.body.removeChild(ta);
+    }
+
+    // --- QUICK SHORTFALL CALCULATOR (DASHBOARD) ---
+    function calcQuickTriage() {
+      const billInput = document.getElementById('dash-bill').value;
+      const cashInput = document.getElementById('dash-cash').value;
+      
+      const bill = parseFloat(billInput) || 0;
+      const cash = parseFloat(cashInput) || 0;
+
+      const outputDiv = document.getElementById('dash-triage-output');
+      const gapVal = document.getElementById('dash-gap-val');
+      const gapStatus = document.getElementById('dash-gap-status');
+
+      if (bill <= 0 && billInput === '') {
+        outputDiv.classList.add('hidden');
+        return;
+      }
+
+      outputDiv.classList.remove('hidden');
+      const shortfall = Math.max(0, bill - cash);
+      gapVal.textContent = `$${shortfall.toLocaleString()}`;
+
+      if (shortfall === 0) {
+        gapStatus.innerHTML = `<span class="badge badge-success"><i class="fa-solid fa-check"></i> Cash Covered</span>`;
+      } else if (shortfall < 500) {
+        gapStatus.innerHTML = `<span class="badge badge-warning"><i class="fa-solid fa-triangle-exclamation"></i> Minor Gap (Planning Heuristic)</span>`;
+      } else {
+        gapStatus.innerHTML = `<span class="badge badge-critical"><i class="fa-solid fa-triangle-exclamation"></i> Major Gap (Triage Needed)</span>`;
+      }
+    }
+
+    // --- TOOL 1: FINANCIAL SHOCK TRIAGE ---
+    function loadSampleTool1() {
+      document.getElementById('t1-type').value = 'Car Repair';
+      document.getElementById('t1-amount').value = 1400;
+      document.getElementById('t1-due').value = 'Immediate';
+      document.getElementById('t1-cash').value = 300;
+      document.getElementById('t1-reserve').value = 100;
+      const radios = document.getElementsByName('t1-survival');
+      if (radios.length > 0) radios[0].checked = true;
+    }
+
+    function runTool1(e) {
+      e.preventDefault();
+      const type = document.getElementById('t1-type').value;
+      const amount = parseFloat(document.getElementById('t1-amount').value) || 0;
+      const due = document.getElementById('t1-due').value;
+      const cash = parseFloat(document.getElementById('t1-cash').value) || 0;
+      const reserve = parseFloat(document.getElementById('t1-reserve').value) || 0;
+      const survivalRadios = document.querySelector('input[name="t1-survival"]:checked');
+      const survival = survivalRadios ? survivalRadios.value : 'Yes';
+
+      const availableCash = Math.max(0, cash - reserve);
+      const shortfall = Math.max(0, amount - cash);
+
+      let urgencyRating = "";
+      let badgeClass = "";
+      if (survival === "Yes" && due === "Immediate") {
+        urgencyRating = "CRITICAL SURVIVAL NEED — IMMEDIATE ACTION REQUIRED";
+        badgeClass = "badge-critical";
+      } else if (survival === "Yes") {
+        urgencyRating = "ESSENTIAL URGENT NEED — MANAGEABLE TIMELINE";
+        badgeClass = "badge-warning";
+      } else {
+        urgencyRating = "DEFERRABLE SHOCK — LOW SURVIVAL RISK";
+        badgeClass = "badge-info";
+      }
+
+      const payNow = Math.min(availableCash, amount);
+      const remainingGap = Math.max(0, amount - payNow);
+      const negotiateAmount = Math.round(remainingGap * 0.4);
+      const delayAmount = Math.round(remainingGap * 0.3);
+      const fundraiseAmount = Math.max(0, remainingGap - negotiateAmount - delayAmount);
+
+      const resultObj = {
+        type, amount, due, cash, reserve, survival, shortfall, payNow, remainingGap,
+        negotiateAmount, delayAmount, fundraiseAmount, urgencyRating, badgeClass
+      };
+
+      emergencyMoneyState.toolResults['tool1'] = resultObj;
+      if (!emergencyMoneyState.completedTools.includes('tool1')) {
+        emergencyMoneyState.completedTools.push('tool1');
+      }
+      saveState();
+
+      renderTool1Results(resultObj);
+      saveHistory('tool1', {
+        title: `${type}: $${amount.toLocaleString()} (Shortfall: $${shortfall.toLocaleString()})`,
+        date: new Date().toLocaleDateString(),
+        data: resultObj
+      });
+    }
+
+    function renderTool1Results(r) {
+      const container = document.getElementById('t1-results');
+      
+      const html = `
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:12px;">
+          <div>
+            <span style="font-size:0.8rem; font-weight:700; text-transform:uppercase; color:var(--slate-muted);">Planning Classification</span>
+            <div style="margin-top:4px;"><span class="badge ${escapeHTML(r.badgeClass)}">${escapeHTML(r.urgencyRating)}</span></div>
+          </div>
+        </div>
+
+        <div class="stat-callout">
+          <div>
+            <div style="font-size:0.8rem; font-weight:700; color:var(--slate-muted);">TOTAL SHORTFALL</div>
+            <div class="stat-amount">$${r.shortfall.toLocaleString()}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.85rem; font-weight:600; color:var(--slate-dark);">Timeline: <strong>${escapeHTML(r.due)}</strong></div>
+            <div style="font-size:0.8rem; color:var(--slate-body);">Cash Retained Buffer: $${r.reserve.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--slate-dark); margin:20px 0 12px;">
+          <i class="fa-solid fa-list-check text-red"></i> 4-Step Illustrative Allocation Plan
+        </h3>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">1</span>
+            <span>PAY (Strategic Cash Deploy): $${r.payNow.toLocaleString()}</span>
+          </div>
+          <p style="font-size:0.875rem; color:var(--slate-body);">
+            Deploy up to $${r.payNow.toLocaleString()} from available liquid cash today while maintaining your explicit $${r.reserve.toLocaleString()} reserve buffer for basic survival essentials.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">2</span>
+            <span>NEGOTIATE (Bill Discount / Deposit): ~$${r.negotiateAmount.toLocaleString()}</span>
+          </div>
+          <p style="font-size:0.875rem; color:var(--slate-body);">
+            Contact ${escapeHTML(r.type)} provider. Offer a modest cash deposit in exchange for spreading the remaining balance over interest-free monthly terms.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">3</span>
+            <span>DELAY (Grace Period / Extension): ~$${r.delayAmount.toLocaleString()}</span>
+          </div>
+          <p style="font-size:0.875rem; color:var(--slate-body);">
+            Verify if grace periods or formal due-date extensions exist before late penalties accumulate.
+          </p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">4</span>
+            <span>ASSISTANCE / FUNDRAISING: ~$${r.fundraiseAmount.toLocaleString()}</span>
+          </div>
+          <p style="font-size:0.875rem; color:var(--slate-body);">
+            Explore community hardship programs or construct a dignified help request script for close personal support.
+          </p>
+        </div>
+
+        <div class="warning-box">
+          <h4><i class="fa-solid fa-shield-cat"></i> FINANCIAL SAFETY & DESTRUCTION PREVENTION WARNING:</h4>
+          <ul style="margin-left:20px; font-size:0.85rem; line-height:1.6;">
+            <li><strong>Avoid High-Cost Predatory Credit:</strong> High-APR payday/title products carry substantial rollover risks.</li>
+            <li><strong>Protect Essential Priorities:</strong> Housing, food, and basic healthcare take absolute precedence over un-collateralized debts.</li>
+            <li><strong>Verify Retirement Rules:</strong> Premature retirement withdrawals may trigger taxes, penalties, and permanent loss of compounding.</li>
+          </ul>
+        </div>
+
+        <div class="recommendation-card">
+          <h4 style="font-size:0.9rem; font-weight:700; color:#065F46; margin-bottom:4px;"><i class="fa-solid fa-circle-arrow-right"></i> Next Recommended Action</h4>
+          <p style="font-size:0.85rem; color:#065F46;">
+            ${r.shortfall > 0 ? 'Proceed to Tool 2 (Payment Matrix) to compare low-cost funding options for your $' + r.shortfall.toLocaleString() + ' shortfall.' : 'Your available liquid cash covers this bill. Proceed to Tool 5 (Recovery Roadmap) to plan buffer rebuilding.'}
+          </p>
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;" onclick="navTo('${r.shortfall > 0 ? 'tool2' : 'tool5'}')">
+              ${r.shortfall > 0 ? 'Open Tool 2: Payment Matrix' : 'Open Tool 5: Recovery Roadmap'}
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      container.classList.remove('hidden');
+    }
+
+    // --- TOOL 2: PAYMENT METHOD RANKING MATRIX ---
+    function loadSampleTool2() {
+      document.getElementById('t2-shortfall').value = 1000;
+      document.getElementById('t2-credit').value = "$1,500 limit available at 22% APR";
+      const familyRadios = document.getElementsByName('t2-family');
+      if (familyRadios.length > 0) familyRadios[0].checked = true;
+      const planRadios = document.getElementsByName('t2-plan');
+      if (planRadios.length > 0) planRadios[0].checked = true;
+      document.getElementById('t2-items').value = 'Moderate';
+    }
+
+    function runTool2(e) {
+      e.preventDefault();
+      const shortfall = parseFloat(document.getElementById('t2-shortfall').value) || 0;
+      const creditText = document.getElementById('t2-credit').value;
+      const familyOpt = document.querySelector('input[name="t2-family"]:checked').value;
+      const planOpt = document.querySelector('input[name="t2-plan"]:checked').value;
+      const itemsOpt = document.getElementById('t2-items').value;
+
+      const paths = [];
+
+      if (planOpt === 'zero') {
+        paths.push({
+          rank: 1,
+          name: "0% Provider Payment Plan",
+          financialCost: "Low ($0 interest subject to fee terms)",
+          relationalRisk: "Very Low",
+          desc: "Set up structured monthly installments directly with provider at zero interest."
+        });
+      }
+
+      if (familyOpt === 'low') {
+        paths.push({
+          rank: paths.length + 1,
+          name: "Family / Friends Loan (Low Relational Strain)",
+          financialCost: "0% interest typical",
+          relationalRisk: "Low (Clear written repayment agreement recommended)",
+          desc: "Borrow with explicit written terms and weekly micro-repayments."
+        });
+      }
+
+      if (itemsOpt === 'High' || itemsOpt === 'Moderate') {
+        paths.push({
+          rank: paths.length + 1,
+          name: "Sell Excess Non-Essential Items",
+          financialCost: "Asset sale / $0 interest",
+          relationalRisk: "Low to Moderate",
+          desc: `Liquidate ${itemsOpt.toLowerCase()} value non-essential personal items for quick cash.`
+        });
+      }
+
+      paths.push({
+        rank: paths.length + 1,
+        name: "Credit Card / Revolving Credit",
+        financialCost: "High (High APR accrued monthly)",
+        relationalRisk: "Moderate",
+        desc: `Use revolving card credit (${escapeHTML(creditText)}) only as secondary gap filler.`
+      });
+
+      if (familyOpt === 'high') {
+        paths.push({
+          rank: paths.length + 1,
+          name: "Family Loan (High Relational Strain)",
+          financialCost: "Financial cost varies",
+          relationalRisk: "HIGH RELATIONAL RISK",
+          desc: "Exercise caution due to potential long-term interpersonal strain."
+        });
+      }
+
+      if (planOpt === 'fee') {
+        paths.push({
+          rank: paths.length + 1,
+          name: "Fee-Based Lender Plan",
+          financialCost: "Moderate (Financing fees)",
+          relationalRisk: "Low",
+          desc: "Incurs set financing or administrative fees."
+        });
+      }
+
+      const resultObj = { shortfall, creditText, familyOpt, planOpt, itemsOpt, paths };
+      emergencyMoneyState.toolResults['tool2'] = resultObj;
+      if (!emergencyMoneyState.completedTools.includes('tool2')) {
+        emergencyMoneyState.completedTools.push('tool2');
+      }
+      saveState();
+
+      renderTool2Results(resultObj);
+      saveHistory('tool2', {
+        title: `Payment Matrix ($${shortfall.toLocaleString()} Gap)`,
+        date: new Date().toLocaleDateString(),
+        data: resultObj
+      });
+    }
+
+    function renderTool2Results(r) {
+      const container = document.getElementById('t2-results');
+
+      let pathsHTML = r.paths.map(p => `
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">${p.rank}</span>
+            <span>${escapeHTML(p.name)}</span>
+          </div>
+          <div style="font-size:0.825rem; display:flex; gap:16px; margin:4px 0 8px; color:var(--slate-dark);">
+            <span><strong>Financial Cost:</strong> ${escapeHTML(p.financialCost)}</span>
+            <span><strong>Relational Risk:</strong> ${escapeHTML(p.relationalRisk)}</span>
+          </div>
+          <p style="font-size:0.875rem; color:var(--slate-body);">${escapeHTML(p.desc)}</p>
+        </div>
+      `).join('');
+
+      const hybridProvider = Math.round(r.shortfall * 0.5);
+      const hybridSales = Math.round(r.shortfall * 0.3);
+      const hybridResidual = Math.max(0, r.shortfall - hybridProvider - hybridSales);
+
+      const html = `
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--slate-dark); margin-bottom:12px;">
+          <i class="fa-solid fa-ranking-star text-red"></i> Prioritized Funding Paths ($${r.shortfall.toLocaleString()} Shortfall)
+        </h3>
+        ${pathsHTML}
+
+        <div class="stat-callout" style="flex-direction:column; align-items:flex-start; gap:8px;">
+          <h4 style="font-size:0.95rem; font-weight:700; color:var(--slate-dark);">
+            <i class="fa-solid fa-puzzle-piece text-red"></i> Illustrative Hybrid Funding Strategy
+          </h4>
+          <p style="font-size:0.875rem; color:var(--slate-body);">
+            <strong>Strategy Option:</strong> Consider splitting the $${r.shortfall.toLocaleString()} gap into manageable components: 
+            Place <strong>$${hybridProvider.toLocaleString()}</strong> onto provider payment plans, 
+            raise <strong>$${hybridSales.toLocaleString()}</strong> via non-essential asset sales, 
+            and fund the remaining <strong>$${hybridResidual.toLocaleString()}</strong> using secondary reserves or credit.
+          </p>
+        </div>
+
+        <div class="recommendation-card">
+          <h4 style="font-size:0.9rem; font-weight:700; color:#065F46; margin-bottom:4px;"><i class="fa-solid fa-circle-arrow-right"></i> Next Recommended Action</h4>
+          <p style="font-size:0.85rem; color:#065F46;">
+            Now generate negotiation scripts in Tool 3 to request a 0% payment plan or prompt-pay discount from your provider.
+          </p>
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;" onclick="navTo('tool3')">
+              Open Tool 3: Hardship & Bill Negotiator
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      container.classList.remove('hidden');
+    }
+
+    // --- TOOL 3: HARDSHIP & BILL NEGOTIATOR ---
+    function loadSampleTool3() {
+      document.getElementById('t3-provider').value = "City General Hospital";
+      document.getElementById('t3-amount').value = 2200;
+      document.getElementById('t3-deposit').value = 200;
+      document.getElementById('t3-reason').value = "Low Income / Fixed Budget";
+    }
+
+    function runTool3(e) {
+      e.preventDefault();
+      const provider = document.getElementById('t3-provider').value;
+      const amount = parseFloat(document.getElementById('t3-amount').value) || 0;
+      const deposit = parseFloat(document.getElementById('t3-deposit').value) || 0;
+      const reason = document.getElementById('t3-reason').value;
+
+      const anchor50 = Math.round(amount * 0.50);
+      const anchor65 = Math.round(amount * 0.65);
+
+      const auditScript = `Hello, I received an invoice for $${amount.toLocaleString()} from ${provider}. Before I can process payment, I request an itemized line-by-line bill with explicit service/CPT codes and self-pay/cash pricing breakdowns. Please verify billing accuracy and note my request in my file. Thank you.`;
+
+      const phoneScript = `Hello, my name is [Your Name]. I am calling regarding my bill of $${amount.toLocaleString()} with ${provider}. Due to ${reason}, paying this full amount immediately creates severe hardship.
+
+I want to fulfill my obligation in good faith. I can pay a deposit of $${deposit.toLocaleString()} today if you can apply a prompt-pay cash discount and place the remaining balance on an affordable, interest-free hardship payment plan. Could you please connect me with your financial assistance department?`;
+
+      const hardshipLetter = `Date: ${new Date().toLocaleDateString()}
+To: Billing & Financial Assistance Dept, ${provider}
+
+RE: Hardship Assistance & Payment Plan Request — Account / Bill Amount: $${amount.toLocaleString()}
+
+To Whom It May Concern,
+
+I am writing to formally request financial hardship assistance or charity care review regarding my outstanding balance of $${amount.toLocaleString()}.
+
+Currently, I am experiencing financial hardship due to ${reason}. Essential survival expenses absorb my monthly income, making lump-sum payment unfeasible without risking default on housing or utilities.
+
+I seek to resolve this responsibility in good faith. I respectfully request:
+1. An application for financial assistance or financial hardship review.
+2. A review for self-pay or cash-pay discount adjustments.
+3. An interest-free monthly payment plan starting next billing cycle.
+
+I can make a good-faith initial deposit of $${deposit.toLocaleString()} upon written agreement. Please confirm available options in writing.
+
+Sincerely,
+[Your Name]
+[Your Phone Number]`;
+
+      const resultObj = { provider, amount, deposit, reason, anchor50, anchor65, auditScript, phoneScript, hardshipLetter };
+      emergencyMoneyState.toolResults['tool3'] = resultObj;
+      if (!emergencyMoneyState.completedTools.includes('tool3')) {
+        emergencyMoneyState.completedTools.push('tool3');
+      }
+      saveState();
+
+      renderTool3Results(resultObj);
+      saveHistory('tool3', {
+        title: `${provider}: $${amount.toLocaleString()}`,
+        date: new Date().toLocaleDateString(),
+        data: resultObj
+      });
+    }
+
+    function renderTool3Results(r) {
+      const container = document.getElementById('t3-results');
+
+      const html = `
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--slate-dark); margin-bottom:16px;">
+          <i class="fa-solid fa-handshake text-red"></i> Negotiation Kit for ${escapeHTML(r.provider)}
+        </h3>
+
+        <div class="stat-callout">
+          <div>
+            <div style="font-size:0.8rem; font-weight:700; color:var(--slate-muted);">ILLUSTRATIVE ANCHOR (50%)</div>
+            <div class="stat-amount">$${r.anchor50.toLocaleString()}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.8rem; font-weight:700; color:var(--slate-muted);">ILLUSTRATIVE ANCHOR (65%)</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--slate-dark);">$${r.anchor65.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <div class="script-header">
+          <h4>1. Itemization & Audit Request Script</h4>
+          <button class="btn-copy" onclick="copyToClipboard(emergencyMoneyState.toolResults['tool3'].auditScript)"><i class="fa-regular fa-copy"></i> Copy Script</button>
+        </div>
+        <div class="script-box">${escapeHTML(r.auditScript)}</div>
+
+        <div class="script-header">
+          <h4>2. Phone Call Cash Discount & Hardship Script</h4>
+          <button class="btn-copy" onclick="copyToClipboard(emergencyMoneyState.toolResults['tool3'].phoneScript)"><i class="fa-regular fa-copy"></i> Copy Script</button>
+        </div>
+        <div class="script-box">${escapeHTML(r.phoneScript)}</div>
+
+        <div class="script-header">
+          <h4>3. Formal Written Hardship Letter Template</h4>
+          <button class="btn-copy" onclick="copyToClipboard(emergencyMoneyState.toolResults['tool3'].hardshipLetter)"><i class="fa-regular fa-copy"></i> Copy Letter</button>
+        </div>
+        <div class="script-box">${escapeHTML(r.hardshipLetter)}</div>
+
+        <div class="recommendation-card">
+          <h4 style="font-size:0.9rem; font-weight:700; color:#065F46; margin-bottom:4px;"><i class="fa-solid fa-circle-arrow-right"></i> Next Recommended Action</h4>
+          <p style="font-size:0.85rem; color:#065F46;">
+            If provider negotiation leaves a remaining gap, use Tool 4 to draft a dignified assistance request to personal networks or community groups.
+          </p>
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;" onclick="navTo('tool4')">
+              Open Tool 4: Help Request Scriptwriter
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      container.classList.remove('hidden');
+    }
+
+    // --- TOOL 4: EMERGENCY HELP REQUEST SCRIPTWRITER ---
+    function loadSampleTool4() {
+      document.getElementById('t4-target').value = 'Parent';
+      document.getElementById('t4-amount').value = 400;
+      document.getElementById('t4-purpose').value = 'fixing broken transmission to keep driving to work';
+      document.getElementById('t4-terms').value = 'Weekly Payments';
+    }
+
+    function runTool4(e) {
+      e.preventDefault();
+      const target = document.getElementById('t4-target').value;
+      const amount = parseFloat(document.getElementById('t4-amount').value) || 0;
+      const purpose = document.getElementById('t4-purpose').value;
+      const terms = document.getElementById('t4-terms').value;
+
+      const mainScript = `Hi ${target}, I'm reaching out directly because I've hit a temporary financial emergency and want to be fully transparent with you.
+
+I am facing an unexpected expense of $${amount.toLocaleString()} for ${purpose}. Right now, my liquid savings fall short.
+
+I would like to ask if you would be open to helping me with $${amount.toLocaleString()}. To protect our relationship, ${terms === 'Asking as Gift' ? 'I am asking for this as a favor/gift, as I am unable to promise financial repayment right now.' : `I propose clear repayment terms: ${terms}.` }
+
+If you aren't able to assist right now, I completely understand and respect your position. Please let me know if you'd be open to chatting.`;
+
+      const agreementScript = `INFORMAL REPAYMENT MEMORANDUM (PLANNING TEMPLATE)
+
+Date: ${new Date().toLocaleDateString()}
+Borrower: [Your Name]
+Lender / Supporter: ${target}
+
+Principal Amount: $${amount.toLocaleString()}
+Purpose: ${purpose}
+
+Repayment Terms:
+- Structure: ${terms}
+- First Payment Date: [Insert Date]
+- Target Completion Date: [Insert Date]
+
+Both parties acknowledge this informal memorandum is created to maintain trust and clarity.
+
+Signed (Borrower): ______________________
+Signed (Supporter): ______________________`;
+
+      const refuseScript = `Thank you so much for your honesty, ${target}. I completely understand and respect your decision. Our relationship means far more to me than any financial bill! Thanks for listening.`;
+
+      const resultObj = { target, amount, purpose, terms, mainScript, agreementScript, refuseScript };
+      emergencyMoneyState.toolResults['tool4'] = resultObj;
+      if (!emergencyMoneyState.completedTools.includes('tool4')) {
+        emergencyMoneyState.completedTools.push('tool4');
+      }
+      saveState();
+
+      renderTool4Results(resultObj);
+      saveHistory('tool4', {
+        title: `Help Request (${target}: $${amount.toLocaleString()})`,
+        date: new Date().toLocaleDateString(),
+        data: resultObj
+      });
+    }
+
+    function renderTool4Results(r) {
+      const container = document.getElementById('t4-results');
+
+      const html = `
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--slate-dark); margin-bottom:16px;">
+          <i class="fa-solid fa-comments text-red"></i> Dignified Outreach Kit (${escapeHTML(r.target)})
+        </h3>
+
+        <div class="script-header">
+          <h4>1. Dignified Outreach Script</h4>
+          <button class="btn-copy" onclick="copyToClipboard(emergencyMoneyState.toolResults['tool4'].mainScript)"><i class="fa-regular fa-copy"></i> Copy Script</button>
+        </div>
+        <div class="script-box">${escapeHTML(r.mainScript)}</div>
+
+        <div class="script-header">
+          <h4>2. Informal Repayment Planning Memorandum</h4>
+          <button class="btn-copy" onclick="copyToClipboard(emergencyMoneyState.toolResults['tool4'].agreementScript)"><i class="fa-regular fa-copy"></i> Copy Template</button>
+        </div>
+        <div class="script-box">${escapeHTML(r.agreementScript)}</div>
+
+        <div class="script-header">
+          <h4>3. Graceful Response If They Decline</h4>
+          <button class="btn-copy" onclick="copyToClipboard(emergencyMoneyState.toolResults['tool4'].refuseScript)"><i class="fa-regular fa-copy"></i> Copy Response</button>
+        </div>
+        <div class="script-box">${escapeHTML(r.refuseScript)}</div>
+
+        <div class="recommendation-card">
+          <h4 style="font-size:0.9rem; font-weight:700; color:#065F46; margin-bottom:4px;"><i class="fa-solid fa-circle-arrow-right"></i> Next Recommended Action</h4>
+          <p style="font-size:0.85rem; color:#065F46;">
+            Once immediate funding is organized, move to Tool 5 (Recovery Roadmap) to plan post-crisis buffer rebuilding.
+          </p>
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" style="font-size:0.8rem; padding:6px 12px;" onclick="navTo('tool5')">
+              Open Tool 5: Recovery Roadmap
+            </button>
+          </div>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      container.classList.remove('hidden');
+    }
+
+    // --- TOOL 5: RECOVERY ROADMAP (POST-CRISIS) ---
+    function loadSampleTool5() {
+      document.getElementById('t5-debt').value = 800;
+      document.getElementById('t5-monthly').value = 100;
+      document.getElementById('t5-savings').value = 150;
+    }
+
+    function runTool5(e) {
+      e.preventDefault();
+      const debt = parseFloat(document.getElementById('t5-debt').value) || 0;
+      const monthlyInput = parseFloat(document.getElementById('t5-monthly').value) || 0;
+      const savings = parseFloat(document.getElementById('t5-savings').value) || 0;
+
+      const monthly = Math.max(1, monthlyInput);
+      const monthsToPayoff = debt > 0 ? Math.ceil(debt / monthly) : 0;
+      const targetBuffer = Math.max(1000, debt * 1.5);
+
+      const resultObj = { debt, monthly, savings, monthsToPayoff, targetBuffer };
+      emergencyMoneyState.toolResults['tool5'] = resultObj;
+      emergencyMoneyState.recoveryPlan = resultObj;
+      if (!emergencyMoneyState.completedTools.includes('tool5')) {
+        emergencyMoneyState.completedTools.push('tool5');
+      }
+      saveState();
+
+      renderTool5Results(resultObj);
+      saveHistory('tool5', {
+        title: `Recovery: $${debt.toLocaleString()} debt @ $${monthly}/mo`,
+        date: new Date().toLocaleDateString(),
+        data: resultObj
+      });
+    }
+
+    function renderTool5Results(r) {
+      const container = document.getElementById('t5-results');
+
+      const html = `
+        <h3 style="font-size:1.05rem; font-weight:700; color:var(--slate-dark); margin-bottom:16px;">
+          <i class="fa-solid fa-route text-red"></i> Post-Crisis Recovery Blueprint
+        </h3>
+
+        <div class="stat-callout">
+          <div>
+            <div style="font-size:0.8rem; font-weight:700; color:var(--slate-muted);">ESTIMATED PAYOFF TIMELINE</div>
+            <div class="stat-amount">${r.debt > 0 ? r.monthsToPayoff + ' Months' : 'Debt Free'}</div>
+          </div>
+          <div style="text-align:right;">
+            <div style="font-size:0.8rem; font-weight:700; color:var(--slate-muted);">REMAINING CASH BUFFER</div>
+            <div style="font-size:1.3rem; font-weight:800; color:var(--slate-dark);">$${r.savings.toLocaleString()}</div>
+          </div>
+        </div>
+
+        <h4 style="font-size:0.95rem; font-weight:700; color:var(--slate-dark); margin:20px 0 10px;">
+          <i class="fa-solid fa-scissors text-red"></i> 3 Temporary Post-Crisis Spending Actions (90 Days)
+        </h4>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">1</span>
+            <span>Pause Non-Essential Recurring Subscriptions</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--slate-body);">Audit and temporarily suspend non-essential digital services for 90 days to redirect cash flow.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">2</span>
+            <span>Enforce Discretionary Spending Wait Periods</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--slate-body);">Institute a mandatory 72-hour delay on all non-essential retail purchases.</p>
+        </div>
+
+        <div class="step-card">
+          <div class="step-card-header">
+            <span class="step-num">3</span>
+            <span>Focus Grocery Budget on Pantry Staples</span>
+          </div>
+          <p style="font-size:0.85rem; color:var(--slate-body);">Minimize dining out and utilize existing pantry stock for 3-4 weeks to accelerate debt payoff.</p>
+        </div>
+
+        <div class="card" style="margin-top:20px; background:var(--slate-light);">
+          <h4 style="font-size:0.95rem; font-weight:700; color:var(--slate-dark); margin-bottom:8px;">
+            <i class="fa-solid fa-piggy-bank text-red"></i> Illustrative Buffer Target
+          </h4>
+          <p style="font-size:0.875rem; color:var(--slate-body);">
+            Target a micro-buffer goal of <strong>$${r.targetBuffer.toLocaleString()}</strong> to absorb future unexpected shocks.
+          </p>
+        </div>
+
+        <div class="warning-box" style="background:#F0F9FF; border-left-color:#0284C7; color:#075985;">
+          <h4><i class="fa-solid fa-brain"></i> Psychological Grounding Prompt</h4>
+          <p style="font-size:0.85rem; line-height:1.6;">
+            A financial shock is a event, not a character judgment. You have implemented structured decision tools and established an actionable path. Give yourself permission to step away from financial screens for today.
+          </p>
+        </div>
+      `;
+
+      container.innerHTML = html;
+      container.classList.remove('hidden');
+    }
+
+    // --- DASHBOARD SNAPSHOT RENDERER ---
+    function renderDashboardSnapshot() {
+      const container = document.getElementById('dashboard-snapshot-container');
+      if (!container) return;
+
+      const completed = emergencyMoneyState.completedTools;
+      if (completed.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      const t1 = emergencyMoneyState.toolResults['tool1'];
+      const t2 = emergencyMoneyState.toolResults['tool2'];
+      const t3 = emergencyMoneyState.toolResults['tool3'];
+      const t5 = emergencyMoneyState.toolResults['tool5'];
+
+      let html = `
+        <div class="card" style="border-left: 4px solid var(--emerald);">
+          <h3 style="font-size:1.1rem; font-weight:700; color:var(--slate-dark); margin-bottom:12px;">
+            <i class="fa-solid fa-chart-line text-red"></i> Active Emergency Snapshot
+          </h3>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; font-size:0.85rem;">
+            <div><strong>Completed Tools:</strong> ${completed.length} / 5</div>
+            <div><strong>Triage Status:</strong> ${t1 ? escapeHTML(t1.urgencyRating.split('—')[0]) : 'Pending'}</div>
+            <div><strong>Negotiation Target:</strong> ${t3 ? '$' + t3.anchor50.toLocaleString() : 'Not Set'}</div>
+            <div><strong>Payoff Horizon:</strong> ${t5 ? (t5.debt > 0 ? t5.monthsToPayoff + ' Mos' : 'Debt Free') : 'Not Set'}</div>
+          </div>
+          <div style="margin-top:14px; text-align:right;">
+            <button class="btn btn-secondary" style="font-size:0.8rem; padding:4px 10px;" onclick="navTo('plan')">View Full Printable Plan</button>
+          </div>
+        </div>
+      `;
+      container.innerHTML = html;
+    }
+
+    // --- PRINTABLE PLAN GENERATOR ---
+    function renderPrintablePlan() {
+      const container = document.getElementById('printable-plan-content');
+      if (!container) return;
+
+      const t1 = emergencyMoneyState.toolResults['tool1'];
+      const t2 = emergencyMoneyState.toolResults['tool2'];
+      const t3 = emergencyMoneyState.toolResults['tool3'];
+      const t4 = emergencyMoneyState.toolResults['tool4'];
+      const t5 = emergencyMoneyState.toolResults['tool5'];
+
+      if (!t1 && !t2 && !t3 && !t4 && !t5) {
+        container.innerHTML = `<p style="padding: 12px; color: var(--slate-muted);">No saved tool results available. Run one or more tools to populate your printable plan.</p>`;
+        return;
+      }
+
+      let html = `<div style="display:flex; flex-direction:column; gap:16px;">`;
+
+      if (t1) {
+        html += `
+          <div class="step-card">
+            <h4>1. Financial Shock Triage Snapshot</h4>
+            <p style="font-size:0.85rem;">Emergency: <strong>${escapeHTML(t1.type)}</strong> | Total Bill: <strong>$${t1.amount.toLocaleString()}</strong> | Shortfall: <strong>$${t1.shortfall.toLocaleString()}</strong></p>
+            <p style="font-size:0.85rem;">Rating: <strong>${escapeHTML(t1.urgencyRating)}</strong></p>
+          </div>
+        `;
+      }
+
+      if (t2) {
+        html += `
+          <div class="step-card">
+            <h4>2. Selected Payment Strategy</h4>
+            <p style="font-size:0.85rem;">Shortfall: <strong>$${t2.shortfall.toLocaleString()}</strong> | Top Path: <strong>${escapeHTML(t2.paths[0] ? t2.paths[0].name : 'N/A')}</strong></p>
+          </div>
+        `;
+      }
+
+      if (t3) {
+        html += `
+          <div class="step-card">
+            <h4>3. Negotiation & Hardship Plan</h4>
+            <p style="font-size:0.85rem;">Provider: <strong>${escapeHTML(t3.provider)}</strong> | Original: <strong>$${t3.amount.toLocaleString()}</strong></p>
+            <p style="font-size:0.85rem;">Deposit Offer: <strong>$${t3.deposit.toLocaleString()}</strong> | 50% Anchor: <strong>$${t3.anchor50.toLocaleString()}</strong></p>
+          </div>
+        `;
+      }
+
+      if (t4) {
+        html += `
+          <div class="step-card">
+            <h4>4. Assistance Outreach</h4>
+            <p style="font-size:0.85rem;">Target: <strong>${escapeHTML(t4.target)}</strong> | Amount: <strong>$${t4.amount.toLocaleString()}</strong></p>
+            <p style="font-size:0.85rem;">Purpose: <strong>${escapeHTML(t4.purpose)}</strong></p>
+          </div>
+        `;
+      }
+
+      if (t5) {
+        html += `
+          <div class="step-card">
+            <h4>5. Post-Crisis Recovery Plan</h4>
+            <p style="font-size:0.85rem;">New Debt: <strong>$${t5.debt.toLocaleString()}</strong> | Monthly Commitment: <strong>$${t5.monthly.toLocaleString()}</strong></p>
+            <p style="font-size:0.85rem;">Payoff Horizon: <strong>${t5.debt > 0 ? t5.monthsToPayoff + ' months' : 'Debt Free'}</strong> | Buffer Target: <strong>$${t5.targetBuffer.toLocaleString()}</strong></p>
+          </div>
+        `;
+      }
+
+      html += `</div>`;
+      container.innerHTML = html;
+    }
+
+    // --- LOCAL STORAGE HISTORY MANAGER ---
+    function saveHistory(toolId, record) {
+      const key = `emergencymoney_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key)) || [];
+      } catch (e) {
+        history = [];
+      }
+
+      history.unshift(record);
+      if (history.length > 30) history = history.slice(0, 30);
+
+      try {
+        localStorage.setItem(key, JSON.stringify(history));
+      } catch (e) {}
+
+      renderHistory(toolId);
+    }
+
+    function renderHistory(toolId) {
+      const key = `emergencymoney_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key)) || [];
+      } catch (e) {
+        history = [];
+      }
+
+      const countSpan = document.getElementById(`${toolId.replace('tool', 't')}-hist-count`);
+      const listContainer = document.getElementById(`${toolId.replace('tool', 't')}-hist-list`);
+
+      if (countSpan) countSpan.textContent = history.length;
+      if (!listContainer) return;
+
+      if (history.length === 0) {
+        listContainer.innerHTML = `<div style="font-size:0.8rem; color:var(--slate-muted); padding:8px 0;">No saved history yet.</div>`;
+        return;
+      }
+
+      listContainer.innerHTML = history.map((item, idx) => `
+        <div class="history-item">
+          <div>
+            <strong>${escapeHTML(item.title)}</strong>
+            <div style="font-size:0.75rem; color:var(--slate-muted);">${escapeHTML(item.date)}</div>
+          </div>
+          <button class="btn-copy" onclick="deleteHistoryItem('${toolId}', ${idx})"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      `).join('') + `
+        <button class="btn btn-secondary" style="font-size:0.75rem; padding:4px 8px; margin-top:6px;" onclick="confirmDestructiveAction('clearToolHistory', '${toolId}')">
+          Clear Tool History
+        </button>
+      `;
+    }
+
+    function renderUnifiedHistory() {
+      const container = document.getElementById('unified-history-container');
+      if (!container) return;
+
+      let html = '';
+      const tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+
+      tools.forEach(tId => {
+        const key = `emergencymoney_history_${tId}`;
+        let history = [];
+        try {
+          history = JSON.parse(localStorage.getItem(key)) || [];
+        } catch (e) { history = []; }
+
+        html += `<h4 style="margin: 12px 0 6px; font-size:0.9rem; text-transform:uppercase; color:var(--slate-muted);">${tId.toUpperCase()} HISTORY (${history.length})</h4>`;
+        if (history.length === 0) {
+          html += `<p style="font-size:0.8rem; color:var(--slate-muted); margin-bottom:12px;">No saved entries.</p>`;
+        } else {
+          html += history.map((item, idx) => `
+            <div class="history-item" style="margin-bottom:6px;">
+              <div>
+                <strong>${escapeHTML(item.title)}</strong>
+                <span style="font-size:0.75rem; color:var(--slate-muted); margin-left:8px;">${escapeHTML(item.date)}</span>
+              </div>
+              <button class="btn-copy" onclick="deleteHistoryItem('${tId}', ${idx})"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          `).join('');
+        }
+      });
+
+      container.innerHTML = html;
+    }
+
+    function toggleHistory(toolId) {
+      const toolPrefix = toolId.replace('tool', 't');
+      const list = document.getElementById(`${toolPrefix}-hist-list`);
+      const icon = document.getElementById(`${toolPrefix}-hist-icon`);
+
+      if (list && list.classList.contains('hidden')) {
+        list.classList.remove('hidden');
+        if (icon) icon.className = "fa-solid fa-chevron-up";
+      } else if (list) {
+        list.classList.add('hidden');
+        if (icon) icon.className = "fa-solid fa-chevron-down";
+      }
+    }
+
+    function deleteHistoryItem(toolId, index) {
+      const key = `emergencymoney_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key)) || [];
+      } catch (e) {}
+      
+      history.splice(index, 1);
+      localStorage.setItem(key, JSON.stringify(history));
+      renderHistory(toolId);
+      if (!document.getElementById('view-history').classList.contains('hidden')) {
+        renderUnifiedHistory();
+      }
+    }
+
+    function confirmDestructiveAction(actionType, param) {
+      if (actionType === 'clearToolHistory') {
+        if (confirm("Are you sure you want to clear history for this tool?")) {
+          localStorage.removeItem(`emergencymoney_history_${param}`);
+          renderHistory(param);
+          renderUnifiedHistory();
+        }
+      } else if (actionType === 'clearAllHistory') {
+        if (confirm("Are you sure you want to clear ALL saved tool histories?")) {
+          ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+            localStorage.removeItem(`emergencymoney_history_${t}`);
+            renderHistory(t);
+          });
+          renderUnifiedHistory();
+        }
+      }
+    }
+
+    function resetTool(toolId) {
+      const form = document.getElementById(`form-${toolId}`);
+      if (form) form.reset();
+      const results = document.getElementById(`${toolId.replace('tool', 't')}-results`);
+      if (results) {
+        results.innerHTML = '';
+        results.classList.add('hidden');
+      }
+      delete emergencyMoneyState.toolResults[toolId];
+      emergencyMoneyState.completedTools = emergencyMoneyState.completedTools.filter(t => t !== toolId);
+      saveState();
+      showToast("Tool inputs reset.");
+    }
+
+    // Initialize Application
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+      renderDashboardSnapshot();
+    });
+  </script>
+</body>
+</html>

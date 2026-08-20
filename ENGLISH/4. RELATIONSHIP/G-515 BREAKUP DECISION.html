@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breakup Decision™ — Clarity Before The Next Chapter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --mauve: #6D597A;
+            --mauve-dark: #554461;
+            --mauve-light: #F2EFF4;
+            --gold: #D4A373;
+            --gold-light: #FAEDDF;
+            --bg-gradient: linear-gradient(135deg, #F8F5F2 0%, #FDF6EC 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 12px rgba(109, 89, 122, 0.08);
+            --shadow-md: 0 8px 24px rgba(109, 89, 122, 0.12);
+            --transition: all 0.25s ease-in-out;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; }
+        .app-container { display: flex; flex: 1; position: relative; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 270px; background: #FFFFFF; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0;
+            z-index: 100; box-shadow: 2px 0 10px rgba(0,0,0,0.02); transition: var(--transition);
+        }
+        .sidebar-brand { padding: 1.75rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid var(--border-color); }
+        .sidebar-brand i { font-size: 1.5rem; color: var(--mauve); }
+        .sidebar-brand h1 { font-size: 1.2rem; font-weight: 700; color: var(--mauve); letter-spacing: -0.5px; }
+        .nav-links { list-style: none; padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
+        .nav-item {
+            display: flex; align-items: center; gap: 0.85rem; padding: 0.7rem 1rem; border-radius: 0.6rem;
+            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.9rem;
+            cursor: pointer; transition: var(--transition);
+        }
+        .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-item:hover { background: var(--mauve-light); color: var(--mauve); }
+        .nav-item.active { background: var(--mauve); color: #FFFFFF; }
+
+        /* Main */
+        .main-content { margin-left: 270px; flex: 1; padding: 2.5rem 2rem; max-width: 950px; width: 100%; margin-right: auto; transition: var(--transition); display: flex; flex-direction: column; }
+        .mobile-header { display: none; background: #FFFFFF; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90; }
+        .hamburger { background: none; border: none; font-size: 1.4rem; color: var(--mauve); cursor: pointer; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 95; backdrop-filter: blur(2px); }
+        .view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-sm); border: 1px solid rgba(109, 89, 122, 0.08); margin-bottom: 1.75rem; }
+        .hero-banner {
+            background: linear-gradient(135deg, var(--mauve) 0%, var(--mauve-dark) 100%);
+            color: #FFFFFF; padding: 3rem 2rem; border-radius: var(--radius-xl); margin-bottom: 2rem;
+            box-shadow: var(--shadow-md); text-align: center; position: relative; overflow: hidden;
+        }
+        .hero-banner::before { content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; background: rgba(212, 163, 115, 0.15); border-radius: 50%; pointer-events: none; }
+        .hero-banner h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.5px; }
+        .hero-banner p { font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: 300; max-width: 600px; margin: 0 auto; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .tool-card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+        .tool-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--gold); }
+        .tool-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+        .tool-card-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--mauve-light); color: var(--mauve); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .tool-card-title { font-size: 1.1rem; font-weight: 600; color: var(--mauve); }
+        .tool-card-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+        .tool-header { margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+        .tool-title-group h2 { font-size: 1.75rem; color: var(--mauve); font-weight: 700; }
+        .tool-title-group p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+        .form-group { margin-bottom: 1.35rem; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem; }
+        .form-control, select, textarea { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: 0.6rem; font-size: 0.95rem; color: var(--text-main); background: #FAFAFA; transition: var(--transition); }
+        .form-control:focus, select:focus, textarea:focus { outline: none; border-color: var(--mauve); background: #FFFFFF; box-shadow: 0 0 0 3px rgba(109, 89, 122, 0.12); }
+        textarea { resize: vertical; min-height: 80px; }
+        .checkbox-grid, .radio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }
+        .custom-option { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.8rem; border: 1px solid var(--border-color); border-radius: 0.6rem; background: #FAFAFA; cursor: pointer; font-size: 0.85rem; transition: var(--transition); }
+        .custom-option:hover { border-color: var(--mauve); background: var(--mauve-light); }
+        .custom-option input[type="checkbox"], .custom-option input[type="radio"] { accent-color: var(--mauve); width: 16px; height: 16px; }
+
+        .slider-container { display: flex; align-items: center; gap: 1.25rem; }
+        .slider-container input[type="range"] { flex: 1; accent-color: var(--mauve); }
+        .slider-value { font-weight: 700; color: var(--mauve); font-size: 1.1rem; min-width: 30px; text-align: right; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.5rem; border-radius: 0.6rem; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; text-decoration: none; }
+        .btn-primary { background: var(--mauve); color: #FFFFFF; }
+        .btn-primary:hover { background: var(--mauve-dark); box-shadow: 0 4px 12px rgba(109, 89, 122, 0.25); }
+        .btn-secondary { background: var(--gold-light); color: #8C5E2B; border: 1px solid rgba(212, 163, 115, 0.3); }
+        .btn-secondary:hover { background: #F3DEC9; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); }
+        .btn-outline:hover { background: #F5F5F5; color: var(--text-main); }
+        .btn-sm { padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 0.4rem; }
+        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+        .output-card { background: #FFFFFF; border-left: 4px solid var(--mauve); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-sm); margin-top: 2rem; display: none; animation: fadeIn 0.4s ease; }
+        .output-card.active { display: block; }
+        .output-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .output-header h3 { color: var(--mauve); font-size: 1.3rem; display: flex; align-items: center; gap: 0.6rem; }
+        .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+        .analysis-item { background: var(--mauve-light); padding: 1rem 1.25rem; border-radius: 0.75rem; }
+        .analysis-item-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; color: var(--mauve-dark); margin-bottom: 0.25rem; }
+        .analysis-item-content { font-size: 0.95rem; color: var(--text-main); font-weight: 500; }
+
+        .validation-box { background: var(--gold-light); border: 1px solid rgba(212, 163, 115, 0.4); border-radius: 0.75rem; padding: 1.25rem; color: #6A4517; margin-top: 1.25rem; font-style: italic; }
+        .script-box { background: #2B2D42; color: #EDF2F4; padding: 1.25rem; border-radius: 0.75rem; position: relative; font-family: monospace; font-size: 0.9rem; line-height: 1.5; margin-top: 0.75rem; white-space: pre-wrap; }
+        .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(255,255,255,0.15); border: none; color: #FFFFFF; padding: 0.3rem 0.6rem; border-radius: 0.35rem; font-size: 0.7rem; cursor: pointer; transition: var(--transition); }
+        .copy-btn:hover { background: rgba(255,255,255,0.3); }
+
+        .history-section { margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+        .history-title { font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; }
+        .history-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .history-item { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 0.6rem; overflow: hidden; }
+        .history-header { padding: 0.7rem 1rem; background: #FAFAFA; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 500; }
+        .history-body { padding: 1rem; display: none; border-top: 1px solid var(--border-color); font-size: 0.88rem; background: #FFFFFF; }
+        .history-item.open .history-body { display: block; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--text-main); color: #FFFFFF; padding: 0.75rem 1.25rem; border-radius: 0.5rem; font-size: 0.88rem; font-weight: 500; box-shadow: var(--shadow-md); z-index: 1000; opacity: 0; transform: translateY(10px); transition: var(--transition); pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        footer { margin-top: auto; background: #FFFFFF; border-top: 1px solid var(--border-color); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+        .reset-progress { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+        .reset-day { background: var(--mauve-light); padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; color: var(--mauve); }
+        .reset-day.done { background: var(--mauve); color: white; }
+
+        @media (max-width: 850px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .mobile-header { display: flex; }
+            .main-content { margin-left: 0; padding: 1.5rem 1rem; }
+            .sidebar-overlay.active { display: block; }
+            .hero-banner { padding: 2rem 1.25rem; }
+            .hero-banner h2 { font-size: 1.75rem; }
+            .checkbox-grid, .radio-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="mobile-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+            <i class="fa-solid fa-compass" style="color:var(--mauve); font-size:1.2rem;"></i>
+            <span style="font-weight:700; color:var(--mauve);">Breakup Decision™</span>
+        </div>
+        <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand"><i class="fa-solid fa-compass"></i><h1>Breakup Decision™</h1></div>
+            <ul class="nav-links">
+                <li><a class="nav-item active" data-target="homeView"><i class="fa-solid fa-house"></i> Home</a></li>
+                <li><a class="nav-item" data-target="clarityView"><i class="fa-solid fa-magnifying-glass-chart"></i> Clarity Scanner</a></li>
+                <li><a class="nav-item" data-target="fearView"><i class="fa-solid fa-shield-halved"></i> Fear Translator</a></li>
+                <li><a class="nav-item" data-target="stayView"><i class="fa-solid fa-sliders"></i> The Stay Test</a></li>
+                <li><a class="nav-item" data-target="leaveView"><i class="fa-solid fa-map"></i> The Leave Plan</a></li>
+                <li><a class="nav-item" data-target="gutView"><i class="fa-solid fa-heart-pulse"></i> Gut Check</a></li>
+                <li><a class="nav-item" data-target="resetView"><i class="fa-solid fa-rotate"></i> Decision Reset</a></li>
+                <li><a class="nav-item" data-target="planView"><i class="fa-solid fa-list-check"></i> My Decision Plan</a></li>
+                <li><a class="nav-item" data-target="historyView"><i class="fa-solid fa-clock-rotate-left"></i> My History</a></li>
+                <li><a class="nav-item" data-target="privacyView"><i class="fa-solid fa-lock"></i> Privacy & Safety</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- HOME -->
+            <section id="homeView" class="view active">
+                <div class="hero-banner">
+                    <h2>You don't have to be miserable to wonder if this is right.</h2>
+                    <p>Breakup Decision is a private reflection and planning toolkit for people who need clarity about whether to stay, what would need to change, or how to move through a possible ending thoughtfully.</p>
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <h3 style="color:var(--mauve);">What do you need clarity about right now?</h3>
+                </div>
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="switchView('clarityView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div><div class="tool-card-title">Clarity Scanner</div></div><div class="tool-card-desc">I can't tell if this is a rough patch or the wrong relationship.</div></div><div style="font-weight:600;color:var(--gold);">Start Clarity Scanner →</div></div>
+                    <div class="tool-card" onclick="switchView('fearView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="tool-card-title">Fear Translator</div></div><div class="tool-card-desc">I'm staying because I'm scared, not because I'm happy.</div></div><div style="font-weight:600;color:var(--gold);">Start Fear Translator →</div></div>
+                    <div class="tool-card" onclick="switchView('stayView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-sliders"></i></div><div class="tool-card-title">The Stay Test</div></div><div class="tool-card-desc">I want to know if staying could actually work.</div></div><div style="font-weight:600;color:var(--gold);">Start The Stay Test →</div></div>
+                    <div class="tool-card" onclick="switchView('leaveView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-map"></i></div><div class="tool-card-title">The Leave Plan</div></div><div class="tool-card-desc">I need to understand the practical side of leaving.</div></div><div style="font-weight:600;color:var(--gold);">Start The Leave Plan →</div></div>
+                    <div class="tool-card" onclick="switchView('gutView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-heart-pulse"></i></div><div class="tool-card-title">Gut Check</div></div><div class="tool-card-desc">I've analyzed this to death. I need to know what my body notices.</div></div><div style="font-weight:600;color:var(--gold);">Start Gut Check →</div></div>
+                    <div class="tool-card" onclick="switchView('resetView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-rotate"></i></div><div class="tool-card-title">Decision Reset</div></div><div class="tool-card-desc">Don't know where to start? Begin the 7-Day Decision Reset.</div></div><div style="font-weight:600;color:var(--gold);">Start Decision Reset →</div></div>
+                </div>
+            </section>
+
+            <!-- CLARITY SCANNER -->
+            <section id="clarityView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Clarity Scanner</h2><p>I can't tell if this is a rough patch or the wrong relationship.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('clarity')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample</button></div>
+                <div class="card"><form id="clarityForm">
+                    <div class="form-group"><label class="form-label">Relationship length:</label><select id="clarityLength" class="form-control"><option value="<6mo">&lt; 6 months</option><option value="6mo-1yr">6 months - 1 year</option><option value="1-2yr">1 - 2 years</option><option value="2-5yr">2 - 5 years</option><option value="5+yr">5+ years</option></select></div>
+                    <div class="form-group"><label class="form-label">How long have you felt unsure?</label><select id="clarityUnsureTime" class="form-control"><option value="Just started">Just started</option><option value="Few weeks">A few weeks</option><option value="Few months">A few months</option><option value="6mo-1yr">6 months - 1 year</option><option value="1yr+">1 year+</option><option value="On and off whole relationship">On and off for whole relationship</option></select></div>
+                    <div class="form-group"><label class="form-label">Best aspects of the relationship:</label><textarea id="clarityBest" placeholder="What keeps you here? Friendship, safety, history..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Worst aspects of the relationship:</label><textarea id="clarityWorst" placeholder="What feels missing or painful? Loneliness, misaligned goals..."></textarea></div>
+                    <div class="form-group"><label class="form-label">If nothing changed, could you live like this for 5 years?</label><select id="clarityFiveYears" class="form-control"><option value="Yes, happily">Yes, happily</option><option value="Yes, but sadly">Yes, but sadly</option><option value="Unsure">Unsure</option><option value="No">No</option><option value="I'd be miserable">I'd be miserable</option></select></div>
+                    <div class="form-group"><label class="form-label">Have you talked to them about your doubts?</label><select id="clarityTalked" class="form-control"><option value="Yes, openly">Yes, openly</option><option value="Yes, vaguely">Yes, vaguely</option><option value="No, I'm afraid">No, I'm afraid</option><option value="No, I don't want to hurt them">No, I don't want to hurt them</option></select></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-pie"></i> Run Scanner</button></div>
+                </form></div>
+                <div id="clarityOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-square-poll-vertical"></i> Clarity Map</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">The Uncertainty Type</div><div class="analysis-item-content" id="resUncertaintyType">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Core Question</div><div class="analysis-item-content" id="resCoreQuestion">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Conversation Check</div><div class="analysis-item-content" id="resTalkedCheck">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Five-Year Reflection</div><div class="analysis-item-content" id="resFiveYearTest">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Pro/Con Balance</div><div class="analysis-item-content" id="resProConBalance">--</div></div></div><div class="validation-box"><strong>One next step:</strong> <span id="resClarityNextStep">Observe, communicate, test a change, or seek support.</span></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Previous Scans</span><button class="btn btn-outline btn-sm" onclick="clearHistory('clarity')">Clear History</button></div><div class="history-list" id="clarityHistory"></div></div>
+            </section>
+
+            <!-- FEAR TRANSLATOR -->
+            <section id="fearView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Fear Translator</h2><p>I'm staying because I'm scared, not because I'm happy.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('fear')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample</button></div>
+                <div class="card"><form id="fearForm">
+                    <div class="form-group"><label class="form-label">What scares you most about leaving?</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Being alone"> Being alone</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Financial impact"> Financial impact</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Hurting them"> Hurting them</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Losing shared friends"> Losing shared friends</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Starting over"> Starting over</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Regret"> Regret</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Their reaction"> Their reaction</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="No one else will love me"> No one else will love me</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Practical entanglement"> Practical entanglement</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">What scares you most about staying?</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Wasting my life"> Wasting my life</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Becoming resentful"> Becoming resentful</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Missing someone better"> Missing someone better</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Losing myself"> Losing myself</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Repeating parents marriage"> Repeating parents' marriage</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Sexual regret"> Sexual regret</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="No growth"> No growth</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Which fear is bigger?</label><select id="fearBigger" class="form-control"><option value="Fear of leaving">Fear of leaving</option><option value="Fear of staying">Fear of staying</option><option value="Equal">Equal</option><option value="I don't know">I don't know</option></select></div>
+                    <div class="form-group"><label class="form-label">What would you do if you weren't afraid?</label><textarea id="fearUnafraid" placeholder="Imagine zero consequences, full safety..."></textarea></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> Translate Fears</button></div>
+                </form></div>
+                <div id="fearOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-shield-cat"></i> Fear Translation Report</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">The Leaving Fears</div><div class="analysis-item-content" id="resLeavingFears">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Staying Fears</div><div class="analysis-item-content" id="resStayingFears">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Fear Decoder</div><div class="analysis-item-content" id="resFearDecoder">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Support Map</div><div class="analysis-item-content" id="resSupportMap">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Worst-Case Frame</div><div class="analysis-item-content" id="resWorstCase">--</div></div></div><div class="validation-box"><strong>The Courage Question:</strong> <span id="resCourageQuestion">What would you choose if you knew you could navigate the transition safely?</span></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Previous Translations</span><button class="btn btn-outline btn-sm" onclick="clearHistory('fear')">Clear History</button></div><div class="history-list" id="fearHistory"></div></div>
+            </section>
+
+            <!-- STAY TEST -->
+            <section id="stayView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>The Stay Test</h2><p>What would need to change for this to feel right?</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('stay')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample</button></div>
+                <div class="card"><form id="stayForm">
+                    <div class="form-group"><label class="form-label">One thing THEY would need to change:</label><textarea id="stayChangeThey" placeholder="Behavior, engagement, communication..."></textarea></div>
+                    <div class="form-group"><label class="form-label">One thing YOU would need to change:</label><textarea id="stayChangeYou" placeholder="Expectations, boundaries, vulnerability..."></textarea></div>
+                    <div class="form-group"><label class="form-label">One thing about the RELATIONSHIP DYNAMIC that needs to change:</label><textarea id="stayChangeDynamic" placeholder="Conflict style, quality time, household split..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Likelihood those changes happen:</label><select id="stayLikelihood" class="form-control"><option value="Very likely">Very likely</option><option value="Possible but hard">Possible but hard</option><option value="Unlikely">Unlikely</option><option value="Impossible">Impossible</option><option value="Already tried">Already tried</option></select></div>
+                    <div class="form-group"><label class="form-label">Your willingness to do the work: <span id="yourWillingnessVal" class="slider-value">5</span>/10</label><div class="slider-container"><input type="range" id="yourWillingness" min="1" max="10" value="5" oninput="document.getElementById('yourWillingnessVal').textContent=this.value"></div></div>
+                    <div class="form-group"><label class="form-label">Their likely willingness to do the work: <span id="theirWillingnessVal" class="slider-value">5</span>/10</label><div class="slider-container"><input type="range" id="theirWillingness" min="1" max="10" value="5" oninput="document.getElementById('theirWillingnessVal').textContent=this.value"></div></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-vial"></i> Evaluate Possibility</button></div>
+                </form></div>
+                <div id="stayOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-clipboard-check"></i> Stay Feasibility Map</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">The Change List</div><div class="analysis-item-content" id="resChangeList">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Reality Check</div><div class="analysis-item-content" id="resRealityCheck">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Effort Gap</div><div class="analysis-item-content" id="resEffortGap">--</div></div><div class="analysis-item"><div class="analysis-item-title">The 30-Day Experiment</div><div class="analysis-item-content" id="resExperiment">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Review Window</div><div class="analysis-item-content" id="resDeadline">--</div></div></div><div class="validation-box"><strong>The Acceptance Check:</strong> <span id="resAcceptanceCheck">If nothing changes at all, can you accept this relationship as-is without resenting them?</span></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Previous Tests</span><button class="btn btn-outline btn-sm" onclick="clearHistory('stay')">Clear History</button></div><div class="history-list" id="stayHistory"></div></div>
+            </section>
+
+            <!-- LEAVE PLAN -->
+            <section id="leaveView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>The Leave Plan</h2><p>If I decide to leave, I need to think through the practical chaos.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('leave')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample</button></div>
+                <div class="card"><form id="leaveForm">
+                    <div class="form-group"><label class="form-label">Living situation:</label><select id="leaveLiving" class="form-control"><option value="Live together">Live together</option><option value="One owns, other stays">One owns, other stays</option><option value="Separate places">Separate places</option><option value="Long distance">Long distance</option></select></div>
+                    <div class="form-group"><label class="form-label">Financial entanglement:</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared lease"> Shared lease</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared mortgage"> Shared mortgage</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Joint bank account"> Joint bank account</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared debt"> Shared debt</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared car"> Shared car</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared pets"> Shared pets</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="None"> None</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Social entanglement:</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Shared friend group"> Shared friend group</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Close to their family"> Close to their family</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Work together"> Work together</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Same hobby communities"> Same hobby communities</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Minimal overlap"> Minimal overlap</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Children involved?</label><div class="radio-grid"><label class="custom-option"><input type="radio" name="leaveChildren" value="Yes"> Yes</label><label class="custom-option"><input type="radio" name="leaveChildren" value="No" checked> No</label></div></div>
+                    <div class="form-group"><label class="form-label">Support system if you leave:</label><select id="leaveSupport" class="form-control"><option value="Strong">Strong (Friends/Family ready)</option><option value="Moderate">Moderate (A few people)</option><option value="Weak">Weak (Limited options)</option><option value="None">None (Mostly on my own)</option></select></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass-drafting"></i> Map Leave Plan</button></div>
+                </form></div>
+                <div id="leaveOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-route"></i> Practical Unentanglement Strategy</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">Exit Complexity</div><div class="analysis-item-content" id="resExitComplexity">--</div></div><div class="analysis-item"><div class="analysis-item-title">Housing Plan</div><div class="analysis-item-content" id="resHousingPlan">--</div></div><div class="analysis-item"><div class="analysis-item-title">Financial Separation</div><div class="analysis-item-content" id="resFinancialSeparation">--</div></div><div class="analysis-item"><div class="analysis-item-title">Social Navigation</div><div class="analysis-item-content" id="resSocialNavigation">--</div></div><div class="analysis-item"><div class="analysis-item-title">Self-Care Protocol</div><div class="analysis-item-content" id="resSelfCare">--</div></div></div><div style="margin-top:1.5rem;"><label class="form-label">Conversation Script:</label><div class="script-box"><button class="copy-btn" onclick="copyToClipboard('resConversationScript')"><i class="fa-regular fa-copy"></i> Copy</button><div id="resConversationScript">--</div></div></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Saved Plans</span><button class="btn btn-outline btn-sm" onclick="clearHistory('leave')">Clear History</button></div><div class="history-list" id="leaveHistory"></div></div>
+            </section>
+
+            <!-- GUT CHECK -->
+            <section id="gutView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Gut Check</h2><p>I've analyzed this to death. I need to know what my body notices.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('gut')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample</button></div>
+                <div class="card"><form id="gutForm">
+                    <div class="form-group"><label class="form-label">When you imagine staying:</label><select id="gutImagineStaying" class="form-control"><option value="Relieved">Relieved</option><option value="Heavy">Heavy</option><option value="Anxious">Anxious</option><option value="Resigned">Resigned</option><option value="Hopeful">Hopeful</option><option value="Trapped">Trapped</option></select></div>
+                    <div class="form-group"><label class="form-label">When you imagine leaving:</label><select id="gutImagineLeaving" class="form-control"><option value="Terrified">Terrified</option><option value="Free">Free</option><option value="Sad but clear">Sad but clear</option><option value="Panicked">Panicked</option><option value="Excited">Excited</option><option value="Guilty">Guilty</option></select></div>
+                    <div class="form-group"><label class="form-label">When you're with them, your body feels:</label><select id="gutWithThem" class="form-control"><option value="Relaxed">Relaxed</option><option value="Tense">Tense</option><option value="Neutral">Neutral</option><option value="Checked out">Checked out</option><option value="Happy">Happy</option><option value="On guard">On guard</option></select></div>
+                    <div class="form-group"><label class="form-label">When you're apart, your body feels:</label><select id="gutApart" class="form-control"><option value="Lonely">Lonely</option><option value="Peaceful">Peaceful</option><option value="Anxious">Anxious</option><option value="Free">Free</option><option value="Missing them">Missing them</option><option value="Nothing">Nothing</option></select></div>
+                    <div class="form-group"><label class="form-label">The first word that comes to mind about this relationship:</label><textarea id="gutFirstWord" placeholder="Spontaneous, unedited word..."></textarea></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-wave-square"></i> Read Somatic Signals</button></div>
+                </form></div>
+                <div id="gutOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-dna"></i> Somatic & Intuitive Reflection</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">The Body Signal</div><div class="analysis-item-content" id="resBodyVote">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Emotional Signal</div><div class="analysis-item-content" id="resEmotionalVote">--</div></div><div class="analysis-item"><div class="analysis-item-title">The Cognitive Signal</div><div class="analysis-item-content" id="resCognitiveVote">--</div></div><div class="analysis-item"><div class="analysis-item-title">Alignment Check</div><div class="analysis-item-content" id="resAlignmentCheck">--</div></div><div class="analysis-item"><div class="analysis-item-title">Immediate Next Step</div><div class="analysis-item-content" id="resNextStep">--</div></div></div><div class="validation-box"><strong>Decision Frame:</strong> There is no wrong choice, only a choice to own. Both paths contain grief and growth.</div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Previous Gut Checks</span><button class="btn btn-outline btn-sm" onclick="clearHistory('gut')">Clear History</button></div><div class="history-list" id="gutHistory"></div></div>
+            </section>
+
+            <!-- DECISION RESET -->
+            <section id="resetView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>7-Day Decision Reset</h2><p>A guided journey through all five tools to build clarity and a plan.</p></div></div>
+                <div class="card">
+                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+                        <span class="reset-day" id="resetDay1">Day 1: Clarity</span>
+                        <span class="reset-day" id="resetDay2">Day 2: Fear</span>
+                        <span class="reset-day" id="resetDay3">Day 3: Stay</span>
+                        <span class="reset-day" id="resetDay4">Day 4: Leave</span>
+                        <span class="reset-day" id="resetDay5">Day 5: Gut</span>
+                        <span class="reset-day" id="resetDay6">Day 6: Synthesize</span>
+                        <span class="reset-day" id="resetDay7">Day 7: Plan</span>
+                    </div>
+                    <div id="resetContent">
+                        <p style="color:var(--text-muted);">Start with Day 1: Clarity Scanner. Complete each tool in order to build your Decision Plan.</p>
+                        <button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Start Day 1</button>
+                    </div>
+                    <div id="resetPlanOutput" class="output-card" style="margin-top:1.5rem;">
+                        <div class="output-header"><h3><i class="fa-solid fa-list-check"></i> Your Decision Plan</h3></div>
+                        <div id="resetPlanContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MY DECISION PLAN -->
+            <section id="planView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>My Breakup Decision Plan</h2><p>Synthesized from your completed tools.</p></div></div>
+                <div class="card" id="planCard">
+                    <div id="planDisplay"><p style="color:var(--text-muted);">Complete the 7-Day Decision Reset or run individual tools to build your plan.</p></div>
+                </div>
+            </section>
+
+            <!-- MY HISTORY -->
+            <section id="historyView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>My History</h2><p>All your saved reflections in one place.</p></div></div>
+                <div class="card">
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+                        <button class="btn btn-outline btn-sm" onclick="renderAllHistory()">Refresh</button>
+                        <button class="btn btn-outline btn-sm" onclick="if(confirm('Clear all history?')){clearAllHistory();}">Clear All History</button>
+                    </div>
+                    <div id="allHistoryContainer"></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY & SAFETY -->
+            <section id="privacyView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Privacy & Safety</h2></div></div>
+                <div class="card">
+                    <p><strong>Private by design.</strong> Your reflections remain on your device. We do not send your data to any server.</p>
+                    <p style="margin-top:1rem;"><strong>Important:</strong> Breakup Decision is a self-guided reflection and planning tool. It is not therapy, diagnosis, crisis intervention, legal advice, or a substitute for qualified professional care.</p>
+                    <p style="margin-top:1rem;">If the relationship involves abuse, threats, coercive control, stalking, serious addiction, or immediate danger, do not rely on these exercises. Prioritize safety and appropriate professional support.</p>
+                    <p style="margin-top:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> Never confront an unsafe partner based on a generated exercise.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer><p>For entertainment and reflection purposes only. Not therapy or professional advice. If you are in an abusive relationship, contact a domestic violence hotline or emergency services.</p></footer>
+    <div id="toast" class="toast">Copied!</div>
+
+    <script>
+        // --- NAVIGATION ---
+        const navItems = document.querySelectorAll('.nav-item');
+        const views = document.querySelectorAll('.view');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function switchView(targetId) {
+            views.forEach(v => v.classList.remove('active'));
+            navItems.forEach(n => n.classList.remove('active'));
+            const tv = document.getElementById(targetId);
+            if (tv) tv.classList.add('active');
+            const an = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+            if (an) an.classList.add('active');
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const target = item.getAttribute('data-target');
+                if (target) switchView(target);
+            });
+        });
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+
+        // --- TOAST & UTILS ---
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => showToast("Copied!")).catch(() => fallbackCopy(text));
+            } else { fallbackCopy(text); }
+        }
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast("Copied!");
+        }
+
+        // --- LOCAL STORAGE (unified history) ---
+        function getHistory(moduleId) {
+            const key = `breakup_history_${moduleId}`;
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+        function setHistory(moduleId, data) {
+            const key = `breakup_history_${moduleId}`;
+            let h = getHistory(moduleId);
+            h.unshift({ timestamp: new Date().toLocaleString(), data: data });
+            if (h.length > 30) h = h.slice(0, 30);
+            localStorage.setItem(key, JSON.stringify(h));
+        }
+        function clearHistory(moduleId) {
+            localStorage.removeItem(`breakup_history_${moduleId}`);
+            renderHistory(moduleId);
+            showToast("History cleared");
+        }
+        function clearAllHistory() {
+            ['clarity','fear','stay','leave','gut','reset'].forEach(id => localStorage.removeItem(`breakup_history_${id}`));
+            renderAllHistory();
+            showToast("All history cleared");
+        }
+
+        function renderHistory(moduleId) {
+            const container = document.getElementById(`${moduleId}History`);
+            if (!container) return;
+            const h = getHistory(moduleId);
+            if (h.length === 0) { container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;">No history stored.</div>'; return; }
+            container.innerHTML = h.map((item, i) => `
+                <div class="history-item">
+                    <div class="history-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${item.timestamp}</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="history-body"><ul style="padding-left:1rem;list-style:square;">${Object.entries(item.data).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('')}</ul></div>
+                </div>
+            `).join('');
+        }
+
+        function renderAllHistory() {
+            const container = document.getElementById('allHistoryContainer');
+            if (!container) return;
+            const modules = ['clarity','fear','stay','leave','gut','reset'];
+            let html = '';
+            modules.forEach(m => {
+                const h = getHistory(m);
+                if (h.length === 0) return;
+                html += `<h4 style="margin:1rem 0 0.5rem;color:var(--mauve);">${m.charAt(0).toUpperCase()+m.slice(1)}</h4>`;
+                html += h.map(item => `
+                    <div class="history-item">
+                        <div class="history-header" onclick="this.parentElement.classList.toggle('open')">
+                            <span>${item.timestamp}</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-body"><ul style="padding-left:1rem;list-style:square;">${Object.entries(item.data).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('')}</ul></div>
+                    </div>
+                `).join('');
+            });
+            container.innerHTML = html || '<p style="color:var(--text-muted);">No history found.</p>';
+        }
+
+        // --- SAMPLE SCENARIOS ---
+        function loadSampleScenario(toolId) {
+            if (toolId === 'clarity') {
+                document.getElementById('clarityLength').value = "2-5yr";
+                document.getElementById('clarityUnsureTime').value = "6mo-1yr";
+                document.getElementById('clarityBest').value = "We have a strong friendship, genuine kindness, shared history, and safety.";
+                document.getElementById('clarityWorst').value = "There is no romantic passion, intimacy feels like a chore, and we feel more like roommates.";
+                document.getElementById('clarityFiveYears').value = "Yes, but sadly";
+                document.getElementById('clarityTalked').value = "No, I don't want to hurt them";
+                showToast("Sample loaded for Clarity Scanner");
+            } else if (toolId === 'fear') {
+                document.querySelectorAll('#fearForm input[name="fearLeaving"]').forEach(cb => { cb.checked = ["Being alone","Hurting them"].includes(cb.value); });
+                document.querySelectorAll('#fearForm input[name="fearStaying"]').forEach(cb => { cb.checked = ["Becoming resentful","Losing myself"].includes(cb.value); });
+                document.getElementById('fearBigger').value = "Fear of leaving";
+                document.getElementById('fearUnafraid').value = "I would gently initiate a separation, rent my own apartment, and begin the healing process.";
+                showToast("Sample loaded for Fear Translator");
+            } else if (toolId === 'stay') {
+                document.getElementById('stayChangeThey').value = "Initiate emotional connection and show active interest in my inner world.";
+                document.getElementById('stayChangeYou').value = "Stop pulling back and communicate needs before becoming resentful.";
+                document.getElementById('stayChangeDynamic').value = "Shift from passive roommate dynamic to intentional dates and deep conversations.";
+                document.getElementById('stayLikelihood').value = "Already tried";
+                document.getElementById('yourWillingness').value = 4; document.getElementById('yourWillingnessVal').textContent = "4";
+                document.getElementById('theirWillingness').value = 4; document.getElementById('theirWillingnessVal').textContent = "4";
+                showToast("Sample loaded for Stay Test");
+            } else if (toolId === 'leave') {
+                document.getElementById('leaveLiving').value = "Live together";
+                document.querySelectorAll('#leaveForm input[name="leaveFinancial"]').forEach(cb => { cb.checked = cb.value === "Shared lease"; });
+                document.querySelectorAll('#leaveForm input[name="leaveSocial"]').forEach(cb => { cb.checked = cb.value === "Shared friend group"; });
+                document.querySelector('#leaveForm input[name="leaveChildren"][value="No"]').checked = true;
+                document.getElementById('leaveSupport').value = "Moderate";
+                showToast("Sample loaded for Leave Plan");
+            } else if (toolId === 'gut') {
+                document.getElementById('gutImagineStaying').value = "Heavy";
+                document.getElementById('gutImagineLeaving').value = "Sad but clear";
+                document.getElementById('gutWithThem').value = "Tense";
+                document.getElementById('gutApart').value = "Peaceful";
+                document.getElementById('gutFirstWord').value = "Exhausting";
+                showToast("Sample loaded for Gut Check");
+            }
+        }
+
+        // --- TOOL LOGIC: CLARITY ---
+        document.getElementById('clarityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const unsure = document.getElementById('clarityUnsureTime').value;
+            const five = document.getElementById('clarityFiveYears').value;
+            const talked = document.getElementById('clarityTalked').value;
+            let type = "";
+            let core = "";
+            if (unsure === "On and off whole relationship" || unsure === "1yr+") {
+                type = "Long-standing Ambiguity / Growing Apart";
+                core = "Are you holding onto potential rather than who they actually are?";
+            } else if (unsure === "Just started" || unsure === "Few weeks") {
+                type = "Rough Patch / External Stress";
+                core = "Is this uncertainty tied to an external stressor (work, illness, family)?";
+            } else {
+                type = "Evolving Priorities / Mismatch";
+                core = "Have your core values or vision for the future drifted in different directions?";
+            }
+            let talkCheck = talked.includes("No") ? "Unspoken Doubts. The relationship hasn't had a chance to respond." : "Open Communication. You've voiced concerns; now evaluate change.";
+            let fiveRef = five.includes("sadly") || five.includes("miserable") ? "High warning: staying requires sacrificing wellbeing for comfort." : five.includes("happily") ? "High acceptance: current state is baseline acceptable." : "Conditional: endurance relies on future change.";
+            document.getElementById('resUncertaintyType').textContent = type;
+            document.getElementById('resCoreQuestion').textContent = core;
+            document.getElementById('resTalkedCheck').textContent = talkCheck;
+            document.getElementById('resFiveYearTest').textContent = fiveRef;
+            document.getElementById('resProConBalance').textContent = "Weigh comfort/history/safety against unmet needs/pain.";
+            document.getElementById('resClarityNextStep').textContent = "Observe, communicate, test a change, or seek support.";
+            document.getElementById('clarityOutput').classList.add('active');
+            setHistory('clarity', { "Uncertainty": type, "5-Year": five, "Talked": talked });
+            renderHistory('clarity');
+            updateDecisionPlan();
+        });
+
+        // --- TOOL LOGIC: FEAR ---
+        document.getElementById('fearForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const leaving = Array.from(document.querySelectorAll('input[name="fearLeaving"]:checked')).map(c=>c.value);
+            const staying = Array.from(document.querySelectorAll('input[name="fearStaying"]:checked')).map(c=>c.value);
+            const bigger = document.getElementById('fearBigger').value;
+            const unafraid = document.getElementById('fearUnafraid').value;
+            let leavingAnalysis = leaving.some(f => ["Financial impact","Practical entanglement"].includes(f)) ? "Practical/logistical barriers (solvable planning problems)." : "Primarily emotional fears (loneliness, guilt).";
+            let stayingAnalysis = staying.length ? `Fears of ${staying.join(', ')} point to core values being compromised.` : "Low fear of staying; relationship feels safe but unfulfilling.";
+            let decoder = bigger === "Fear of leaving" ? "Fear is an anchor keeping you in familiar discomfort." : bigger === "Fear of staying" ? "Fear is an alarm warning about long-term cost." : "Equilibrium of fear between pain of staying and pain of ending.";
+            document.getElementById('resLeavingFears').textContent = leavingAnalysis;
+            document.getElementById('resStayingFears').textContent = stayingAnalysis;
+            document.getElementById('resFearDecoder').textContent = decoder;
+            document.getElementById('resSupportMap').textContent = "Identify 2 trusted contacts, a financial backup, or a professional advisor.";
+            document.getElementById('resWorstCase').textContent = "Worst of leaving: temporary discomfort & grief. Worst of staying: long-term erosion of self.";
+            document.getElementById('resCourageQuestion').textContent = `What would you choose if you knew you could navigate the transition safely? "${unafraid || 'Reflect on this.'}"`;
+            document.getElementById('fearOutput').classList.add('active');
+            setHistory('fear', { "Bigger Fear": bigger, "Leaving Fears": leaving.join(', ')||"None", "Staying Fears": staying.join(', ')||"None" });
+            renderHistory('fear');
+            updateDecisionPlan();
+        });
+
+        // --- TOOL LOGIC: STAY ---
+        document.getElementById('stayForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const they = document.getElementById('stayChangeThey').value;
+            const you = document.getElementById('stayChangeYou').value;
+            const like = document.getElementById('stayLikelihood').value;
+            const yw = parseInt(document.getElementById('yourWillingness').value);
+            const tw = parseInt(document.getElementById('theirWillingness').value);
+            let reality = ["Already tried","Impossible","Unlikely"].includes(like) ? "High risk: requiring core shifts rarely succeeds without personal drive." : "Feasible: changes are behavioral and within growth parameters.";
+            let gap = Math.abs(yw - tw);
+            let effort = gap >= 3 ? `Significant asymmetry (gap of ${gap} points).` : (yw <=4 && tw <=4) ? "Mutual fatigue: both partners have low energy for repair." : "Balanced investment: aligned energy levels.";
+            document.getElementById('resChangeList').textContent = `They: ${they.substring(0,40)}... You: ${you.substring(0,40)}...`;
+            document.getElementById('resRealityCheck').textContent = reality;
+            document.getElementById('resEffortGap').textContent = effort;
+            document.getElementById('resExperiment').textContent = "Select ONE change. Request it calmly. Observe behavior for 30 days.";
+            document.getElementById('resDeadline').textContent = "Set a calendar check-in 30-60 days from today.";
+            document.getElementById('resAcceptanceCheck').textContent = "If nothing changes at all, can you accept this relationship as-is without resenting them?";
+            document.getElementById('stayOutput').classList.add('active');
+            setHistory('stay', { "Likelihood": like, "Your Willingness": `${yw}/10`, "Their Willingness": `${tw}/10` });
+            renderHistory('stay');
+            updateDecisionPlan();
+        });
+
+        // --- TOOL LOGIC: LEAVE ---
+        document.getElementById('leaveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const living = document.getElementById('leaveLiving').value;
+            const financial = Array.from(document.querySelectorAll('input[name="leaveFinancial"]:checked')).map(c=>c.value);
+            const social = Array.from(document.querySelectorAll('input[name="leaveSocial"]:checked')).map(c=>c.value);
+            const kids = document.querySelector('input[name="leaveChildren"]:checked')?.value || "No";
+            let score = (living === "Live together"||living==="One owns, other stays")?2:0;
+            if (financial.length > 2) score += 2;
+            if (kids === "Yes") score += 3;
+            if (social.length > 2) score += 1;
+            let complexity = score >= 5 ? "High (requires phased exit)" : score >= 3 ? "Medium (requires structured planning)" : "Low";
+            let housing = living === "Live together" ? "Identify temporary stay (friend/family/Airbnb) for 1-2 weeks. Determine lease end or buyout." : "Maintain separate space; simple physical boundaries.";
+            let fin = financial.includes("None") ? "No financial disentanglement required." : `Separate: ${financial.join(', ')}. Open individual accounts.`;
+            let script = "I value what we've shared, but I've realized this relationship isn't the right long-term fit for me. I want us both to find what we truly need, and I want to handle the next steps respectfully.";
+            document.getElementById('resExitComplexity').textContent = complexity;
+            document.getElementById('resHousingPlan').textContent = housing;
+            document.getElementById('resFinancialSeparation').textContent = fin;
+            document.getElementById('resSocialNavigation').textContent = "Notify close mutual friends individually. Avoid asking people to pick sides.";
+            document.getElementById('resSelfCare').textContent = "First 48 hours: no major decisions. Stock comfort food, secure a supportive friend, turn off shared location.";
+            document.getElementById('resConversationScript').textContent = script;
+            document.getElementById('leaveOutput').classList.add('active');
+            setHistory('leave', { "Exit Complexity": complexity, "Living": living, "Children": kids });
+            renderHistory('leave');
+            updateDecisionPlan();
+        });
+
+        // --- TOOL LOGIC: GUT ---
+        document.getElementById('gutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const staying = document.getElementById('gutImagineStaying').value;
+            const leaving = document.getElementById('gutImagineLeaving').value;
+            const withThem = document.getElementById('gutWithThem').value;
+            const apart = document.getElementById('gutApart').value;
+            let body = ["Tense","Checked out","On guard"].includes(withThem) ? "Nervous system contraction: chronic vigilance or withdrawal." : "Nervous system regulation: steady and grounded.";
+            let emotional = `Staying triggers [${staying}], leaving triggers [${leaving}].`;
+            let alignment = (["Heavy","Trapped"].includes(staying) && ["Free","Sad but clear"].includes(leaving)) ? "Strong alignment toward leaving." :
+                (["Relieved","Hopeful"].includes(staying)) ? "Alignment toward repair." : "Conflicting signals: fears may mask intuition.";
+            document.getElementById('resBodyVote').textContent = body;
+            document.getElementById('resEmotionalVote').textContent = emotional;
+            document.getElementById('resCognitiveVote').textContent = "Logic is attempting to over-optimize, but emotional truth precedes intellectual clarity.";
+            document.getElementById('resAlignmentCheck').textContent = alignment;
+            document.getElementById('resNextStep').textContent = "Take a 24-hour 'Decision Fast': act as if you've chosen silently, and observe how your body feels.";
+            document.getElementById('gutOutput').classList.add('active');
+            setHistory('gut', { "Staying Feeling": staying, "Leaving Feeling": leaving, "Somatic State": withThem });
+            renderHistory('gut');
+            updateDecisionPlan();
+        });
+
+        // --- DECISION RESET ---
+        let resetDays = JSON.parse(localStorage.getItem('breakup_reset_days') || '{"day":0}');
+        function startReset() {
+            const day = resetDays.day || 0;
+            const tools = ['clarity','fear','stay','leave','gut'];
+            if (day < 5) {
+                switchView(tools[day]+'View');
+                showToast(`Starting Day ${day+1}: ${tools[day].charAt(0).toUpperCase()+tools[day].slice(1)}`);
+                resetDays.day = day + 1;
+                localStorage.setItem('breakup_reset_days', JSON.stringify(resetDays));
+            } else if (day === 5) {
+                synthesizeReset();
+                resetDays.day = 6;
+                localStorage.setItem('breakup_reset_days', JSON.stringify(resetDays));
+            } else if (day === 6) {
+                showToast("Reset complete! View your plan in My Decision Plan.");
+                switchView('planView');
+            }
+            updateResetUI();
+        }
+
+        function synthesizeReset() {
+            const plan = {
+                clarity: getHistory('clarity')[0]?.data || {},
+                fear: getHistory('fear')[0]?.data || {},
+                stay: getHistory('stay')[0]?.data || {},
+                leave: getHistory('leave')[0]?.data || {},
+                gut: getHistory('gut')[0]?.data || {}
+            };
+            const output = document.getElementById('resetPlanContent');
+            output.innerHTML = `
+                <div class="analysis-grid">
+                    <div class="analysis-item"><div class="analysis-item-title">What I Know Now</div><div class="analysis-item-content">${plan.clarity.Uncertainty || 'Reflect on clarity.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">What I Fear</div><div class="analysis-item-content">${plan.fear['Bigger Fear'] || 'Reflect on fear.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Stay Conditions</div><div class="analysis-item-content">${plan.stay.Likelihood || 'Reflect on stay conditions.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Leave Complexity</div><div class="analysis-item-content">${plan.leave['Exit Complexity'] || 'Reflect on leave plan.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Body Signal</div><div class="analysis-item-content">${plan.gut['Somatic State'] || 'Reflect on gut check.'}</div></div>
+                </div>
+                <div class="validation-box"><strong>Your First Action:</strong> Choose one small step: observe, experiment, plan, or seek support. Review in 30-60 days.</div>
+            `;
+            document.getElementById('resetPlanOutput').classList.add('active');
+            setHistory('reset', { "Reset Completed": "7-Day Decision Reset", "Plan": "Synthesized" });
+            renderAllHistory();
+        }
+
+        function updateResetUI() {
+            const day = resetDays.day || 0;
+            for (let i=1; i<=7; i++) {
+                const el = document.getElementById(`resetDay${i}`);
+                if (el) el.classList.toggle('done', i <= day);
+            }
+            const content = document.getElementById('resetContent');
+            if (day === 0) content.innerHTML = '<p>Start with Day 1: Clarity Scanner. Complete each tool in order to build your Decision Plan.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Start Day 1</button>';
+            else if (day < 5) content.innerHTML = `<p>Day ${day+1} of 7: Complete the ${['Clarity Scanner','Fear Translator','The Stay Test','The Leave Plan','Gut Check'][day]}.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-arrow-right"></i> Continue</button>`;
+            else if (day === 5) content.innerHTML = `<p>You've completed all tools. Ready to synthesize your Decision Plan?</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-list-check"></i> Synthesize Plan</button>`;
+            else if (day === 6) content.innerHTML = `<p>✅ Reset complete. View your plan in My Decision Plan.</p><button class="btn btn-secondary" onclick="switchView('planView')">View Plan</button>`;
+        }
+
+        // --- DECISION PLAN (synthesis) ---
+        function updateDecisionPlan() {
+            const container = document.getElementById('planDisplay');
+            const c = getHistory('clarity')[0]?.data || {};
+            const f = getHistory('fear')[0]?.data || {};
+            const s = getHistory('stay')[0]?.data || {};
+            const l = getHistory('leave')[0]?.data || {};
+            const g = getHistory('gut')[0]?.data || {};
+            const hasData = Object.keys(c).length || Object.keys(f).length || Object.keys(s).length || Object.keys(l).length || Object.keys(g).length;
+            if (!hasData) {
+                container.innerHTML = '<p style="color:var(--text-muted);">Complete the 7-Day Decision Reset or run individual tools to build your plan.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <div class="analysis-grid">
+                    <div class="analysis-item"><div class="analysis-item-title">What I Know Now</div><div class="analysis-item-content">${c.Uncertainty || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">What I Fear</div><div class="analysis-item-content">${f['Bigger Fear'] || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Stay Conditions</div><div class="analysis-item-content">${s.Likelihood || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Leave Complexity</div><div class="analysis-item-content">${l['Exit Complexity'] || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Body Signal</div><div class="analysis-item-content">${g['Somatic State'] || '—'}</div></div>
+                </div>
+                <div class="validation-box"><strong>Next Step:</strong> Choose one action: observe, experiment, plan, or seek support. Review in 30-60 days.</div>
+            `;
+        }
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', function() {
+            ['clarity','fear','stay','leave','gut'].forEach(renderHistory);
+            renderAllHistory();
+            updateResetUI();
+            updateDecisionPlan();
+        });
+    </script>
+</body>
+</html>

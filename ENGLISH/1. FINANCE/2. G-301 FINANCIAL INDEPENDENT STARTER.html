@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Independence Starter</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS CDN for Utility Classes -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            800: '#6B21A8',
+                            900: '#581C87',
+                            50: '#FAF5FF',
+                            100: '#F3E8FF',
+                        },
+                        teal: {
+                            500: '#14B8A6',
+                            600: '#0D9488',
+                            50: '#F0FDFA',
+                            100: '#CCFBF1',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #FAF5FF 0%, #F0FDFA 100%);
+            min-height: 100vh;
+            color: #1F2937;
+        }
+        .sidebar {
+            width: 260px;
+            transition: transform 0.3s ease;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #6B21A8;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 50;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .nav-link.active {
+            background-color: #FAF5FF;
+            color: #6B21A8;
+            border-left: 4px solid #6B21A8;
+            font-weight: 600;
+        }
+        @media print {
+            body {
+                background: white !important;
+            }
+            .sidebar, header, footer, button, .no-print {
+                display: none !important;
+            }
+            main {
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            .print-container {
+                display: block !important;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen">
+
+    <!-- Mobile Header -->
+    <div class="md:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200 sticky top-0 z-30 no-print">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-key text-purple-800 text-xl"></i>
+            <span class="font-bold text-lg text-purple-800">FI Starter V2</span>
+        </div>
+        <button id="hamburgerBtn" class="p-2 text-gray-600 focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <!-- Main Container -->
+    <div class="flex flex-1 relative">
+        <!-- Sidebar Overlay for Mobile -->
+        <div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden no-print"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="sidebar fixed md:sticky top-0 h-screen bg-white border-r border-gray-200 z-40 flex flex-col justify-between shrink-0 no-print">
+            <div>
+                <div class="p-6 hidden md:flex items-center space-x-3 border-b border-gray-100">
+                    <div class="bg-purple-100 p-2 rounded-lg">
+                        <i class="fa-solid fa-key text-purple-800 text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-purple-800 text-lg leading-tight">FI Starter</h1>
+                        <p class="text-xs text-teal-600 font-medium">Autonomy OS V2</p>
+                    </div>
+                </div>
+
+                <nav class="p-4 space-y-1">
+                    <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-link active flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-gauge w-5 text-center text-purple-800"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" onclick="switchTab('tool1')" id="nav-tool1" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-clipboard-check w-5 text-center text-purple-800"></i>
+                        <span>1. Autonomy Audit</span>
+                    </a>
+                    <a href="#" onclick="switchTab('tool2')" id="nav-tool2" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-piggy-bank w-5 text-center text-purple-800"></i>
+                        <span>2. Buffer Builder</span>
+                    </a>
+                    <a href="#" onclick="switchTab('tool3')" id="nav-tool3" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-calculator w-5 text-center text-purple-800"></i>
+                        <span>3. Solo Living Cost</span>
+                    </a>
+                    <a href="#" onclick="switchTab('tool4')" id="nav-tool4" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-briefcase w-5 text-center text-purple-800"></i>
+                        <span>4. Income Generator</span>
+                    </a>
+                    <a href="#" onclick="switchTab('tool5')" id="nav-tool5" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-map-location-dot w-5 text-center text-purple-800"></i>
+                        <span>5. Independence Roadmap</span>
+                    </a>
+                    <a href="#" onclick="switchTab('myplan')" id="nav-myplan" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-file-lines w-5 text-center text-purple-800"></i>
+                        <span>My Plan & Print</span>
+                    </a>
+                    <a href="#" onclick="switchTab('history')" id="nav-history" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-clock-rotate-left w-5 text-center text-purple-800"></i>
+                        <span>Unified History</span>
+                    </a>
+                    <a href="#" onclick="switchTab('privacy')" id="nav-privacy" class="nav-link flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-purple-50 transition">
+                        <i class="fa-solid fa-shield-halved w-5 text-center text-purple-800"></i>
+                        <span>Privacy & Safety</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-gray-100 text-xs text-gray-500 bg-gray-50">
+                <p><i class="fa-solid fa-shield-halved text-teal-500 mr-1"></i> Client-side local state storage.</p>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 p-4 md:p-8 max-width-4xl mx-auto w-full min-w-0">
+            
+            <!-- DASHBOARD SECTION -->
+            <section id="section-dashboard" class="space-y-6">
+                <!-- Hero Card -->
+                <div class="bg-gradient-to-r from-purple-800 to-purple-900 rounded-xl shadow-sm p-6 md:p-8 text-white">
+                    <div class="max-w-2xl">
+                        <span class="inline-block bg-teal-500 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider mb-3">Autonomy Toolkit V2</span>
+                        <h2 class="text-2xl md:text-3xl font-bold mb-2">Financial Independence Starter</h2>
+                        <p class="text-purple-100 text-sm md:text-base mb-6">Build your personal financial foundation—one practical step at a time. Designed for realistic planning, privacy-aware use, and measurable progress[cite: 2].</p>
+                    </div>
+                </div>
+
+                <!-- Orientation / Guidance Card -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <h3 class="font-bold text-gray-800 text-lg flex items-center mb-2">
+                        <i class="fa-solid fa-compass text-teal-500 mr-2"></i> How to Use This Toolkit
+                    </h3>
+                    <p class="text-sm text-gray-600 mb-4">Financial autonomy is built from distinct structural layers. Weakness in one area indicates a planning focus, not personal failure[cite: 2].</p>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                        <div class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                            <strong class="text-purple-900 block mb-1 font-semibold">1. Access & Docs</strong>
+                            <span class="text-gray-600">Secure account and identity verification records.</span>
+                        </div>
+                        <div class="bg-teal-50 p-3 rounded-lg border border-teal-100">
+                            <strong class="text-teal-900 block mb-1 font-semibold">2. Buffer Reserve</strong>
+                            <span class="text-gray-600">Model realistic savings capacity and storage options.</span>
+                        </div>
+                        <div class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                            <strong class="text-purple-900 block mb-1 font-semibold">3. Living Baseline</strong>
+                            <span class="text-gray-600">Calculate independent monthly costs and reserves.</span>
+                        </div>
+                        <div class="bg-teal-50 p-3 rounded-lg border border-teal-100">
+                            <strong class="text-teal-900 block mb-1 font-semibold">4. Income Matrix</strong>
+                            <span class="text-gray-600">Match skills and hours to feasible earning pathways.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Autonomy Progress Tracker -->
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-bold text-gray-800 text-lg flex items-center">
+                            <i class="fa-solid fa-bars-progress text-teal-500 mr-2"></i> Autonomy Progress Milestones
+                        </h3>
+                        <span id="trackerPercent" class="text-sm font-semibold text-purple-800 bg-purple-50 px-3 py-1 rounded-full">0% Completed</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-6">
+                        <div id="trackerBar" class="bg-teal-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="checklistContainer">
+                        <!-- Dynamic Checklists -->
+                    </div>
+                </div>
+
+                <!-- Tools Grid -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div onclick="switchTab('tool1')" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <h4 class="font-bold text-gray-800 mb-1">1. Autonomy Audit</h4>
+                            <p class="text-gray-600 text-sm">Assess financial access, identity documents, income, and visibility constraints[cite: 2].</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center text-purple-800 font-semibold text-sm"><span>Start Audit</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i></div>
+                    </div>
+
+                    <div onclick="switchTab('tool2')" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-piggy-bank"></i></div>
+                            <h4 class="font-bold text-gray-800 mb-1">2. Buffer Builder</h4>
+                            <p class="text-gray-600 text-sm">Model a personal buffer, calculate time-to-target, and examine secure storage tradeoffs[cite: 2].</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center text-teal-600 font-semibold text-sm"><span>Build Buffer</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i></div>
+                    </div>
+
+                    <div onclick="switchTab('tool3')" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-calculator"></i></div>
+                            <h4 class="font-bold text-gray-800 mb-1">3. Solo Living Cost</h4>
+                            <p class="text-gray-600 text-sm">Calculate a monthly baseline for entered categories and scenario reserves[cite: 2].</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center text-purple-800 font-semibold text-sm"><span>Calculate Costs</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i></div>
+                    </div>
+
+                    <div onclick="switchTab('tool4')" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-briefcase"></i></div>
+                            <h4 class="font-bold text-gray-800 mb-1">4. Income Generator</h4>
+                            <p class="text-gray-600 text-sm">Match hours, location flexibility, and skills to feasible work pathways and experiments[cite: 2].</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center text-teal-600 font-semibold text-sm"><span>Explore Pathways</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i></div>
+                    </div>
+
+                    <div onclick="switchTab('tool5')" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-lg bg-purple-100 text-purple-800 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-map-location-dot"></i></div>
+                            <h4 class="font-bold text-gray-800 mb-1">5. Independence Roadmap</h4>
+                            <p class="text-gray-600 text-sm">Generate a condition-based milestone timeline adapted to your stage and hurdles[cite: 2].</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center text-purple-800 font-semibold text-sm"><span>View Roadmap</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i></div>
+                    </div>
+
+                    <div onclick="switchTab('myplan')" class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition cursor-pointer flex flex-col justify-between">
+                        <div>
+                            <div class="w-12 h-12 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center text-xl mb-4"><i class="fa-solid fa-file-lines"></i></div>
+                            <h4 class="font-bold text-gray-800 mb-1">My Plan & Print</h4>
+                            <p class="text-gray-600 text-sm">Synthesize all completed tool outputs into a clean, printable financial independence plan[cite: 2].</p>
+                        </div>
+                        <div class="mt-4 pt-3 border-t border-gray-50 flex items-center text-teal-600 font-semibold text-sm"><span>View Combined Plan</span><i class="fa-solid fa-arrow-right ml-2 text-xs"></i></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: AUTONOMY AUDIT -->
+            <section id="section-tool1" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-purple-800 flex items-center">
+                                <i class="fa-solid fa-clipboard-check mr-2"></i> Tool 1: Autonomy Audit
+                            </h2>
+                            <p class="text-sm text-gray-500">Problem: "I have no money in my own name and don't know where I stand[cite: 2]."</p>
+                        </div>
+                        <button onclick="loadSampleTool1()" class="px-3 py-1.5 bg-purple-50 text-purple-800 text-xs font-semibold rounded-lg hover:bg-purple-100 border border-purple-200 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Load Sample Scenario
+                        </button>
+                    </div>
+
+                    <form id="form-tool1" onsubmit="handleTool1Submit(event)" class="space-y-6">
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">1. Do you have a personal bank account in ONLY your name?</label>
+                            <div class="space-x-4">
+                                <label class="inline-flex items-center"><input type="radio" name="t1_account" value="yes" class="text-purple-800 focus:ring-purple-800" required> <span class="ml-2 text-sm">Yes</span></label>
+                                <label class="inline-flex items-center"><input type="radio" name="t1_account" value="no" class="text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">No</span></label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">2. Do you have personal income or access to cash?</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center"><input type="radio" name="t1_income" value="regular" class="text-purple-800 focus:ring-purple-800" required> <span class="ml-2 text-sm">Regular personal income</span></label>
+                                <label class="flex items-center"><input type="radio" name="t1_income" value="occasional" class="text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Occasional cash/gifts/allowance</span></label>
+                                <label class="flex items-center"><input type="radio" name="t1_income" value="zero" class="text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Zero personal money</span></label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">3. Do you have your essential legal documents accessible? (Check all accessible)</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <label class="flex items-center"><input type="checkbox" name="t1_docs" value="ID" class="rounded text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">ID / Driver License</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t1_docs" value="BirthCert" class="rounded text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Birth Certificate</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t1_docs" value="SSN" class="rounded text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Social Security / Tax ID</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t1_docs" value="Passport" class="rounded text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Passport</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t1_docs" value="BankStmt" class="rounded text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Bank Statements</span></label>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">4. Is your financial activity subject to heavy oversight or visibility?</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center"><input type="radio" name="t1_monitoring" value="heavy" class="text-purple-800 focus:ring-purple-800" required> <span class="ml-2 text-sm">Heavy oversight (transactions or accounts actively monitored)</span></label>
+                                <label class="flex items-center"><input type="radio" name="t1_monitoring" value="moderate" class="text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Moderate questions about spending</span></label>
+                                <label class="flex items-center"><input type="radio" name="t1_monitoring" value="minimal" class="text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">Minimal oversight</span></label>
+                                <label class="flex items-center"><input type="radio" name="t1_monitoring" value="no" class="text-purple-800 focus:ring-purple-800"> <span class="ml-2 text-sm">No oversight</span></label>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-purple-800 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-900 transition shadow">
+                                Generate Autonomy Audit
+                            </button>
+                            <button type="button" onclick="resetToolForm('tool1')" class="px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition">
+                                Start Over
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Output Box -->
+                <div id="out-tool1" class="hidden bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-6">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h3 class="font-bold text-gray-800 text-lg">Autonomy Snapshot</h3>
+                        <div class="flex gap-2">
+                            <button onclick="copyResults('out-tool1-content')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded flex items-center">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy Plan
+                            </button>
+                            <button onclick="switchTab('tool2')" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-800 font-semibold py-1.5 px-3 rounded flex items-center">
+                                Next Tool <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="out-tool1-content" class="space-y-6"></div>
+                </div>
+            </section>
+
+            <!-- TOOL 2: PERSONAL BUFFER BUILDER -->
+            <section id="section-tool2" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-teal-600 flex items-center">
+                                <i class="fa-solid fa-piggy-bank mr-2"></i> Tool 2: Personal Buffer Builder
+                            </h2>
+                            <p class="text-sm text-gray-500">Problem: "How can I build a personal reserve when funds are tight[cite: 2]?"</p>
+                        </div>
+                        <button onclick="loadSampleTool2()" class="px-3 py-1.5 bg-teal-50 text-teal-600 text-xs font-semibold rounded-lg hover:bg-teal-100 border border-teal-200 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Load Sample Scenario
+                        </button>
+                    </div>
+
+                    <form id="form-tool2" onsubmit="handleTool2Submit(event)" class="space-y-6">
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Primary source of potential savings:</label>
+                            <select id="t2_source" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-teal-500 focus:border-teal-500" required>
+                                <option value="">Select source...</option>
+                                <option value="Minor income allocation">Minor income allocation</option>
+                                <option value="Micro-gigs / Small tasks">Micro-gigs / Small tasks</option>
+                                <option value="Selling personal items">Selling small personal items</option>
+                                <option value="Gifts / Allowances">Gifts / Allowances</option>
+                                <option value="Other independent source">Other independent source</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Estimated savings contribution per week ($):</label>
+                            <input type="number" id="t2_amount" min="1" step="1" placeholder="e.g. 15" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-teal-500 focus:border-teal-500" required>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Target buffer amount ($) (Optional):</label>
+                            <input type="number" id="t2_target" min="0" step="1" placeholder="e.g. 500" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-teal-500 focus:border-teal-500">
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Safe storage options under consideration:</label>
+                            <div class="space-y-2">
+                                <label class="flex items-center"><input type="checkbox" name="t2_storage" value="digital" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Private digital account (paperless mobile banking)</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t2_storage" value="cash" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Physical cash reserve in secure location</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t2_storage" value="friend" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Trusted independent arrangement</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t2_storage" value="separate" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Separate account at an independent institution</span></label>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-teal-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-teal-700 transition shadow">
+                                Build Buffer Plan
+                            </button>
+                            <button type="button" onclick="resetToolForm('tool2')" class="px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition">
+                                Start Over
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="out-tool2" class="hidden bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-6">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h3 class="font-bold text-gray-800 text-lg">Buffer Strategy Plan</h3>
+                        <div class="flex gap-2">
+                            <button onclick="copyResults('out-tool2-content')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded flex items-center">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy Plan
+                            </button>
+                            <button onclick="switchTab('tool3')" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-800 font-semibold py-1.5 px-3 rounded flex items-center">
+                                Next Tool <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="out-tool2-content" class="space-y-6"></div>
+                </div>
+            </section>
+
+            <!-- TOOL 3: SOLO LIVING COST CALCULATOR -->
+            <section id="section-tool3" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-purple-800 flex items-center">
+                                <i class="fa-solid fa-calculator mr-2"></i> Tool 3: Solo Living Cost Calculator
+                            </h2>
+                            <p class="text-sm text-gray-500">Problem: "How much money would I actually need to support myself independently[cite: 2]?"</p>
+                        </div>
+                        <button onclick="loadSampleTool3()" class="px-3 py-1.5 bg-purple-50 text-purple-800 text-xs font-semibold rounded-lg hover:bg-purple-100 border border-purple-200 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Load Sample Scenario
+                        </button>
+                    </div>
+
+                    <form id="form-tool3" onsubmit="handleTool3Submit(event)" class="space-y-6">
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Target living arrangement / arrangement type:</label>
+                            <select id="t3_location" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                                <option value="">Select option...</option>
+                                <option value="Current area solo">Current area (Solo Apartment)</option>
+                                <option value="Lower cost area">Lower cost area / city</option>
+                                <option value="Roommate/Shared Living">Roommate / Shared Living</option>
+                                <option value="Other arrangement">Other arrangement</option>
+                            </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Monthly housing / rent ($/mo):</label>
+                                <input type="number" id="t3_rent" min="0" placeholder="e.g. 750" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Utilities & phone ($/mo):</label>
+                                <input type="number" id="t3_utilities" min="0" placeholder="e.g. 150" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Groceries & essentials ($/mo):</label>
+                                <input type="number" id="t3_groceries" min="0" placeholder="e.g. 300" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Transport ($/mo):</label>
+                                <input type="number" id="t3_transport" min="0" placeholder="e.g. 150" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gray-100 pt-4">
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Optional debt/insurance ($/mo):</label>
+                                <input type="number" id="t3_other" min="0" placeholder="e.g. 50" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Reserve Duration:</label>
+                                <select id="t3_reserve_months" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800">
+                                    <option value="1">1 Month reserve</option>
+                                    <option value="2">2 Months reserve</option>
+                                    <option value="3" selected>3 Months reserve</option>
+                                    <option value="6">6 Months reserve</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-gray-700 text-sm mb-1">Reliable Monthly Net Income ($):</label>
+                                <input type="number" id="t3_income" min="0" placeholder="e.g. 1200" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800">
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-purple-800 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-900 transition shadow">
+                                Calculate Living Baseline
+                            </button>
+                            <button type="button" onclick="resetToolForm('tool3')" class="px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition">
+                                Start Over
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="out-tool3" class="hidden bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-6">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h3 class="font-bold text-gray-800 text-lg">Living Cost Analysis</h3>
+                        <div class="flex gap-2">
+                            <button onclick="copyResults('out-tool3-content')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded flex items-center">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy Analysis
+                            </button>
+                            <button onclick="switchTab('tool4')" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-800 font-semibold py-1.5 px-3 rounded flex items-center">
+                                Next Tool <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="out-tool3-content" class="space-y-6"></div>
+                </div>
+            </section>
+
+            <!-- TOOL 4: INCOME GENERATOR MATRIX -->
+            <section id="section-tool4" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-teal-600 flex items-center">
+                                <i class="fa-solid fa-briefcase mr-2"></i> Tool 4: Income Pathway Matrix
+                            </h2>
+                            <p class="text-sm text-gray-500">Problem: "I need to earn my own income, but I have schedule or location constraints[cite: 2]."</p>
+                        </div>
+                        <button onclick="loadSampleTool4()" class="px-3 py-1.5 bg-teal-50 text-teal-600 text-xs font-semibold rounded-lg hover:bg-teal-100 border border-teal-200 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Load Sample Scenario
+                        </button>
+                    </div>
+
+                    <form id="form-tool4" onsubmit="handleTool4Submit(event)" class="space-y-6">
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Hours available per week:</label>
+                            <select id="t4_hours" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-teal-500 focus:border-teal-500" required>
+                                <option value="">Select availability...</option>
+                                <option value="1-5 hours">1 - 5 hours / week</option>
+                                <option value="5-15 hours">5 - 15 hours / week</option>
+                                <option value="30+ hours">Full-time capacity (30+ hours)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Location flexibility:</label>
+                            <select id="t4_location" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-teal-500 focus:border-teal-500" required>
+                                <option value="">Select location option...</option>
+                                <option value="Remote / From Home only">Remote / From Home only</option>
+                                <option value="Local flexible hours">Local flexible hours (nearby errands/gigs)</option>
+                                <option value="Standard workplace">Standard workplace / On-site job</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-1">Top existing skills or activities you feel confident in:</label>
+                            <textarea id="t4_skills" rows="3" placeholder="e.g. Data entry, childcare, organizing, customer service, writing, cooking" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-teal-500 focus:border-teal-500" required></textarea>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Access to transport & technology:</label>
+                            <div class="grid grid-cols-2 gap-2">
+                                <label class="flex items-center"><input type="checkbox" name="t4_tech" value="Smartphone" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Smartphone</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t4_tech" value="Laptop" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Laptop / PC</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t4_tech" value="Car" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Car / Personal Vehicle</span></label>
+                                <label class="flex items-center"><input type="checkbox" name="t4_tech" value="Internet" class="rounded text-teal-600 focus:ring-teal-500"> <span class="ml-2 text-sm">Reliable Internet</span></label>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-teal-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-teal-700 transition shadow">
+                                Generate Income Matrix
+                            </button>
+                            <button type="button" onclick="resetToolForm('tool4')" class="px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition">
+                                Start Over
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="out-tool4" class="hidden bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-6">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h3 class="font-bold text-gray-800 text-lg">Income Strategy Matrix</h3>
+                        <div class="flex gap-2">
+                            <button onclick="copyResults('out-tool4-content')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded flex items-center">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy Plan
+                            </button>
+                            <button onclick="switchTab('tool5')" class="text-xs bg-teal-50 hover:bg-teal-100 text-teal-800 font-semibold py-1.5 px-3 rounded flex items-center">
+                                Next Tool <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="out-tool4-content" class="space-y-6"></div>
+                </div>
+            </section>
+
+            <!-- TOOL 5: INDEPENDENCE ROADMAP -->
+            <section id="section-tool5" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-purple-800 flex items-center">
+                                <i class="fa-solid fa-map-location-dot mr-2"></i> Tool 5: Independence Roadmap
+                            </h2>
+                            <p class="text-sm text-gray-500">Problem: "I want to become independent over time, but I need a structured sequence[cite: 2]."</p>
+                        </div>
+                        <button onclick="loadSampleTool5()" class="px-3 py-1.5 bg-purple-50 text-purple-800 text-xs font-semibold rounded-lg hover:bg-purple-100 border border-purple-200 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> Load Sample Scenario
+                        </button>
+                    </div>
+
+                    <form id="form-tool5" onsubmit="handleTool5Submit(event)" class="space-y-6">
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Current financial dependence level:</label>
+                            <select id="t5_dependence" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                                <option value="">Select dependence level...</option>
+                                <option value="Total financial reliance">Total financial reliance (No personal income/savings)</option>
+                                <option value="Partial dependence">Partial dependence (Some micro-cash or small income)</option>
+                                <option value="Transition ready">Transition ready (Income active, building final reserve)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Target independence timeframe:</label>
+                            <select id="t5_timeframe" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                                <option value="">Select target timeline...</option>
+                                <option value="3 Months">3 Months (Fast-track emergency transition)</option>
+                                <option value="6 Months">6 Months (Balanced transition)</option>
+                                <option value="1 Year">1 Year (Structured rebuild)</option>
+                                <option value="2 Years">2 Years (Long-term foundation)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block font-semibold text-gray-700 text-sm mb-2">Primary hurdle or key challenge:</label>
+                            <select id="t5_hurdle" class="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-purple-800 focus:border-purple-800" required>
+                                <option value="">Select primary hurdle...</option>
+                                <option value="No savings">No savings saved</option>
+                                <option value="No job">No active job / employment gap</option>
+                                <option value="Conflict or pushback">Fear of conflict or pushback</option>
+                                <option value="Credit history">Poor or zero credit history</option>
+                                <option value="Housing or documents">Housing or document availability</option>
+                            </select>
+                        </div>
+
+                        <div class="flex gap-3">
+                            <button type="submit" class="flex-1 bg-purple-800 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-900 transition shadow">
+                                Generate Independence Roadmap
+                            </button>
+                            <button type="button" onclick="resetToolForm('tool5')" class="px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition">
+                                Start Over
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="out-tool5" class="hidden bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-6">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <h3 class="font-bold text-gray-800 text-lg">Customized Roadmap</h3>
+                        <div class="flex gap-2">
+                            <button onclick="copyResults('out-tool5-content')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-1.5 px-3 rounded flex items-center">
+                                <i class="fa-regular fa-copy mr-1"></i> Copy Roadmap
+                            </button>
+                            <button onclick="switchTab('myplan')" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-800 font-semibold py-1.5 px-3 rounded flex items-center">
+                                View Full Plan <i class="fa-solid fa-arrow-right ml-1"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div id="out-tool5-content" class="space-y-6"></div>
+                </div>
+            </section>
+
+            <!-- MY PLAN & PRINT SECTION -->
+            <section id="section-myplan" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 print-container">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-purple-800 flex items-center">
+                                <i class="fa-solid fa-file-lines mr-2"></i> My Financial Independence Plan
+                            </h2>
+                            <p class="text-sm text-gray-500">Synthesized outputs from your completed toolkit modules[cite: 2].</p>
+                        </div>
+                        <div class="flex gap-2 no-print">
+                            <button onclick="window.print()" class="px-4 py-2 bg-purple-800 text-white text-xs font-semibold rounded-lg hover:bg-purple-900 transition flex items-center shadow">
+                                <i class="fa-solid fa-print mr-1.5"></i> Print Plan
+                            </button>
+                            <button onclick="copyResults('myplan-content')" class="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-200 transition flex items-center">
+                                <i class="fa-regular fa-copy mr-1.5"></i> Copy Plan Text
+                            </button>
+                        </div>
+                    </div>
+                    <div id="myplan-content" class="space-y-6 text-sm text-gray-700">
+                        <!-- Dynamic Synthesis Loaded via JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- UNIFIED HISTORY SECTION -->
+            <section id="section-history" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 pb-4 mb-6">
+                        <div>
+                            <h2 class="text-xl font-bold text-purple-800 flex items-center">
+                                <i class="fa-solid fa-clock-rotate-left mr-2"></i> Unified History & Saved Runs
+                            </h2>
+                            <p class="text-sm text-gray-500">Review, restore, or clear saved runs across all toolkit modules[cite: 2].</p>
+                        </div>
+                        <button onclick="clearAllHistoryConfirm()" class="px-3 py-1.5 bg-red-50 text-red-600 text-xs font-semibold rounded-lg hover:bg-red-100 border border-red-200 transition">
+                            <i class="fa-solid fa-trash-can mr-1"></i> Clear All History
+                        </button>
+                    </div>
+                    <div id="unifiedHistoryContainer" class="space-y-4">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- PRIVACY & SAFETY SECTION -->
+            <section id="section-privacy" class="hidden space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 space-y-4 text-sm text-gray-700">
+                    <h2 class="text-xl font-bold text-purple-800 flex items-center border-b border-gray-100 pb-3">
+                        <i class="fa-solid fa-shield-halved mr-2"></i> Privacy & Safety Framework
+                    </h2>
+                    <p><strong>Client-Side Storage:</strong> This application operates entirely within your local web browser. Your inputs and saved histories are stored locally using browser storage (`localStorage`) and are never transmitted to any server[cite: 2].</p>
+                    <p><strong>Planning vs. Advice:</strong> This toolkit is designed for personal organization, autonomy preparedness, and transition planning. It does not constitute formal legal, financial, or domestic advocacy advice[cite: 2].</p>
+                    <p><strong>Safety Considerations:</strong> If taking financial or planning steps presents a risk due to household monitoring, conflict, or control, prioritize your personal safety. Consider using safe devices or consulting local professional support services when navigating difficult situations[cite: 2].</p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Universal Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6 px-4 text-center text-xs text-gray-500 mt-auto z-10 no-print">
+        <div class="max-w-4xl mx-auto space-y-2">
+            <p class="font-medium text-gray-600">For personal empowerment and planning purposes only. Not legal or domestic advocacy advice. If in an unsafe situation, contact local support helplines[cite: 2].</p>
+            <p class="text-gray-400">FI Starter V2 &bull; Local Browser Storage &bull; Offline Ready[cite: 2]</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle mr-2"></i> Copied to clipboard!
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Central State Model & Milestones
+        const milestones = [
+            { id: 'm1', text: 'Personal solo bank account opened' },
+            { id: 'm2', text: 'Secure unmonitored digital communication set up' },
+            { id: 'm3', text: 'Essential legal and identity documents gathered' },
+            { id: 'm4', text: 'First independent personal cash buffer saved' },
+            { id: 'm5', text: 'Feasible independent income stream explored' },
+            { id: 'm6', text: 'Solo living baseline & transition plan completed' }
+        ];
+
+        let appState = {
+            schemaVersion: 2,
+            completedTools: [],
+            toolResults: {},
+            currentInputs: {}
+        };
+
+        function loadAppState() {
+            try {
+                const saved = localStorage.getItem('findependence_v2_state');
+                if (saved) {
+                    appState = JSON.parse(saved);
+                }
+            } catch(e) {
+                console.error("Error loading app state", e);
+            }
+        }
+
+        function saveAppState() {
+            try {
+                localStorage.setItem('findependence_v2_state', JSON.stringify(appState));
+            } catch(e) {
+                console.error("Error saving app state", e);
+            }
+        }
+
+        // HTML Sanitizer / Escaper
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Mobile Menu Setup
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('hidden');
+        }
+
+        if(hamburgerBtn) hamburgerBtn.addEventListener('click', toggleSidebar);
+        if(sidebarOverlay) sidebarOverlay.addEventListener('click', toggleSidebar);
+
+        // Navigation / Tab Switching
+        function switchTab(tabId) {
+            const sections = ['dashboard', 'tool1', 'tool2', 'tool3', 'tool4', 'tool5', 'myplan', 'history', 'privacy'];
+            sections.forEach(s => {
+                const elem = document.getElementById('section-' + s);
+                if(elem) elem.classList.add('hidden');
+                const navElem = document.getElementById('nav-' + s);
+                if(navElem) navElem.classList.remove('active');
+            });
+
+            const targetSection = document.getElementById('section-' + tabId);
+            if(targetSection) targetSection.classList.remove('hidden');
+            const activeNav = document.getElementById('nav-' + tabId);
+            if(activeNav) activeNav.classList.add('active');
+
+            if(tabId === 'myplan') renderCombinedPlan();
+            if(tabId === 'history') renderUnifiedHistory();
+
+            if (window.innerWidth < 768 && sidebar && sidebar.classList.contains('open')) {
+                toggleSidebar();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Toast Helper
+        function showToast(msg = 'Copied!') {
+            const toast = document.getElementById('toast');
+            if(!toast) return;
+            toast.innerHTML = `<i class="fa-solid fa-check-circle mr-2"></i> ${msg}`;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Copy Helper
+        function copyResults(containerId) {
+            const container = document.getElementById(containerId);
+            if(!container) return;
+            const text = container.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Copied to clipboard!');
+            }).catch(() => {
+                showToast('Copy failed.');
+            });
+        }
+
+        // History Storage & UI Helper
+        function saveHistory(toolId, inputSummary, htmlOutput) {
+            const key = `findependence_history_${toolId}`;
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+
+            const timestamp = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+            
+            history.unshift({
+                id: Date.now(),
+                toolId: toolId,
+                time: timestamp,
+                summary: escapeHTML(inputSummary),
+                content: htmlOutput
+            });
+
+            if (history.length > 30) history = history.slice(0, 30);
+            localStorage.setItem(key, JSON.stringify(history));
+            
+            if(!appState.completedTools.includes(toolId)) {
+                appState.completedTools.push(toolId);
+            }
+            appState.toolResults[toolId] = { summary: inputSummary, content: htmlOutput, time: timestamp };
+            saveAppState();
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryContainer');
+            if(!container) return;
+            const tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            let allEntries = [];
+
+            tools.forEach(tId => {
+                try {
+                    const h = JSON.parse(localStorage.getItem(`findependence_history_${tId}`) || '[]');
+                    allEntries = allEntries.concat(h);
+                } catch(e) {}
+            });
+
+            allEntries.sort((a, b) => b.id - a.id);
+
+            if(allEntries.length === 0) {
+                container.innerHTML = '<p class="text-xs text-gray-400 italic">No saved history entries found across modules.</p>';
+                return;
+            }
+
+            let html = `<div class="flex justify-between items-center mb-4"><span class="text-xs text-gray-500 font-semibold">${allEntries.length} Total Saved Runs</span></div><div class="space-y-3">`;
+
+            allEntries.forEach(item => {
+                html += `
+                    <div class="border border-gray-200 rounded-lg p-4 bg-white hover:bg-gray-50 text-xs transition flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+                        <div>
+                            <div class="text-gray-400 font-medium mb-1"><span class="uppercase font-bold text-purple-800">${item.toolId}</span> &bull; ${item.time}</div>
+                            <div class="font-semibold text-gray-800">${item.summary}</div>
+                        </div>
+                        <button onclick="restoreAndSwitch('${item.toolId}', ${item.id})" class="px-3 py-1.5 bg-purple-50 text-purple-800 rounded font-semibold hover:bg-purple-100 transition shrink-0">
+                            View Result
+                        </button>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function restoreAndSwitch(toolId, itemId) {
+            try {
+                const history = JSON.parse(localStorage.getItem(`findependence_history_${toolId}`) || '[]');
+                const item = history.find(i => i.id === itemId);
+                if(item) {
+                    switchTab(toolId);
+                    const outContainer = document.getElementById(`out-${toolId}`);
+                    const contentContainer = document.getElementById(`out-${toolId}-content`);
+                    if(contentContainer && outContainer) {
+                        contentContainer.innerHTML = item.content;
+                        outContainer.classList.remove('hidden');
+                    }
+                }
+            } catch(e) {}
+        }
+
+        function clearAllHistoryConfirm() {
+            if(confirm("Are you sure you want to clear all saved history across all modules?")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                    localStorage.removeItem(`findependence_history_${t}`);
+                });
+                appState.completedTools = [];
+                appState.toolResults = {};
+                saveAppState();
+                renderUnifiedHistory();
+                initChecklist();
+                showToast("All history cleared.");
+            }
+        }
+
+        function resetToolForm(toolId) {
+            const form = document.getElementById(`form-${toolId}`);
+            if(form) form.reset();
+            const out = document.getElementById(`out-${toolId}`);
+            if(out) out.classList.add('hidden');
+            showToast("Form reset.");
+        }
+
+        // Checklist Tracker Logic
+        function initChecklist() {
+            const container = document.getElementById('checklistContainer');
+            if(!container) return;
+            let savedState = {};
+            try {
+                savedState = JSON.parse(localStorage.getItem('findependence_checklist') || '{}');
+            } catch(e) {}
+
+            container.innerHTML = '';
+            milestones.forEach((m) => {
+                const isChecked = !!savedState[m.id];
+                const div = document.createElement('div');
+                div.className = 'flex items-center p-3 rounded-lg border border-gray-100 bg-gray-50 hover:bg-purple-50 transition cursor-pointer';
+                div.onclick = () => toggleChecklist(m.id);
+                div.innerHTML = `
+                    <input type="checkbox" id="chk_${m.id}" ${isChecked ? 'checked' : ''} class="rounded text-purple-800 focus:ring-purple-800 pointer-events-none">
+                    <label for="chk_${m.id}" class="ml-3 text-xs md:text-sm font-medium text-gray-700 cursor-pointer pointer-events-none">${escapeHTML(m.text)}</label>
+                `;
+                container.appendChild(div);
+            });
+            updateTrackerMeter();
+        }
+
+        function toggleChecklist(id) {
+            let savedState = {};
+            try {
+                savedState = JSON.parse(localStorage.getItem('findependence_checklist') || '{}');
+            } catch(e) {}
+            savedState[id] = !savedState[id];
+            localStorage.setItem('findependence_checklist', JSON.stringify(savedState));
+            initChecklist();
+        }
+
+        function updateTrackerMeter() {
+            let savedState = {};
+            try {
+                savedState = JSON.parse(localStorage.getItem('findependence_checklist') || '{}');
+            } catch(e) {}
+            const total = milestones.length;
+            const completed = Object.values(savedState).filter(Boolean).length;
+            const pct = Math.round((completed / total) * 100);
+
+            const pctElem = document.getElementById('trackerPercent');
+            const barElem = document.getElementById('trackerBar');
+            if(pctElem) pctElem.innerText = `${pct}% Completed`;
+            if(barElem) barElem.style.width = `${pct}%`;
+        }
+
+        // ---------------- TOOL 1 LOGIC ----------------
+        function loadSampleTool1() {
+            const form = document.getElementById('form-tool1');
+            if(!form) return;
+            form.t1_account.value = 'no';
+            form.t1_income.value = 'zero';
+            form.querySelectorAll('input[name="t1_docs"]').forEach(cb => {
+                cb.checked = (cb.value === 'ID' || cb.value === 'BirthCert');
+            });
+            form.t1_monitoring.value = 'heavy';
+            showToast('Sample Scenario Loaded!');
+        }
+
+        function handleTool1Submit(e) {
+            e.preventDefault();
+            const form = e.target;
+            const hasAccount = form.t1_account.value;
+            const income = form.t1_income.value;
+            const monitoring = form.t1_monitoring.value;
+            const checkedDocs = Array.from(form.querySelectorAll('input[name="t1_docs"]:checked')).map(c => c.value);
+
+            let stageTitle = '';
+            let stageDesc = '';
+            let stageColor = '';
+            if (hasAccount === 'no' || income === 'zero') {
+                stageTitle = 'Foundation Stage';
+                stageDesc = 'Focus on securing identity documents and establishing a secure individual account foothold[cite: 2].';
+                stageColor = 'bg-amber-100 text-amber-800 border-amber-200';
+            } else if (income === 'occasional' || monitoring === 'heavy') {
+                stageTitle = 'Buffer Building Stage';
+                stageDesc = 'Focus on growing cash reserves, maintaining digital privacy, and securing independent income capacity[cite: 2].';
+                stageColor = 'bg-purple-100 text-purple-800 border-purple-200';
+            } else {
+                stageTitle = 'Transition Preparation Stage';
+                stageDesc = 'Focus on living cost calculations, financial readiness, and contingency timeline planning[cite: 2].';
+                stageColor = 'bg-teal-100 text-teal-800 border-teal-200';
+            }
+
+            const gaps = [];
+            if (hasAccount === 'no') gaps.push('No personal bank account in single name.');
+            if (income === 'zero') gaps.push('Zero personal income stream.');
+            if (monitoring === 'heavy' || monitoring === 'moderate') gaps.push('Active oversight of transactions or personal communication.');
+            if (!checkedDocs.includes('SSN') || !checkedDocs.includes('ID')) gaps.push('Missing essential primary legal identity records.');
+            if (gaps.length === 0) gaps.push('Review long-term independent credit and reserve foundations.');
+
+            const steps = [
+                'Set up a separate, private communication channel using device security precautions.',
+                'Identify a fee-free digital account or independent institution with paperless delivery options.',
+                'Begin gathering physical original documents or secure digitized copies in a password-protected environment.'
+            ];
+
+            const html = `
+                <div class="p-4 rounded-xl border ${stageColor} mb-4">
+                    <span class="text-xs uppercase font-bold tracking-wider opacity-80">Audit Assessment</span>
+                    <h4 class="text-lg font-bold mt-1">${escapeHTML(stageTitle)}</h4>
+                    <p class="text-sm mt-1">${escapeHTML(stageDesc)}</p>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-2 flex items-center">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-500 mr-2"></i> Identified Planning Gaps
+                    </h4>
+                    <ul class="list-disc pl-5 text-sm text-gray-700 space-y-1">
+                        ${gaps.map(g => `<li>${escapeHTML(g)}</li>`).join('')}
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-2 flex items-center">
+                        <i class="fa-solid fa-user-shield text-teal-600 mr-2"></i> Recommended First Actions
+                    </h4>
+                    <ol class="list-decimal pl-5 text-sm text-gray-700 space-y-1">
+                        ${steps.map(s => `<li>${escapeHTML(s)}</li>`).join('')}
+                    </ol>
+                </div>
+            `;
+
+            const outContent = document.getElementById('out-tool1-content');
+            const outBox = document.getElementById('out-tool1');
+            if(outContent) outContent.innerHTML = html;
+            if(outBox) outBox.classList.remove('hidden');
+
+            saveHistory('tool1', `Account: ${hasAccount.toUpperCase()} | Income: ${income} | Oversight: ${monitoring}`, html);
+        }
+
+        // ---------------- TOOL 2 LOGIC ----------------
+        function loadSampleTool2() {
+            const src = document.getElementById('t2_source');
+            const amt = document.getElementById('t2_amount');
+            const tgt = document.getElementById('t2_target');
+            if(src) src.value = 'Micro-gigs / Small tasks';
+            if(amt) amt.value = '15';
+            if(tgt) tgt.value = '300';
+            document.querySelectorAll('input[name="t2_storage"]').forEach(cb => {
+                cb.checked = (cb.value === 'digital' || cb.value === 'separate');
+            });
+            showToast('Sample Scenario Loaded!');
+        }
+
+        function handleTool2Submit(e) {
+            e.preventDefault();
+            const source = document.getElementById('t2_source').value;
+            const amount = parseFloat(document.getElementById('t2_amount').value) || 0;
+            const target = parseFloat(document.getElementById('t2_target').value) || 0;
+
+            const monthlyEst = amount * 4.345;
+            const proj13Wk = amount * 13;
+            const proj26Wk = amount * 26;
+            const proj52Wk = amount * 52;
+
+            let targetText = '';
+            if(target > 0) {
+                const gap = Math.max(target - monthlyEst, 0);
+                const weeksToTarget = amount > 0 ? Math.ceil(target / amount) : 0;
+                targetText = `<div class="bg-purple-50 border border-purple-200 p-4 rounded-xl text-center md:col-span-2">
+                    <span class="text-xs text-purple-700 font-semibold uppercase">Target Goal: $${target.toLocaleString()}</span>
+                    <p class="text-xl font-bold text-purple-800 mt-1">Estimated Time to Target: ~${weeksToTarget} weeks (${Math.round(weeksToTarget/4.345)} months)</p>
+                </div>`;
+            }
+
+            const html = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="bg-teal-50 border border-teal-200 p-4 rounded-xl text-center">
+                        <span class="text-xs text-teal-700 font-semibold uppercase">Monthly Accumulation Estimate</span>
+                        <p class="text-3xl font-extrabold text-teal-800 mt-1">$${monthlyEst.toFixed(2)}</p>
+                        <span class="text-xs text-teal-600">Based on weekly contribution × 4.345</span>
+                    </div>
+                    <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl text-center">
+                        <span class="text-xs text-purple-700 font-semibold uppercase">26-Week Projection</span>
+                        <p class="text-3xl font-extrabold text-purple-800 mt-1">$${proj26Wk.toFixed(2)}</p>
+                        <span class="text-xs text-purple-600">Accumulated over half a year</span>
+                    </div>
+                    ${targetText}
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-2">Storage & Account Considerations</h4>
+                    <ul class="list-disc pl-5 text-xs text-gray-700 space-y-1">
+                        <li>Verify fee structures and paperless delivery settings on any financial account.</li>
+                        <li>Ensure account access credentials remain strictly private and secure.</li>
+                        <li>Evaluate whether physical cash holding or digital independent accounts best fit your circumstances.</li>
+                    </ul>
+                </div>
+            `;
+
+            const outContent = document.getElementById('out-tool2-content');
+            const outBox = document.getElementById('out-tool2');
+            if(outContent) outContent.innerHTML = html;
+            if(outBox) outBox.classList.remove('hidden');
+
+            saveHistory('tool2', `Source: ${source} | $${amount}/wk | Monthly Est: $${monthlyEst.toFixed(2)}`, html);
+        }
+
+        // ---------------- TOOL 3 LOGIC ----------------
+        function loadSampleTool3() {
+            const loc = document.getElementById('t3_location');
+            const rent = document.getElementById('t3_rent');
+            const util = document.getElementById('t3_utilities');
+            const groc = document.getElementById('t3_groceries');
+            const trans = document.getElementById('t3_transport');
+            const inc = document.getElementById('t3_income');
+            if(loc) loc.value = 'Lower cost area';
+            if(rent) rent.value = '700';
+            if(util) util.value = '150';
+            if(groc) groc.value = '300';
+            if(trans) trans.value = '150';
+            if(inc) inc.value = '1200';
+            showToast('Sample Scenario Loaded!');
+        }
+
+        function handleTool3Submit(e) {
+            e.preventDefault();
+            const location = document.getElementById('t3_location').value;
+            const rent = parseFloat(document.getElementById('t3_rent').value) || 0;
+            const utilities = parseFloat(document.getElementById('t3_utilities').value) || 0;
+            const groceries = parseFloat(document.getElementById('t3_groceries').value) || 0;
+            const transport = parseFloat(document.getElementById('t3_transport').value) || 0;
+            const other = parseFloat(document.getElementById('t3_other').value) || 0;
+            const reserveMonths = parseInt(document.getElementById('t3_reserve_months').value) || 3;
+            const income = parseFloat(document.getElementById('t3_income').value) || 0;
+
+            const monthlyTotal = rent + utilities + groceries + transport + other;
+            const reserveTarget = monthlyTotal * reserveMonths;
+            const incomeGap = Math.max(monthlyTotal - income, 0);
+
+            const html = `
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+                    <div class="bg-purple-50 border border-purple-200 p-4 rounded-xl">
+                        <span class="text-xs text-purple-700 font-semibold uppercase">Monthly Living Baseline</span>
+                        <p class="text-2xl font-extrabold text-purple-800 mt-1">$${monthlyTotal.toLocaleString()}/mo</p>
+                        <span class="text-xs text-purple-600">Sum of included categories</span>
+                    </div>
+                    <div class="bg-teal-50 border border-teal-200 p-4 rounded-xl">
+                        <span class="text-xs text-teal-700 font-semibold uppercase">${reserveMonths}-Month Reserve Target</span>
+                        <p class="text-2xl font-extrabold text-teal-800 mt-1">$${reserveTarget.toLocaleString()}</p>
+                        <span class="text-xs text-teal-600">Calculated reserve target</span>
+                    </div>
+                    <div class="bg-gray-50 border border-gray-200 p-4 rounded-xl">
+                        <span class="text-xs text-gray-600 font-semibold uppercase">Monthly Affordability Gap</span>
+                        <p class="text-2xl font-extrabold text-gray-800 mt-1">$${incomeGap.toLocaleString()}/mo</p>
+                        <span class="text-xs text-gray-500">${income > 0 ? 'Baseline minus reliable net income' : 'No income entered'}</span>
+                    </div>
+                </div>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200 space-y-2 text-xs">
+                    <h4 class="font-bold text-gray-800 text-sm">Arrangement Analysis (${escapeHTML(location)})</h4>
+                    <p class="text-gray-600">Housing represents ${monthlyTotal > 0 ? Math.round((rent/monthlyTotal)*100) : 0}% of your entered monthly baseline. Factoring in shared living arrangements or lower-cost areas can adjust your baseline requirements.</p>
+                </div>
+            `;
+
+            const outContent = document.getElementById('out-tool3-content');
+            const outBox = document.getElementById('out-tool3');
+            if(outContent) outContent.innerHTML = html;
+            if(outBox) outBox.classList.remove('hidden');
+
+            saveHistory('tool3', `Arrangement: ${location} | Monthly: $${monthlyTotal} | Reserve: $${reserveTarget}`, html);
+        }
+
+        // ---------------- TOOL 4 LOGIC ----------------
+        function loadSampleTool4() {
+            const hrs = document.getElementById('t4_hours');
+            const loc = document.getElementById('t4_location');
+            const skl = document.getElementById('t4_skills');
+            if(hrs) hrs.value = '5-15 hours';
+            if(loc) loc.value = 'Remote / From Home only';
+            if(skl) skl.value = 'Data entry, customer support, writing, organization';
+            document.querySelectorAll('input[name="t4_tech"]').forEach(cb => {
+                cb.checked = (cb.value === 'Smartphone' || cb.value === 'Laptop' || cb.value === 'Internet');
+            });
+            showToast('Sample Scenario Loaded!');
+        }
+
+        function handleTool4Submit(e) {
+            e.preventDefault();
+            const hours = document.getElementById('t4_hours').value;
+            const location = document.getElementById('t4_location').value;
+            const skills = document.getElementById('t4_skills').value;
+
+            let roles = [];
+            if (location.includes('Remote')) {
+                roles = ['Virtual Assistant / Data Entry', 'Transcription & Annotation', 'Remote Customer Support'];
+            } else if (location.includes('Local')) {
+                roles = ['Pet Care & Local Sitting', 'Errand & Task Runner', 'In-Home Organization Support'];
+            } else {
+                roles = ['Administrative Support Staff', 'Retail or Hospitality Role', 'Local Service Staffing'];
+            }
+
+            const html = `
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-3 flex items-center">
+                        <i class="fa-solid fa-briefcase text-teal-600 mr-2"></i> Feasible Work Pathways (${escapeHTML(hours)}, ${escapeHTML(location)})
+                    </h4>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        ${roles.map(r => `
+                            <div class="p-3 bg-teal-50 border border-teal-200 rounded-lg text-xs font-semibold text-teal-900 flex items-center">
+                                <i class="fa-solid fa-check-circle text-teal-600 mr-2"></i> ${escapeHTML(r)}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-2">Skill Translation Note</h4>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Your entered skills ("${escapeHTML(skills)}") map well to operational coordination, customer communication, and structured task execution.
+                    </p>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 p-4 rounded-lg">
+                    <h4 class="font-bold text-purple-900 text-sm mb-2 flex items-center">
+                        <i class="fa-solid fa-bolt text-purple-800 mr-2"></i> First Earning Experiment
+                    </h4>
+                    <p class="text-xs text-purple-950">Define a small initial earning target (e.g., securing your first micro-gig or task assignment) to test your income channel without overextending your schedule.</p>
+                </div>
+            `;
+
+            const outContent = document.getElementById('out-tool4-content');
+            const outBox = document.getElementById('out-tool4');
+            if(outContent) outContent.innerHTML = html;
+            if(outBox) outBox.classList.remove('hidden');
+
+            saveHistory('tool4', `Availability: ${hours} | Location: ${location}`, html);
+        }
+
+        // ---------------- TOOL 5 LOGIC ----------------
+        function loadSampleTool5() {
+            const dep = document.getElementById('t5_dependence');
+            const tim = document.getElementById('t5_timeframe');
+            const hur = document.getElementById('t5_hurdle');
+            if(dep) dep.value = 'Partial dependence';
+            if(tim) tim.value = '6 Months';
+            if(hur) hur.value = 'Credit history';
+            showToast('Sample Scenario Loaded!');
+        }
+
+        function handleTool5Submit(e) {
+            e.preventDefault();
+            const dependence = document.getElementById('t5_dependence').value;
+            const timeframe = document.getElementById('t5_timeframe').value;
+            const hurdle = document.getElementById('t5_hurdle').value;
+
+            const html = `
+                <div>
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide mb-3 flex items-center">
+                        <i class="fa-solid fa-timeline text-purple-800 mr-2"></i> Condition-Based Roadmap (${escapeHTML(timeframe)} Target, Hurdle: ${escapeHTML(hurdle)})
+                    </h4>
+                    <div class="space-y-3 text-xs">
+                        <div class="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-800">
+                            <strong class="text-purple-900 block font-semibold text-sm">Phase 1: Foundation</strong>
+                            <p class="text-gray-700 mt-1">Verify access to original identity records, establish secure unmonitored communication, and open an individual digital account.</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-800">
+                            <strong class="text-purple-900 block font-semibold text-sm">Phase 2: Capacity Building</strong>
+                            <p class="text-gray-700 mt-1">Initiate regular or micro-income streams, grow your personal cash buffer, and calculate independent living expenses.</p>
+                        </div>
+                        <div class="p-3 bg-purple-50 rounded-lg border-l-4 border-purple-800">
+                            <strong class="text-purple-900 block font-semibold text-sm">Phase 3: Transition Preparation</strong>
+                            <p class="text-gray-700 mt-1">Review credit report standing, evaluate housing or roommate options, and verify contingency plans.</p>
+                        </div>
+                        <div class="p-3 bg-teal-50 rounded-lg border-l-4 border-teal-500">
+                            <strong class="text-teal-900 block font-semibold text-sm">Phase 4: Stabilization & Launch</strong>
+                            <p class="text-gray-700 mt-1">Proceed only when prerequisite reserves, documents, and income streams are confirmed stable.</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const outContent = document.getElementById('out-tool5-content');
+            const outBox = document.getElementById('out-tool5');
+            if(outContent) outContent.innerHTML = html;
+            if(outBox) outBox.classList.remove('hidden');
+
+            saveHistory('tool5', `Timeframe: ${timeframe} | Hurdle: ${hurdle}`, html);
+        }
+
+        // ---------------- COMBINED PLAN / SYNTHESIS ----------------
+        function renderCombinedPlan() {
+            const container = document.getElementById('myplan-content');
+            if(!container) return;
+
+            const results = appState.toolResults;
+            let html = `<div class="space-y-6">`;
+            
+            html += `<div class="p-4 bg-purple-50 rounded-xl border border-purple-200">
+                <h3 class="font-bold text-purple-900 text-base mb-1">Financial Independence Plan Summary</h3>
+                <p class="text-xs text-purple-800">Generated from your completed toolkit modules. Use this synthesis as your working action plan.</p>
+            </div>`;
+
+            const toolsList = [
+                { id: 'tool1', name: '1. Autonomy Audit' },
+                { id: 'tool2', name: '2. Buffer Builder' },
+                { id: 'tool3', name: '3. Solo Living Cost' },
+                { id: 'tool4', name: '4. Income Generator' },
+                { id: 'tool5', name: '5. Independence Roadmap' }
+            ];
+
+            toolsList.forEach(t => {
+                html += `<div class="border border-gray-200 rounded-xl p-4 bg-white space-y-2">
+                    <h4 class="font-bold text-gray-800 text-sm uppercase tracking-wide text-purple-800">${escapeHTML(t.name)}</h4>`;
+                if(results[t.id]) {
+                    html += `<div class="text-xs text-gray-600 mb-1"><em>Last updated: ${escapeHTML(results[t.id].time)}</em></div>`;
+                    html += `<div>${results[t.id].content}</div>`;
+                } else {
+                    html += `<p class="text-xs text-gray-400 italic">Module not yet completed. Visit the corresponding tab to generate your assessment.</p>`;
+                }
+                html += `</div>`;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // Initialize App on Load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppState();
+            initChecklist();
+        });
+    </script>
+</body>
+</html>

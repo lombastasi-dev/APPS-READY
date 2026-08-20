@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenerationBridge™ — Intergenerational Understanding & Relationship System</title>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #1E293B;
+            --navy-light: #334155;
+            --amber: #D97706;
+            --amber-hover: #B45309;
+            --amber-light: #FEF3C7;
+            --bg-start: #F8FAFC;
+            --bg-end: #FFFBEB;
+            --card-bg: #FFFFFF;
+            --text-main: #334155;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --sidebar-width: 260px;
+            --green: #10B981;
+            --green-light: #D1FAE5;
+            --red: #EF4444;
+            --red-light: #FEF2F2;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar */
+        aside {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--amber);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--navy);
+            letter-spacing: -0.02em;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--text-muted);
+            padding: 0.75rem 1.5rem 0.25rem;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            border-left: 4px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover {
+            background-color: #F1F5F9;
+            color: var(--navy);
+        }
+
+        .nav-item.active {
+            background-color: var(--amber-light);
+            color: var(--navy);
+            border-left-color: var(--amber);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 1rem;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 99;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* Main Content */
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem;
+            max-width: 1040px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .content-inner {
+            max-width: 840px;
+            width: 100%;
+            margin: 0 auto;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* Common Cards & UI */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn {
+            background-color: var(--amber);
+            color: #FFFFFF;
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover { background-color: var(--amber-hover); }
+        .btn:active { transform: scale(0.98); }
+
+        .btn-secondary {
+            background-color: #F1F5F9;
+            color: var(--navy);
+            border: 1px solid var(--border-color);
+        }
+        .btn-secondary:hover { background-color: #E2E8F0; }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--navy);
+            border: 1px solid var(--navy-light);
+        }
+        .btn-outline:hover { background-color: #F1F5F9; }
+
+        .btn-danger {
+            background-color: #FEF2F2;
+            color: #EF4444;
+            border: 1px solid #FCA5A5;
+        }
+        .btn-danger:hover { background-color: #FEE2E2; }
+
+        /* Form Controls */
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #FFFFFF;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px rgba(217, 119, 6, 0.15);
+        }
+
+        textarea { resize: vertical; min-height: 100px; }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: normal;
+            font-size: 0.95rem;
+            cursor: pointer;
+            background: #F8FAFC;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-label input { width: 1.1rem; height: 1.1rem; accent-color: var(--amber); cursor: pointer; }
+
+        /* Banner & Hero */
+        .hero-section {
+            background: linear-gradient(135deg, var(--navy), #334155);
+            color: white;
+            border-radius: 1rem;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .hero-section h2 { font-size: 2rem; font-weight: 700; margin-bottom: 0.75rem; }
+        .hero-section p { font-size: 1.05rem; color: #94A3B8; max-width: 640px; margin: 0 auto; line-height: 1.5; }
+
+        .safety-notice {
+            background-color: #FFFBEB;
+            border: 1px solid #FCD34D;
+            border-left: 4px solid var(--amber);
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            color: #92400E;
+            line-height: 1.5;
+        }
+
+        /* Routing Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08);
+            border-color: var(--amber);
+        }
+
+        .tool-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 0.5rem;
+            background-color: var(--amber-light);
+            color: var(--amber);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .tool-card h3 { font-size: 1.05rem; font-weight: 600; color: var(--navy); }
+        .tool-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.4; }
+
+        /* Snapshot Table / Grid */
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .snapshot-item {
+            background: #F8FAFC;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .snapshot-item .label { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .snapshot-item .value { font-size: 1rem; font-weight: 600; color: var(--navy); margin-top: 0.25rem; }
+
+        /* Tool Headers */
+        .tool-header-desc {
+            background-color: #F8FAFC;
+            border-left: 4px solid var(--amber);
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        .tool-header-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .tool-header-title i { color: var(--amber); }
+
+        /* Unified Results Architecture */
+        .output-section {
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .result-card h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-card h4 i { color: var(--amber); }
+        .result-card p, .result-card li { font-size: 0.95rem; line-height: 1.6; color: var(--text-main); }
+        .result-card ul { padding-left: 1.25rem; margin-top: 0.5rem; }
+
+        .side-by-side {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 0.75rem;
+        }
+
+        @media (max-width: 640px) { .side-by-side { grid-template-columns: 1fr; } }
+
+        .contrast-box {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+        .contrast-box h5 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .script-box {
+            background: #F8FAFC;
+            border: 1px dashed var(--amber);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            position: relative;
+            margin-top: 0.75rem;
+        }
+
+        .script-text {
+            font-style: italic;
+            color: var(--navy);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .copy-btn {
+            background: var(--navy);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.35rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover { background: var(--navy-light); }
+
+        /* Recommendations Card */
+        .rec-card {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-left: 4px solid #3B82F6;
+        }
+
+        .rec-card h4 i { color: #2563EB; }
+
+        /* Next Step Navigation Banner */
+        .next-step-banner {
+            background: linear-gradient(135deg, #FEF3C7, #FFFBEB);
+            border: 1px solid #FDE68A;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .next-step-banner h4 { color: var(--navy); font-size: 1.1rem; font-weight: 700; }
+        .next-step-banner p { color: var(--text-main); font-size: 0.95rem; }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--navy);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-weight: 500;
+            font-size: 0.9rem;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .toast.show { transform: translateY(0); opacity: 1; }
+
+        /* History Accordion */
+        .history-container {
+            margin-top: 2rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            background: var(--card-bg);
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 1rem 1.5rem;
+            background: #F8FAFC;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--navy);
+        }
+
+        .history-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 1.5rem;
+        }
+
+        .history-content.open {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .history-item {
+            padding: 0.85rem 0;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .history-item:last-child { border-bottom: none; }
+        .history-meta { color: var(--text-muted); font-size: 0.8rem; margin-top: 0.2rem; }
+
+        .sample-badge {
+            display: inline-block;
+            background: #E2E8F0;
+            color: var(--navy);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background-color: var(--card-bg);
+        }
+
+        /* Printable CSS */
+        @media print {
+            aside, .mobile-header, .sidebar-overlay, .btn, .history-container, footer, .next-step-banner, .sample-badge {
+                display: none !important;
+            }
+            main {
+                margin-left: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .card, .result-card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 0 1.5rem 0 !important;
+            }
+            .print-only-header {
+                display: block !important;
+                margin-bottom: 2rem;
+                border-bottom: 2px solid #000;
+                padding-bottom: 1rem;
+            }
+        }
+
+        .print-only-header { display: none; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            aside { transform: translateX(-100%); }
+            aside.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .mobile-header { display: flex; }
+            main { margin-left: 0; padding: 1rem; padding-top: 80px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-bridge" style="color: var(--amber);"></i>
+            <span style="font-weight: 700; color: var(--navy);">GenerationBridge™</span>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-bridge"></i>
+                <h1>GenerationBridge™</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </a>
+                <a class="nav-item" data-target="orientation">
+                    <i class="fa-solid fa-compass"></i> Start Here
+                </a>
+
+                <div class="nav-category">Core Tools</div>
+                <a class="nav-item" data-target="tool1">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i> Gap Diagnostic
+                </a>
+                <a class="nav-item" data-target="tool2">
+                    <i class="fa-solid fa-comments"></i> Communication Translator
+                </a>
+                <a class="nav-item" data-target="tool3">
+                    <i class="fa-solid fa-landmark"></i> Legacy & Sacrifice
+                </a>
+                <a class="nav-item" data-target="tool4">
+                    <i class="fa-solid fa-calendar-check"></i> Visit Planner
+                </a>
+                <a class="nav-item" data-target="tool5">
+                    <i class="fa-solid fa-route"></i> Renewal Roadmap
+                </a>
+
+                <div class="nav-category">Guided Programs</div>
+                <a class="nav-item" data-target="reset7">
+                    <i class="fa-solid fa-calendar-week"></i> 7-Day Reset
+                </a>
+
+                <div class="nav-category">System Synthesis</div>
+                <a class="nav-item" data-target="bridgeplan">
+                    <i class="fa-solid fa-file-invoice"></i> My Bridge Plan
+                </a>
+                <a class="nav-item" data-target="history">
+                    <i class="fa-solid fa-clock-rotate-left"></i> My History
+                </a>
+                <a class="nav-item" data-target="privacy">
+                    <i class="fa-solid fa-shield-halved"></i> Privacy & Data
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main>
+            <div class="print-only-header">
+                <h2>GenerationBridge™ — Relationship Plan</h2>
+                <p>Generated for personal intergenerational reflection and family communication.</p>
+            </div>
+
+            <div class="content-inner">
+
+                <!-- VIEW: DASHBOARD -->
+                <section id="dashboard" class="view-section">
+                    <div class="hero-section">
+                        <h2>GenerationBridge™ System</h2>
+                        <p>Understand the generation gap without losing the relationship. Honor where your family came from while making room for where your life is going.</p>
+                    </div>
+
+                    <div class="safety-notice">
+                        <i class="fa-solid fa-shield-cat" style="margin-right: 0.5rem;"></i>
+                        <strong>Safety First:</strong> GenerationBridge™ is designed for family reflection and communication planning. If you are experiencing coercion, severe intimidation, or domestic abuse, please prioritize your physical safety and seek professional support services.
+                    </div>
+
+                    <!-- Relationship Snapshot Widget -->
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 0.75rem;">
+                            <h3 style="font-size: 1.1rem; color: var(--navy);"><i class="fa-solid fa-chart-pie" style="color: var(--amber); margin-right: 0.5rem;"></i> Qualitative Relationship Snapshot</h3>
+                            <button class="btn btn-secondary" style="font-size: 0.8rem; padding: 0.4rem 0.8rem;" onclick="switchView('bridgeplan')">View Full Plan</button>
+                        </div>
+                        <div class="snapshot-grid">
+                            <div class="snapshot-item">
+                                <div class="label">Generational Gap</div>
+                                <div class="value" id="snapGap">Not Diagnosed</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="label">Communication</div>
+                                <div class="value" id="snapComm">Unmapped</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="label">Legacy & Boundaries</div>
+                                <div class="value" id="snapLegacy">Unmapped</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="label">Interaction Climate</div>
+                                <div class="value" id="snapVisit">Unplanned</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="label">Renewal Momentum</div>
+                                <div class="value" id="snapRoadmap">Not Started</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Routing Prompts -->
+                    <div class="card">
+                        <h3 style="font-size: 1.1rem; color: var(--navy); margin-bottom: 0.75rem;"><i class="fa-solid fa-circle-question" style="color: var(--amber); margin-right: 0.5rem;"></i> What feels hardest right now?</h3>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;" onclick="switchView('tool1')">
+                                <i class="fa-solid fa-bolt" style="color: var(--amber);"></i> "We keep having the exact same argument over and over."
+                            </button>
+                            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;" onclick="switchView('tool2')">
+                                <i class="fa-solid fa-comments" style="color: var(--amber);"></i> "I cannot explain my choices without being misunderstood or judged."
+                            </button>
+                            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;" onclick="switchView('tool3')">
+                                <i class="fa-solid fa-heart-crack" style="color: var(--amber);"></i> "I feel overwhelming guilt because of everything my parents sacrificed."
+                            </button>
+                            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;" onclick="switchView('tool4')">
+                                <i class="fa-solid fa-phone-slash" style="color: var(--amber);"></i> "Family visits or phone calls almost always end in tension or silence."
+                            </button>
+                            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left;" onclick="switchView('tool5')">
+                                <i class="fa-solid fa-handshake" style="color: var(--amber);"></i> "We have grown distant, and I want a realistic way to rebuild connection."
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 5 Tools Grid -->
+                    <div class="dashboard-grid">
+                        <div class="tool-card" onclick="switchView('tool1')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                            <h3>1. Gap Diagnostic</h3>
+                            <p>Identify the visible clash point and what both sides may be trying to protect.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('tool2')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-comments"></i></div>
+                            <h3>2. Communication Translator</h3>
+                            <p>Translate modern choices into scripts that minimize defensiveness.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('tool3')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-landmark"></i></div>
+                            <h3>3. Legacy & Sacrifice</h3>
+                            <p>Separate deep appreciation for family history from mandatory repetition.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('tool4')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                            <h3>4. Visit Planner</h3>
+                            <p>Design low-conflict visits using time-boxing, safe topics, and exit scripts.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('tool5')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-route"></i></div>
+                            <h3>5. Renewal Roadmap</h3>
+                            <p>Build a realistic 30-day rhythm of low-pressure micro-actions.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: ORIENTATION -->
+                <section id="orientation" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-compass"></i> Start Here: System Orientation</div>
+                    <div class="card" style="display: flex; flex-direction: column; gap: 1rem; line-height: 1.6;">
+                        <h3 style="color: var(--navy);">A Generational Difference Is Not a Lack of Love</h3>
+                        <p>Generational friction rarely stems from malice. Different eras and life environments produce different default assumptions about security, independence, family duty, and emotional expression.</p>
+                        <ul style="padding-left: 1.25rem;">
+                            <li><strong>Survival Era Mindsets</strong> often prioritize material security, physical endurance, duty, and emotional stoicism.</li>
+                            <li><strong>Modern Era Mindsets</strong> often prioritize psychological wellness, individual identity autonomy, work-life boundaries, and open emotional expression.</li>
+                        </ul>
+                        <div style="background: #F8FAFC; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid var(--amber);">
+                            <strong>Core Operating Rule:</strong> Understanding someone's historical perspective does not require surrendering your personal boundaries. Gratitude does not require self-abandonment.
+                        </div>
+                        <h4 style="color: var(--navy); margin-top: 0.5rem;">How to Use This Toolkit</h4>
+                        <ol style="padding-left: 1.25rem;">
+                            <li>Start with the tool closest to today's immediate pressure point.</li>
+                            <li>Use generated scripts as thoughtful conversation starters, not absolute scripts or verdicts.</li>
+                            <li>Focus on one small interaction habit at a time rather than trying to fix decades of history at once.</li>
+                        </ol>
+                        <button class="btn" style="align-self: flex-start; margin-top: 0.5rem;" onclick="switchView('tool1')">Begin with Gap Diagnostic <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                </section>
+
+                <!-- VIEW: TOOL 1 — GAP DIAGNOSTIC -->
+                <section id="tool1" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-magnifying-glass-chart"></i> Generational Gap Diagnostic</div>
+                    <div class="tool-header-desc">"My parents and I live in completely different worlds. We trigger each other constantly."</div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                        </div>
+                        <form id="formTool1">
+                            <div class="form-group">
+                                <label for="t1_role">User Role:</label>
+                                <select id="t1_role" required>
+                                    <option value="">Select your role...</option>
+                                    <option value="Adult Child">Adult Child</option>
+                                    <option value="Parent">Parent</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_clash">Primary Generational Clash Point:</label>
+                                <select id="t1_clash" required>
+                                    <option value="">Select clash point...</option>
+                                    <option value="Communication style">Communication style</option>
+                                    <option value="Life choices & independence">Life choices & independence</option>
+                                    <option value="Technology & modern pace">Technology & modern pace</option>
+                                    <option value="Emotional expression">Emotional expression</option>
+                                    <option value="Cultural values">Cultural values</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_desc">Describe the Recurring Argument:</label>
+                                <textarea id="t1_desc" placeholder="Briefly describe what usually triggers the argument and how it feels..." required></textarea>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit" class="btn"><i class="fa-solid fa-stethoscope"></i> Run Diagnostic</button>
+                                <button type="button" class="btn btn-outline" onclick="resetForm('tool1')">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outputTool1" class="output-section" style="display: none;"></div>
+
+                    <div class="history-container">
+                        <div class="history-header" onclick="toggleHistory('historyContent1')">
+                            <span><i class="fa-solid fa-history" style="margin-right: 0.5rem; color: var(--amber);"></i> Diagnostic History (<span id="count1">0</span>/30)</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-content" id="historyContent1">
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="clearToolHistory('gap-diagnostic')">Clear History</button>
+                            </div>
+                            <div id="historyList1"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: TOOL 2 — COMMUNICATION TRANSLATOR -->
+                <section id="tool2" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-comments"></i> Communication Translator</div>
+                    <div class="tool-header-desc">"When we talk, we just talk past each other. I want to be understood without fighting."</div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                        </div>
+                        <form id="formTool2">
+                            <div class="form-group">
+                                <label for="t2_want">What You Want to Tell Them:</label>
+                                <textarea id="t2_want" placeholder="What is your core message or need?" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_hear">What They Usually Hear / React With:</label>
+                                <textarea id="t2_hear" placeholder="How do they typically misinterpret or push back?" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_outcome">Desired Emotional Outcome:</label>
+                                <select id="t2_outcome" required>
+                                    <option value="">Select desired outcome...</option>
+                                    <option value="Mutual respect">Mutual respect</option>
+                                    <option value="Calmer visits">Calmer visits</option>
+                                    <option value="Permission to make own choices">Permission to make own choices</option>
+                                    <option value="Stopping criticism">Stopping criticism</option>
+                                </select>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit" class="btn"><i class="fa-solid fa-language"></i> Generate Empathy Scripts</button>
+                                <button type="button" class="btn btn-outline" onclick="resetForm('tool2')">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outputTool2" class="output-section" style="display: none;"></div>
+
+                    <div class="history-container">
+                        <div class="history-header" onclick="toggleHistory('historyContent2')">
+                            <span><i class="fa-solid fa-history" style="margin-right: 0.5rem; color: var(--amber);"></i> Translation History (<span id="count2">0</span>/30)</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-content" id="historyContent2">
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="clearToolHistory('communication-translator')">Clear History</button>
+                            </div>
+                            <div id="historyList2"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: TOOL 3 — LEGACY & SACRIFICE -->
+                <section id="tool3" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-landmark"></i> Legacy & Sacrifice Reflector</div>
+                    <div class="tool-header-desc">"I want to honor my family's hardship or immigration story without sacrificing my modern boundaries."</div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                        </div>
+                        <form id="formTool3">
+                            <div class="form-group">
+                                <label for="t3_history">Parents' Background / Hardship History:</label>
+                                <textarea id="t3_history" placeholder="What hardships, immigration struggles, or economic sacrifices did they experience?" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_choices">Your Current Life Choices:</label>
+                                <textarea id="t3_choices" placeholder="What modern career, lifestyle, or boundary choices are you making?" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_disconnect">Disconnect Point:</label>
+                                <textarea id="t3_disconnect" placeholder="Where does their survival mindset clash with your modern priorities?" required></textarea>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit" class="btn"><i class="fa-solid fa-scale-balanced"></i> Generate Legacy Reflection</button>
+                                <button type="button" class="btn btn-outline" onclick="resetForm('tool3')">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outputTool3" class="output-section" style="display: none;"></div>
+
+                    <div class="history-container">
+                        <div class="history-header" onclick="toggleHistory('historyContent3')">
+                            <span><i class="fa-solid fa-history" style="margin-right: 0.5rem; color: var(--amber);"></i> Legacy History (<span id="count3">0</span>/30)</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-content" id="historyContent3">
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="clearToolHistory('legacy-sacrifice')">Clear History</button>
+                            </div>
+                            <div id="historyList3"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: TOOL 4 — VISIT PLANNER -->
+                <section id="tool4" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-calendar-check"></i> Low-Conflict Visit Planner</div>
+                    <div class="tool-header-desc">"Our visits or phone calls always start fine and end in tension or silence."</div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                        </div>
+                        <form id="formTool4">
+                            <div class="form-group">
+                                <label for="t4_format">Visit Format:</label>
+                                <select id="t4_format" required>
+                                    <option value="">Select visit format...</option>
+                                    <option value="Weekend family dinner">Weekend family dinner</option>
+                                    <option value="Phone call">Phone call</option>
+                                    <option value="Holiday stay">Holiday stay</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_temp">Interaction Temperature:</label>
+                                <select id="t4_temp" required>
+                                    <option value="Warm but cautious">Warm but cautious</option>
+                                    <option value="Mostly calm">Mostly calm</option>
+                                    <option value="Unpredictable">Unpredictable</option>
+                                    <option value="Strained">Strained</option>
+                                    <option value="Active conflict">Active conflict</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Trigger Topics to Avoid:</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="triggers" value="Politics"> Politics</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="triggers" value="Career"> Career</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="triggers" value="Marriage/Dating"> Marriage / Dating</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="triggers" value="Lifestyle"> Lifestyle & Habits</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="triggers" value="Relatives"> Extended Relatives</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_duration">Planned Duration:</label>
+                                <input type="text" id="t4_duration" placeholder="e.g., 2.5 hours, 30 min call, 2 days" required>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit" class="btn"><i class="fa-solid fa-shield-heart"></i> Plan Low-Conflict Interaction</button>
+                                <button type="button" class="btn btn-outline" onclick="resetForm('tool4')">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outputTool4" class="output-section" style="display: none;"></div>
+
+                    <div class="history-container">
+                        <div class="history-header" onclick="toggleHistory('historyContent4')">
+                            <span><i class="fa-solid fa-history" style="margin-right: 0.5rem; color: var(--amber);"></i> Visit Plan History (<span id="count4">0</span>/30)</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-content" id="historyContent4">
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="clearToolHistory('visit-planner')">Clear History</button>
+                            </div>
+                            <div id="historyList4"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: TOOL 5 — RENEWAL ROADMAP -->
+                <section id="tool5" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-route"></i> 30-Day Relationship Renewal Roadmap</div>
+                    <div class="tool-header-desc">"I want to rebuild a warm, predictable relationship over the next month."</div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                        </div>
+                        <form id="formTool5">
+                            <div class="form-group">
+                                <label for="t5_temp">Current Relationship Temperature:</label>
+                                <select id="t5_temp" required>
+                                    <option value="">Select temperature...</option>
+                                    <option value="Frosty">Frosty (Distant, high tension)</option>
+                                    <option value="Strained">Strained (Frequent low-level friction)</option>
+                                    <option value="Polite distance">Polite distance (Surface-only contact)</option>
+                                    <option value="Active conflict">Active conflict (Frequent arguments)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_actions">Commitment Level (Micro-actions per week):</label>
+                                <input type="number" id="t5_actions" min="1" max="7" value="3" required>
+                            </div>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button type="submit" class="btn"><i class="fa-solid fa-map"></i> Generate 30-Day Roadmap</button>
+                                <button type="button" class="btn btn-outline" onclick="resetForm('tool5')">Reset</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outputTool5" class="output-section" style="display: none;"></div>
+
+                    <div class="history-container">
+                        <div class="history-header" onclick="toggleHistory('historyContent5')">
+                            <span><i class="fa-solid fa-history" style="margin-right: 0.5rem; color: var(--amber);"></i> Roadmap History (<span id="count5">0</span>/30)</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-content" id="historyContent5">
+                            <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+                                <button class="btn btn-danger" style="font-size: 0.8rem; padding: 0.25rem 0.5rem;" onclick="clearToolHistory('renewal-roadmap')">Clear History</button>
+                            </div>
+                            <div id="historyList5"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: 7-DAY RESET PROGRAM -->
+                <section id="reset7" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-calendar-week"></i> 7-Day Generation Bridge Reset</div>
+                    <div class="tool-header-desc">A guided daily sequence through all five system modules.</div>
+
+                    <div class="card">
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div style="padding: 1rem; background: #F8FAFC; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <strong>Day 1: Identify the Core Gap</strong>
+                                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Run the Gap Diagnostic to clarify what both sides are trying to protect.</p>
+                                <button class="btn btn-secondary" style="font-size: 0.8rem; margin-top: 0.5rem;" onclick="switchView('tool1')">Go to Day 1</button>
+                            </div>
+                            <div style="padding: 1rem; background: #F8FAFC; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <strong>Day 2: Translate One Message</strong>
+                                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Use Communication Translator to script a core message without defensive wording.</p>
+                                <button class="btn btn-secondary" style="font-size: 0.8rem; margin-top: 0.5rem;" onclick="switchView('tool2')">Go to Day 2</button>
+                            </div>
+                            <div style="padding: 1rem; background: #F8FAFC; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <strong>Day 3: Explore Family History</strong>
+                                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Reflect on past hardship using Legacy & Sacrifice to decouple gratitude from guilt.</p>
+                                <button class="btn btn-secondary" style="font-size: 0.8rem; margin-top: 0.5rem;" onclick="switchView('tool3')">Go to Day 3</button>
+                            </div>
+                            <div style="padding: 1rem; background: #F8FAFC; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <strong>Day 4: Establish Safe Containers</strong>
+                                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Design a low-conflict visit or call using Visit Planner.</p>
+                                <button class="btn btn-secondary" style="font-size: 0.8rem; margin-top: 0.5rem;" onclick="switchView('tool4')">Go to Day 4</button>
+                            </div>
+                            <div style="padding: 1rem; background: #F8FAFC; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <strong>Day 5: Set a 30-Day Rhythm</strong>
+                                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Commit to low-pressure micro-actions via Renewal Roadmap.</p>
+                                <button class="btn btn-secondary" style="font-size: 0.8rem; margin-top: 0.5rem;" onclick="switchView('tool5')">Go to Day 5</button>
+                            </div>
+                            <div style="padding: 1rem; background: #F8FAFC; border-radius: 0.5rem; border: 1px solid var(--border-color);">
+                                <strong>Days 6 & 7: Synthesis & Review</strong>
+                                <p style="font-size: 0.875rem; color: var(--text-muted); margin-top: 0.25rem;">Review your consolidated Bridge Plan and print or save your strategy.</p>
+                                <button class="btn btn-secondary" style="font-size: 0.8rem; margin-top: 0.5rem;" onclick="switchView('bridgeplan')">View Final Plan</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: MY BRIDGE PLAN SYNTHESIS -->
+                <section id="bridgeplan" class="view-section" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="tool-header-title" style="margin-bottom: 0;"><i class="fa-solid fa-file-invoice"></i> My GenerationBridge Plan</div>
+                        <button class="btn btn-secondary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Plan</button>
+                    </div>
+
+                    <div id="bridgePlanContainer" class="output-section" style="margin-top: 0;"></div>
+                </section>
+
+                <!-- VIEW: MY HISTORY -->
+                <section id="history" class="view-section" style="display: none;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                        <div class="tool-header-title" style="margin-bottom: 0;"><i class="fa-solid fa-clock-rotate-left"></i> System Analysis History</div>
+                        <button class="btn btn-danger" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Clear All History</button>
+                    </div>
+
+                    <div class="card">
+                        <div id="unifiedHistoryList"></div>
+                    </div>
+                </section>
+
+                <!-- VIEW: PRIVACY & DATA -->
+                <section id="privacy" class="view-section" style="display: none;">
+                    <div class="tool-header-title"><i class="fa-solid fa-shield-halved"></i> Privacy & Data Controls</div>
+                    <div class="card" style="display: flex; flex-direction: column; gap: 1rem; line-height: 1.6;">
+                        <h3 style="color: var(--navy);">100% Local & Private</h3>
+                        <p>GenerationBridge™ operates entirely within your web browser. None of your entered text, family history, or generated scripts are ever transmitted to an external server or database.</p>
+                        <ul style="padding-left: 1.25rem;">
+                            <li><strong>Storage Location:</strong> All saved analyses are stored in your browser's standard <code>localStorage</code>.</li>
+                            <li><strong>Data Ownership:</strong> You have complete control over your data. Clearing your browser data or clicking "Clear All History" immediately purges all entries.</li>
+                            <li><strong>Device Specificity:</strong> Saved history does not sync across devices automatically unless printed or exported.</li>
+                        </ul>
+                        <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                            <button class="btn btn-danger" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Purge All Saved Local Data</button>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <footer>
+                For generational reflection and family communication only. Not family therapy or legal counseling.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check" style="color: #34D399;"></i>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <script>
+        /* --- CENTRAL STATE MANAGEMENT --- */
+        const STORAGE_KEY_STATE = 'generationbridge_v2_state';
+        const STORAGE_KEY_HISTORY = 'generationbridge_v2_history';
+
+        let generationBridgeState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        let generationBridgeHistory = [];
+
+        function loadCentralState() {
+            try {
+                const savedState = localStorage.getItem(STORAGE_KEY_STATE);
+                if (savedState) generationBridgeState = JSON.parse(savedState);
+
+                const savedHist = localStorage.getItem(STORAGE_KEY_HISTORY);
+                if (savedHist) generationBridgeHistory = JSON.parse(savedHist);
+            } catch (e) {
+                console.error("Failed to load local state:", e);
+            }
+            updateSnapshotUI();
+            renderUnifiedHistory();
+        }
+
+        function saveCentralState() {
+            try {
+                generationBridgeState.lastUpdated = new Date().toISOString();
+                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(generationBridgeState));
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(generationBridgeHistory));
+            } catch (e) {
+                console.error("Failed to save local state:", e);
+            }
+            updateSnapshotUI();
+            renderUnifiedHistory();
+        }
+
+        function saveToolResult(toolId, summaryData, rawInputs, outputHTML, isSample = false) {
+            if (!generationBridgeState.completedTools.includes(toolId)) {
+                generationBridgeState.completedTools.push(toolId);
+            }
+            generationBridgeState.toolResults[toolId] = summaryData;
+
+            const newEntry = {
+                id: 'hist_' + Date.now(),
+                timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                toolId: toolId,
+                summary: summaryData.summary,
+                inputs: rawInputs,
+                outputHTML: outputHTML,
+                isSample: isSample
+            };
+
+            generationBridgeHistory.unshift(newEntry);
+            if (generationBridgeHistory.length > 30) {
+                generationBridgeHistory = generationBridgeHistory.slice(0, 30);
+            }
+
+            saveCentralState();
+            loadToolHistoryUI(toolId);
+        }
+
+        /* --- NAVIGATION SYSTEM --- */
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const mobileToggle = document.getElementById('mobileToggle');
+
+        function switchView(targetId) {
+            viewSections.forEach(sec => sec.style.display = 'none');
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) targetSection.style.display = 'block';
+
+            navItems.forEach(item => {
+                if (item.getAttribute('data-target') === targetId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+            window.scrollTo(0, 0);
+
+            if (targetId === 'bridgeplan') {
+                renderBridgePlan();
+            }
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(item.getAttribute('data-target'));
+            });
+        });
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('open');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+        });
+
+        /* --- UTILITY HELPERS --- */
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function showToast(message = "Copied to clipboard!") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function copyText(text, btnElement) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => handleCopySuccess(btnElement));
+            } else {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    handleCopySuccess(btnElement);
+                } catch (err) {
+                    console.error('Fallback copy failed', err);
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        function handleCopySuccess(btnElement) {
+            showToast("Copied to clipboard!");
+            if (btnElement) {
+                const originalHTML = btnElement.innerHTML;
+                btnElement.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+                setTimeout(() => btnElement.innerHTML = originalHTML, 2000);
+            }
+        }
+
+        function toggleHistory(contentId) {
+            document.getElementById(contentId).classList.toggle('open');
+        }
+
+        function resetForm(toolNum) {
+            const form = document.getElementById(`form${toolNum.toUpperCase()}`);
+            if (form) form.reset();
+            const output = document.getElementById(`output${toolNum.toUpperCase()}`);
+            if (output) {
+                output.style.display = 'none';
+                output.innerHTML = '';
+            }
+        }
+
+        /* --- HISTORY MANAGEMENT UI --- */
+        function loadToolHistoryUI(toolId) {
+            const toolNumMap = {
+                'gap-diagnostic': '1',
+                'communication-translator': '2',
+                'legacy-sacrifice': '3',
+                'visit-planner': '4',
+                'renewal-roadmap': '5'
+            };
+            const num = toolNumMap[toolId];
+            if (!num) return;
+
+            const filtered = generationBridgeHistory.filter(h => h.toolId === toolId);
+            const listEl = document.getElementById(`historyList${num}`);
+            const countEl = document.getElementById(`count${num}`);
+
+            if (countEl) countEl.textContent = filtered.length;
+            if (!listEl) return;
+
+            if (filtered.length === 0) {
+                listEl.innerHTML = '<div style="color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem 0;">No saved history for this tool.</div>';
+                return;
+            }
+
+            listEl.innerHTML = filtered.map(item => `
+                <div class="history-item">
+                    <div>
+                        ${item.isSample ? '<span class="sample-badge">Sample Scenario</span>' : ''}
+                        <div style="font-weight: 600; color: var(--navy);">${escapeHtml(item.summary)}</div>
+                        <div class="history-meta">${item.timestamp}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="restoreHistoryItem('${item.id}')">View</button>
+                </div>
+            `).join('');
+        }
+
+        function renderUnifiedHistory() {
+            const listEl = document.getElementById('unifiedHistoryList');
+            if (!listEl) return;
+
+            if (generationBridgeHistory.length === 0) {
+                listEl.innerHTML = '<div style="color: var(--text-muted); font-size: 0.9rem; padding: 1rem 0;">No system history saved yet. Complete an analysis above!</div>';
+                return;
+            }
+
+            listEl.innerHTML = generationBridgeHistory.map(item => `
+                <div class="history-item">
+                    <div>
+                        ${item.isSample ? '<span class="sample-badge">Sample Scenario</span>' : ''}
+                        <div style="font-weight: 600; color: var(--navy);">${escapeHtml(item.summary)}</div>
+                        <div class="history-meta">${item.timestamp} • Tool: ${escapeHtml(item.toolId)}</div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <button class="btn btn-secondary" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="restoreHistoryItem('${item.id}')">Restore</button>
+                        <button class="btn btn-danger" style="font-size: 0.75rem; padding: 0.25rem 0.5rem;" onclick="deleteSingleHistory('${item.id}')">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function restoreHistoryItem(id) {
+            const item = generationBridgeHistory.find(h => h.id === id);
+            if (!item) return;
+
+            const toolViewMap = {
+                'gap-diagnostic': 'tool1',
+                'communication-translator': 'tool2',
+                'legacy-sacrifice': 'tool3',
+                'visit-planner': 'tool4',
+                'renewal-roadmap': 'tool5'
+            };
+
+            const targetView = toolViewMap[item.toolId];
+            if (!targetView) return;
+
+            switchView(targetView);
+
+            const toolNumMap = { 'tool1': '1', 'tool2': '2', 'tool3': '3', 'tool4': '4', 'tool5': '5' };
+            const num = toolNumMap[targetView];
+            const outputEl = document.getElementById(`outputTool${num}`);
+
+            if (outputEl) {
+                outputEl.style.display = 'flex';
+                outputEl.innerHTML = item.outputHTML;
+                outputEl.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function deleteSingleHistory(id) {
+            generationBridgeHistory = generationBridgeHistory.filter(h => h.id !== id);
+            saveCentralState();
+            ['gap-diagnostic', 'communication-translator', 'legacy-sacrifice', 'visit-planner', 'renewal-roadmap'].forEach(loadToolHistoryUI);
+        }
+
+        function clearToolHistory(toolId) {
+            if (confirm(`Clear all saved history for this tool?`)) {
+                generationBridgeHistory = generationBridgeHistory.filter(h => h.toolId !== toolId);
+                saveCentralState();
+                loadToolHistoryUI(toolId);
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Are you sure you want to purge all local saved data? This cannot be undone.")) {
+                generationBridgeHistory = [];
+                generationBridgeState = { completedTools: [], toolResults: {}, lastUpdated: null };
+                saveCentralState();
+                ['gap-diagnostic', 'communication-translator', 'legacy-sacrifice', 'visit-planner', 'renewal-roadmap'].forEach(loadToolHistoryUI);
+                showToast("All data purged.");
+            }
+        }
+
+        function updateSnapshotUI() {
+            const tr = generationBridgeState.toolResults;
+            document.getElementById('snapGap').textContent = tr['gap-diagnostic'] ? tr['gap-diagnostic'].clash : 'Not Diagnosed';
+            document.getElementById('snapComm').textContent = tr['communication-translator'] ? tr['communication-translator'].outcome : 'Unmapped';
+            document.getElementById('snapLegacy').textContent = tr['legacy-sacrifice'] ? 'Reflected' : 'Unmapped';
+            document.getElementById('snapVisit').textContent = tr['visit-planner'] ? tr['visit-planner'].temp : 'Unplanned';
+            document.getElementById('snapRoadmap').textContent = tr['renewal-roadmap'] ? tr['renewal-roadmap'].temp : 'Not Started';
+        }
+
+        /* --- CROSS-MODULE RECOMMENDATIONS --- */
+        function getRecommendation(currentTool, inputs) {
+            if (currentTool === 'gap-diagnostic') {
+                if (inputs.clash === 'Emotional expression' || inputs.clash === 'Communication style') {
+                    return {
+                        title: "Recommended Next Step: Communication Translator",
+                        desc: "Since your gap centers on expression style, translate your core message into a non-defensive script next.",
+                        target: "tool2"
+                    };
+                } else if (inputs.clash === 'Cultural values' || inputs.clash === 'Life choices & independence') {
+                    return {
+                        title: "Recommended Next Step: Legacy & Sacrifice Reflector",
+                        desc: "Because your friction involves autonomy and values, reflect on past family survival context next.",
+                        target: "tool3"
+                    };
+                }
+            } else if (currentTool === 'communication-translator') {
+                return {
+                    title: "Recommended Next Step: Visit Planner",
+                    desc: "Apply your translated script during a time-boxed, low-conflict visit or phone call container.",
+                    target: "tool4"
+                };
+            } else if (currentTool === 'visit-planner') {
+                return {
+                    title: "Recommended Next Step: Renewal Roadmap",
+                    desc: "Solidify your low-conflict visit strategy into a 30-day rhythm of consistent, low-pressure micro-actions.",
+                    target: "tool5"
+                };
+            }
+            return {
+                title: "Recommended Next Step: Review My Bridge Plan",
+                desc: "Synthesize your complete intergenerational relationship plan.",
+                target: "bridgeplan"
+            };
+        }
+
+        /* --- TOOL LOGIC & ENGINES --- */
+
+        // TOOL 1 — GAP DIAGNOSTIC
+        function loadSampleTool1() {
+            document.getElementById('t1_role').value = "Adult Child";
+            document.getElementById('t1_clash').value = "Emotional expression";
+            document.getElementById('t1_desc').value = "I try to express my feelings of burnout and emotional exhaustion, but my parent tells me I am being weak and ungrateful since they worked so hard to give me a good life.";
+            runTool1(true);
+        }
+
+        document.getElementById('formTool1').addEventListener('submit', function(e) {
+            e.preventDefault();
+            runTool1(false);
+        });
+
+        function runTool1(isSample = false) {
+            const role = document.getElementById('t1_role').value;
+            const clash = document.getElementById('t1_clash').value;
+            const desc = document.getElementById('t1_desc').value;
+
+            const rec = getRecommendation('gap-diagnostic', { clash });
+
+            const html = `
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-glasses"></i> Worldview & Context Analysis</h4>
+                    <div class="side-by-side">
+                        <div class="contrast-box">
+                            <h5>Historical / Survival Context</h5>
+                            <p>${role === 'Adult Child' ? 'Raised in environments prioritizing physical security, financial endurance, and stoic protection against hardship.' : 'Operating from a framework where providing physical safety and material provision was the primary expression of care.'}</p>
+                        </div>
+                        <div class="contrast-box">
+                            <h5>Modern Reality Context</h5>
+                            <p>${role === 'Adult Child' ? 'Navigating modern landscapes prioritizing mental health, individual identity, boundaries, and emotional expression.' : 'Witnessing a world where success is measured by emotional well-being and personal fulfillment.'}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-shield-halved"></i> What Both Sides May Be Protecting</h4>
+                    <p><strong>Parent Side:</strong> May be protecting family stability, emotional safety from vulnerability, and ensuring their sacrifices created lasting resilience.</p>
+                    <p style="margin-top: 0.5rem;"><strong>Adult Child Side:</strong> May be protecting personal authenticity, mental health sustainability, and the right to establish modern boundaries.</p>
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-bullseye"></i> Priority & Focus Step</h4>
+                    <p><strong>Primary Priority:</strong> Reframe emotional discussion so it is not interpreted as a rejection of parental sacrifice or love.</p>
+                </div>
+
+                <div class="result-card rec-card">
+                    <h4><i class="fa-solid fa-compass"></i> ${escapeHtml(rec.title)}</h4>
+                    <p>${escapeHtml(rec.desc)}</p>
+                    <button class="btn btn-secondary" style="margin-top: 0.75rem;" onclick="switchView('${rec.target}')">Proceed <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            `;
+
+            const outputEl = document.getElementById('outputTool1');
+            outputEl.style.display = 'flex';
+            outputEl.innerHTML = html;
+            outputEl.scrollIntoView({ behavior: 'smooth' });
+
+            saveToolResult('gap-diagnostic', { summary: `${role} — ${clash}`, clash: clash, role: role }, { role, clash, desc }, html, isSample);
+        }
+
+        // TOOL 2 — COMMUNICATION TRANSLATOR
+        function loadSampleTool2() {
+            document.getElementById('t2_want').value = "I am experiencing severe burnout from working 60-hour weeks and need to slow down to protect my mental health.";
+            document.getElementById('t2_hear').value = "They hear: 'You didn't work hard enough raising me, and I am lazy.' They react by listing past struggles.";
+            document.getElementById('t2_outcome').value = "Mutual respect";
+            runTool2(true);
+        }
+
+        document.getElementById('formTool2').addEventListener('submit', function(e) {
+            e.preventDefault();
+            runTool2(false);
+        });
+
+        function runTool2(isSample = false) {
+            const want = document.getElementById('t2_want').value;
+            const hear = document.getElementById('t2_hear').value;
+            const outcome = document.getElementById('t2_outcome').value;
+
+            const script1 = "I know how hard you worked to build a foundation for our family. Because of that foundation, I am taking steps to manage my health so I can sustain my success over the long term.";
+            const script2 = "When I share my stress with you, I am not criticizing how I was raised. I am sharing my life so we can stay connected.";
+
+            const rec = getRecommendation('communication-translator', { outcome });
+
+            const html = `
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-language"></i> Translation Breakdown</h4>
+                    <p><strong>Core Intention:</strong> "${escapeHtml(want)}"</p>
+                    <p style="margin-top: 0.5rem;"><strong>Risk of Defensive Reaction:</strong> "${escapeHtml(hear)}"</p>
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-comment-dots"></i> De-escalated Scripts (${escapeHtml(outcome)})</h4>
+                    <div class="script-box">
+                        <div class="script-text">"${script1}"</div>
+                        <button class="copy-btn" onclick="copyText('${script1.replace(/'/g, "\\'")}', this)"><i class="fa-solid fa-copy"></i> Copy Script</button>
+                    </div>
+                    <div class="script-box">
+                        <div class="script-text">"${script2}"</div>
+                        <button class="copy-btn" onclick="copyText('${script2.replace(/'/g, "\\'")}', this)"><i class="fa-solid fa-copy"></i> Copy Script</button>
+                    </div>
+                </div>
+
+                <div class="result-card rec-card">
+                    <h4><i class="fa-solid fa-compass"></i> ${escapeHtml(rec.title)}</h4>
+                    <p>${escapeHtml(rec.desc)}</p>
+                    <button class="btn btn-secondary" style="margin-top: 0.75rem;" onclick="switchView('${rec.target}')">Proceed <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            `;
+
+            const outputEl = document.getElementById('outputTool2');
+            outputEl.style.display = 'flex';
+            outputEl.innerHTML = html;
+            outputEl.scrollIntoView({ behavior: 'smooth' });
+
+            saveToolResult('communication-translator', { summary: `Script: ${outcome}`, outcome: outcome }, { want, hear, outcome }, html, isSample);
+        }
+
+        // TOOL 3 — LEGACY & SACRIFICE
+        function loadSampleTool3() {
+            document.getElementById('t3_history').value = "Parents immigrated with zero English and little money, working multiple manual labor jobs to buy a home.";
+            document.getElementById('t3_choices').value = "Pursuing a creative career in design, setting work boundaries, and prioritizing therapy.";
+            document.getElementById('t3_disconnect').value = "They view non-traditional choices as reckless after their survival efforts.";
+            runTool3(true);
+        }
+
+        document.getElementById('formTool3').addEventListener('submit', function(e) {
+            e.preventDefault();
+            runTool3(false);
+        });
+
+        function runTool3(isSample = false) {
+            const history = document.getElementById('t3_history').value;
+            const choices = document.getElementById('t3_choices').value;
+            const disconnect = document.getElementById('t3_disconnect').value;
+
+            const statement = "When I look at the incredible hardships you overcame to establish our family, I feel deep gratitude. Because you secured our foundation, I have the privilege to pursue this path. My choices are not a rejection of your sacrifice, but the fulfillment of the opportunity you created.";
+
+            const html = `
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-scale-balanced"></i> Legacy & Survival Audit</h4>
+                    <p><strong>Honoring History:</strong> Family hardship often establishes a protective survival mindset centered on material security and risk avoidance.</p>
+                    <p style="margin-top: 0.5rem;"><strong>Reconciling Modern Choices:</strong> Pursuing individual fulfillment or boundaries is not ungrateful; it represents moving from survival to flourishing.</p>
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-hand-holding-heart"></i> Gratitude + Boundary Statement</h4>
+                    <div class="script-box">
+                        <div class="script-text">"${statement}"</div>
+                        <button class="copy-btn" onclick="copyText('${statement.replace(/'/g, "\\'")}', this)"><i class="fa-solid fa-copy"></i> Copy Statement</button>
+                    </div>
+                </div>
+            `;
+
+            const outputEl = document.getElementById('outputTool3');
+            outputEl.style.display = 'flex';
+            outputEl.innerHTML = html;
+            outputEl.scrollIntoView({ behavior: 'smooth' });
+
+            saveToolResult('legacy-sacrifice', { summary: `Legacy Reflection`, history: history }, { history, choices, disconnect }, html, isSample);
+        }
+
+        // TOOL 4 — VISIT PLANNER
+        function loadSampleTool4() {
+            document.getElementById('t4_format').value = "Weekend family dinner";
+            document.getElementById('t4_temp').value = "Strained";
+            document.querySelectorAll('input[name="triggers"]').forEach(cb => {
+                cb.checked = (cb.value === 'Career' || cb.value === 'Marriage/Dating');
+            });
+            document.getElementById('t4_duration').value = "2.5 hours";
+            runTool4(true);
+        }
+
+        document.getElementById('formTool4').addEventListener('submit', function(e) {
+            e.preventDefault();
+            runTool4(false);
+        });
+
+        function runTool4(isSample = false) {
+            const format = document.getElementById('t4_format').value;
+            const temp = document.getElementById('t4_temp').value;
+            const duration = document.getElementById('t4_duration').value;
+            const triggers = Array.from(document.querySelectorAll('input[name="triggers"]:checked')).map(cb => cb.value);
+
+            const exitScript = "It has been wonderful spending time together today. I have a commitment early tomorrow, so I need to head out now to make sure I am well-rested!";
+
+            const rec = getRecommendation('visit-planner', { temp });
+
+            const html = `
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-utensils"></i> Safe Topic Menu</h4>
+                    <ul>
+                        <li>Childhood culinary recipes & family cooking history</li>
+                        <li>Early family stories and hometown memories</li>
+                        <li>Shared nature, gardens, pets, or hobbies</li>
+                        <li>Lighthearted practical home updates</li>
+                    </ul>
+                    ${triggers.length > 0 ? `<p style="margin-top: 0.75rem; color: #EF4444; font-size: 0.85rem;"><strong>Active Boundaries:</strong> Deprioritizing: ${escapeHtml(triggers.join(', '))}</p>` : ''}
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-clock"></i> Time-Box Container (${escapeHtml(duration)})</h4>
+                    <p>Maintaining a defined time window prevents emotional exhaustion and reduces conflict risk.</p>
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-door-open"></i> Gentle Exit Script</h4>
+                    <div class="script-box">
+                        <div class="script-text">"${exitScript}"</div>
+                        <button class="copy-btn" onclick="copyText('${exitScript.replace(/'/g, "\\'")}', this)"><i class="fa-solid fa-copy"></i> Copy Exit Phrase</button>
+                    </div>
+                </div>
+
+                <div class="result-card rec-card">
+                    <h4><i class="fa-solid fa-compass"></i> ${escapeHtml(rec.title)}</h4>
+                    <p>${escapeHtml(rec.desc)}</p>
+                    <button class="btn btn-secondary" style="margin-top: 0.75rem;" onclick="switchView('${rec.target}')">Proceed <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            `;
+
+            const outputEl = document.getElementById('outputTool4');
+            outputEl.style.display = 'flex';
+            outputEl.innerHTML = html;
+            outputEl.scrollIntoView({ behavior: 'smooth' });
+
+            saveToolResult('visit-planner', { summary: `${format} (${duration})`, temp: temp }, { format, temp, duration, triggers }, html, isSample);
+        }
+
+        // TOOL 5 — RENEWAL ROADMAP
+        function loadSampleTool5() {
+            document.getElementById('t5_temp').value = "Strained";
+            document.getElementById('t5_actions').value = "3";
+            runTool5(true);
+        }
+
+        document.getElementById('formTool5').addEventListener('submit', function(e) {
+            e.preventDefault();
+            runTool5(false);
+        });
+
+        function runTool5(isSample = false) {
+            const temp = document.getElementById('t5_temp').value;
+            const actions = document.getElementById('t5_actions').value;
+
+            const msg = "Hi Mom/Dad, just wanted to send a quick note to say I am thinking of you. Hope you are having a calm and restful week!";
+
+            const html = `
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-route"></i> 30-Day Renewal Action Plan (${escapeHtml(temp)})</h4>
+                    <ul style="list-style: none; padding-left: 0; display: flex; flex-direction: column; gap: 0.75rem;">
+                        <li style="background:#F8FAFC; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color);">
+                            <strong>Week 1: Low-Pressure Warmth</strong><br>Send ${escapeHtml(actions)} low-demand messages (photos or simple well-wishes) with zero expectation of an immediate reply.
+                        </li>
+                        <li style="background:#F8FAFC; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color);">
+                            <strong>Week 2: Curiosity & Listening</strong><br>Ask a neutral question about family history or childhood memories. Listen without debating.
+                        </li>
+                        <li style="background:#F8FAFC; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color);">
+                            <strong>Week 3: Short Time-Boxed Interaction</strong><br>Schedule a brief, warm phone call or coffee date with a clear time limit.
+                        </li>
+                        <li style="background:#F8FAFC; padding:0.75rem; border-radius:0.5rem; border:1px solid var(--border-color);">
+                            <strong>Week 4: Sustainable Rhythm</strong><br>Establish a predictable, comfortable check-in rhythm that respects both sides.
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="result-card">
+                    <h4><i class="fa-solid fa-paper-plane"></i> Low-Pressure Message Template</h4>
+                    <div class="script-box">
+                        <div class="script-text">"${msg}"</div>
+                        <button class="copy-btn" onclick="copyText('${msg.replace(/'/g, "\\'")}', this)"><i class="fa-solid fa-copy"></i> Copy Message</button>
+                    </div>
+                </div>
+            `;
+
+            const outputEl = document.getElementById('outputTool5');
+            outputEl.style.display = 'flex';
+            outputEl.innerHTML = html;
+            outputEl.scrollIntoView({ behavior: 'smooth' });
+
+            saveToolResult('renewal-roadmap', { summary: `30-Day Reset: ${temp}`, temp: temp }, { temp, actions }, html, isSample);
+        }
+
+        /* --- BRIDGE PLAN SYNTHESIS --- */
+        function renderBridgePlan() {
+            const container = document.getElementById('bridgePlanContainer');
+            const tr = generationBridgeState.toolResults;
+
+            if (Object.keys(tr).length === 0) {
+                container.innerHTML = `
+                    <div class="card" style="text-align: center; padding: 2rem;">
+                        <i class="fa-solid fa-folder-open" style="font-size: 2.5rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <h3 style="color: var(--navy);">No System Analyses Completed Yet</h3>
+                        <p style="color: var(--text-muted); margin-top: 0.5rem;">Complete any of the core tools to construct your consolidated intergenerational relationship plan.</p>
+                        <button class="btn" style="margin-top: 1rem;" onclick="switchView('tool1')">Start Gap Diagnostic</button>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="card">
+                    <h3 style="color: var(--navy); border-bottom: 1px solid var(--border-color); padding-bottom: 0.5rem; margin-bottom: 1rem;">
+                        <i class="fa-solid fa-bridge" style="color: var(--amber);"></i> Consolidated Relationship Overview
+                    </h3>
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <div>
+                            <strong>Primary Generational Clash:</strong>
+                            <p>${tr['gap-diagnostic'] ? escapeHtml(tr['gap-diagnostic'].summary) : 'Not completed yet.'}</p>
+                        </div>
+                        <div>
+                            <strong>Communication Strategy:</strong>
+                            <p>${tr['communication-translator'] ? escapeHtml(tr['communication-translator'].summary) : 'Not completed yet.'}</p>
+                        </div>
+                        <div>
+                            <strong>Legacy & Sacrifice Understanding:</strong>
+                            <p>${tr['legacy-sacrifice'] ? escapeHtml(tr['legacy-sacrifice'].summary) : 'Not completed yet.'}</p>
+                        </div>
+                        <div>
+                            <strong>Low-Conflict Interaction Plan:</strong>
+                            <p>${tr['visit-planner'] ? escapeHtml(tr['visit-planner'].summary) : 'Not completed yet.'}</p>
+                        </div>
+                        <div>
+                            <strong>30-Day Renewal Rhythm:</strong>
+                            <p>${tr['renewal-roadmap'] ? escapeHtml(tr['renewal-roadmap'].summary) : 'Not completed yet.'}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCentralState();
+            ['gap-diagnostic', 'communication-translator', 'legacy-sacrifice', 'visit-planner', 'renewal-roadmap'].forEach(loadToolHistoryUI);
+        });
+    </script>
+</body>
+</html>

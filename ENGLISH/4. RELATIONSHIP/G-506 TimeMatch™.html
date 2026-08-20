@@ -1,0 +1,2388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TimeMatch™ — The Couple's Time & Connection System</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root {
+      --primary: #264653;
+      --primary-hover: #1e3742;
+      --accent: #E9C46A;
+      --accent-hover: #d8b256;
+      --bg-gradient: linear-gradient(135deg, #F8F9FA 0%, #FFF3E0 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --border-color: #E2E8F0;
+      --danger: #E76F51;
+      --success: #2A9D8F;
+      --warning: #F4A261;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --sidebar-width: 270px;
+      --radius-xl: 1rem;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Layout Structure */
+    .app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Mobile Header & Hamburger */
+    .mobile-header {
+      display: none;
+      background: var(--card-bg);
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-header .brand {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 50;
+      transition: transform 0.3s ease;
+      box-shadow: var(--shadow-sm);
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .sidebar-sub {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-group-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: 1rem 1.25rem 0.25rem 1.25rem;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 0.5rem 0.75rem;
+      display: flex;
+      flex-direction: flex-column;
+      gap: 0.15rem;
+    }
+
+    .nav-item button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.875rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .nav-item button:hover {
+      background: #F1F5F9;
+      color: var(--primary);
+    }
+
+    .nav-item.active button {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .nav-item button i {
+      width: 1.25rem;
+      text-align: center;
+      font-size: 1rem;
+    }
+
+    /* System Progress Tracker in Sidebar */
+    .progress-widget {
+      margin: 1rem 0.75rem;
+      padding: 0.85rem;
+      background: #F8FAFC;
+      border-radius: 0.5rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-widget-title {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-bar-sm {
+      height: 6px;
+      background: #E2E8F0;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Main Content Area */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      transition: margin 0.3s ease;
+    }
+
+    .content-container {
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+      flex: 1;
+    }
+
+    /* Section Visibility */
+    .tool-section {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .tool-section.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card Components */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .card-header-flex {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      color: var(--primary);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Dashboard & Hero Styles */
+    .hero-card {
+      background: linear-gradient(135deg, var(--primary) 0%, #344e41 100%);
+      color: white;
+      text-align: center;
+      padding: 3rem 1.75rem;
+      border-radius: var(--radius-xl);
+      margin-bottom: 2rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero-card h2 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+    }
+
+    .hero-card .hero-sub {
+      font-size: 1.1rem;
+      opacity: 0.95;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-card p {
+      font-size: 0.98rem;
+      opacity: 0.9;
+      max-width: 650px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .diagnostic-header {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 1.5rem 0 1rem 0;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .dash-card-icon {
+      width: 44px;
+      height: 44px;
+      background: #FFF8E7;
+      color: #D97706;
+      border-radius: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .dash-card h3 {
+      font-size: 1.05rem;
+      color: var(--primary);
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+
+    .dash-card p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    .dash-card-footer {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control, select, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      font-size: 0.925rem;
+      color: var(--text-main);
+      background: #FAFAFA;
+      transition: all 0.2s;
+    }
+
+    .form-control:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(38, 70, 83, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .checkbox-group, .radio-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.5rem;
+    }
+
+    .choice-tile {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      background: #FAFAFA;
+      cursor: pointer;
+      font-size: 0.875rem;
+      user-select: none;
+    }
+
+    .choice-tile:hover {
+      background: #F1F5F9;
+    }
+
+    .choice-tile input {
+      accent-color: var(--primary);
+    }
+
+    /* Sliders */
+    .slider-container {
+      margin-bottom: 1.25rem;
+      background: #F8FAFC;
+      padding: 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .slider-val {
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 0.5rem;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #E2E8F0;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background: #CBD5E1;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:hover {
+      background: #F8FAFC;
+      color: var(--text-main);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.825rem;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    /* Outputs & Results */
+    .output-container {
+      margin-top: 2rem;
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .output-container.active {
+      display: block;
+    }
+
+    .output-box {
+      background: #F8FAFC;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      margin-bottom: 1rem;
+    }
+
+    .output-box.warning {
+      border-left-color: var(--warning);
+      background: #FFFBEB;
+    }
+
+    .output-box.accent {
+      border-left-color: var(--accent);
+      background: #FEFCE8;
+    }
+
+    .output-box.success {
+      border-left-color: var(--success);
+      background: #F0FDF4;
+    }
+
+    .output-title {
+      font-weight: 700;
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .script-box {
+      background: #FFFFFF;
+      border: 1px dashed var(--primary);
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.925rem;
+      color: #1E293B;
+      line-height: 1.5;
+      position: relative;
+      margin-top: 0.5rem;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+    }
+
+    /* Metric Visual Bar */
+    .metric-bar-container {
+      margin-bottom: 1rem;
+    }
+
+    .metric-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      margin-bottom: 0.25rem;
+      font-weight: 500;
+    }
+
+    .metric-track {
+      height: 8px;
+      background: #E2E8F0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .metric-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .bg-green { background: var(--success); }
+    .bg-yellow { background: var(--warning); }
+    .bg-red { background: var(--danger); }
+
+    /* History Accordion */
+    .accordion {
+      margin-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1.5rem;
+    }
+
+    .accordion-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .accordion-title {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .accordion-content {
+      display: none;
+      padding-top: 1rem;
+    }
+
+    .accordion-content.open {
+      display: block;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .history-item {
+      background: #FAFAFA;
+      border: 1px solid var(--border-color);
+      border-radius: 0.5rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .history-date {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-bottom: 0.25rem;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #1E293B;
+      color: white;
+      padding: 0.75rem 1.25rem;
+      border-radius: 0.5rem;
+      font-size: 0.9rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Reset Wizard Day Box */
+    .reset-day-card {
+      border: 1px solid var(--border-color);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      background: #FFFFFF;
+    }
+
+    .reset-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .reset-day-title {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      font-weight: 600;
+    }
+
+    .badge-pending { background: #E2E8F0; color: var(--text-muted); }
+    .badge-complete { background: #D1FAE5; color: #065F46; }
+
+    /* Footer */
+    footer {
+      background: var(--card-bg);
+      border-top: 1px solid var(--border-color);
+      padding: 1.25rem;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-top: auto;
+    }
+
+    /* Overlay for Mobile Sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 45;
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .mobile-header, .btn, .btn-group, .accordion, footer, .toast {
+        display: none !important;
+      }
+      .main-wrapper {
+        margin-left: 0 !important;
+      }
+      .content-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+      }
+      .tool-section {
+        display: block !important;
+      }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      .content-container {
+        padding: 1.25rem 1rem;
+      }
+
+      .hero-card h2 {
+        font-size: 1.6rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+      <div class="brand">
+        <i class="fa-solid fa-hourglass-half" style="color: var(--accent);"></i>
+        <span>TimeMatch™</span>
+      </div>
+      <button class="hamburger-btn" onclick="toggleSidebar()" aria-label="Toggle Navigation">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <h1>
+          <i class="fa-solid fa-hourglass-half" style="color: var(--accent);"></i>
+          <span>TimeMatch™</span>
+        </h1>
+        <div class="sidebar-sub">Couple's Connection OS</div>
+      </div>
+
+      <div class="progress-widget">
+        <div class="progress-widget-title">
+          <span>System Setup</span>
+          <span id="navProgressText">0/5 Tools</span>
+        </div>
+        <div class="progress-bar-sm">
+          <div class="progress-bar-fill" id="navProgressBar"></div>
+        </div>
+      </div>
+
+      <ul class="nav-links">
+        <li class="nav-item active">
+          <button onclick="switchTab('dashboard')">
+            <i class="fa-solid fa-house"></i>
+            <span>Home</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('start-here')">
+            <i class="fa-solid fa-compass"></i>
+            <span>Start Here</span>
+          </button>
+        </li>
+
+        <div class="nav-group-title">The Core Tools</div>
+        <li class="nav-item">
+          <button onclick="switchTab('time-audit')">
+            <i class="fa-solid fa-clock"></i>
+            <span>1. See Our Time</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('the-ask')">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>2. Make The Ask</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('schedule-sync')">
+            <i class="fa-solid fa-calendar-days"></i>
+            <span>3. Sync Schedules</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('solo-together')">
+            <i class="fa-solid fa-battery-half"></i>
+            <span>4. Space + Togetherness</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('check-in')">
+            <i class="fa-solid fa-sliders"></i>
+            <span>5. Weekly Check-In</span>
+          </button>
+        </li>
+
+        <div class="nav-group-title">System Synthesis</div>
+        <li class="nav-item">
+          <button onclick="switchTab('seven-day-reset')">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <span>7-Day Reset</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('couple-rhythm')">
+            <i class="fa-solid fa-heart-pulse"></i>
+            <span>Our Couple Rhythm</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('experiment-tracker')">
+            <i class="fa-solid fa-vial"></i>
+            <span>Experiment Tracker</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('connection-menu')">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Connection Menu</span>
+          </button>
+        </li>
+
+        <div class="nav-group-title">System & Records</div>
+        <li class="nav-item">
+          <button onclick="switchTab('history-view')">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Our History</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button onclick="switchTab('privacy-safety')">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Privacy & Safety</span>
+          </button>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <main class="content-container">
+
+        <!-- SECTION: HOME / DASHBOARD -->
+        <section id="dashboard" class="tool-section active">
+          <div class="hero-card">
+            <h2>TIME MATCH™</h2>
+            <div class="hero-sub">Different schedules. Different needs. One relationship.</div>
+            <p>You don't need to spend every free minute together. You need a rhythm that gives both of you enough connection, enough space, and enough intention.</p>
+          </div>
+
+          <div class="diagnostic-header">What's hurting most right now?</div>
+
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTab('time-audit')">
+              <div>
+                <div class="dash-card-icon"><i class="fa-solid fa-clock"></i></div>
+                <h3>🕐 We barely have enough time together</h3>
+                <p>Uncover where your hours actually go and map the connection gap between actual and ideal time.</p>
+              </div>
+              <div class="dash-card-footer">Start Time Audit <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="dash-card" onclick="switchTab('the-ask')">
+              <div>
+                <div class="dash-card-icon"><i class="fa-solid fa-comment-dots"></i></div>
+                <h3>💬 Asking for connection turns into conflict</h3>
+                <p>Learn to frame requests constructively without sounding needy, accusatory, or demanding.</p>
+              </div>
+              <div class="dash-card-footer">Start The Ask <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="dash-card" onclick="switchTab('schedule-sync')">
+              <div>
+                <div class="dash-card-icon"><i class="fa-solid fa-calendar-days"></i></div>
+                <h3>📅 Our schedules never seem to line up</h3>
+                <p>Align busy routines, protect solo time, and discover hidden windows for meaningful togetherness.</p>
+              </div>
+              <div class="dash-card-footer">Start Schedule Sync <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="dash-card" onclick="switchTab('solo-together')">
+              <div>
+                <div class="dash-card-icon"><i class="fa-solid fa-battery-half"></i></div>
+                <h3>🔋 I need space, but it's felt as rejection</h3>
+                <p>Decode differences in energy recharge styles and turn personality clashes into practical compromises.</p>
+              </div>
+              <div class="dash-card-footer">Start Space + Togetherness <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="dash-card" onclick="switchTab('check-in')">
+              <div>
+                <div class="dash-card-icon"><i class="fa-solid fa-sliders"></i></div>
+                <h3>🔄 We make agreements but don't check if they work</h3>
+                <p>Weekly calibration tool to review time satisfaction, identify tension early, and stay aligned.</p>
+              </div>
+              <div class="dash-card-footer">Start Weekly Check-In <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+
+            <div class="dash-card" style="background: #FEFCE8; border-color: var(--accent);" onclick="switchTab('seven-day-reset')">
+              <div>
+                <div class="dash-card-icon" style="background: var(--accent); color: var(--primary);"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                <h3>❤️ We need to redesign our whole rhythm</h3>
+                <p>Follow our guided 7-Day Time Match Reset sequence to rebuild your couple schedule end-to-end.</p>
+              </div>
+              <div class="dash-card-footer">Start 7-Day Reset <i class="fa-solid fa-arrow-right"></i></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: START HERE -->
+        <section id="start-here" class="tool-section">
+          <div class="card">
+            <h2 class="card-title" style="margin-bottom: 1rem;"><i class="fa-solid fa-compass"></i> Start Here: Orientation</h2>
+            
+            <div class="output-box accent">
+              <div style="font-weight: 700; font-size: 1.1rem; color: var(--primary); margin-bottom: 0.5rem;">
+                Time problems are often relationship design problems.
+              </div>
+              <p style="line-height: 1.6;">
+                Two people can love each other deeply and still struggle with time. One person finishes work at 4:00 PM; the other finishes at 7:00 PM. One wants conversation immediately upon returning; the other needs silence to decompress. Neither means the relationship is failing — you may simply have different definitions of "enough."
+              </p>
+            </div>
+
+            <div style="margin: 1.5rem 0;">
+              <h3 style="font-size: 1.05rem; color: var(--primary); margin-bottom: 0.75rem;">Five Essential Questions We Will Solve Together:</h3>
+              <ul style="padding-left: 1.25rem; line-height: 1.8;">
+                <li><strong>1. How much meaningful time do we actually have?</strong> (Tool 1: Time Audit)</li>
+                <li><strong>2. Can we ask for connection without creating defensiveness?</strong> (Tool 2: The Ask)</li>
+                <li><strong>3. How do we find windows when calendars clash?</strong> (Tool 3: Schedule Sync)</li>
+                <li><strong>4. Can we protect both togetherness and individual space?</strong> (Tool 4: Space + Togetherness)</li>
+                <li><strong>5. How do we know whether our new rhythm is actually working?</strong> (Tool 5: Weekly Check-In)</li>
+              </ul>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" onclick="switchTab('time-audit')">Begin Tool 1: Time Audit <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1: TIME AUDIT -->
+        <section id="time-audit" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-clock"></i> 1. See Our Time (Time Audit)</h2>
+              <button class="btn btn-outline btn-sm" onclick="loadSampleAudit()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> See A Sample
+              </button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              We may not have a love problem — we may have a time-inventory problem. Identify mismatches between actual togetherness and ideal connection time.
+            </p>
+
+            <form id="auditForm" onsubmit="event.preventDefault(); processAudit();">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem;">
+                <div class="form-group">
+                  <label for="auditAWork">Partner A Work Hours + Commute:</label>
+                  <input type="text" id="auditAWork" class="form-control" placeholder="e.g. 8:30am–6:30pm (10 hrs)">
+                </div>
+                <div class="form-group">
+                  <label for="auditBWork">Partner B Work Hours + Commute:</label>
+                  <input type="text" id="auditBWork" class="form-control" placeholder="e.g. 7:00am–3:30pm (8.5 hrs)">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="auditAObligations">Partner A Evening / Personal Obligations:</label>
+                <textarea id="auditAObligations" placeholder="e.g., Gym Mon/Wed/Fri (2 hrs), side project, chores"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="auditBObligations">Partner B Evening / Personal Obligations:</label>
+                <textarea id="auditBObligations" placeholder="e.g., Cooking, evening calls, reading, relaxing solo"></textarea>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div class="form-group">
+                  <label for="auditActualWeekday">Current Shared Time (Weekday):</label>
+                  <select id="auditActualWeekday" class="form-control">
+                    <option value="None">None</option>
+                    <option value="30 min">30 minutes</option>
+                    <option value="1 hr" selected>1 hour</option>
+                    <option value="2 hr">2 hours</option>
+                    <option value="3+ hr">3+ hours</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="auditActualWeekend">Current Shared Time (Weekend Day):</label>
+                  <select id="auditActualWeekend" class="form-control">
+                    <option value="None">None</option>
+                    <option value="1-2 hr">1–2 hours</option>
+                    <option value="3-5 hr" selected>3–5 hours</option>
+                    <option value="6+ hr">6+ hours</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div class="form-group">
+                  <label for="auditIdealA">Partner A's Ideal Daily Together Time:</label>
+                  <select id="auditIdealA" class="form-control">
+                    <option value="30 min">30 minutes</option>
+                    <option value="1 hr">1 hour</option>
+                    <option value="2 hr" selected>2 hours</option>
+                    <option value="3+ hr">3+ hours</option>
+                    <option value="Quality over quantity">Quality over quantity</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="auditIdealB">Partner B's Ideal Daily Together Time:</label>
+                  <select id="auditIdealB" class="form-control">
+                    <option value="30 min">30 minutes</option>
+                    <option value="1 hr" selected>1 hour</option>
+                    <option value="2 hr">2 hours</option>
+                    <option value="3+ hr">3+ hours</option>
+                    <option value="Quality over quantity">Quality over quantity</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-simple"></i> Analyze Time Inventory</button>
+              </div>
+            </form>
+
+            <div id="auditOutput" class="output-container">
+              <div class="output-box accent">
+                <div class="output-title">The Connection Gap</div>
+                <div id="auditGapText"></div>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">Your Time Reality</div>
+                <div id="auditInventoryText"></div>
+              </div>
+
+              <div class="output-box warning">
+                <div class="output-title">Primary Pattern Observed</div>
+                <div id="auditMismatchText" style="font-weight: 600; font-size: 1.05rem;"></div>
+              </div>
+
+              <div class="output-box success">
+                <div class="output-title">Low-Hanging Fruit (Quick Wins)</div>
+                <ul id="auditWinsList" style="padding-left: 1.25rem; line-height: 1.6;"></ul>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">One-Week Time Experiment</div>
+                <div id="auditExperimentText" style="line-height: 1.5;"></div>
+              </div>
+
+              <div class="btn-group">
+                <button class="btn btn-secondary btn-sm" onclick="copyToClipboard('auditOutput')"><i class="fa-regular fa-copy"></i> Copy Results</button>
+                <button class="btn btn-primary btn-sm" onclick="switchTab('the-ask')">Continue to Tool 2: The Ask <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: THE ASK -->
+        <section id="the-ask" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-comment-dots"></i> 2. Make The Ask</h2>
+              <button class="btn btn-outline btn-sm" onclick="loadSampleAsk()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> See A Sample
+              </button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Ask for connection without turning it into a complaint. Structure requests with warmth, clarity, and partner recognition.
+            </p>
+
+            <form id="askForm" onsubmit="event.preventDefault(); processAsk();">
+              <div class="form-group">
+                <label for="askDesired">What do you want more of?</label>
+                <select id="askDesired" class="form-control">
+                  <option value="Evening downtime">Evening downtime & unhurried relaxation</option>
+                  <option value="Weekend activities">Weekend activities & shared adventures</option>
+                  <option value="Morning connection">Morning connection (coffee, brief check-in)</option>
+                  <option value="Deep conversation">Deep conversation without distractions</option>
+                  <option value="Physical affection">Physical affection & quiet closeness</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="askPastAttempt">When you tried asking before, what happened?</label>
+                <select id="askPastAttempt" class="form-control">
+                  <option value="They agreed but didn't follow through">They agreed but didn't follow through</option>
+                  <option value="They got defensive">They got defensive ("I work hard all day!")</option>
+                  <option value="It turned into a fight">It turned into a fight or lingering tension</option>
+                  <option value="I didn't ask — I just hoped they'd notice">I didn't ask — I just hoped they'd notice</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="askFear">What are you afraid they'll say?</label>
+                <textarea id="askFear" placeholder="e.g., That I'm suffocating them or asking for too much."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="askPartnerNeed">What do you think they need that they're not getting?</label>
+                <textarea id="askPartnerNeed" placeholder="e.g., Decompression time after stressful work hours."></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Generate Reframed Script</button>
+              </div>
+            </form>
+
+            <div id="askOutput" class="output-container">
+              <div class="output-box">
+                <div class="output-title">Your Current Ask Pattern</div>
+                <div id="askStyleText" style="font-weight: 500;"></div>
+              </div>
+
+              <div class="output-box accent">
+                <div class="output-title">The First Ask (Reframed Request)</div>
+                <div class="script-box">
+                  <span id="askScriptText"></span>
+                  <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('askScriptText')">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">Timing Engine Recommendation</div>
+                <div id="askTimingText" style="line-height: 1.5;"></div>
+              </div>
+
+              <div class="output-box warning">
+                <div class="output-title">If They Say "No" (Dignity-Preserving Response)</div>
+                <div class="script-box">
+                  <span id="askNoScriptText"></span>
+                  <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('askNoScriptText')">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+
+              <div class="output-box success">
+                <div class="output-title">If They Say "Yes" But Don't Follow Through</div>
+                <div class="script-box">
+                  <span id="askFollowupScriptText"></span>
+                  <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('askFollowupScriptText')">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">The Other Side of the Request</div>
+                <div id="askPerspectiveText" style="font-style: italic; color: var(--text-muted);"></div>
+              </div>
+
+              <div class="btn-group">
+                <button class="btn btn-primary btn-sm" onclick="switchTab('schedule-sync')">Continue to Tool 3: Sync Schedules <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: SCHEDULE SYNC -->
+        <section id="schedule-sync" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-calendar-days"></i> 3. Sync Our Schedules</h2>
+              <button class="btn btn-outline btn-sm" onclick="loadSampleSync()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> See A Sample
+              </button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Your calendars don't need to match — your connection windows need to. Map non-negotiable blocks and manage planning burden fairly.
+            </p>
+
+            <form id="syncForm" onsubmit="event.preventDefault(); processSync();">
+              <div class="form-group">
+                <label for="syncASolo">Partner A Non-Negotiable Solo Time:</label>
+                <textarea id="syncASolo" placeholder="e.g., Gym Mon/Wed 6-7:30pm, Sunday morning gaming"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="syncBSolo">Partner B Non-Negotiable Solo Time:</label>
+                <textarea id="syncBSolo" placeholder="e.g., Book club Tues evening, Saturday long run"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="syncObligations">Recurring Obligations That Steal Connection Time:</label>
+                <textarea id="syncObligations" placeholder="e.g., Late work emails, household chores, grocery shopping, commuting"></textarea>
+              </div>
+
+              <div class="form-group">
+                <label>Preferred Connection Formats (Select all that apply):</label>
+                <div class="checkbox-group">
+                  <label class="choice-tile"><input type="checkbox" name="syncFormat" value="Meals" checked> Meals together</label>
+                  <label class="choice-tile"><input type="checkbox" name="syncFormat" value="TV together" checked> TV / Movies</label>
+                  <label class="choice-tile"><input type="checkbox" name="syncFormat" value="Walks"> Evening walks</label>
+                  <label class="choice-tile"><input type="checkbox" name="syncFormat" value="Deep talk"> Deep talk</label>
+                  <label class="choice-tile"><input type="checkbox" name="syncFormat" value="Activities"> Weekend outings</label>
+                  <label class="choice-tile"><input type="checkbox" name="syncFormat" value="Parallel play"> Parallel play (reading side-by-side)</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Who currently carries the Connection Planning Load?</label>
+                <div class="radio-group">
+                  <label class="choice-tile"><input type="radio" name="syncLogistics" value="Partner A" checked> Partner A</label>
+                  <label class="choice-tile"><input type="radio" name="syncLogistics" value="Partner B"> Partner B</label>
+                  <label class="choice-tile"><input type="radio" name="syncLogistics" value="Both"> Equally Shared</label>
+                  <label class="choice-tile"><input type="radio" name="syncLogistics" value="Nobody"> Nobody (Spontaneous)</label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calendar-check"></i> Map Couple Time</button>
+              </div>
+            </form>
+
+            <div id="syncOutput" class="output-container">
+              <div class="output-box">
+                <div class="output-title">Your Couple Time Map</div>
+                <div id="syncHeatmapText"></div>
+              </div>
+
+              <div class="output-box success">
+                <div class="output-title">Protected Connection Windows</div>
+                <ul id="syncWindowsList" style="padding-left: 1.25rem; line-height: 1.6;"></ul>
+              </div>
+
+              <div class="output-box warning">
+                <div class="output-title">Connection Planning Load Assessment</div>
+                <div id="syncLogisticsText" style="line-height: 1.5;"></div>
+              </div>
+
+              <div class="output-box accent">
+                <div class="output-title">Suggested 7-Day Connection Rhythm</div>
+                <div id="sync7DayPlan" style="display: grid; gap: 0.5rem; margin-top: 0.5rem;"></div>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">No-Go Windows (Avoid Demanding Connection Here)</div>
+                <div id="syncNoGoText" style="color: var(--danger); font-weight: 500;"></div>
+              </div>
+
+              <div class="btn-group">
+                <button class="btn btn-primary btn-sm" onclick="switchTab('solo-together')">Continue to Tool 4: Space + Togetherness <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 4: SOLO VS TOGETHER -->
+        <section id="solo-together" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-battery-half"></i> 4. Space + Togetherness</h2>
+              <button class="btn btn-outline btn-sm" onclick="loadSampleSolo()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> See A Sample
+              </button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Space is not the opposite of connection. Align different energy recharge preferences without taking them personally.
+            </p>
+
+            <form id="soloForm" onsubmit="event.preventDefault(); processSolo();">
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div class="form-group">
+                  <label for="soloRechargeA">Partner A Recharges By:</label>
+                  <select id="soloRechargeA" class="form-control">
+                    <option value="Alone time">Alone time (Solitude, gaming, reading)</option>
+                    <option value="Social time">Social time with friends/groups</option>
+                    <option value="Physical activity">Physical activity / Sports</option>
+                    <option value="Quiet togetherness" selected>Quiet togetherness (Co-existing)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="soloRechargeB">Partner B Recharges By:</label>
+                  <select id="soloRechargeB" class="form-control">
+                    <option value="Alone time" selected>Alone time (Solitude, gaming, reading)</option>
+                    <option value="Social time">Social time with friends/groups</option>
+                    <option value="Physical activity">Physical activity / Sports</option>
+                    <option value="Quiet togetherness">Quiet togetherness (Co-existing)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div class="form-group">
+                  <label for="soloDrainA">Partner A Feels Drained By:</label>
+                  <select id="soloDrainA" class="form-control">
+                    <option value="Not enough personal time">Not enough personal / solo time</option>
+                    <option value="Too much unstructured together time">Too much unstructured togetherness</option>
+                    <option value="Too much scheduled activity" selected>Too much scheduled activity</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="soloDrainB">Partner B Feels Drained By:</label>
+                  <select id="soloDrainB" class="form-control">
+                    <option value="Not enough personal time" selected>Not enough personal / solo time</option>
+                    <option value="Too much unstructured together time">Too much unstructured togetherness</option>
+                    <option value="Too much scheduled activity">Too much scheduled activity</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="soloConflictPattern">Current Tension Point:</label>
+                <textarea id="soloConflictPattern" placeholder="e.g., Partner A gets upset when Partner B retreats to the bedroom after work."></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-scale-balanced"></i> Map Energy Styles</button>
+              </div>
+            </form>
+
+            <div id="soloOutput" class="output-container">
+              <div class="output-box accent">
+                <div class="output-title">Recharge Style Difference</div>
+                <div id="soloCoreDiffText" style="line-height: 1.5; font-weight: 500;"></div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div class="output-box">
+                  <div class="output-title">What May Help Partner A</div>
+                  <div id="soloNeedsAText"></div>
+                </div>
+                <div class="output-box">
+                  <div class="output-title">What May Help Partner B</div>
+                  <div id="soloNeedsBText"></div>
+                </div>
+              </div>
+
+              <div class="output-box success">
+                <div class="output-title">Space → Transition → Connection Formula</div>
+                <div id="soloFormulaText" style="font-weight: 600; font-size: 1.05rem; color: var(--primary);"></div>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">Quality-Over-Quantity Options</div>
+                <ul id="soloChecklist" style="padding-left: 1.25rem; line-height: 1.6;"></ul>
+              </div>
+
+              <div class="output-box warning">
+                <div class="output-title">Your Transition Buffer Rule</div>
+                <div id="soloRuleText" style="font-weight: 600; font-size: 1rem;"></div>
+              </div>
+
+              <div class="btn-group">
+                <button class="btn btn-primary btn-sm" onclick="switchTab('check-in')">Continue to Tool 5: Weekly Check-In <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 5: THE CHECK-IN -->
+        <section id="check-in" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-sliders"></i> 5. Weekly Check-In</h2>
+              <button class="btn btn-outline btn-sm" onclick="loadSampleCheckin()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> See A Sample
+              </button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Review your weekly time snapshot to notice friction early and adjust proactively. No false relationship scores — just descriptive reflection.
+            </p>
+
+            <form id="checkinForm" onsubmit="event.preventDefault(); processCheckin();">
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span>1. Togetherness: I got enough shared time this week</span>
+                  <span class="slider-val" id="val1">5</span>
+                </div>
+                <input type="range" id="check1" min="1" max="10" value="5" oninput="document.getElementById('val1').innerText = this.value">
+              </div>
+
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span>2. Space: I got enough individual solo time this week</span>
+                  <span class="slider-val" id="val2">5</span>
+                </div>
+                <input type="range" id="check2" min="1" max="10" value="5" oninput="document.getElementById('val2').innerText = this.value">
+              </div>
+
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span>3. Quality: Our shared time felt intentional, not just accidental</span>
+                  <span class="slider-val" id="val3">5</span>
+                </div>
+                <input type="range" id="check3" min="1" max="10" value="5" oninput="document.getElementById('val3').innerText = this.value">
+              </div>
+
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span>4. Resentment Pressure: Resentment about time this week</span>
+                  <span class="slider-val" id="val4">3</span>
+                </div>
+                <input type="range" id="check4" min="1" max="10" value="3" oninput="document.getElementById('val4').innerText = this.value">
+              </div>
+
+              <div class="slider-container">
+                <div class="slider-header">
+                  <span>5. Guilt Around Space: Guilt felt when asking for solo space</span>
+                  <span class="slider-val" id="val5">3</span>
+                </div>
+                <input type="range" id="check5" min="1" max="10" value="3" oninput="document.getElementById('val5').innerText = this.value">
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-square-poll-vertical"></i> Generate Weekly Snapshot</button>
+              </div>
+            </form>
+
+            <div id="checkinOutput" class="output-container">
+              <div class="output-box">
+                <div class="output-title">Weekly Time Snapshot</div>
+                <div id="checkinDashboardBars"></div>
+              </div>
+
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+                <div class="output-box success">
+                  <div class="output-title">What's Working Well</div>
+                  <div id="checkinAlignmentText"></div>
+                </div>
+                <div class="output-box warning">
+                  <div class="output-title">Where Tension Is Building</div>
+                  <div id="checkinTensionText"></div>
+                </div>
+              </div>
+
+              <div class="output-box accent">
+                <div class="output-title">One Adjustment For Next Week</div>
+                <div id="checkinAdjustmentText" style="line-height: 1.5; font-weight: 500;"></div>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">Conversation Starter Script</div>
+                <div class="script-box">
+                  <span id="checkinScriptText"></span>
+                  <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('checkinScriptText')">
+                    <i class="fa-regular fa-copy"></i> Copy
+                  </button>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button class="btn btn-primary btn-sm" onclick="switchTab('couple-rhythm')">View Complete Couple Rhythm <i class="fa-solid fa-arrow-right"></i></button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: 7-DAY TIME MATCH RESET -->
+        <section id="seven-day-reset" class="tool-section">
+          <div class="card">
+            <h2 class="card-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-wand-magic-sparkles"></i> 7-Day Time Match Reset</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              A guided, step-by-step sequence to redesign your relationship time end-to-end over seven days.
+            </p>
+
+            <div class="reset-day-card">
+              <div class="reset-day-header">
+                <span class="reset-day-title">DAY 1: See Your Real Time</span>
+                <span class="badge badge-pending" id="badgeDay1">Pending</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">Complete Tool 1 (Time Audit) to establish your Connection Gap baseline.</p>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('time-audit')">Go to Day 1 Tool</button>
+            </div>
+
+            <div class="reset-day-card">
+              <div class="reset-day-header">
+                <span class="reset-day-title">DAY 2: Name What You Want</span>
+                <span class="badge badge-pending" id="badgeDay2">Pending</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">Complete Tool 2 (The Ask) to generate warm, complaint-free requests.</p>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('the-ask')">Go to Day 2 Tool</button>
+            </div>
+
+            <div class="reset-day-card">
+              <div class="reset-day-header">
+                <span class="reset-day-title">DAY 3: Find Your Windows</span>
+                <span class="badge badge-pending" id="badgeDay3">Pending</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">Complete Tool 3 (Schedule Sync) to map real connection windows.</p>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('schedule-sync')">Go to Day 3 Tool</button>
+            </div>
+
+            <div class="reset-day-card">
+              <div class="reset-day-header">
+                <span class="reset-day-title">DAY 4: Understand Space</span>
+                <span class="badge badge-pending" id="badgeDay4">Pending</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">Complete Tool 4 (Space + Togetherness) to define your transition buffer.</p>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('solo-together')">Go to Day 4 Tool</button>
+            </div>
+
+            <div class="reset-day-card">
+              <div class="reset-day-header">
+                <span class="reset-day-title">DAYS 5–6: Run Your Experiment</span>
+                <span class="badge badge-pending" id="badgeDay5">Pending</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">Set up your 7-Day Experiment in the Experiment Tracker and test it in real life.</p>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('experiment-tracker')">Go to Experiment Tracker</button>
+            </div>
+
+            <div class="reset-day-card">
+              <div class="reset-day-header">
+                <span class="reset-day-title">DAY 7: Review & Synthesize</span>
+                <span class="badge badge-pending" id="badgeDay7">Pending</span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">Complete Tool 5 (Weekly Check-In) and generate your full Couple Rhythm Card.</p>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('check-in')">Go to Day 7 Review</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: OUR COUPLE RHYTHM -->
+        <section id="couple-rhythm" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-heart-pulse"></i> Our Couple Rhythm Snapshot</h2>
+              <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Couple Plan</button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              The synthesized blueprint of your relationship time system based on your completed tools.
+            </p>
+
+            <div id="rhythmContent">
+              <!-- Dynamically populated by renderCoupleRhythm() -->
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: EXPERIMENT TRACKER -->
+        <section id="experiment-tracker" class="tool-section">
+          <div class="card">
+            <h2 class="card-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-vial"></i> Experiment Tracker</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Small change → Observe → Adjust. Record micro-experiments to see what actually works in practice.
+            </p>
+
+            <form id="expForm" onsubmit="event.preventDefault(); saveExperiment();">
+              <div class="form-group">
+                <label for="expTitle">What small experiment are you trying this week?</label>
+                <input type="text" id="expTitle" class="form-control" placeholder="e.g., 20-minute no-phone dinner check-in">
+              </div>
+
+              <div class="form-group">
+                <label for="expStatus">Status / Outcome:</label>
+                <select id="expStatus" class="form-control">
+                  <option value="In Progress">In Progress</option>
+                  <option value="Kept (Worked Well)">Kept (Worked Well)</option>
+                  <option value="Changed (Adjusted)">Changed (Adjusted)</option>
+                  <option value="Dropped (Didn't Work)">Dropped (Didn't Work)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="expNotes">Notes / What felt better or worse?</label>
+                <textarea id="expNotes" placeholder="e.g., Dinner felt much more relaxed. Tuesday was tough due to late meetings."></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-plus"></i> Save Experiment Log</button>
+              </div>
+            </form>
+
+            <div style="margin-top: 2rem;">
+              <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 0.75rem;">Logged Experiments</h3>
+              <div id="expList" class="history-list">
+                <div style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No experiments logged yet.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: CONNECTION MENU -->
+        <section id="connection-menu" class="tool-section">
+          <div class="card">
+            <h2 class="card-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-list-check"></i> Connection Menu</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Meaningful connection doesn't require a free weekend. Pick an option that fits your current time budget.
+            </p>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem;">
+              <div class="output-box">
+                <div class="output-title">⚡ 5 MINUTES (Micro-Connect)</div>
+                <ul style="padding-left: 1rem; font-size: 0.875rem; line-height: 1.6;">
+                  <li>60-second uninterrupted embrace</li>
+                  <li>Morning coffee check-in</li>
+                  <li>"One thing I appreciated today" text or note</li>
+                </ul>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">☕ 15 MINUTES (Anchor)</div>
+                <ul style="padding-left: 1rem; font-size: 0.875rem; line-height: 1.6;">
+                  <li>Short evening walk around the block</li>
+                  <li>No-phone tea/dessert break</li>
+                  <li>Listening to one favorite song together</li>
+                </ul>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">🍷 30 MINUTES (Focus)</div>
+                <ul style="padding-left: 1rem; font-size: 0.875rem; line-height: 1.6;">
+                  <li>Device-free dinner conversation</li>
+                  <li>Parallel play (reading together in same room)</li>
+                  <li>Post-work decompression catch-up</li>
+                </ul>
+              </div>
+
+              <div class="output-box">
+                <div class="output-title">🕯️ 60+ MINUTES (Deep Sync)</div>
+                <ul style="padding-left: 1rem; font-size: 0.875rem; line-height: 1.6;">
+                  <li>Dedicated date night / dinner out</li>
+                  <li>Shared outdoor outing / hike</li>
+                  <li>Weekly couple planning & dream ritual</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: OUR HISTORY -->
+        <section id="history-view" class="tool-section">
+          <div class="card">
+            <div class="card-header-flex">
+              <h2 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Our System History</h2>
+              <button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Clear All History</button>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.5rem;">
+              Review past tool runs and track qualitative changes in your couple rhythm over time.
+            </p>
+
+            <div id="fullHistoryList" class="history-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </section>
+
+        <!-- SECTION: PRIVACY & SAFETY -->
+        <section id="privacy-safety" class="tool-section">
+          <div class="card">
+            <h2 class="card-title" style="margin-bottom: 1rem;"><i class="fa-solid fa-shield-halved"></i> Privacy & Safety Notice</h2>
+            
+            <div class="output-box success" style="margin-bottom: 1.5rem;">
+              <div class="output-title"><i class="fa-solid fa-lock"></i> 100% Local Device Privacy</div>
+              <p style="font-size: 0.9rem; line-height: 1.5;">
+                Your privacy is completely protected. All inputs, schedules, notes, and outputs stay strictly inside your browser's local storage (`localStorage`). No information is transmitted to external servers, cloud accounts, or third parties.
+              </p>
+            </div>
+
+            <div class="output-box warning">
+              <div class="output-title"><i class="fa-solid fa-triangle-exclamation"></i> Relationship Boundary & Safety</div>
+              <p style="font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.5rem;">
+                This application is designed strictly for self-guided relationship coordination, time planning, and communication reflection between consenting partners. It is not couples therapy, clinical counseling, or a diagnostic medical tool.
+              </p>
+              <p style="font-size: 0.9rem; line-height: 1.5;">
+                If you or your partner are experiencing fear, coercion, threats, violence, or controlling behavior, ordinary communication or scheduling tools are not appropriate or safe. Please reach out to professional support resources or a local crisis helpline.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Footer Disclaimer -->
+      <footer>
+        TimeMatch™ is a self-guided relationship time and connection planning system for entertainment and reflection. Not therapy or clinical advice.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast Notification element -->
+  <div id="toast" class="toast">
+    <i class="fa-solid fa-circle-check" style="color: var(--accent);"></i>
+    <span id="toastMsg">Copied!</span>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       GLOBAL STATE ARCHITECTURE (V2 SYSTEM STATE)
+       ========================================================================== */
+    const STORAGE_KEY_STATE = "timematch_v2_state";
+    const STORAGE_KEY_HISTORY = "timematch_v2_history";
+
+    let timeMatchState = {
+      version: 2,
+      completedTools: [],
+      toolResults: {
+        audit: null,
+        ask: null,
+        sync: null,
+        solo: null,
+        checkin: null
+      },
+      experiments: [],
+      lastUpdated: null
+    };
+
+    /* Security Utility: Escape HTML to prevent XSS injection */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function saveState() {
+      timeMatchState.lastUpdated = new Date().toISOString();
+      localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(timeMatchState));
+      updateProgressUI();
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY_STATE);
+      if (saved) {
+        try {
+          timeMatchState = JSON.parse(saved);
+        } catch (e) {
+          console.error("Failed to parse saved state", e);
+        }
+      } else {
+        migrateLegacyHistory();
+      }
+      updateProgressUI();
+    }
+
+    function migrateLegacyHistory() {
+      // Migrate legacy histories if present
+      const tools = ['audit', 'ask', 'sync', 'solo', 'checkin'];
+      let migratedAny = false;
+
+      tools.forEach(tool => {
+        const legacyKey = `timematch_history_${tool}`;
+        const legacyData = localStorage.getItem(legacyKey);
+        if (legacyData) {
+          try {
+            const parsed = JSON.parse(legacyData);
+            if (Array.isArray(parsed)) {
+              parsed.forEach(item => {
+                saveHistoryItem(tool, item.summary || 'Legacy Record', item.details || '');
+              });
+            }
+          } catch(e) {}
+        }
+      });
+    }
+
+    function markToolCompleted(toolId, resultData) {
+      if (!timeMatchState.completedTools.includes(toolId)) {
+        timeMatchState.completedTools.push(toolId);
+      }
+      timeMatchState.toolResults[toolId] = resultData;
+      saveState();
+    }
+
+    function updateProgressUI() {
+      const completed = timeMatchState.completedTools || [];
+      const count = completed.length;
+      
+      const bar = document.getElementById('navProgressBar');
+      const text = document.getElementById('navProgressText');
+      if (bar) bar.style.width = `${(count / 5) * 100}%`;
+      if (text) text.innerText = `${count}/5 Tools Completed`;
+
+      // Update 7-day reset badges
+      const badgeMap = { audit: 'badgeDay1', ask: 'badgeDay2', sync: 'badgeDay3', solo: 'badgeDay4', checkin: 'badgeDay7' };
+      Object.keys(badgeMap).forEach(key => {
+        const el = document.getElementById(badgeMap[key]);
+        if (el) {
+          if (completed.includes(key)) {
+            el.className = "badge badge-complete";
+            el.innerText = "Completed ✓";
+          } else {
+            el.className = "badge badge-pending";
+            el.innerText = "Pending";
+          }
+        }
+      });
+      if (completed.length >= 4) {
+        const el5 = document.getElementById('badgeDay5');
+        if (el5) { el5.className = "badge badge-complete"; el5.innerText = "Ready ✓"; }
+      }
+    }
+
+    /* ==========================================================================
+       NAVIGATION & UI CONTROLS
+       ========================================================================== */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tool-section').forEach(sec => sec.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+      const targetSec = document.getElementById(tabId);
+      if (targetSec) targetSec.classList.add('active');
+
+      const navButtons = document.querySelectorAll('.nav-links button');
+      navButtons.forEach(btn => {
+        if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes(tabId)) {
+          btn.parentElement.classList.add('active');
+        }
+      });
+
+      closeSidebar();
+
+      if (tabId === 'couple-rhythm') renderCoupleRhythm();
+      if (tabId === 'history-view') renderFullHistory();
+      if (tabId === 'experiment-tracker') renderExperiments();
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('open');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      if (toastMsg) toastMsg.innerText = message;
+      if (toast) {
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2000);
+      }
+    }
+
+    function copyToClipboard(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!")).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Copied to clipboard!");
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    /* ==========================================================================
+       HISTORY MANAGEMENT (GLOBAL REPOSITORY)
+       ========================================================================== */
+    function saveHistoryItem(toolId, summary, details) {
+      let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+      const newItem = {
+        id: Date.now(),
+        toolId: toolId,
+        timestamp: new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        summary: summary,
+        details: details
+      };
+      history.unshift(newItem);
+      if (history.length > 50) history = history.slice(0, 50);
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+    }
+
+    function renderFullHistory() {
+      const container = document.getElementById('fullHistoryList');
+      if (!container) return;
+
+      const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+      if (history.length === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem; font-style:italic;">No recorded tool entries found.</div>`;
+        return;
+      }
+
+      container.innerHTML = history.map(item => `
+        <div class="history-item">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+            <span class="badge badge-pending" style="text-transform:uppercase;">${escapeHTML(item.toolId)}</span>
+            <span class="history-date">${escapeHTML(item.timestamp)}</span>
+          </div>
+          <div style="font-weight:700; color:var(--primary);">${escapeHTML(item.summary)}</div>
+          <div style="color:var(--text-muted); margin-top:0.2rem; font-size:0.85rem;">${escapeHTML(item.details)}</div>
+        </div>
+      `).join('');
+    }
+
+    function clearAllHistory() {
+      localStorage.removeItem(STORAGE_KEY_HISTORY);
+      renderFullHistory();
+      showToast("History cleared");
+    }
+
+    /* ==========================================================================
+       TOOL 1: TIME AUDIT LOGIC
+       ========================================================================== */
+    function loadSampleAudit() {
+      document.getElementById('auditAWork').value = "8:30am–6:30pm (10 hrs including commute)";
+      document.getElementById('auditBWork').value = "7:00am–3:30pm (8.5 hrs including commute)";
+      document.getElementById('auditAObligations').value = "Gym Tue/Thu till 8pm, catching up on emails";
+      document.getElementById('auditBObligations').value = "Prepping dinner, winding down early, reading in bed by 9:30pm";
+      document.getElementById('auditActualWeekday').value = "30 min";
+      document.getElementById('auditActualWeekend').value = "1-2 hr";
+      document.getElementById('auditIdealA').value = "2 hr";
+      document.getElementById('auditIdealB').value = "1 hr";
+      showToast("Sample scenario loaded");
+    }
+
+    function processAudit() {
+      const workA = document.getElementById('auditAWork').value || "Unspecified";
+      const workB = document.getElementById('auditBWork').value || "Unspecified";
+      const actualWkday = document.getElementById('auditActualWeekday').value;
+      const actualWkend = document.getElementById('auditActualWeekend').value;
+      const idealA = document.getElementById('auditIdealA').value;
+      const idealB = document.getElementById('auditIdealB').value;
+
+      let mismatchType = "Opposing Work & Finish Windows";
+      if (idealA === "2 hr" || idealA === "3+ hr") {
+        mismatchType = "More-Togetherness vs. More-Space Preference";
+      }
+
+      document.getElementById('auditGapText').innerHTML = `
+        Current weekday connection: <strong>${escapeHTML(actualWkday)}</strong> | Weekend: <strong>${escapeHTML(actualWkend)}</strong><br>
+        Partner A Ideal: <strong>${escapeHTML(idealA)}</strong> | Partner B Ideal: <strong>${escapeHTML(idealB)}</strong><br>
+        <em>Interpretation:</em> You are not necessarily disagreeing about whether connection matters — you may simply have different expectations of what "enough" feels like.
+      `;
+
+      document.getElementById('auditInventoryText').innerHTML = `
+        • <strong>Partner A Schedule:</strong> ${escapeHTML(workA)}<br>
+        • <strong>Partner B Schedule:</strong> ${escapeHTML(workB)}
+      `;
+
+      document.getElementById('auditMismatchText').innerText = mismatchType;
+
+      document.getElementById('auditWinsList').innerHTML = `
+        <li><strong>Micro-Connection Morning Anchor:</strong> Reclaim a 15-minute coffee window before work routines diverge.</li>
+        <li><strong>Transition Buffer:</strong> Swap phone scrolling for a 20-minute post-dinner wind-down.</li>
+        <li><strong>Protected Weekend Outing:</strong> Block out Saturday morning before solo errands begin.</li>
+      `;
+
+      document.getElementById('auditExperimentText').innerHTML = `
+        <strong>The 20-Minute Weekday Anchor:</strong> For the next 7 days, protect 20 uninterrupted minutes together right after dinner without screens or logistics discussions.
+      `;
+
+      document.getElementById('auditOutput').classList.add('active');
+
+      const auditData = { actualWkday, actualWkend, idealA, idealB, mismatchType };
+      markToolCompleted('audit', auditData);
+      saveHistoryItem('audit', `Pattern: ${mismatchType}`, `Actual: ${actualWkday} weekday | Ideal A: ${idealA}, B: ${idealB}`);
+    }
+
+    /* ==========================================================================
+       TOOL 2: THE ASK LOGIC
+       ========================================================================== */
+    function loadSampleAsk() {
+      document.getElementById('askDesired').value = "Evening downtime";
+      document.getElementById('askPastAttempt').value = "They got defensive";
+      document.getElementById('askFear').value = "That they think I'm demanding too much after a hard workday.";
+      document.getElementById('askPartnerNeed').value = "Uninterrupted quiet time right after work to decompress.";
+      showToast("Sample scenario loaded");
+    }
+
+    function processAsk() {
+      const desired = document.getElementById('askDesired').value;
+      const pastAttempt = document.getElementById('askPastAttempt').value;
+      const fear = document.getElementById('askFear').value || "conflict";
+      const partnerNeed = document.getElementById('askPartnerNeed').value || "decompression time";
+
+      let pattern = "Expressing needs during accumulated frustration, which can trigger defensiveness.";
+      if (pastAttempt.includes("didn't ask")) {
+        pattern = "Keeping expectations unspoken, leading to silent resentment.";
+      }
+
+      const mainScript = `"I love our relationship and I miss having dedicated ${desired.toLowerCase()} with you. I know how hard you work and that you need ${partnerNeed.toLowerCase()}. Could we set aside 30 quiet minutes around 8:00pm this Thursday just to catch up and unwind?"`;
+      const noScript = `"I understand tonight isn't a good time and you're drained. Let's keep tonight relaxed, but can we lock in a 30-minute block tomorrow evening instead?"`;
+      const followupScript = `"I loved that we agreed to get more ${desired.toLowerCase()} together. I know schedule shifts happen, but it really matters to me. Can we pick two specific days this week to put on our calendars?"`;
+
+      document.getElementById('askStyleText').innerText = pattern;
+      document.getElementById('askScriptText').innerText = mainScript;
+      document.getElementById('askTimingText').innerHTML = `
+        <strong>Good Window:</strong> Bring this up during a calm weekend moment or relaxing morning.<br>
+        <strong>Poor Window:</strong> Immediately as they walk through the door or right before sleep.
+      `;
+      document.getElementById('askNoScriptText').innerText = noScript;
+      document.getElementById('askFollowupScriptText').innerText = followupScript;
+      document.getElementById('askPerspectiveText').innerText = `"One possible reason your partner may hesitate is needing zero-demand decompression time to reset their energy."`;
+
+      document.getElementById('askOutput').classList.add('active');
+
+      const askData = { desired, mainScript, pastAttempt };
+      markToolCompleted('ask', askData);
+      saveHistoryItem('ask', `Focus: ${desired}`, `Script created for ${desired}`);
+    }
+
+    /* ==========================================================================
+       TOOL 3: SCHEDULE SYNC LOGIC
+       ========================================================================== */
+    function loadSampleSync() {
+      document.getElementById('syncASolo').value = "Gym Mon/Wed/Fri 6:00pm - 7:30pm";
+      document.getElementById('syncBSolo').value = "Tuesday evening pottery class, Sunday morning cycling";
+      document.getElementById('syncObligations').value = "Late work emails on Thursday nights, groceries Saturday morning";
+      
+      const checkboxes = document.getElementsByName('syncFormat');
+      checkboxes.forEach(cb => cb.checked = (cb.value === 'Meals' || cb.value === 'Walks' || cb.value === 'TV together'));
+
+      const radios = document.getElementsByName('syncLogistics');
+      radios.forEach(r => r.checked = (r.value === 'Partner A'));
+
+      showToast("Sample scenario loaded");
+    }
+
+    function processSync() {
+      const aSolo = document.getElementById('syncASolo').value || "None specified";
+      const bSolo = document.getElementById('syncBSolo').value || "None specified";
+      const logistics = document.querySelector('input[name="syncLogistics"]:checked').value;
+
+      const checkedFormats = Array.from(document.querySelectorAll('input[name="syncFormat"]:checked')).map(cb => cb.value);
+      const formatStr = checkedFormats.join(', ') || "Shared relaxation";
+
+      document.getElementById('syncHeatmapText').innerHTML = `
+        • <strong>Solo / Busy Blocks:</strong> Partner A (${escapeHTML(aSolo)}) | Partner B (${escapeHTML(bSolo)})<br>
+        • <strong>A Likely Connection Window:</strong> Shared post-dinner hours (7:45pm–8:30pm) and weekend mornings.
+      `;
+
+      document.getElementById('syncWindowsList').innerHTML = `
+        <li><strong>Post-Work Reset Window:</strong> Fixed 45-minute post-dinner connection block focusing on ${escapeHTML(formatStr.toLowerCase())}.</li>
+        <li><strong>Weekend Anchor:</strong> Dedicated 1-hour coffee/walk block before personal chores start.</li>
+      `;
+
+      let logText = `Logistics responsibility is currently carried primarily by <strong>${escapeHTML(logistics)}</strong>. Experiment with alternating planning duty week by week.`;
+      if (logistics === 'Both') logText = `Logistics responsibility is currently balanced. Keep maintaining clear communication on plans.`;
+      
+      document.getElementById('syncLogisticsText').innerHTML = logText;
+
+      const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+      const activities = [
+        '30-min shared dinner & catch-up',
+        'Parallel play: reading together in living room',
+        'Quick evening walk around the block',
+        'No-phone 20-min dessert & tea',
+        'Movie night / relaxed evening',
+        'Weekend morning coffee outing',
+        'Weekly check-in & prep ritual'
+      ];
+
+      document.getElementById('sync7DayPlan').innerHTML = days.map((day, idx) => `
+        <div style="background:#FFFFFF; padding:0.5rem 0.75rem; border-radius:0.375rem; border:1px solid var(--border-color); display:flex; font-size:0.875rem;">
+          <strong style="width:100px; color:var(--primary);">${day}:</strong>
+          <span style="color:var(--text-main);">${activities[idx]}</span>
+        </div>
+      `).join('');
+
+      document.getElementById('syncNoGoText').innerText = "Immediately upon waking, or within 30 minutes of returning home from high-stress work/gym sessions.";
+
+      document.getElementById('syncOutput').classList.add('active');
+
+      const syncData = { logistics, formatStr };
+      markToolCompleted('sync', syncData);
+      saveHistoryItem('sync', `Formats: ${formatStr}`, `Planning Load: ${logistics}`);
+    }
+
+    /* ==========================================================================
+       TOOL 4: SOLO VS TOGETHER LOGIC
+       ========================================================================== */
+    function loadSampleSolo() {
+      document.getElementById('soloRechargeA').value = "Quiet togetherness";
+      document.getElementById('soloRechargeB').value = "Alone time";
+      document.getElementById('soloDrainA').value = "Not enough personal time";
+      document.getElementById('soloDrainB').value = "Too much structured activity";
+      document.getElementById('soloConflictPattern').value = "Partner A feels hurt when Partner B retreats to the bedroom after work.";
+      showToast("Sample scenario loaded");
+    }
+
+    function processSolo() {
+      const rechargeA = document.getElementById('soloRechargeA').value;
+      const rechargeB = document.getElementById('soloRechargeB').value;
+
+      document.getElementById('soloCoreDiffText').innerText = 
+        `You appear to have different preferred ways of recharging: Partner A prefers ${rechargeA.toLowerCase()}, while Partner B prefers ${rechargeB.toLowerCase()}.`;
+
+      document.getElementById('soloNeedsAText').innerHTML = `• Clear signals of warmth.<br>• Quality time free from phone distractions.`;
+      document.getElementById('soloNeedsBText').innerHTML = `• Zero-demand solo downtime.<br>• Freedom to enjoy individual hobbies without guilt.`;
+
+      document.getElementById('soloFormulaText').innerText = `45 minutes of decompression → clear reconnection signal → 30 minutes of intentional togetherness`;
+
+      document.getElementById('soloChecklist').innerHTML = `
+        <li><strong>Parallel Play:</strong> Sit in the same room reading/relaxing without pressure for continuous conversation.</li>
+        <li><strong>Focused 15:</strong> 15 minutes of uninterrupted eye contact and conversation beats 3 hours of half-attentive TV watching.</li>
+      `;
+
+      document.getElementById('soloRuleText').innerText = `Your Transition Buffer: Allow a 20-minute quiet transition buffer when arriving home before initiating shared plans.`;
+
+      document.getElementById('soloOutput').classList.add('active');
+
+      const soloData = { rechargeA, rechargeB };
+      markToolCompleted('solo', soloData);
+      saveHistoryItem('solo', `Recharge: A (${rechargeA}) vs B (${rechargeB})`, `Transition buffer established`);
+    }
+
+    /* ==========================================================================
+       TOOL 5: THE CHECK-IN LOGIC
+       ========================================================================== */
+    function loadSampleCheckin() {
+      document.getElementById('check1').value = 4; document.getElementById('val1').innerText = 4;
+      document.getElementById('check2').value = 7; document.getElementById('val2').innerText = 7;
+      document.getElementById('check3').value = 5; document.getElementById('val3').innerText = 5;
+      document.getElementById('check4').value = 6; document.getElementById('val4').innerText = 6;
+      document.getElementById('check5').value = 3; document.getElementById('val5').innerText = 3;
+      showToast("Sample scores loaded");
+    }
+
+    function processCheckin() {
+      const c1 = parseInt(document.getElementById('check1').value);
+      const c2 = parseInt(document.getElementById('check2').value);
+      const c3 = parseInt(document.getElementById('check3').value);
+      const c4 = parseInt(document.getElementById('check4').value);
+      const c5 = parseInt(document.getElementById('check5').value);
+
+      const items = [
+        { name: "Togetherness", score: c1, inverse: false },
+        { name: "Space / Solitude", score: c2, inverse: false },
+        { name: "Quality of Connection", score: c3, inverse: false },
+        { name: "Resentment Pressure", score: c4, inverse: true },
+        { name: "Guilt Around Space", score: c5, inverse: true }
+      ];
+
+      document.getElementById('checkinDashboardBars').innerHTML = items.map(item => {
+        let colorClass = "bg-green";
+        if (item.inverse) {
+          if (item.score >= 7) colorClass = "bg-red";
+          else if (item.score >= 4) colorClass = "bg-yellow";
+        } else {
+          if (item.score <= 3) colorClass = "bg-red";
+          else if (item.score <= 6) colorClass = "bg-yellow";
+        }
+
+        return `
+          <div class="metric-bar-container">
+            <div class="metric-label">
+              <span>${item.name}</span>
+              <span>${item.score}/10</span>
+            </div>
+            <div class="metric-track">
+              <div class="metric-fill ${colorClass}" style="width: ${item.score * 10}%;"></div>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      let alignMsg = "Good baseline balance in space and individual boundaries.";
+      let tensionMsg = "No major friction signals detected.";
+
+      if (c4 >= 5) tensionMsg = "Resentment score is elevated (≥5). Unmet time expectations may be lingering.";
+      if (c1 <= 4 && c2 <= 4) tensionMsg = "Both togetherness and solo space felt low. Schedule overcrowding is likely overall.";
+
+      document.getElementById('checkinAlignmentText').innerText = alignMsg;
+      document.getElementById('checkinTensionText').innerText = tensionMsg;
+
+      let adjustment = "Protect one non-negotiable 30-minute quality connection window without screens next week.";
+      if (c2 <= 4) adjustment = "Schedule two guilt-free 1-hour blocks of individual space for each partner.";
+
+      document.getElementById('checkinAdjustmentText').innerText = adjustment;
+      document.getElementById('checkinScriptText').innerText = 
+        `"Looking back at this week, I felt our together time was around ${c1}/10 and friction was ${c4}/10. I'd love to try this one small adjustment next week: '${adjustment}'. What do you think?"`;
+
+      document.getElementById('checkinOutput').classList.add('active');
+
+      const checkinData = { togetherness: c1, space: c2, resentment: c4, adjustment };
+      markToolCompleted('checkin', checkinData);
+      saveHistoryItem('checkin', `Togetherness: ${c1}/10 | Space: ${c2}/10 | Resentment: ${c4}/10`, `Adjustment: ${adjustment}`);
+    }
+
+    /* ==========================================================================
+       SYNTHESIS: OUR COUPLE RHYTHM RENDERER
+       ========================================================================== */
+    function renderCoupleRhythm() {
+      const container = document.getElementById('rhythmContent');
+      if (!container) return;
+
+      const res = timeMatchState.toolResults;
+      const completed = timeMatchState.completedTools || [];
+
+      if (completed.length === 0) {
+        container.innerHTML = `
+          <div class="output-box warning">
+            <div class="output-title">No Tools Completed Yet</div>
+            <p style="font-size:0.9rem;">Complete one or more tools from the sidebar to assemble your personalized Couple Rhythm Snapshot.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = `
+        <div class="output-box accent" style="margin-bottom:1rem;">
+          <div class="output-title">System Status: ${completed.length}/5 Tools Assembled</div>
+          <p style="font-size:0.95rem; font-weight:600; color:var(--primary);">
+            Your Couple Time Design Blueprint
+          </p>
+        </div>
+
+        <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+          <div class="output-box">
+            <div class="output-title">1. Togetherness & Gap</div>
+            <div>${res.audit ? `Pattern: <strong>${escapeHTML(res.audit.mismatchType)}</strong><br>Ideal Shared: ${escapeHTML(res.audit.idealA)}` : '<em>Tool 1 Pending</em>'}</div>
+          </div>
+
+          <div class="output-box">
+            <div class="output-title">2. Communication Strategy</div>
+            <div>${res.ask ? `Focus: <strong>${escapeHTML(res.ask.desired)}</strong><br>Script generated ✓` : '<em>Tool 2 Pending</em>'}</div>
+          </div>
+
+          <div class="output-box">
+            <div class="output-title">3. Connection Windows</div>
+            <div>${res.sync ? `Planning Load: <strong>${escapeHTML(res.sync.logistics)}</strong><br>Formats: ${escapeHTML(res.sync.formatStr)}` : '<em>Tool 3 Pending</em>'}</div>
+          </div>
+
+          <div class="output-box">
+            <div class="output-title">4. Recharge Balance</div>
+            <div>${res.solo ? `Recharge: A (${escapeHTML(res.solo.rechargeA)}) / B (${escapeHTML(res.solo.rechargeB)})` : '<em>Tool 4 Pending</em>'}</div>
+          </div>
+        </div>
+
+        <div class="output-box success">
+          <div class="output-title">Current Weekly Focus & Experiment</div>
+          <div>${res.checkin ? `<strong>Next Week Adjustment:</strong> ${escapeHTML(res.checkin.adjustment)}` : '<em>Complete Tool 5 (Weekly Check-In) to lock in your next experiment.</em>'}</div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       EXPERIMENT TRACKER LOGIC
+       ========================================================================== */
+    function saveExperiment() {
+      const title = document.getElementById('expTitle').value;
+      const status = document.getElementById('expStatus').value;
+      const notes = document.getElementById('expNotes').value;
+
+      if (!title) {
+        showToast("Please enter an experiment title");
+        return;
+      }
+
+      if (!timeMatchState.experiments) timeMatchState.experiments = [];
+
+      timeMatchState.experiments.unshift({
+        id: Date.now(),
+        title,
+        status,
+        notes,
+        date: new Date().toLocaleDateString()
+      });
+
+      saveState();
+      document.getElementById('expForm').reset();
+      renderExperiments();
+      showToast("Experiment logged!");
+    }
+
+    function renderExperiments() {
+      const container = document.getElementById('expList');
+      if (!container) return;
+
+      const list = timeMatchState.experiments || [];
+      if (list.length === 0) {
+        container.innerHTML = `<div style="color:var(--text-muted); font-size:0.85rem; font-style:italic;">No experiments logged yet.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(item => `
+        <div class="history-item">
+          <div style="display:flex; justify-shadow:space-between; align-items:center; margin-bottom:0.2rem;">
+            <span style="font-weight:700; color:var(--primary);">${escapeHTML(item.title)}</span>
+            <span class="badge badge-complete">${escapeHTML(item.status)}</span>
+          </div>
+          <div style="font-size:0.8rem; color:var(--text-muted);">${escapeHTML(item.date)}</div>
+          <div style="font-size:0.85rem; margin-top:0.3rem;">${escapeHTML(item.notes)}</div>
+        </div>
+      `).join('');
+    }
+
+    /* Initializer */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      switchTab('dashboard');
+    });
+  </script>
+</body>
+</html>

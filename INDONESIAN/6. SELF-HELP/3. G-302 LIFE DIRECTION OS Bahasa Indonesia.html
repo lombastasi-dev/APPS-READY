@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LifeDirection™ — Eksperimentasi Karir & OS Lini Masa Pribadi</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* CSS RESET & VARS */
+    :root {
+      --primary: #4338CA;
+      --primary-hover: #3730A3;
+      --primary-light: #EEF2FF;
+      --teal: #0D9488;
+      --teal-hover: #0F766E;
+      --teal-light: #CCFBF1;
+      --text-dark: #1F2937;
+      --text-muted: #6B7280;
+      --bg-gradient: linear-gradient(135deg, #EEF2FF 0%, #CCFBF1 100%);
+      --card-bg: #FFFFFF;
+      --border-color: #E5E7EB;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --radius-xl: 1rem;
+      --radius-md: 0.5rem;
+      --sidebar-width: 260px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* LAYOUT STRUCTURE */
+    #app {
+      display: flex;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      box-shadow: var(--shadow-md);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-header i {
+      font-size: 1.5rem;
+      color: var(--primary);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.025em;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 1rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.375rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-item.active {
+      background-color: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .nav-item i {
+      font-size: 1.1rem;
+      width: 1.25rem;
+      text-align: center;
+    }
+
+    /* MOBILE HEADER & OVERLAY */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+      z-index: 30;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1.25rem;
+    }
+
+    .mobile-header-title {
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 1.1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--text-dark);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    /* MAIN CONTENT */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .main-content {
+      flex: 1;
+      max-width: 840px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* CARDS & UI COMPONENTS */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(229, 231, 235, 0.6);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, #312E81 100%);
+      color: white;
+      border-radius: var(--radius-xl);
+      padding: 2rem 1.75rem;
+      margin-bottom: 1.75rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .hero-banner h2 {
+      font-size: 1.85rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      line-height: 1.2;
+    }
+
+    .hero-banner p {
+      font-size: 1rem;
+      opacity: 0.92;
+      max-width: 600px;
+      font-weight: 300;
+    }
+
+    /* BUTTONS & FORMS */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-teal {
+      background-color: var(--teal);
+      color: white;
+    }
+
+    .btn-teal:hover {
+      background-color: var(--teal-hover);
+    }
+
+    .btn-secondary {
+      background-color: #F3F4F6;
+      color: var(--text-dark);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background-color: #E5E7EB;
+    }
+
+    .btn-danger {
+      background-color: #FEF2F2;
+      color: #991B1B;
+      border: 1px solid #FECACA;
+    }
+
+    .btn-danger:hover {
+      background-color: #FEE2E2;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.85rem;
+      font-size: 0.825rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-control, .form-select, textarea {
+      width: 100%;
+      padding: 0.65rem 0.875rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.925rem;
+      color: var(--text-dark);
+      background-color: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus, .form-select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.12);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .multi-select-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.5rem;
+    }
+
+    .checkbox-card {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      background: #FAFAFA;
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      user-select: none;
+      transition: all 0.2s ease;
+    }
+
+    .checkbox-card:hover {
+      background: var(--primary-light);
+      border-color: #C7D2FE;
+    }
+
+    .checkbox-card input[type="checkbox"] {
+      accent-color: var(--primary);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* DASHBOARD GRID */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .tool-card-preview {
+      background: white;
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      border: 1px solid rgba(229, 231, 235, 0.8);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tool-card-preview:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary);
+    }
+
+    .tool-icon-wrapper {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .tool-card-title {
+      font-weight: 700;
+      font-size: 1rem;
+      margin-bottom: 0.35rem;
+    }
+
+    .tool-card-desc {
+      font-size: 0.825rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* OUTPUT BOX & HISTORY */
+    .output-container {
+      margin-top: 1.5rem;
+      border-top: 2px dashed var(--border-color);
+      padding-top: 1.5rem;
+      display: none;
+    }
+
+    .output-container.active {
+      display: block;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .completion-banner {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .completion-banner h4 {
+      color: #166534;
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .completion-banner p {
+      font-size: 0.85rem;
+      color: #14532D;
+      margin-bottom: 0.75rem;
+    }
+
+    .history-section {
+      margin-top: 2rem;
+      border-top: 1px solid var(--border-color);
+      padding-top: 1rem;
+    }
+
+    .history-accordion {
+      background: #FAFAFA;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-top: 0.75rem;
+      overflow: hidden;
+    }
+
+    .history-header {
+      padding: 0.75rem 1rem;
+      font-weight: 600;
+      font-size: 0.875rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: #F3F4F6;
+    }
+
+    .history-list {
+      max-height: 250px;
+      overflow-y: auto;
+      padding: 0.5rem 0;
+    }
+
+    .history-item {
+      padding: 0.6rem 1rem;
+      border-bottom: 1px solid #E5E7EB;
+      font-size: 0.825rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .history-item:last-child {
+      border-bottom: none;
+    }
+
+    /* FOOTER */
+    .site-footer {
+      background: #FFFFFF;
+      border-top: 1px solid var(--border-color);
+      padding: 1.25rem 1.5rem;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: #111827;
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* PROGRESS BAR & MATRIX */
+    .progress-bar-bg {
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 0.25rem;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--teal);
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin: 1rem 0;
+    }
+
+    .matrix-card {
+      background: #F9FAFB;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .table-custom {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+      font-size: 0.875rem;
+    }
+
+    .table-custom th, .table-custom td {
+      padding: 0.75rem 0.875rem;
+      border: 1px solid var(--border-color);
+      text-align: left;
+    }
+
+    .table-custom th {
+      background: #F3F4F6;
+      font-weight: 600;
+    }
+
+    .notice-box {
+      background: #EEF2FF;
+      border: 1px solid #C7D2FE;
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      font-size: 0.825rem;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    .reset-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    /* PRINT STYLES */
+    @media print {
+      .sidebar, .mobile-header, .sidebar-overlay, .site-footer, .reset-bar, .history-section, .btn, .toast {
+        display: none !important;
+      }
+      .main-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding-top: 0 !important;
+      }
+      body {
+        background: white !important;
+        color: black !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+      }
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+        padding-top: 60px;
+      }
+
+      .main-content {
+        padding: 1.25rem 1rem;
+      }
+
+      .hero-banner {
+        padding: 1.5rem 1.25rem;
+      }
+
+      .hero-banner h2 {
+        font-size: 1.5rem;
+      }
+
+      .toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- MOBILE HEADER -->
+    <header class="mobile-header">
+      <div class="mobile-header-title">
+        <i class="fa-solid fa-compass"></i>
+        <span>LifeDirection™</span>
+      </div>
+      <button class="hamburger-btn" id="mobileMenuToggle" aria-label="Buka navigasi" aria-expanded="false">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </header>
+
+    <!-- OVERLAY -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-compass"></i>
+        <h1>LifeDirection™</h1>
+      </div>
+      <ul class="nav-links">
+        <li>
+          <a class="nav-item active" data-target="dashboard">
+            <i class="fa-solid fa-house"></i>
+            <span>Dasbor</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="reset-flow">
+            <i class="fa-solid fa-arrows-spin"></i>
+            <span>Alur Reset 90 Hari</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool1">
+            <i class="fa-solid fa-filter"></i>
+            <span>Nilai & Kekuatan</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool2">
+            <i class="fa-solid fa-flask"></i>
+            <span>Arsitek 90 Hari</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool3">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Detoks Perbandingan</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool4">
+            <i class="fa-solid fa-calculator"></i>
+            <span>Estimator Aksi</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool5">
+            <i class="fa-solid fa-chart-line"></i>
+            <span>Log Eksperimen</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="direction-plan">
+            <i class="fa-solid fa-map"></i>
+            <span>Rencana Arah Saya</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Riwayat Saya</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="privacy">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Privasi</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-wrapper">
+      <main class="main-content">
+
+        <!-- DASHBOARD VIEW -->
+        <section id="view-dashboard" class="app-view">
+          <div class="hero-banner">
+            <h2>Life Direction™ OS</h2>
+            <p>Berhenti membandingkan diri, pertegas nilai-nilai Anda, dan pilih eksperimen arah 90 hari.</p>
+          </div>
+
+          <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 1.25rem; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-bottom: 0.5rem;">Filosofi Inti</h3>
+            <p style="font-size: 0.875rem; color: var(--text-muted); line-height: 1.5;">
+              Arah hidup ditemukan melalui tindakan yang selaras dan bukti nyata, bukan dari pemikiran tanpa akhir. Anda tidak harus memilih karir selamanya hari ini—Anda hanya membutuhkan arah yang layak untuk diuji.
+            </p>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="tool-card-preview" onclick="switchView('tool1')">
+              <div>
+                <div class="tool-icon-wrapper"><i class="fa-solid fa-filter"></i></div>
+                <div class="tool-card-title">Filter Nilai & Kekuatan</div>
+                <div class="tool-card-desc">Kerucutkan pilihan yang membingungkan menjadi jalur kandidat yang selaras.</div>
+              </div>
+            </div>
+
+            <div class="tool-card-preview" onclick="switchView('tool2')">
+              <div>
+                <div class="tool-icon-wrapper"><i class="fa-solid fa-flask"></i></div>
+                <div class="tool-card-title">Arsitek 90 Hari</div>
+                <div class="tool-card-desc">Rancang uji coba berisiko rendah yang dapat diubah dengan aturan validasi jelas.</div>
+              </div>
+            </div>
+
+            <div class="tool-card-preview" onclick="switchView('tool3')">
+              <div>
+                <div class="tool-icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="tool-card-title">Detoks Perbandingan</div>
+                <div class="tool-card-desc">Dekonstruksi pemicu media sosial dan kokohkan lini masa pribadi Anda.</div>
+              </div>
+            </div>
+
+            <div class="tool-card-preview" onclick="switchView('tool4')">
+              <div>
+                <div class="tool-icon-wrapper"><i class="fa-solid fa-calculator"></i></div>
+                <div class="tool-card-title">Estimator Biaya Aksi</div>
+                <div class="tool-card-desc">Bandingkan jalur berisiko tinggi dengan mikro-eksperimen $0 sebelum mengeluarkan uang.</div>
+              </div>
+            </div>
+
+            <div class="tool-card-preview" onclick="switchView('tool5')">
+              <div>
+                <div class="tool-icon-wrapper"><i class="fa-solid fa-chart-line"></i></div>
+                <div class="tool-card-title">Log & Evaluasi Eksperimen</div>
+                <div class="tool-card-desc">Lacak energi mingguan, evaluasi hambatan, dan putuskan: bertahan atau beralih.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Direction Clarity Index Card -->
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-gauge-high" style="color: var(--teal);"></i>
+              Indeks Kejelasan Arah
+            </div>
+            <div class="card-subtitle">Evaluasi mandiri kejelasan dasar Anda vs. kelumpuhan akibat perbandingan (alat bantu perencanaan, bukan skor klinis).</div>
+
+            <form id="clarityIndexForm">
+              <div class="form-group">
+                <label class="form-label" for="q1">1. Seberapa jelas Anda tentang 3 nilai karir utama Anda?</label>
+                <input type="range" class="form-control" id="q1" min="1" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
+                <output style="font-size: 0.85rem; font-weight: 600; color: var(--primary);">5</output>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="q2">2. Seberapa sering Anda merasa tertinggal saat melihat rekan/media sosial? (1 = Sangat Sering, 10 = Tidak Pernah)</label>
+                <input type="range" class="form-control" id="q2" min="1" max="10" value="4" oninput="this.nextElementSibling.value = this.value">
+                <output style="font-size: 0.85rem; font-weight: 600; color: var(--primary);">4</output>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="q3">3. Seberapa percaya diri Anda dalam mengambil langkah eksplorasi minggu ini?</label>
+                <input type="range" class="form-control" id="q3" min="1" max="10" value="5" oninput="this.nextElementSibling.value = this.value">
+                <output style="font-size: 0.85rem; font-weight: 600; color: var(--primary);">5</output>
+              </div>
+
+              <button type="button" class="btn btn-teal" onclick="calculateClarityIndex()">Hitung Baseline Kejelasan</button>
+            </form>
+
+            <div id="clarityOutput" class="output-container" aria-live="polite">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- GUIDED 90-DAY RESET FLOW VIEW -->
+        <section id="view-reset-flow" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-arrows-spin" style="color: var(--primary);"></i>
+              Sekuens Reset Arah 7 Hari
+            </div>
+            <div class="card-subtitle">Ikuti panduan langkah demi langkah melalui ke-5 alat untuk berpindah dari ketidakpastian menuju eksperimen yang terstruktur.</div>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <strong>Hari 1: Perjelas Gangguan Awal</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Evaluasi di mana gangguan mengaburkan fokus Anda menggunakan Indeks Kejelasan Arah di Dasbor.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('dashboard')">Buka Indeks Dasbor</button>
+              </div>
+
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <strong>Hari 2: Identifikasi Jalur yang Selaras</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Uji nilai-nilai, kondisi flow, dan keterampilan Anda melalui Filter Arah.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('tool1')">Buka Alat 1</button>
+              </div>
+
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <strong>Hari 3: Arsitekturkan Uji Coba 90 Hari Anda</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Pilih 1 arah kandidat dan pecah menjadi peta jalan 12 minggu.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('tool2')">Buka Alat 2</button>
+              </div>
+
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <strong>Hari 4: Netralkan Gangguan Perbandingan Sosial</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Dekonstruksi pemicu sosial yang membuat Anda merasa tertinggal.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('tool3')">Buka Alat 3</button>
+              </div>
+
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <strong>Hari 5: Minimalkan Biaya Keuangan & Waktu</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Rancang mikro-eksperimen $0 sebelum membeli pelatihan mahal.</p>
+                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('tool4')">Buka Alat 4</button>
+              </div>
+
+              <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+                <strong>Hari 6 & 7: Catat Bukti & Sintesiskan Rencana</strong>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Catat temuan awal Anda dan susun Rencana Arah terpadu Anda.</p>
+                <div style="display: flex; gap: 0.5rem; margin-top: 0.5rem;">
+                  <button class="btn btn-secondary btn-sm" onclick="switchView('tool5')">Buka Alat 5</button>
+                  <button class="btn btn-primary btn-sm" onclick="switchView('direction-plan')">Lihat Rencana Arah</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1: VALUES & STRENGTHS FILTER -->
+        <section id="view-tool1" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-filter" style="color: var(--primary);"></i>
+              Alat 1 — Filter Arah Nilai & Kekuatan
+            </div>
+            <div class="card-subtitle">Masalah: "Saya memiliki terlalu banyak pilihan acak (atau tidak ada ide sama sekali) dan tidak tahu arah mana yang cocok."</div>
+
+            <div class="reset-bar">
+              <button class="btn btn-secondary btn-sm" onclick="loadSampleTool1()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="resetTool('tool1')">
+                <i class="fa-solid fa-rotate-left"></i> Mulai Ulang
+              </button>
+            </div>
+
+            <form id="tool1Form">
+              <div class="form-group">
+                <label class="form-label">Nilai Inti Utama (Pilih hingga 3):</label>
+                <div class="multi-select-grid">
+                  <label class="checkbox-card">
+                    <input type="checkbox" name="t1_values" value="Independensi" onchange="limitCheckboxes(this, 3)"> Independensi
+                  </label>
+                  <label class="checkbox-card">
+                    <input type="checkbox" name="t1_values" value="Keamanan Finansial" onchange="limitCheckboxes(this, 3)"> Keamanan Finansial
+                  </label>
+                  <label class="checkbox-card">
+                    <input type="checkbox" name="t1_values" value="Kreativitas" onchange="limitCheckboxes(this, 3)"> Kreativitas
+                  </label>
+                  <label class="checkbox-card">
+                    <input type="checkbox" name="t1_values" value="Membantu Orang Lain" onchange="limitCheckboxes(this, 3)"> Membantu Orang Lain
+                  </label>
+                  <label class="checkbox-card">
+                    <input type="checkbox" name="t1_values" value="Penguasaan Keterampilan" onchange="limitCheckboxes(this, 3)"> Penguasaan Keterampilan
+                  </label>
+                  <label class="checkbox-card">
+                    <input type="checkbox" name="t1_values" value="Prestise" onchange="limitCheckboxes(this, 3)"> Prestise
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1_flow_activity">Aktivitas apa yang membuat Anda lupa waktu?</label>
+                <textarea id="t1_flow_activity" placeholder="contoh: Menulis artikel, merancang grafis, mengorganisir spreadsheet, memecahkan teka-teki logika..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1_skills">Inventaris keterampilan saat ini:</label>
+                <textarea id="t1_skills" placeholder="contoh: Copywriting, HTML dasar, formula Excel, mendengarkan dengan empati, public speaking..."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1_income">Minimum penghasilan bulanan yang dibutuhkan ($):</label>
+                <input type="number" id="t1_income" class="form-control" placeholder="contoh: 3500" value="3500">
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="runTool1()">
+                <i class="fa-solid fa-compass"></i> Filter Jalur yang Selaras
+              </button>
+            </form>
+
+            <div id="tool1Output" class="output-container" aria-live="polite"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool1')">
+                <span><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Analisis Filter Sebelumnya</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-tool1"></i>
+              </div>
+              <div id="hist-body-tool1" class="history-accordion" style="display: none;">
+                <div class="history-list" id="hist-list-tool1"></div>
+                <div style="padding: 0.5rem; text-align: right;">
+                  <button class="btn btn-danger btn-sm" onclick="clearToolHistory('tool1')">Hapus Riwayat Alat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: 90-DAY EXPERIMENT ARCHITECT -->
+        <section id="view-tool2" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-flask" style="color: var(--teal);"></i>
+              Alat 2 — Arsitek Eksperimen 90 Hari
+            </div>
+            <div class="card-subtitle">Masalah: "Saya sangat takut berkomitmen pada jalur karir seumur hidup dan memilih hal yang salah."</div>
+
+            <div class="reset-bar">
+              <button class="btn btn-secondary btn-sm" onclick="loadSampleTool2()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="resetTool('tool2')">
+                <i class="fa-solid fa-rotate-left"></i> Mulai Ulang
+              </button>
+            </div>
+
+            <form id="tool2Form">
+              <div class="form-group">
+                <label class="form-label" for="t2_direction">Arah terpilih untuk diuji:</label>
+                <input type="text" id="t2_direction" class="form-control" placeholder="contoh: Manajemen Proyek Digital">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t2_hours">Waktu mingguan yang tersedia untuk menguji jalur ini:</label>
+                <select id="t2_hours" class="form-select">
+                  <option value="5 jam/minggu">5 jam/minggu [Proyek sampingan]</option>
+                  <option value="15 jam/minggu" selected>15 jam/minggu [Fokus paruh waktu]</option>
+                  <option value="40 jam/minggu">40 jam/minggu [Fokus penuh]</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t2_hypothesis">Hipotesis utama untuk divalidasi:</label>
+                <input type="text" id="t2_hypothesis" class="form-control" placeholder="contoh: Saya menikmati mengelola sprint dan bisa mendapatkan 1 klien lepas senilai $800/bulan">
+              </div>
+
+              <button type="button" class="btn btn-teal" onclick="runTool2()">
+                <i class="fa-solid fa-rocket"></i> Bangun Arsitektur 90 Hari
+              </button>
+            </form>
+
+            <div id="tool2Output" class="output-container" aria-live="polite"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool2')">
+                <span><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Arsitek Sebelumnya</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-tool2"></i>
+              </div>
+              <div id="hist-body-tool2" class="history-accordion" style="display: none;">
+                <div class="history-list" id="hist-list-tool2"></div>
+                <div style="padding: 0.5rem; text-align: right;">
+                  <button class="btn btn-danger btn-sm" onclick="clearToolHistory('tool2')">Hapus Riwayat Alat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: COMPARISON DETOX -->
+        <section id="view-tool3" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-shield-halved" style="color: var(--primary);"></i>
+              Alat 3 — Detoks Perbandingan & Filter Gangguan Sosial
+            </div>
+            <div class="card-subtitle">Masalah: "Melihat orang lain sukses di media sosial membuat saya merasa tertinggal dalam hidup."</div>
+
+            <div class="reset-bar">
+              <button class="btn btn-secondary btn-sm" onclick="loadSampleTool3()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="resetTool('tool3')">
+                <i class="fa-solid fa-rotate-left"></i> Mulai Ulang
+              </button>
+            </div>
+
+            <form id="tool3Form">
+              <div class="form-group">
+                <label class="form-label" for="t3_compare_to">Dengan siapa Anda paling sering membandingkan diri?</label>
+                <select id="t3_compare_to" class="form-select">
+                  <option value="Rekan SMA/Kuliah">Rekan SMA / Kuliah</option>
+                  <option value="Influencer media sosial">Influencer media sosial</option>
+                  <option value="Rekan kerja">Rekan kerja</option>
+                  <option value="Ekspektasi keluarga">Ekspektasi keluarga</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3_trigger_metric">Metrik pemicu apa yang membuat Anda merasa rendah diri?</label>
+                <select id="t3_trigger_metric" class="form-select">
+                  <option value="Gaji/Kekayaan">Gaji / Kekayaan</option>
+                  <option value="Jabatan pekerjaan">Jabatan pekerjaan</option>
+                  <option value="Status hubungan">Status hubungan</option>
+                  <option value="Gaya hidup bepergian">Gaya hidup bepergian</option>
+                </select>
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="runTool3()">
+                <i class="fa-solid fa-filter-circle-xmark"></i> Dekonstruksi Perbandingan
+              </button>
+            </form>
+
+            <div id="tool3Output" class="output-container" aria-live="polite"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool3')">
+                <span><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Detoks Sebelumnya</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-tool3"></i>
+              </div>
+              <div id="hist-body-tool3" class="history-accordion" style="display: none;">
+                <div class="history-list" id="hist-list-tool3"></div>
+                <div style="padding: 0.5rem; text-align: right;">
+                  <button class="btn btn-danger btn-sm" onclick="clearToolHistory('tool3')">Hapus Riwayat Alat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 4: LOW-STAKES ACTION ESTIMATOR -->
+        <section id="view-tool4" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-calculator" style="color: var(--teal);"></i>
+              Alat 4 — Estimator Biaya Aksi Berisiko Rendah
+            </div>
+            <div class="card-subtitle">Masalah: "Saya khawatir mencoba sesuatu yang baru akan membuang terlalu banyak uang atau waktu saya."</div>
+
+            <div class="reset-bar">
+              <button class="btn btn-secondary btn-sm" onclick="loadSampleTool4()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="resetTool('tool4')">
+                <i class="fa-solid fa-rotate-left"></i> Mulai Ulang
+              </button>
+            </div>
+
+            <form id="tool4Form">
+              <div class="form-group">
+                <label class="form-label" for="t4_action">Tindakan eksplorasi yang sedang dipertimbangkan:</label>
+                <input type="text" id="t4_action" class="form-control" placeholder="contoh: Mengikuti bootcamp coding $3,000 vs. membangun 3 proyek otodidak">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4_budget">Estimasi anggaran untuk jalur tradisional ($):</label>
+                <input type="number" id="t4_budget" class="form-control" placeholder="contoh: 2500" value="2500">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4_hours">Estimasi jam per minggu yang didedikasikan:</label>
+                <input type="number" id="t4_hours" class="form-control" placeholder="contoh: 10" value="10">
+              </div>
+
+              <button type="button" class="btn btn-teal" onclick="runTool4()">
+                <i class="fa-solid fa-chart-pie"></i> Estimasi ROI Berisiko Rendah
+              </button>
+            </form>
+
+            <div id="tool4Output" class="output-container" aria-live="polite"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool4')">
+                <span><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Estimasi Biaya Sebelumnya</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-tool4"></i>
+              </div>
+              <div id="hist-body-tool4" class="history-accordion" style="display: none;">
+                <div class="history-list" id="hist-list-tool4"></div>
+                <div style="padding: 0.5rem; text-align: right;">
+                  <button class="btn btn-danger btn-sm" onclick="clearToolHistory('tool4')">Hapus Riwayat Alat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 5: DECISION EXPERIMENT LOG -->
+        <section id="view-tool5" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-chart-line" style="color: var(--primary);"></i>
+              Alat 5 — Log & Evaluasi Eksperimen Keputusan
+            </div>
+            <div class="card-subtitle">Masalah: "Saya memulai banyak hal tetapi kehilangan jejak tentang apa yang saya pelajari mengenai diri saya."</div>
+
+            <div class="reset-bar">
+              <button class="btn btn-secondary btn-sm" onclick="loadSampleTool5()">
+                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="resetTool('tool5')">
+                <i class="fa-solid fa-rotate-left"></i> Mulai Ulang
+              </button>
+            </div>
+
+            <form id="tool5Form">
+              <div class="form-group">
+                <label class="form-label" for="t5_exp_name">Nama eksperimen 90 hari yang aktif:</label>
+                <input type="text" id="t5_exp_name" class="form-control" placeholder="contoh: Uji Coba Copywriting Lepas">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t5_day_num">Hari Ke- (1 sampai 90):</label>
+                <input type="number" id="t5_day_num" class="form-control" min="1" max="90" value="30">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t5_learning">Pembelajaran kunci hari ini / minggu ini:</label>
+                <textarea id="t5_learning" placeholder="contoh: Menulis 3 contoh landing page. Merasa fokus saat riset judul, tetapi tidak menyukai email penawaran."></textarea>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t5_energy">Tingkat Energi / Antusiasme (1 sampai 10):</label>
+                <input type="range" id="t5_energy" class="form-control" min="1" max="10" value="7" oninput="this.nextElementSibling.value = this.value">
+                <output style="font-size: 0.85rem; font-weight: 600; color: var(--primary);">7</output>
+              </div>
+
+              <button type="button" class="btn btn-primary" onclick="runTool5()">
+                <i class="fa-solid fa-floppy-disk"></i> Catat Jurnal & Buat Evaluasi
+              </button>
+            </form>
+
+            <div id="tool5Output" class="output-container" aria-live="polite"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool5')">
+                <span><i class="fa-solid fa-clock-rotate-left"></i> Catatan Log Eksperimen Sebelumnya</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-tool5"></i>
+              </div>
+              <div id="hist-body-tool5" class="history-accordion" style="display: none;">
+                <div class="history-list" id="hist-list-tool5"></div>
+                <div style="padding: 0.5rem; text-align: right;">
+                  <button class="btn btn-danger btn-sm" onclick="clearToolHistory('tool5')">Hapus Riwayat Alat</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: MY DIRECTION PLAN -->
+        <section id="view-direction-plan" class="app-view" style="display: none;">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+              <div class="card-title" style="margin-bottom: 0;">
+                <i class="fa-solid fa-map" style="color: var(--primary);"></i>
+                Rencana Arah Terpadu Saya
+              </div>
+              <button class="btn btn-secondary btn-sm" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Cetak Rencana
+              </button>
+            </div>
+            <div class="card-subtitle">Tampilan terpadu dari seluruh alat yang telah diselesaikan. Gunakan ini sebagai acuan arah Anda saat ini.</div>
+
+            <div id="directionPlanContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: MY HISTORY -->
+        <section id="view-history" class="app-view" style="display: none;">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem;">
+              <div class="card-title" style="margin-bottom: 0;">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--teal);"></i>
+                Pusat Riwayat Tersimpan
+              </div>
+              <button class="btn btn-danger btn-sm" onclick="clearAllHistory()">
+                <i class="fa-solid fa-trash"></i> Hapus Semua Riwayat
+              </button>
+            </div>
+            <div class="card-subtitle">Semua analisis refleksi yang tersimpan secara lokal di peramban Anda.</div>
+
+            <div id="centralHistoryContainer">
+              <!-- Rendered via JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: PRIVACY -->
+        <section id="view-privacy" class="app-view" style="display: none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-user-shield" style="color: var(--primary);"></i>
+              Pemberitahuan Privasi & Penyimpanan Lokal
+            </div>
+            <div style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.6;">
+              <p style="margin-bottom: 1rem;">
+                <strong>100% Arsitektur Sisi Klien (Client-Side):</strong> LifeDirection™ beroperasi sepenuhnya di dalam peramban web Anda. Tidak ada akun, kredensial masuk, atau server eksternal yang digunakan.
+              </p>
+              <p style="margin-bottom: 1rem;">
+                <strong>Penyimpanan Peramban Lokal:</strong> Input, skor indeks kejelasan, dan log eksperimen Anda disimpan secara lokal di perangkat Anda melalui <code>localStorage</code> (namespace: <code>lifedirection_v2</code>).
+              </p>
+              <p style="margin-bottom: 1rem;">
+                <strong>Kontrol Data:</strong> Anda dapat menghapus riwayat yang tersimpan kapan saja menggunakan opsi "Hapus Riwayat" pada masing-masing alat atau dari tampilan Pusat Riwayat.
+              </p>
+              <p style="margin-bottom: 1rem;">
+                <strong>Penafian Alat Bantu Perencanaan:</strong> Skor kecocokan, estimasi risiko, dan metrik yang dihasilkan oleh aplikasi ini adalah kerangka keputusan heuristik yang dirancang untuk memicu refleksi dan menurunkan hambatan eksperimen. Ini bukan konseling karir formal atau jaminan penasihat keuangan.
+              </p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- GLOBAL FOOTER -->
+      <footer class="site-footer">
+        <p>LifeDirection™ — Sistem refleksi diri dan eksperimentasi karir berisiko rendah. Bukan konseling pendidikan formal atau penasihat keuangan.</p>
+      </footer>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa-solid fa-check-circle" style="color: var(--teal-light);"></i>
+    <span id="toastText">Berhasil disalin ke papan klip!</span>
+  </div>
+
+  <script>
+    /* ==========================================================================
+       CENTRAL STATE & CONSTANTS
+       ========================================================================== */
+    const STORAGE_KEY_STATE = 'lifedirection_v2_state';
+    const STORAGE_KEY_HISTORY = 'lifedirection_v2_history';
+
+    let lifeDirectionState = {
+      completedTools: [],
+      toolResults: {},
+      clarityIndex: null,
+      activeExperiment: null,
+      lastUpdated: null
+    };
+
+    /* ==========================================================================
+       SECURITY & ESCAPING HELPERS
+       ========================================================================== */
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(text = "Tersalin!") {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toastText');
+      toastText.innerText = text;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast("Berhasil disalin ke papan klip!");
+        }).catch(() => {
+          fallbackCopyText(text);
+        });
+      } else {
+        fallbackCopyText(text);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Berhasil disalin ke papan klip!");
+      } catch (err) {
+        showToast("Gagal menyalin");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    /* ==========================================================================
+       APP INITIALIZATION & NAVIGATION
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      initNavigation();
+      initMobileMenu();
+      loadCentralState();
+      loadAllHistories();
+      renderDirectionPlan();
+      renderCentralHistoryView();
+    });
+
+    function switchView(targetId) {
+      document.querySelectorAll('.app-view').forEach(view => {
+        view.style.display = 'none';
+      });
+
+      const targetView = document.getElementById(`view-${targetId}`);
+      if (targetView) {
+        targetView.style.display = 'block';
+      }
+
+      document.querySelectorAll('.nav-item').forEach(nav => {
+        if (nav.getAttribute('data-target') === targetId) {
+          nav.classList.add('active');
+        } else {
+          nav.classList.remove('active');
+        }
+      });
+
+      if (targetId === 'direction-plan') renderDirectionPlan();
+      if (targetId === 'history') renderCentralHistoryView();
+
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initNavigation() {
+      document.querySelectorAll('.nav-item').forEach(nav => {
+        nav.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = nav.getAttribute('data-target');
+          switchView(target);
+        });
+      });
+    }
+
+    function initMobileMenu() {
+      const toggleBtn = document.getElementById('mobileMenuToggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+
+      toggleBtn.addEventListener('click', () => {
+        const isOpen = sidebar.classList.contains('open');
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+        toggleBtn.setAttribute('aria-expanded', !isOpen);
+      });
+
+      overlay.addEventListener('click', closeMobileSidebar);
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+      document.getElementById('mobileMenuToggle').setAttribute('aria-expanded', 'false');
+    }
+
+    function limitCheckboxes(checkbox, max) {
+      const checkboxes = document.querySelectorAll(`input[name="${checkbox.name}"]`);
+      const checkedCount = Array.from(checkboxes).filter(cb => cb.checked).length;
+      if (checkedCount > max) {
+        checkbox.checked = false;
+        showToast(`Pilih maksimal ${max} nilai.`);
+      }
+    }
+
+    /* ==========================================================================
+       STATE & LOCALSTORAGE MANAGEMENT
+       ========================================================================== */
+    function saveCentralState() {
+      try {
+        lifeDirectionState.lastUpdated = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(lifeDirectionState));
+      } catch (e) {
+        console.error("Gagal menyimpan state ke localStorage", e);
+      }
+    }
+
+    function loadCentralState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_STATE);
+        if (saved) {
+          lifeDirectionState = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.error("Gagal memuat state", e);
+      }
+    }
+
+    function saveHistory(toolId, data) {
+      try {
+        let history = getHistory(toolId);
+        history.unshift({
+          id: Date.now(),
+          timestamp: new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          data: data
+        });
+        if (history.length > 30) history = history.slice(0, 30);
+        
+        const allHistory = getAllHistoryObj();
+        allHistory[toolId] = history;
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(allHistory));
+        renderHistoryList(toolId);
+      } catch (e) {
+        console.error("Gagal menyimpan riwayat", e);
+      }
+    }
+
+    function getAllHistoryObj() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_HISTORY);
+        return saved ? JSON.parse(saved) : {};
+      } catch (e) {
+        return {};
+      }
+    }
+
+    function getHistory(toolId) {
+      const all = getAllHistoryObj();
+      return all[toolId] || [];
+    }
+
+    function clearToolHistory(toolId) {
+      if (!confirm("Hapus riwayat tersimpan untuk alat ini?")) return;
+      const all = getAllHistoryObj();
+      all[toolId] = [];
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(all));
+      renderHistoryList(toolId);
+      renderCentralHistoryView();
+      showToast("Riwayat alat dihapus!");
+    }
+
+    function clearAllHistory() {
+      if (!confirm("Apakah Anda yakin ingin menghapus SEMUA riwayat tersimpan di seluruh alat?")) return;
+      localStorage.removeItem(STORAGE_KEY_HISTORY);
+      loadAllHistories();
+      renderCentralHistoryView();
+      showToast("Semua riwayat dihapus!");
+    }
+
+    function toggleHistory(toolId) {
+      const body = document.getElementById(`hist-body-${toolId}`);
+      const icon = document.getElementById(`hist-icon-${toolId}`);
+      if (body.style.display === 'none') {
+        body.style.display = 'block';
+        icon.className = 'fa-solid fa-chevron-up';
+      } else {
+        body.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      }
+    }
+
+    function loadAllHistories() {
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistoryList);
+    }
+
+    function renderHistoryList(toolId) {
+      const listEl = document.getElementById(`hist-list-${toolId}`);
+      if (!listEl) return;
+
+      const history = getHistory(toolId);
+      if (history.length === 0) {
+        listEl.innerHTML = `<div style="padding: 0.75rem 1rem; color: var(--text-muted); font-size: 0.8rem;">Belum ada riwayat tersimpan.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = history.map(item => {
+        let label = "Catatan";
+        if (toolId === 'tool1') label = item.data.summary || "Filter Nilai & Kekuatan";
+        if (toolId === 'tool2') label = item.data.direction || "Arsitektur 90 Hari";
+        if (toolId === 'tool3') label = `Detoks: vs ${item.data.compareTo}`;
+        if (toolId === 'tool4') label = item.data.action || "Analisis Biaya";
+        if (toolId === 'tool5') label = `${item.data.expName} (Hari ke-${item.data.dayNum})`;
+
+        return `
+          <div class="history-item">
+            <div>
+              <strong>${escapeHtml(label)}</strong>
+              <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(item.timestamp)}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function resetTool(toolId) {
+      const form = document.getElementById(`${toolId}Form`);
+      if (form) form.reset();
+      const output = document.getElementById(`${toolId}Output`);
+      if (output) {
+        output.innerHTML = '';
+        output.classList.remove('active');
+      }
+      showToast("Alat berhasil direset!");
+    }
+
+    /* ==========================================================================
+       DASHBOARD: DIRECTION CLARITY INDEX
+       ========================================================================== */
+    function calculateClarityIndex() {
+      const q1 = parseInt(document.getElementById('q1').value) || 5;
+      const q2 = parseInt(document.getElementById('q2').value) || 5;
+      const q3 = parseInt(document.getElementById('q3').value) || 5;
+
+      const total = Math.round(((q1 + q2 + q3) / 30) * 100);
+      let status = "Kelumpuhan Sedang";
+      let statusColor = "var(--primary)";
+      let advice = "Anda memiliki gagasan dasar, tetapi perbandingan sosial menciptakan gangguan. Pilih Alat 1 untuk memfilter pilihan Anda.";
+      let nextTool = "tool1";
+
+      if (total >= 75) {
+        status = "Kejelasan Tinggi & Siap BEREKSPERIMEN";
+        statusColor = "var(--teal)";
+        advice = "Anda memiliki pijakan kokoh dan kejelasan! Langsung menuju Alat 2 (Arsitek 90 Hari) untuk memulai uji coba aktif Anda.";
+        nextTool = "tool2";
+      } else if (total <= 45) {
+        status = "Gangguan Tinggi & Kelumpuhan Perbandingan";
+        statusColor = "#DC2626";
+        advice = "Gangguan mengaburkan penilaian Anda. Mulailah dengan Alat 3 (Detoks Perbandingan) sebelum memilih jalur karir.";
+        nextTool = "tool3";
+      }
+
+      lifeDirectionState.clarityIndex = { total, status, advice, nextTool };
+      saveCentralState();
+
+      const outputEl = document.getElementById('clarityOutput');
+      outputEl.innerHTML = `
+        <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 700; font-size: 1.1rem; color: ${statusColor};">${escapeHtml(status)}</span>
+            <span style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">${total}/100</span>
+          </div>
+          <div class="progress-bar-bg" style="margin-bottom: 1rem;">
+            <div class="progress-bar-fill" style="width: ${total}%; background: ${statusColor};"></div>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-dark); margin-bottom: 1rem;">${escapeHtml(advice)}</p>
+          <div class="notice-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Indeks Kejelasan ini adalah acuan refleksi diri untuk membantu memprioritaskan langkah Anda berikutnya, bukan skor klinis yang tervalidasi.</span>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="switchView('${nextTool}')">
+            Lanjut ke Langkah yang Direkomendasikan <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      `;
+      outputEl.classList.add('active');
+    }
+
+    /* ==========================================================================
+       TOOL 1: VALUES & STRENGTHS DIRECTION FILTER
+       ========================================================================== */
+    function loadSampleTool1() {
+      const checkboxes = document.querySelectorAll('input[name="t1_values"]');
+      checkboxes.forEach(cb => cb.checked = ['Independensi', 'Kreativitas', 'Keamanan Finansial'].includes(cb.value));
+
+      document.getElementById('t1_flow_activity').value = "Menulis esai blog, menelaah posisi merek, menganalisis alur narasi yang viral.";
+      document.getElementById('t1_skills').value = "Menulis persuasif, riset media sosial, SEO dasar, desain grafis di Canva, mewawancarai orang.";
+      document.getElementById('t1_income').value = "3800";
+      showToast("Skenario contoh dimuat: Lulusan baru yang bingung antara Menulis & Pemasaran");
+    }
+
+    function runTool1() {
+      const selectedValues = Array.from(document.querySelectorAll('input[name="t1_values"]:checked')).map(cb => cb.value);
+      const flow = document.getElementById('t1_flow_activity').value.trim();
+      const skills = document.getElementById('t1_skills').value.trim();
+      const income = parseInt(document.getElementById('t1_income').value) || 3000;
+
+      if (selectedValues.length === 0) {
+        alert("Silakan pilih setidaknya satu nilai inti.");
+        return;
+      }
+
+      const valuesStr = selectedValues.join(', ');
+
+      const pathways = [
+        {
+          title: "Konsultan Strategi Konten & Copywriting",
+          matchScore: 92,
+          desc: "Memadukan penceritaan kreatif dengan permintaan komersial langsung. Potensi independensi tinggi sebagai pekerja lepas atau ahli strategi boutique.",
+          strengthAdvantage: `Memanfaatkan minat Anda pada (${flow || 'tugas kreatif'}) dan keterampilan dalam (${skills || 'komunikasi'}).`,
+          incomeFeasibility: income <= 4500 ? "Kelayakan Tinggi (Target $4rb - $6rb/bulan)" : "Kelayakan Sedang (Membutuhkan 6-12 bulan untuk membangun retainer klien bernilai tinggi)"
+        },
+        {
+          title: "Spesialis Growth Marketing",
+          matchScore: 85,
+          desc: "Menggabungkan pemasaran berbasis data dengan pengujian narasi kreatif. Menawarkan stabilitas korporat yang kuat dengan fleksibilitas karir.",
+          strengthAdvantage: `Menerapkan dasar keterampilan Anda (${skills || 'kumpulan keterampilan umum'}) secara langsung pada metrik pertumbuhan bisnis yang terukur.`,
+          incomeFeasibility: "Kelayakan Tinggi (Gaji awal $4,000 - $5,500/bulan)"
+        },
+        {
+          title: "Produsen Media Audiens & Produk",
+          matchScore: 78,
+          desc: "Fokus pada membangun buletin/properti media atau publikasi digital ceruk. Ekspresi kreatif maksimal dengan penghasilan bertahap.",
+          strengthAdvantage: `Menyalurkan secara langsung kondisi flow Anda dalam (${flow || 'pekerjaan eksploratif'}).`,
+          incomeFeasibility: "Bervariasi (Membutuhkan validasi audiens 90 hari sebelum pendapatan stabil)"
+        }
+      ];
+
+      // Update Central State
+      lifeDirectionState.toolResults.tool1 = {
+        selectedValues,
+        flow,
+        skills,
+        income,
+        topPathway: pathways[0].title
+      };
+      if (!lifeDirectionState.completedTools.includes('tool1')) lifeDirectionState.completedTools.push('tool1');
+      saveCentralState();
+
+      const outputEl = document.getElementById('tool1Output');
+      outputEl.innerHTML = `
+        <div class="notice-box">
+          <i class="fa-solid fa-compass"></i>
+          <span>Jalur-jalur ini adalah kandidat arah heuristik yang dihasilkan untuk memfokuskan eksperimen Anda, bukan prediksi empiris dari kesuksesan karir.</span>
+        </div>
+
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem;">
+          <i class="fa-solid fa-bullseye"></i> Top 3 Jalur yang Selaras
+        </h3>
+
+        ${pathways.map(p => `
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <h4 style="font-size: 1rem; font-weight: 700; color: var(--text-dark);">${escapeHtml(p.title)}</h4>
+              <span style="background: var(--teal-light); color: var(--teal-hover); font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem;">
+                ${p.matchScore}% Kecocokan Heuristik
+              </span>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-bottom: 0.75rem;">${escapeHtml(p.desc)}</p>
+            
+            <div style="font-size: 0.825rem; color: var(--text-muted); background: #FFFFFF; padding: 0.75rem; border-radius: var(--radius-md); border: 1px solid #E5E7EB;">
+              <div><strong>Keunggulan Kekuatan Inti:</strong> ${escapeHtml(p.strengthAdvantage)}</div>
+              <div style="margin-top: 0.25rem;"><strong>Kelayakan Penghasilan (Target $${income}/bulan):</strong> ${escapeHtml(p.incomeFeasibility)}</div>
+            </div>
+          </div>
+        `).join('')}
+
+        <div class="matrix-grid">
+          <div class="matrix-card">
+            <strong style="font-size: 0.85rem; color: var(--primary);">Ringkasan Matriks Keselarasan</strong>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.3rem;">
+              Difilter terhadap Nilai-Nilai Inti: <strong>${escapeHtml(valuesStr)}</strong>.
+            </p>
+          </div>
+        </div>
+
+        <div class="completion-banner">
+          <h4><i class="fa-solid fa-circle-check"></i> Langkah Selesai: Kandidat Arah Terfilter</h4>
+          <p>Anda telah mengidentifikasi jalur kandidat yang masuk akal. Langkah selanjutnya adalah memilih satu arah dan membangun uji coba yang dapat diubah.</p>
+          <button class="btn btn-teal btn-sm" onclick="switchView('tool2')">
+            Bangun Arsitektur 90 Hari (Alat 2) <i class="fa-solid fa-arrow-right"></i>
+          </button>
+        </div>
+      `;
+      outputEl.classList.add('active');
+
+      saveHistory('tool1', {
+        summary: `Jalur untuk ${valuesStr}`,
+        pathwaysCount: pathways.length
+      });
+    }
+
+    /* ==========================================================================
+       TOOL 2: 90-DAY EXPERIMENT ARCHITECT
+       ========================================================================== */
+    function loadSampleTool2() {
+      document.getElementById('t2_direction').value = "Manajemen Proyek & Operasional Digital";
+      document.getElementById('t2_hours').value = "15 jam/minggu";
+      document.getElementById('t2_hypothesis').value = "Saya menikmati perencanaan sprint dan bisa mendapatkan 1 retainer bisnis kecil seharga $1,000/bulan";
+      showToast("Skenario contoh dimuat: Uji Coba Manajemen Proyek Digital");
+    }
+
+    function runTool2() {
+      const direction = document.getElementById('t2_direction').value.trim() || "Jalur Eksplorasi Terpilih";
+      const hours = document.getElementById('t2_hours').value;
+      const hypothesis = document.getElementById('t2_hypothesis').value.trim() || "Saya dapat membangun keterampilan dan memvalidasi minat dalam 90 hari.";
+
+      lifeDirectionState.toolResults.tool2 = { direction, hours, hypothesis };
+      lifeDirectionState.activeExperiment = { direction, hours, hypothesis, startDate: new Date().toLocaleDateString('id-ID') };
+      if (!lifeDirectionState.completedTools.includes('tool2')) lifeDirectionState.completedTools.push('tool2');
+      saveCentralState();
+
+      const outputEl = document.getElementById('tool2Output');
+      outputEl.innerHTML = `
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--teal); margin-bottom: 0.5rem;">
+          <i class="fa-solid fa-map-location-dot"></i> Cetak Biru Eksperimen 90 Hari: ${escapeHtml(direction)}
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Target komitmen: <strong>${escapeHtml(hours)}</strong> | Hipotesis Utama: "<em>${escapeHtml(hypothesis)}</em>"
+        </p>
+
+        <!-- 90-DAY ROADMAP -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: #F0FDFA; border: 1px solid #99F6E4; border-radius: var(--radius-md); padding: 1rem;">
+            <div style="font-weight: 700; color: var(--teal-hover); font-size: 0.9rem; margin-bottom: 0.4rem;">
+              BULAN 1: Pelajari & Riset
+            </div>
+            <ul style="font-size: 0.825rem; color: var(--text-dark); padding-left: 1rem; line-height: 1.5;">
+              <li>Dekonstruksi 3 alur kerja standar industri terbaik</li>
+              <li>Selesaikan 1 sertifikasi mikro atau kursus gratis</li>
+              <li>Lakukan 3 wawancara informasional</li>
+            </ul>
+          </div>
+
+          <div style="background: #EEF2FF; border: 1px solid #C7D2FE; border-radius: var(--radius-md); padding: 1rem;">
+            <div style="font-weight: 700; color: var(--primary); font-size: 0.9rem; margin-bottom: 0.4rem;">
+              BULAN 2: Bangun & Eksekusi
+            </div>
+            <ul style="font-size: 0.825rem; color: var(--text-dark); padding-left: 1rem; line-height: 1.5;">
+              <li>Buat 2 contoh portofolio buatan</li>
+              <li>Tawarkan proyek uji coba $0 atau sukarela untuk umpan balik nyata</li>
+              <li>Sempurnakan penawaran berdasarkan titik hambatan</li>
+            </ul>
+          </div>
+
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <div style="font-weight: 700; color: var(--text-dark); font-size: 0.9rem; margin-bottom: 0.4rem;">
+              BULAN 3: Evaluasi & Putuskan
+            </div>
+            <ul style="font-size: 0.825rem; color: var(--text-dark); padding-left: 1rem; line-height: 1.5;">
+              <li>Tawarkan ke 5 calon klien / pemberi kerja</li>
+              <li>Lacak tren energi & antusiasme</li>
+              <li>Tinjau metrik keberhasilan vs pembatalan</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- SUCCESS / ABORT CRITERIA -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: #F0FDF4; border: 1px solid #BBF7D0; border-radius: var(--radius-md); padding: 1rem; font-size: 0.85rem;">
+            <strong style="color: #166534;"><i class="fa-solid fa-circle-check"></i> Metrik Lanjutkan & Tingkatkan (Sukses)</strong>
+            <p style="color: #14532D; margin-top: 0.25rem;">
+              Tingkat antusiasme konsisten &ge; 7/10 DAN setidaknya 1 sinyal tervalidasi (minat klien, ulasan positif penyelia, atau artefak selesai).
+            </p>
+          </div>
+          <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-md); padding: 1rem; font-size: 0.85rem;">
+            <strong style="color: #991B1B;"><i class="fa-solid fa-circle-xmark"></i> Metrik Beralih dengan Bijak (Info)</strong>
+            <p style="color: #7F1D1D; margin-top: 0.25rem;">
+              Antusiasme tetap &le; 4/10 meskipun telah dieksekusi. Catatan: Beralih adalah informasi berharga dari eksperimen, bukan kegagalan.
+            </p>
+          </div>
+        </div>
+
+        <div class="completion-banner">
+          <h4><i class="fa-solid fa-circle-check"></i> Arsitektur Eksperimen Terkunci</h4>
+          <p>Selanjutnya: Pastikan perbandingan sosial atau risiko keuangan tidak mengganggu eksekusi Anda.</p>
+          <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-primary btn-sm" onclick="switchView('tool3')">Dekonstruksi Gangguan Perbandingan (Alat 3)</button>
+            <button class="btn btn-teal btn-sm" onclick="switchView('tool4')">Estimasi Biaya Aksi (Alat 4)</button>
+          </div>
+        </div>
+      `;
+      outputEl.classList.add('active');
+
+      saveHistory('tool2', { direction, hours });
+    }
+
+    /* ==========================================================================
+       TOOL 3: COMPARISON DETOX & SOCIAL NOISE FILTER
+       ========================================================================== */
+    function loadSampleTool3() {
+      document.getElementById('t3_compare_to').value = "Rekan SMA/Kuliah";
+      document.getElementById('t3_trigger_metric').value = "Gaji/Kekayaan";
+      showToast("Skenario contoh dimuat: Perbandingan dengan Rekan Kerja di Perusahaan Besar");
+    }
+
+    function runTool3() {
+      const compareTo = document.getElementById('t3_compare_to').value;
+      const metric = document.getElementById('t3_trigger_metric').value;
+
+      const realityBreakdown = {
+        "Gaji/Kekayaan": {
+          curated: "Momen terbaik berupa gaji teknologi yang mencolok, pamer saham, dan pembelian barang mewah.",
+          unseen: "Terikat gaji tinggi (golden handcuffs), jam kerja 60+ jam/minggu, biaya hidup tinggi, kecemasan, kurangnya otonomi pribadi."
+        },
+        "Jabatan pekerjaan": {
+          curated: "Pembaruan jabatan bergengsi di LinkedIn dan pamer identitas perusahaan.",
+          unseen: "Birokrasi manajemen tingkat menengah, politik kantor, tugas berulang, kurangnya kebebasan kreatif."
+        },
+        "Status hubungan": {
+          curated: "Foto momen penting yang sempurna dan unggahan media sosial yang terkoordinasi.",
+          unseen: "Gesekan hubungan yang tidak terlihat, kompromi, kehilangan identitas individu, perjuangan pribadi."
+        },
+        "Gaya hidup bepergian": {
+          curated: "Foto di lokasi yang indah, pengaturan kerja jarak jauh yang eksotis.",
+          unseen: "Kelelahan bekerja dari hotel, ketidakstabilan, terisolasi dari hubungan jangka panjang, pendapatan tidak stabil."
+        }
+      }[metric] || {
+        curated: "Momen pencapaian terpilih di platform sosial.",
+        unseen: "Pengorbanan tersembunyi, stres, dan beban pribadi yang tidak pernah diungkapkan."
+      };
+
+      const mantra = `Lini masa saya adalah eksperimen, bukan perlombaan melawan ${compareTo}. Saya mengukur kemajuan berdasarkan keselarasan nilai-nilai saya, bukan berdasarkan momen terpilih mereka tentang ${metric}.`;
+
+      lifeDirectionState.toolResults.tool3 = { compareTo, metric, mantra };
+      if (!lifeDirectionState.completedTools.includes('tool3')) lifeDirectionState.completedTools.push('tool3');
+      saveCentralState();
+
+      const outputEl = document.getElementById('tool3Output');
+      outputEl.innerHTML = `
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem;">
+          <i class="fa-solid fa-eye-slash"></i> Dekonstruksi Gangguan vs Realita
+        </h3>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+          <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: #991B1B; font-size: 0.875rem;"><i class="fa-solid fa-desktop"></i> Momen Terpilih (${escapeHtml(compareTo)})</strong>
+            <p style="font-size: 0.85rem; color: var(--text-dark); margin-top: 0.4rem;">${escapeHtml(realityBreakdown.curated)}</p>
+          </div>
+          <div style="background: #F0FDFA; border: 1px solid #99F6E4; border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--teal-hover); font-size: 0.875rem;"><i class="fa-solid fa-mask"></i> Pengorbanan Tersembunyi & Realita</strong>
+            <p style="font-size: 0.85rem; color: var(--text-dark); margin-top: 0.4rem;">${escapeHtml(realityBreakdown.unseen)}</p>
+          </div>
+        </div>
+
+        <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.5rem;">
+          <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-dark);">
+            <i class="fa-solid fa-bolt" style="color: #EAB308;"></i> 3 Pemutus Arus Perbandingan
+          </h4>
+          <ol style="font-size: 0.85rem; color: var(--text-dark); padding-left: 1.25rem; line-height: 1.6;">
+            <li><strong>Bisu akun Pemicu:</strong> Bisukan atau berhenti mengikuti akun yang memicu iri terhadap ${escapeHtml(metric)} selama 30 hari ke depan.</li>
+            <li><strong>Audit Metrik Tersebut:</strong> Tanyakan: <em>"Apakah saya menginginkan seluruh hidup mereka—termasuk stres terburuk mereka—atau hanya potongan foto ini?"</em></li>
+            <li><strong>Alihkan ke Aksi Mikro:</strong> Salurkan kecemasan perbandingan sosial menjadi 15 menit eksekusi pada eksperimen 90 hari Anda sendiri.</li>
+          </ol>
+        </div>
+
+        <div style="background: linear-gradient(135deg, var(--primary-light) 0%, #E0E7FF 100%); border: 1px solid #C7D2FE; border-radius: var(--radius-md); padding: 1.25rem; text-align: center;">
+          <div style="font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem;">
+            Mantra Lini Masa Pribadi
+          </div>
+          <p style="font-size: 1rem; font-weight: 600; color: var(--text-dark); margin-bottom: 1rem; font-style: italic;">
+            "${escapeHtml(mantra)}"
+          </p>
+          <button class="btn btn-primary btn-sm" id="copyMantraBtn">
+            <i class="fa-regular fa-copy"></i> Salin Mantra Penguat
+          </button>
+        </div>
+      `;
+      outputEl.classList.add('active');
+
+      document.getElementById('copyMantraBtn').addEventListener('click', () => copyToClipboard(mantra));
+
+      saveHistory('tool3', { compareTo, metric });
+    }
+
+    /* ==========================================================================
+       TOOL 4: LOW-STAKES ACTION COST ESTIMATOR
+       ========================================================================== */
+    function loadSampleTool4() {
+      document.getElementById('t4_action').value = "Jalur Riset UX (Bootcamp vs. Studi Kasus Otodidak)";
+      document.getElementById('t4_budget').value = "3500";
+      document.getElementById('t4_hours').value = "12";
+      showToast("Skenario contoh dimuat: Jalur Pembelajaran Riset UX");
+    }
+
+    function runTool4() {
+      const action = document.getElementById('t4_action').value.trim() || "Jalur Eksplorasi";
+      const tradBudget = parseFloat(document.getElementById('t4_budget').value) || 2500;
+      const hours = parseInt(document.getElementById('t4_hours').value) || 10;
+
+      const lowStakesBudget = Math.round(tradBudget * 0.05);
+      const savings = tradBudget - lowStakesBudget;
+
+      lifeDirectionState.toolResults.tool4 = { action, tradBudget, lowStakesBudget, savings };
+      if (!lifeDirectionState.completedTools.includes('tool4')) lifeDirectionState.completedTools.push('tool4');
+      saveCentralState();
+
+      const outputEl = document.getElementById('tool4Output');
+      outputEl.innerHTML = `
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--teal); margin-bottom: 1rem;">
+          <i class="fa-solid fa-scale-balanced"></i> Perbandingan ROI Sumber Daya
+        </h3>
+
+        <table class="table-custom">
+          <thead>
+            <tr>
+              <th>Dimensi</th>
+              <th>Jalur Tradisional Berisiko Tinggi</th>
+              <th>Mikro-Eksperimen $0 Berisiko Rendah</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Komitmen Finansial</strong></td>
+              <td style="color: #DC2626; font-weight: 600;">$${tradBudget.toLocaleString()}</td>
+              <td style="color: var(--teal-hover); font-weight: 600;">$${lowStakesBudget} (Buku/Hosting)</td>
+            </tr>
+            <tr>
+              <td><strong>Waktu yang Diinvestasikan</strong></td>
+              <td>Jadwal Tetap (${hours} jam/minggu)</td>
+              <td>Sprint Fleksibel (${hours} jam/minggu)</td>
+            </tr>
+            <tr>
+              <td><strong>Risiko Keuangan</strong></td>
+              <td>Biaya Sunk Cost Tinggi Jika Tidak Menyukai</td>
+              <td>Risiko Mendekati Nol (Hemat $${savings.toLocaleString()})</td>
+            </tr>
+            <tr>
+              <td><strong>Hasil Pembelajaran</strong></td>
+              <td>Sertifikat Umum</td>
+              <td>1 Artefak Nyata Dunia Kerja</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div style="background: #F0FDFA; border: 1px solid #99F6E4; border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong style="color: var(--teal-hover); font-size: 0.95rem;">Ilustrasi Heuristik Perlindungan</strong>
+            <span style="font-weight: 800; font-size: 1.1rem; color: var(--teal-hover);">Mitigasi Biaya 95%</span>
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-dark);">
+            Mencoba jalur ini melalui mikro-eksperimen 90 hari sebelum berkomitmen senilai $${tradBudget.toLocaleString()} menjaga sumber daya Anda tetap aman sembari mengumpulkan bukti dunia nyata.
+          </p>
+        </div>
+
+        <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 0.75rem;">
+          <div>
+            <div style="font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase;">
+              Aksi $0 Pertama yang Bisa Dilakukan Hari Ini:
+            </div>
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-dark);">
+              Hubungi 1 praktisi untuk berbincang 15 menit & pelajari 1 studi kasus terbuka secara gratis.
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm" onclick="showToast('Rencana aksi terkunci!')">
+            <i class="fa-solid fa-check"></i> Komitmen Hari Ini
+          </button>
+        </div>
+      `;
+      outputEl.classList.add('active');
+
+      saveHistory('tool4', { action, tradBudget });
+    }
+
+    /* ==========================================================================
+       TOOL 5: DECISION EXPERIMENT LOG & REVIEW
+       ========================================================================== */
+    function loadSampleTool5() {
+      document.getElementById('t5_exp_name').value = "Uji Coba Copywriting Lepas";
+      document.getElementById('t5_day_num').value = "30";
+      document.getElementById('t5_learning').value = "Evaluasi Hari ke-30: Menulis 3 landing page untuk bisnis lokal. Menikmati penyusunan teks, tetapi kurang menyukai email penawaran cold outreach. Energi secara keseluruhan tetap tinggi.";
+      document.getElementById('t5_energy').value = "8";
+      document.getElementById('t5_energy').nextElementSibling.value = "8";
+      showToast("Skenario contoh dimuat: Log Copywriting Hari ke-30");
+    }
+
+    function runTool5() {
+      const expName = document.getElementById('t5_exp_name').value.trim() || "Eksperimen Aktif";
+      const dayNum = parseInt(document.getElementById('t5_day_num').value) || 1;
+      const learning = document.getElementById('t5_learning').value.trim() || "Mencatat wawasan harian.";
+      const energy = parseInt(document.getElementById('t5_energy').value) || 5;
+
+      let verdict = "BERTAHAN & LANJUTKAN";
+      let verdictColor = "var(--teal-hover)";
+      let verdictBg = "#F0FDFA";
+      let verdictDesc = "Tingkat energi dan keterlibatan menunjukkan momentum yang sehat. Lanjutkan ke blok 30 hari berikutnya.";
+
+      if (energy <= 4) {
+        verdict = "BERALIH ATAU SESUAIKAN HIPOTESIS";
+        verdictColor = "#DC2626";
+        verdictBg = "#FEF2F2";
+        verdictDesc = "Peringatan tingkat energi rendah terdeteksi. Evaluasi apakah hambatan disebabkan oleh kesulitan penguasaan keterampilan atau ketidaktertarikan murni. Skor rendah adalah data untuk diinvestigasi, bukan kegagalan otomatis.";
+      }
+
+      lifeDirectionState.toolResults.tool5 = { expName, dayNum, learning, energy, verdict };
+      if (!lifeDirectionState.completedTools.includes('tool5')) lifeDirectionState.completedTools.push('tool5');
+      saveCentralState();
+
+      const outputEl = document.getElementById('tool5Output');
+      outputEl.innerHTML = `
+        <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem;">
+          <i class="fa-solid fa-chart-line"></i> Analisis Momentum Eksperimen: ${escapeHtml(expName)}
+        </h3>
+
+        <div style="background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.25rem; margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-size: 0.9rem; font-weight: 700;">Tingkat Energi Hari ke-${dayNum}</span>
+            <span style="font-size: 1.2rem; font-weight: 800; color: var(--primary);">${energy} / 10</span>
+          </div>
+          <div class="progress-bar-bg" style="height: 12px; margin-bottom: 1rem;">
+            <div class="progress-bar-fill" style="width: ${energy * 10}%; background: ${energy >= 6 ? 'var(--teal)' : '#EF4444'};"></div>
+          </div>
+        </div>
+
+        <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.25rem;">
+          <strong style="font-size: 0.875rem; color: var(--text-dark); display: block; margin-bottom: 0.3rem;">
+            Pembelajaran Kunci Terdaftar:
+          </strong>
+          <p style="font-size: 0.85rem; color: var(--text-dark); font-style: italic;">"${escapeHtml(learning)}"</p>
+        </div>
+
+        <div style="background: ${verdictBg}; border: 1px solid ${verdictColor}; border-radius: var(--radius-md); padding: 1.25rem;">
+          <div style="font-size: 0.8rem; font-weight: 700; text-transform: uppercase; color: ${verdictColor}; margin-bottom: 0.25rem;">
+            Hasil Evaluasi Terkalkulasi
+          </div>
+          <div style="font-size: 1.1rem; font-weight: 800; color: ${verdictColor}; margin-bottom: 0.4rem;">
+            ${escapeHtml(verdict)}
+          </div>
+          <p style="font-size: 0.85rem; color: var(--text-dark);">${escapeHtml(verdictDesc)}</p>
+        </div>
+      `;
+      outputEl.classList.add('active');
+
+      saveHistory('tool5', { expName, dayNum, energy });
+    }
+
+    /* ==========================================================================
+       VIEW: MY DIRECTION PLAN
+       ========================================================================== */
+    function renderDirectionPlan() {
+      const container = document.getElementById('directionPlanContainer');
+      if (!container) return;
+
+      const t1 = lifeDirectionState.toolResults.tool1 || {};
+      const t2 = lifeDirectionState.toolResults.tool2 || {};
+      const t3 = lifeDirectionState.toolResults.tool3 || {};
+      const t4 = lifeDirectionState.toolResults.tool4 || {};
+      const t5 = lifeDirectionState.toolResults.tool5 || {};
+      const ci = lifeDirectionState.clarityIndex || {};
+
+      container.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--primary);">1. Baseline Kejelasan Arah</strong>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.25rem;">
+              Skor: <strong>${ci.total ? ci.total + '/100' : 'Belum dihitung'}</strong> — ${escapeHtml(ci.status || 'Hitung indeks di Dasbor')}
+            </p>
+          </div>
+
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--primary);">2. Nilai & Jalur Kandidat (Alat 1)</strong>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.25rem;">
+              Nilai-Nilai Inti: <strong>${t1.selectedValues ? escapeHtml(t1.selectedValues.join(', ')) : 'Belum diatur'}</strong><br>
+              Jalur Kandidat Utama: <strong>${t1.topPathway ? escapeHtml(t1.topPathway) : 'Belum difilter'}</strong>
+            </p>
+          </div>
+
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--primary);">3. Eksperimen 90 Hari Aktif (Alat 2)</strong>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.25rem;">
+              Arah Uji Coba: <strong>${t2.direction ? escapeHtml(t2.direction) : 'Belum ditentukan'}</strong> (${escapeHtml(t2.hours || 'N/A')})<br>
+              Hipotesis: <em>${t2.hypothesis ? escapeHtml(t2.hypothesis) : 'Belum ada'}</em>
+            </p>
+          </div>
+
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--primary);">4. Filter Gangguan Perbandingan (Alat 3)</strong>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.25rem;">
+              Kelompok Perbandingan: <strong>${t3.compareTo ? escapeHtml(t3.compareTo) : 'Belum dipilih'}</strong> | Pemicu: <strong>${t3.metric ? escapeHtml(t3.metric) : 'Tidak ada'}</strong>
+            </p>
+          </div>
+
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--primary);">5. Strategi Minimasi Risiko (Alat 4)</strong>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.25rem;">
+              Aksi: <strong>${t4.action ? escapeHtml(t4.action) : 'Belum dianalisis'}</strong><br>
+              Anggaran Tradisional: $${t4.tradBudget ? t4.tradBudget.toLocaleString() : '0'} vs. Mikro-Eksperimen: $${t4.lowStakesBudget ? t4.lowStakesBudget : '0'}
+            </p>
+          </div>
+
+          <div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem;">
+            <strong style="color: var(--primary);">6. Log Eksperimen & Status Keputusan (Alat 5)</strong>
+            <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.25rem;">
+              Keputusan Saat Ini: <strong>${t5.verdict ? escapeHtml(t5.verdict) : 'Belum ada log evaluasi'}</strong> (Hari ke-${t5.dayNum || '0'}, Energi: ${t5.energy || '0'}/10)
+            </p>
+          </div>
+        </div>
+      `;
+    }
+
+    /* ==========================================================================
+       VIEW: CENTRAL HISTORY
+       ========================================================================== */
+    function renderCentralHistoryView() {
+      const container = document.getElementById('centralHistoryContainer');
+      if (!container) return;
+
+      const all = getAllHistoryObj();
+      const keys = Object.keys(all);
+
+      if (keys.length === 0 || keys.every(k => !all[k] || all[k].length === 0)) {
+        container.innerHTML = `<p style="font-size: 0.875rem; color: var(--text-muted);">Belum ada riwayat yang tercatat di seluruh alat.</p>`;
+        return;
+      }
+
+      let html = '';
+      keys.forEach(toolId => {
+        const items = all[toolId] || [];
+        if (items.length === 0) return;
+
+        html += `<h4 style="font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-top: 1rem; margin-bottom: 0.5rem; text-transform: uppercase;">${escapeHtml(toolId)}</h4>`;
+        html += '<div style="background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; margin-bottom: 1rem;">';
+        items.forEach(item => {
+          let label = JSON.stringify(item.data);
+          html += `
+            <div class="history-item">
+              <div>
+                <strong>${escapeHtml(label)}</strong>
+                <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHtml(item.timestamp)}</div>
+              </div>
+            </div>
+          `;
+        });
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+  </script>
+</body>
+</html>

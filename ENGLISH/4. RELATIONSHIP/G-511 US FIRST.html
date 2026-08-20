@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>USFIRST™ — Couple Boundary Toolkit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #1D3557;
+            --primary-light: #2B4C7E;
+            --accent: #E9C46A;
+            --accent-hover: #DFB550;
+            --bg-start: #F1FAEE;
+            --bg-end: #FFFBE6;
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E0E0E0;
+            --success: #2A9D8F;
+            --warning: #E76F51;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-main); display: flex; min-height: 100vh; line-height: 1.6; }
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; top:0; bottom:0; left:0; z-index:1000; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:transform 0.3s ease; }
+        .sidebar-header { padding:1.5rem; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--accent); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--primary); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+        .nav-item:hover { background-color:rgba(29,53,87,0.08); color:var(--primary); }
+        .nav-item.active { background-color:var(--primary); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:60px; background-color:var(--card-bg); border-bottom:1px solid var(--border-color); padding:0 1.25rem; align-items:center; justify-content:space-between; z-index:900; box-shadow:var(--shadow-sm); }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--primary); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--primary); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.4); z-index:950; }
+        .main-content { margin-left:var(--sidebar-width); flex-grow:1; padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; width:calc(100% - var(--sidebar-width)); }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid rgba(0,0,0,0.03); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--primary); margin-bottom:0.5rem; line-height:1.2; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--accent); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(29,53,87,0.1); color:var(--primary); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(233,196,106,0.2); color:var(--primary-light); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--primary); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--primary); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--primary); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:90px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--primary); }
+        .slider-value { font-weight:700; color:var(--primary); min-width:2rem; text-align:center; background:rgba(29,53,87,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--primary); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--primary-light); }
+        .btn-secondary { background-color:rgba(233,196,106,0.2); color:var(--primary); }
+        .btn-secondary:hover { background-color:rgba(233,196,106,0.35); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:var(--warning); color:#fff; }
+        .btn-danger:hover { background-color:#c0392b; }
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(29,53,87,0.1); color:var(--primary); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--primary); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--warning); }
+        .result-block.success { border-left-color:var(--success); }
+        .result-block.accent { border-left-color:var(--accent); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--primary); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--primary); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--primary); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid rgba(0,0,0,0.05); }
+        .problem-frame { background-color:rgba(233,196,106,0.15); border-left:3px solid var(--accent); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--primary); margin-bottom:1.5rem; font-weight:500; }
+        .partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+        .partner-box { background:#FAFAFA; padding:1rem; border-radius:0.5rem; border:1px solid var(--border-color); }
+        .partner-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--primary); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+        .checkbox-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .checkbox-grid label { font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; }
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .partner-grid { grid-template-columns:1fr; }
+            .checkbox-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-solid fa-crown" style="color:var(--accent);"></i><span>UsFirst</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-crown"></i><h1>UsFirst</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-map-location-dot"></i><span>Boundary Mapper</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-handshake"></i><span>United Front</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-comment"></i><span>The Script</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-shield"></i><span>Pushback Prep</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-calendar-days"></i><span>Holiday Negotiator</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>My History</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privacy</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <h2 class="hero-title">UsFirst</h2>
+                    <p class="hero-tagline">Protect your marriage without cutting off family.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        You can love your family and still build a marriage with its own rules. Use these tools to identify oversteps, align with your partner, communicate clearly, prepare for pushback, and structure recurring family situations.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-map-location-dot"></i></div><h3>Boundary Mapper</h3><p>Identify specific oversteps, understand marriage impacts, and clarify your priority rank.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-handshake"></i></div><h3>United Front</h3><p>Align with your spouse when extended-family conflict creates team tension.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-comment"></i></div><h3>The Script</h3><p>Craft firm, warm, non-dramatic boundary phrases tailored to likely reactions.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-shield"></i></div><h3>Pushback Prep</h3><p>Prepare for guilt trips, repeated testing, pressure, silence, or escalation.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-calendar-days"></i></div><h3>Holiday Negotiator</h3><p>Resolve family-tradition battlegrounds and design balanced, predictable schedules.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: BOUNDARY MAPPER -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Boundary Mapper</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "I know they're overstepping but I can't name exactly how."</div>
+                    <form id="form-tool1">
+                        <div class="form-group"><label class="form-label">Who is the source of the boundary pressure?</label><select id="t1_source"><option value="Parent">Parent</option><option value="In-law">In-law</option><option value="Sibling">Sibling</option><option value="Extended family">Extended family</option></select></div>
+                        <div class="form-group"><label class="form-label">What actions are occurring? (Select all that apply)</label><div class="checkbox-grid" id="t1_actions"><label><input type="checkbox" value="Unannounced visits"> Unannounced visits</label><label><input type="checkbox" value="Constant calls/texts"> Constant calls/texts</label><label><input type="checkbox" value="Criticizing your partner"> Criticizing your partner</label><label><input type="checkbox" value="Unsolicited advice"> Unsolicited advice</label><label><input type="checkbox" value="Demanding holidays"> Demanding holidays</label><label><input type="checkbox" value="Financial interference"> Financial interference</label><label><input type="checkbox" value="Parenting override"> Parenting override</label><label><input type="checkbox" value="Sharing private information"> Sharing private information</label></div></div>
+                        <div class="form-group"><label class="form-label">How long has this been happening?</label><select id="t1_duration"><option value="Just started">Just started</option><option value="Months">Months</option><option value="Years">Years</option><option value="Since wedding">Since wedding</option></select></div>
+                        <div class="form-group"><label class="form-label">What have you already tried?</label><textarea id="t1_tried" placeholder="e.g., Ignoring it, saying something softly, asking partner to intervene..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Your primary emotional reaction:</label><select id="t1_emotion"><option value="Angry">Angry</option><option value="Resentful">Resentful</option><option value="Guilty">Guilty</option><option value="Exhausted">Exhausted</option><option value="Anxious">Anxious</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-compass"></i> Map Boundary</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Boundary Snapshot</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-map"></i> Your Boundary Snapshot</div><p id="t1-out-snapshot">Identifying the overstep...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-heart-crack"></i> Impact on Your Marriage</div><p id="t1-out-impact">How this affects your household...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-paperclip"></i> What May Be Keeping It Stuck</div><p id="t1-out-hook">The emotional pattern...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-bullseye"></i> Your First Priority</div><p id="t1-out-priority">The most concrete boundary to address...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-handshake"></i> The Couple Check</div><p id="t1-out-couple">Aligning without attacking...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Previous Mappings</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Clear History</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: UNITED FRONT -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">United Front</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "My partner defends their family instead of backing me up."</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">Partner A's view of the situation:</label><textarea id="t2_view_a" placeholder="What do you see happening?"></textarea></div>
+                        <div class="form-group"><label class="form-label">Partner B's view of the situation:</label><textarea id="t2_view_b" placeholder="What do you see happening?"></textarea></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Partner A</div><div class="form-group"><label class="form-label">How supported do you feel by your partner? (1-10)</label><div class="slider-container"><input type="range" id="t2_support_a" min="1" max="10" value="5" oninput="document.getElementById('support_a_val').innerText=this.value"><span class="slider-value" id="support_a_val">5</span></div></div><div class="form-group"><label class="form-label">How caught in the middle do you feel? (1-10)</label><div class="slider-container"><input type="range" id="t2_middle_a" min="1" max="10" value="5" oninput="document.getElementById('middle_a_val').innerText=this.value"><span class="slider-value" id="middle_a_val">5</span></div></div></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Partner B</div><div class="form-group"><label class="form-label">How supported do you feel by your partner? (1-10)</label><div class="slider-container"><input type="range" id="t2_support_b" min="1" max="10" value="5" oninput="document.getElementById('support_b_val').innerText=this.value"><span class="slider-value" id="support_b_val">5</span></div></div><div class="form-group"><label class="form-label">How caught in the middle do you feel? (1-10)</label><div class="slider-container"><input type="range" id="t2_middle_b" min="1" max="10" value="5" oninput="document.getElementById('middle_b_val').innerText=this.value"><span class="slider-value" id="middle_b_val">5</span></div></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">What does loyalty mean to each of you?</label><textarea id="t2_loyalty" placeholder="e.g., Partner A: Backing me up publicly. Partner B: Staying connected to family..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What are you afraid might happen if you push back together?</label><textarea id="t2_fear" placeholder="e.g., They'll be furious, we'll be cut off, I'll lose my parents..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-handshake"></i> Build United Front</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">United Front Assessment</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-link"></i> The Loyalty Bind</div><p id="t2-out-bind">Understanding the tension...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-message"></i> The Marriage Message</div><p id="t2-out-message">What you need to say to each other...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-people-arrows"></i> The Shared Position</div><p id="t2-out-position">Your household decision...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-user"></i> Partner A's Need</div><p id="t2-out-need_a">What Partner A needs most...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-user"></i> Partner B's Need</div><p id="t2-out-need_b">What Partner B needs most...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-lock"></i> The Private Couple Script</div><div class="script-box"><span id="t2-out-script">Script content...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t2-out-script')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Previous United Fronts</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Clear History</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: THE SCRIPT -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">The Script</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "I don't know what words to use that aren't rude or weak."</div>
+                    <form id="form-tool3">
+                        <div class="form-group"><label class="form-label">What is the specific boundary you need to communicate?</label><textarea id="t3_boundary" placeholder="e.g., We need 24-hour notice before any visit to our home..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Who will communicate it?</label><select id="t3_who"><option value="Partner A">Partner A</option><option value="Partner B">Partner B</option><option value="Both together">Both together</option></select></div>
+                        <div class="form-group"><label class="form-label">Preferred method:</label><select id="t3_method"><option value="In person">In person</option><option value="Phone">Phone call</option><option value="Text">Text</option><option value="Email">Email</option></select></div>
+                        <div class="form-group"><label class="form-label">Likely reaction:</label><select id="t3_reaction"><option value="Anger">Anger / Defensiveness</option><option value="Guilt trip">Guilt trip / Tears</option><option value="Silent treatment">Silent treatment</option><option value="Dismissal">Dismissal / Minimizing</option><option value="Acceptance">Acceptance</option></select></div>
+                        <div class="form-group"><label class="form-label">Relationship goal:</label><select id="t3_goal"><option value="Closer but bounded">Closer but bounded</option><option value="Distant but polite">Distant but polite</option><option value="Minimal contact">Minimal contact</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-comment"></i> Generate Script</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Your Boundary Script</h3>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-quote-left"></i> The Boundary Statement</div><div class="script-box"><span id="t3-out-statement">Statement content...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t3-out-statement')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-pen"></i> Tone Guide</div><p id="t3-out-tone">Firm + Warm + Brief...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-phone"></i> Method & Timing</div><p id="t3-out-timing">When and how to deliver...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> Immediate Follow-Up</div><p id="t3-out-followup">What to say right after...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Warm Reassurance</div><p id="t3-out-reassurance">Preserving connection...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Previous Scripts</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Clear History</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: PUSHBACK PREP -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Pushback Prep</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "They'll argue, guilt-trip, or ignore us. What then?"</div>
+                    <form id="form-tool4">
+                        <div class="form-group"><label class="form-label">Likely pushback tactic (select primary):</label><select id="t4_tactic"><option value="Family comes first">"Family comes first"</option><option value="You're too sensitive">"You're being too sensitive"</option><option value="We've always done it this way">"We've always done it this way"</option><option value="Silent treatment">Silent treatment / Withdrawal</option><option value="Involving other relatives">Involving other relatives</option><option value="Financial threat">Financial threat / Pressure</option></select></div>
+                        <div class="form-group"><label class="form-label">Your biggest fear about this pushback:</label><textarea id="t4_fear" placeholder="e.g., That they'll cut us off, that I'll lose my family..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What would you sacrifice to keep the peace?</label><textarea id="t4_sacrifice" placeholder="e.g., I'd let it go, I'd stop visiting..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Your non-negotiable (what you will not compromise):</label><textarea id="t4_nonneg" placeholder="e.g., My partner being treated with respect, our holiday time..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-shield"></i> Prepare Pushback</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Pushback Defense Plan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-crosshairs"></i> Pushback Profile</div><p id="t4-out-profile">The likely pressure pattern...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-shield-halved"></i> Neutralizing Antidote</div><p id="t4-out-antidote">Your core response...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-repeat"></i> Broken Record Line</div><div class="script-box"><span id="t4-out-broken">Broken record line...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-broken')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-stairs"></i> Escalation Ladder</div><p id="t4-out-escalation">Gradual steps...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> Your Non-Negotiable</div><p id="t4-out-nonneg">The line you will not cross...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-scale-balanced"></i> Peace Trade-Off</div><p id="t4-out-tradeoff">What you're willing to sacrifice...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Previous Pushback Plans</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Clear History</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: HOLIDAY NEGOTIATOR -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Holiday Negotiator</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "Holidays and traditions have become a battleground."</div>
+                    <form id="form-tool5">
+                        <div class="form-group"><label class="form-label">Current holiday pattern:</label><textarea id="t5_current" placeholder="e.g., We always go to my parents' house for Christmas..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What Partner A wants:</label><textarea id="t5_want_a" placeholder="e.g., Christmas morning at home with our kids..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What Partner B wants:</label><textarea id="t5_want_b" placeholder="e.g., Christmas dinner with my extended family..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What family expects:</label><textarea id="t5_expect" placeholder="e.g., Everyone comes to their house for the full day..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Compromise willingness (1-10):</label><div class="slider-container"><input type="range" id="t5_flex" min="1" max="10" value="5" oninput="document.getElementById('flex_val').innerText=this.value"><span class="slider-value" id="flex_val">5</span></div></div>
+                        <div class="form-group"><label class="form-label">Children involved?</label><select id="t5_kids"><option value="Yes">Yes</option><option value="No">No</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-calendar-check"></i> Negotiate Holidays</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Holiday Framework</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-map"></i> Expectation Map</div><p id="t5-out-map">Competing expectations...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Your Essential Couple Need</div><p id="t5-out-need">What matters most to your household...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-arrows-rotate"></i> Your Holiday Structure</div><p id="t5-out-structure">The schedule you can commit to...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-house"></i> New Household Tradition</div><p id="t5-out-tradition">What you're building together...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Announcement Script</div><div class="script-box"><span id="t5-out-announce">Announcement script...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t5-out-announce')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-hand-peace"></i> Grace Offer</div><p id="t5-out-grace">Staying connected beyond the schedule...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Previous Holiday Plans</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Clear History</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">My History</h2><p class="hero-tagline">All your saved UsFirst analyses and plans.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Clear All History</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privacy & Safety</h2>
+                    <p style="margin-bottom:1rem;">Your relationship data stays on your device. Nothing is sent to any server.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>All inputs and results are stored only in your browser's local storage.</li>
+                        <li>No account, no login, no tracking, no analytics.</li>
+                        <li>You can clear history at any time.</li>
+                        <li>This application is for reflection, planning, and communication practice—not therapy, legal advice, or diagnosis.</li>
+                        <li>If you are experiencing abuse, coercion, threats, or safety risks, consult appropriate professional support.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Clear All Stored Data</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">For entertainment and reflection purposes only. Not therapy or professional advice. If there is abuse, coercion, or legal risk, seek appropriate professional support.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:var(--accent);"></i><span id="toast-message">Copied!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => fallbackCopy(text));
+        } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Copied!'); } catch(e) { showToast('Could not copy'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('mobile-open'); });
+    overlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE ---
+    function getHistory(toolId) {
+        const key = `usfirst_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `usfirst_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Delete all history for this tool?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('History cleared');
+    }
+    function clearAllHistory() {
+        if (!confirm('Delete ALL UsFirst history?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('All history cleared');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">No saved history.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">No saved history.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Clear current inputs and results for this tool?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset complete');
+    }
+
+    // ========================================
+    // TOOL 1: BOUNDARY MAPPER
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_source').value = 'In-law';
+        document.querySelectorAll('#t1_actions input').forEach(cb => cb.checked = false);
+        document.querySelector('#t1_actions input[value="Unannounced visits"]').checked = true;
+        document.querySelector('#t1_actions input[value="Criticizing your partner"]').checked = true;
+        document.getElementById('t1_duration').value = 'Years';
+        document.getElementById('t1_tried').value = 'Ignored it, asked partner to say something, changed the subject.';
+        document.getElementById('t1_emotion').value = 'Resentful';
+        showToast('Sample loaded: In-law visits & criticism');
+    }
+
+    function analyzeTool1() {
+        const source = document.getElementById('t1_source').value;
+        const actions = [...document.querySelectorAll('#t1_actions input:checked')].map(cb => cb.value);
+        const duration = document.getElementById('t1_duration').value;
+        const tried = document.getElementById('t1_tried').value || 'Not specified';
+        const emotion = document.getElementById('t1_emotion').value;
+        const actionList = actions.length ? actions.join(', ') : 'Multiple oversteps';
+
+        const snapshot = `The primary pressure is coming from <strong>${source}</strong>, involving: <strong>${actionList}</strong>. This has been happening for <strong>${duration}</strong>.`;
+        const impact = `Repeated boundary crossings like these can erode household privacy, increase couple tension, and make home feel less like a safe shared space. When one partner feels consistently undermined, it often creates a pattern of resentment and withdrawal.`;
+        let hook = '';
+        if (emotion === 'Angry' || emotion === 'Resentful') {
+            hook = 'Anger and resentment often signal that repeated soft attempts have not produced a clear agreement. You may be ready to shift from hoping they will change to stating what your household needs.';
+        } else if (emotion === 'Guilty' || emotion === 'Anxious') {
+            hook = 'Guilt and anxiety can make boundaries harder to state clearly—you may be more focused on their reaction than on what your household needs. It is okay to prioritize your marriage.';
+        } else {
+            hook = 'Exhaustion often means the emotional cost of the situation is becoming unsustainable. This is a signal that a clear, consistent boundary may actually reduce long-term friction.';
+        }
+        const priority = `Start with the most concrete and recurring issue: <strong>${actionList.split(',')[0] || 'the primary overstep'}</strong>. Address this one boundary first rather than confronting everything at once.`;
+        const couple = `This behavior can be addressed without attacking ${source}'s character or intentions. Focus on what your household needs, not what they are doing wrong.`;
+
+        document.getElementById('t1-out-snapshot').innerHTML = snapshot;
+        document.getElementById('t1-out-impact').innerHTML = impact;
+        document.getElementById('t1-out-hook').innerHTML = hook;
+        document.getElementById('t1-out-priority').innerHTML = priority;
+        document.getElementById('t1-out-couple').innerHTML = couple;
+        document.getElementById('output-tool1').classList.add('active');
+        saveToHistory('tool1', 'Boundary Mapper', `<p>${snapshot}</p><br><strong>Priority:</strong> ${priority}`);
+    }
+
+    // ========================================
+    // TOOL 2: UNITED FRONT
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_view_a').value = 'My partner\'s family criticizes me and my partner just stays silent or changes the subject.';
+        document.getElementById('t2_view_b').value = 'I feel caught between my spouse and my parents. I don\'t want to hurt anyone.';
+        document.getElementById('t2_support_a').value = '3'; document.getElementById('support_a_val').innerText = '3';
+        document.getElementById('t2_middle_a').value = '8'; document.getElementById('middle_a_val').innerText = '8';
+        document.getElementById('t2_support_b').value = '4'; document.getElementById('support_b_val').innerText = '4';
+        document.getElementById('t2_middle_b').value = '7'; document.getElementById('middle_b_val').innerText = '7';
+        document.getElementById('t2_loyalty').value = 'Partner A: Loyalty means backing me up when family is disrespectful. Partner B: Loyalty means not turning my back on my parents.';
+        document.getElementById('t2_fear').value = 'That we\'ll be cut off from the family and holidays will become a war.';
+        showToast('Sample loaded: Support vs. middle conflict');
+    }
+
+    function analyzeTool2() {
+        const viewA = document.getElementById('t2_view_a').value || 'Partner A sees a problem';
+        const viewB = document.getElementById('t2_view_b').value || 'Partner B sees a problem';
+        const suppA = parseInt(document.getElementById('t2_support_a').value) || 5;
+        const suppB = parseInt(document.getElementById('t2_support_b').value) || 5;
+        const midA = parseInt(document.getElementById('t2_middle_a').value) || 5;
+        const midB = parseInt(document.getElementById('t2_middle_b').value) || 5;
+        const loyalty = document.getElementById('t2_loyalty').value || 'Loyalty means different things to each partner.';
+        const fear = document.getElementById('t2_fear').value || 'Fear of conflict or loss';
+
+        const bind = `Partner A feels supported at ${suppA}/10 and caught in the middle at ${midA}/10. Partner B feels supported at ${suppB}/10 and caught in the middle at ${midB}/10. The gap between support and being caught in the middle is a tension point.`;
+        let message = '';
+        if (suppA < 5 && midA > 5) message = 'Partner A may need more explicit public solidarity. Private reassurance is good, but hearing you speak up matters.';
+        else if (suppB < 5 && midB > 5) message = 'Partner B may need more explicit public solidarity. Private reassurance is good, but hearing you speak up matters.';
+        else message = 'Both partners are feeling caught. Prioritize private alignment on what the household needs.';
+        const position = `We are a household. We make decisions together. We are not choosing between each other and our families—we are building a family unit with its own rules.`;
+        const needA = `Partner A needs to feel that their partner sees the impact and is willing to say something.`;
+        const needB = `Partner B needs to feel that drawing a boundary does not mean abandoning their family.`;
+        const script = `"I love you. I love our family. I want us to be a team on this. We need to figure out what our household needs, and then we'll communicate it together. I'm not asking you to reject your family—I'm asking us to decide what works for us."`;
+
+        document.getElementById('t2-out-bind').innerHTML = bind;
+        document.getElementById('t2-out-message').innerHTML = message;
+        document.getElementById('t2-out-position').innerHTML = position;
+        document.getElementById('t2-out-need_a').innerHTML = needA;
+        document.getElementById('t2-out-need_b').innerHTML = needB;
+        document.getElementById('t2-out-script').innerText = script;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', 'United Front', `<p>${position}</p><br><code>${script}</code>`);
+    }
+
+    // ========================================
+    // TOOL 3: THE SCRIPT
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_boundary').value = 'We need 24-hour advance notice before any visit to our home.';
+        document.getElementById('t3_who').value = 'Both together';
+        document.getElementById('t3_method').value = 'Phone';
+        document.getElementById('t3_reaction').value = 'Guilt trip';
+        document.getElementById('t3_goal').value = 'Closer but bounded';
+        showToast('Sample loaded: Advance notice boundary');
+    }
+
+    function analyzeTool3() {
+        const boundary = document.getElementById('t3_boundary').value || 'Our household needs a clear boundary.';
+        const who = document.getElementById('t3_who').value;
+        const method = document.getElementById('t3_method').value;
+        const reaction = document.getElementById('t3_reaction').value;
+        const goal = document.getElementById('t3_goal').value;
+
+        let statement = '';
+        if (who === 'Both together') {
+            statement = `"We love you. We want our household to work well, and we need to share something important. Going forward, we need ${boundary.toLowerCase()}. We know this might be an adjustment, and we appreciate you respecting our household's needs."`;
+        } else if (who === 'Partner A') {
+            statement = `"${who}, you mean so much to us. I need to share something about our household: ${boundary.toLowerCase()}. I know this might be an adjustment, and I'm grateful for your understanding."`;
+        } else {
+            statement = `"${who}, you mean so much to us. I need to share something about our household: ${boundary.toLowerCase()}. I know this might be an adjustment, and I'm grateful for your understanding."`;
+        }
+
+        let tone = 'FIRM + WARM + BRIEF. Say the boundary clearly. Add one brief reason if helpful. Do not turn this into a long debate.';
+        let timing = `Choose a neutral moment—not during an active conflict and not immediately after a boundary violation. ${method} is appropriate.`;
+        let followup = `After stating the boundary, stop talking about it. Let them respond. If they push back, use a repeatable calm response.`;
+        let reassurance = `"We want to stay connected with you. This isn't about rejecting you—it's about making our household work better."`;
+
+        document.getElementById('t3-out-statement').innerText = statement;
+        document.getElementById('t3-out-tone').innerHTML = tone;
+        document.getElementById('t3-out-timing').innerHTML = timing;
+        document.getElementById('t3-out-followup').innerHTML = followup;
+        document.getElementById('t3-out-reassurance').innerHTML = reassurance;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', 'The Script', `<p><strong>Boundary:</strong> ${escapeHTML(boundary)}</p><br><code>${statement}</code>`);
+    }
+
+    // ========================================
+    // TOOL 4: PUSHBACK PREP
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_tactic').value = 'Family comes first';
+        document.getElementById('t4_fear').value = 'That they\'ll cut us off and blame me.';
+        document.getElementById('t4_sacrifice').value = 'I\'d let it go, I\'d stop visiting, I\'d just stay quiet.';
+        document.getElementById('t4_nonneg').value = 'My partner being treated with respect in our home.';
+        showToast('Sample loaded: "Family comes first" pressure');
+    }
+
+    function analyzeTool4() {
+        const tactic = document.getElementById('t4_tactic').value;
+        const fear = document.getElementById('t4_fear').value || 'Fear of conflict';
+        const sacrifice = document.getElementById('t4_sacrifice').value || 'Peace over boundaries';
+        const nonneg = document.getElementById('t4_nonneg').value || 'Our household's core need';
+
+        let profile = `Primary pushback pattern: <strong>${tactic}</strong>. This is a common pressure pattern when families feel a shift in expectations.`;
+        let antidote = '';
+        if (tactic.includes('Family comes first')) antidote = '"Family matters deeply to us. That is exactly why we are making sure our household is stable and healthy."';
+        else if (tactic.includes('too sensitive')) antidote = '"We are not debating whether we are sensitive. We are making a decision about what works for our household."';
+        else if (tactic.includes('always done')) antidote = '"We understand that traditions matter. We are starting a new tradition that works for our household now."';
+        else if (tactic.includes('Silent')) antidote = '"We will give you space. When you are ready to talk respectfully, we are here."';
+        else if (tactic.includes('Involving')) antidote = '"This is a decision between us and our household. We are not discussing it with others."';
+        else antidote = '"We are making this decision for our household. We hope you can respect it."';
+
+        let broken = `"This is what we need for our household. We understand it might feel different, but this is our decision."`;
+        let escalation = `1. State the boundary calmly. 2. If they push, repeat the broken record line. 3. If the conversation becomes heated, offer to revisit later. 4. If respect is not possible, end the call or visit.`;
+        let nonnegLine = `<strong>${nonneg}</strong> is non-negotiable for your household.`;
+        let tradeoff = `You are willing to sacrifice: ${sacrifice}. Reflect on whether this sacrifice supports or undermines your household's long-term health.`;
+
+        document.getElementById('t4-out-profile').innerHTML = profile;
+        document.getElementById('t4-out-antidote').innerHTML = antidote;
+        document.getElementById('t4-out-broken').innerText = broken;
+        document.getElementById('t4-out-escalation').innerHTML = escalation;
+        document.getElementById('t4-out-nonneg').innerHTML = nonnegLine;
+        document.getElementById('t4-out-tradeoff').innerHTML = tradeoff;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', 'Pushback Prep', `<p><strong>Tactic:</strong> ${tactic}</p><br><code>${broken}</code>`);
+    }
+
+    // ========================================
+    // TOOL 5: HOLIDAY NEGOTIATOR
+    // ========================================
+    function loadSampleTool5() {
+        document.getElementById('t5_current').value = 'We always go to my in-laws\' house for Christmas Day.';
+        document.getElementById('t5_want_a').value = 'Christmas morning at home with our kids, opening presents.';
+        document.getElementById('t5_want_b').value = 'Christmas dinner with my extended family—it\'s the only time we all get together.';
+        document.getElementById('t5_expect').value = 'Everyone comes to their house for the full day.';
+        document.getElementById('t5_flex').value = '6'; document.getElementById('flex_val').innerText = '6';
+        document.getElementById('t5_kids').value = 'Yes';
+        showToast('Sample loaded: Christmas Day conflict');
+    }
+
+    function analyzeTool5() {
+        const current = document.getElementById('t5_current').value || 'Current pattern described';
+        const wantA = document.getElementById('t5_want_a').value || 'Partner A wants something different';
+        const wantB = document.getElementById('t5_want_b').value || 'Partner B wants something different';
+        const expect = document.getElementById('t5_expect').value || 'Family has expectations';
+        const flex = parseInt(document.getElementById('t5_flex').value) || 5;
+        const kids = document.getElementById('t5_kids').value;
+
+        const map = `Current: ${current}. Partner A wants: ${wantA}. Partner B wants: ${wantB}. Family expects: ${expect}.`;
+        const need = `Your household needs protected time together. Reserve a meaningful block of time for your nuclear household during major holidays.`;
+        let structure = '';
+        if (flex <= 4) {
+            structure = 'Given lower flexibility, consider an alternating-year structure: one year with one side, the next year with the other, with private household time on a different date.';
+        } else if (flex <= 7) {
+            structure = 'Consider a split-day structure: morning with one side, afternoon/evening with the other, or one full day with each side. Keep the schedule predictable.';
+        } else {
+            structure = 'With higher flexibility, consider a time-block structure: specific hours with each side, and clear private household time. Communicate the schedule well in advance.';
+        }
+        const tradition = `Build a new household tradition: a special meal, activity, or ritual that happens during your protected household time. This creates a positive anchor.`;
+        const announce = `"We are updating our holiday structure this year to build traditions at home. We will spend [specific time] with you and [specific time] privately at home. We are excited to celebrate together during our time with you."`;
+        const grace = `"We still want to see you. Let's plan a visit around the holiday—maybe a dinner or a weekend—so we can stay connected."`;
+
+        document.getElementById('t5-out-map').innerHTML = map;
+        document.getElementById('t5-out-need').innerHTML = need;
+        document.getElementById('t5-out-structure').innerHTML = structure;
+        document.getElementById('t5-out-tradition').innerHTML = tradition;
+        document.getElementById('t5-out-announce').innerText = announce;
+        document.getElementById('t5-out-grace').innerHTML = grace;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', 'Holiday Negotiator', `<p>${structure}</p><br><code>${announce}</code>`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,2480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payday Survival Field Guide™</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Embedded CSS Styling -->
+    <style>
+        /* Base Reset & Variables */
+        :root {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --primary-light: #D1FAE5;
+            --navy: #1E293B;
+            --navy-light: #334155;
+            --bg-gradient: linear-gradient(135deg, #ECFDF5 0%, #F1F5F9 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Layout Architecture */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--navy);
+            line-height: 1.2;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-category {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            padding: 12px 12px 4px 12px;
+            font-weight: 700;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 12px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button:hover {
+            background: #F8FAFC;
+            color: var(--navy);
+        }
+
+        .nav-item button.active {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .nav-item button i {
+            font-size: 1rem;
+            width: 18px;
+            text-align: center;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: var(--card-bg);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--navy);
+        }
+
+        .mobile-header .brand i {
+            color: var(--primary);
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--navy);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.4);
+            backdrop-filter: blur(2px);
+            z-index: 95;
+        }
+
+        /* Main Content Viewport */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-area {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Footer */
+        .app-footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        /* View Controllers */
+        .view-panel {
+            display: none;
+        }
+
+        .view-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* UI Components & Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .hero-banner {
+            background: var(--navy);
+            color: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            margin-bottom: 24px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-banner h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .hero-banner p {
+            color: #94A3B8;
+            font-size: 0.95rem;
+            max-width: 620px;
+        }
+
+        .hero-icon {
+            position: absolute;
+            right: -20px;
+            bottom: -20px;
+            font-size: 10rem;
+            color: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+        }
+
+        /* Dashboard Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border-color: var(--primary);
+        }
+
+        .dashboard-card .icon-wrapper {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.05rem;
+            color: var(--navy);
+        }
+
+        .dashboard-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Orientation Banner */
+        .orientation-box {
+            background: #EFF6FF;
+            border: 1px solid #BFDBFE;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 24px;
+            color: #1E40AF;
+            font-size: 0.9rem;
+        }
+
+        .orientation-box h4 {
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .orientation-box ul {
+            padding-left: 20px;
+            margin-top: 6px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--navy);
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--navy);
+            background: white;
+            outline: none;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group, .radio-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .checkbox-label, .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.88rem;
+            color: var(--navy);
+            cursor: pointer;
+            background: #F8FAFC;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            user-select: none;
+        }
+
+        .checkbox-label:hover, .radio-label:hover {
+            background: #F1F5F9;
+        }
+
+        .checkbox-label input, .radio-label input {
+            accent-color: var(--primary);
+        }
+
+        /* Buttons & Actions */
+        .btn-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #E2E8F0;
+            color: var(--navy);
+        }
+
+        .btn-secondary:hover {
+            background: #CBD5E1;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            background: #F8FAFC;
+            color: var(--navy);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        /* Output Modules & Tool UI */
+        .results-container {
+            margin-top: 32px;
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--primary-light);
+        }
+
+        .section-header h3 {
+            font-size: 1.1rem;
+            color: var(--navy);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .metric-badge {
+            background: var(--navy);
+            color: white;
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .metric-badge .val {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1.1;
+        }
+
+        .metric-badge .lbl {
+            font-size: 0.8rem;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* Output Blocks */
+        .output-block {
+            background: #F8FAFC;
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .output-block.danger {
+            border-left-color: var(--danger);
+            background: #FEF2F2;
+        }
+
+        .output-block.warning {
+            border-left-color: var(--warning);
+            background: #FFFBEB;
+        }
+
+        .output-block.info {
+            border-left-color: #3B82F6;
+            background: #EFF6FF;
+        }
+
+        .output-block h4 {
+            font-size: 0.92rem;
+            color: var(--navy);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .output-block p, .output-block ul {
+            font-size: 0.88rem;
+            color: var(--navy-light);
+        }
+
+        .output-block ul {
+            padding-left: 20px;
+        }
+
+        /* Script Boxes */
+        .script-box {
+            position: relative;
+            background: #1E293B;
+            color: #F8FAFC;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            margin-top: 8px;
+            margin-bottom: 12px;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.15);
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Dynamic Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.88rem;
+            margin-bottom: 16px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .data-table th {
+            background: #F8FAFC;
+            color: var(--navy);
+            font-weight: 600;
+        }
+
+        /* Next Best Step Widget */
+        .next-step-box {
+            background: var(--primary-light);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .next-step-box .info-side h5 {
+            color: var(--primary-dark);
+            font-size: 0.95rem;
+            font-weight: 700;
+        }
+
+        .next-step-box .info-side p {
+            font-size: 0.85rem;
+            color: var(--navy);
+        }
+
+        /* Accordion & History */
+        .history-section {
+            margin-top: 32px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .history-header h4 {
+            font-size: 0.92rem;
+            color: var(--navy);
+        }
+
+        .history-list {
+            margin-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Repeater Rows */
+        .repeater-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1.5fr 1fr 40px;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        /* Snapshot Grid */
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .snapshot-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 14px;
+            border-radius: 8px;
+        }
+
+        .snapshot-card .lbl {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .snapshot-card .val {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--navy);
+            margin-top: 4px;
+        }
+
+        /* Toast Component */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--navy);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast i {
+            color: var(--primary);
+        }
+
+        /* Sample Scenario Notice */
+        .sample-badge {
+            display: inline-block;
+            background: #FEF3C7;
+            color: #92400E;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+
+        /* Printable Layout Styles */
+        @media print {
+            .sidebar, .mobile-header, .btn-toolbar, .history-section, .next-step-box, .app-footer, .sample-badge, button {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .content-area {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            .card {
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .content-area {
+                padding: 16px;
+            }
+
+            .hero-banner {
+                padding: 20px;
+            }
+
+            .hero-banner h2 {
+                font-size: 1.4rem;
+            }
+
+            .repeater-row {
+                grid-template-columns: 1fr 1fr;
+                background: #F8FAFC;
+                padding: 12px;
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+            }
+
+            .repeater-row .btn-remove {
+                grid-column: span 2;
+                justify-self: end;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- App Container -->
+    <div class="app-container">
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <div class="brand">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>Payday Survival Field Guide™</span>
+            </div>
+            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Navigation">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Fixed Left Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h1>Payday Survival<br><span style="font-size: 0.72rem; font-weight: 400; color: var(--text-muted);">Field Guide™ OS</span></h1>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-category">Main Dashboard</li>
+                <li class="nav-item">
+                    <button class="nav-btn active" data-target="dashboard">
+                        <i class="fa-solid fa-house"></i> Home Overview
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="resetWorkflow">
+                        <i class="fa-solid fa-arrows-spin"></i> Payday Reset Guide
+                    </button>
+                </li>
+
+                <li class="nav-category">Tactical Toolkit</li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="tool1">
+                        <i class="fa-solid fa-filter-circle-dollar"></i> Cash Leak Triage
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="tool2">
+                        <i class="fa-solid fa-list-check"></i> Payment Priority
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="tool3">
+                        <i class="fa-solid fa-user-shield"></i> Embarrassment Shield
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="tool4">
+                        <i class="fa-solid fa-handshake-slash"></i> Panic-Free Negotiator
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="tool5">
+                        <i class="fa-solid fa-bridge"></i> Micro-Payday Bridge
+                    </button>
+                </li>
+
+                <li class="nav-category">Plan & History</li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="summaryPlan">
+                        <i class="fa-solid fa-file-invoice"></i> My Survival Plan
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="historyView">
+                        <i class="fa-solid fa-clock-rotate-left"></i> My History Log
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-target="privacyView">
+                        <i class="fa-solid fa-lock"></i> Privacy & Safety
+                    </button>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Workspace -->
+        <div class="main-wrapper">
+            <main class="content-area">
+
+                <!-- DASHBOARD VIEW -->
+                <section id="dashboard" class="view-panel active">
+                    <div class="hero-banner">
+                        <h2>Payday Survival Field Guide™</h2>
+                        <p>Make your remaining dollars reach the finish line with dignity. Tactical tools built for real-world financial triage when money runs out early.</p>
+                        <i class="fa-solid fa-compass hero-icon"></i>
+                    </div>
+
+                    <!-- Orientation Layer -->
+                    <div class="orientation-box">
+                        <h4><i class="fa-solid fa-circle-info"></i> Triage Operating Rules</h4>
+                        <ul>
+                            <li>First protect essential survival needs: food, shelter, essential transport, medication, and core utilities.</li>
+                            <li>Do not treat every bill as equally urgent when available cash is insufficient.</li>
+                            <li>Contact providers proactively before due dates pass whenever possible.</li>
+                            <li>Use outputs as structured planning prompts; verify local regulations and provider terms directly.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Countdown Calculator Widget -->
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-hourglass-half" style="color:var(--primary)"></i> Days to Payday Countdown</h3>
+                        </div>
+                        <div style="display: flex; gap: 16px; align-items: flex-end; flex-wrap: wrap;">
+                            <div style="flex: 1; min-width: 200px;">
+                                <label class="form-label" for="nextPaydate">Select Next Paydate:</label>
+                                <input type="date" id="nextPaydate" class="form-control">
+                            </div>
+                            <div style="flex: 1; min-width: 200px;">
+                                <div id="countdownDisplay" style="background: var(--navy); color: white; padding: 10px 16px; border-radius: 8px; text-align: center; font-weight: 600;">
+                                    Set date to calculate
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Qualitative Survival Snapshot -->
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-chart-line" style="color:var(--primary)"></i> Qualitative Survival Snapshot</h3>
+                        </div>
+                        <div class="snapshot-grid">
+                            <div class="snapshot-card">
+                                <div class="lbl">Cash Gap</div>
+                                <div class="val" id="snapCashGap">Not Analyzed</div>
+                            </div>
+                            <div class="snapshot-card">
+                                <div class="lbl">Daily Capacity</div>
+                                <div class="val" id="snapCapacity">--</div>
+                            </div>
+                            <div class="snapshot-card">
+                                <div class="lbl">Payment Pressure</div>
+                                <div class="val" id="snapPressure">Contained</div>
+                            </div>
+                            <div class="snapshot-card">
+                                <div class="lbl">Spending Leak</div>
+                                <div class="val" id="snapLeak">None Identified</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5 Main Tools Grid -->
+                    <div class="tools-grid">
+                        <div class="dashboard-card" onclick="switchView('tool1')">
+                            <div class="icon-wrapper"><i class="fa-solid fa-filter-circle-dollar"></i></div>
+                            <h3>Cash Leak Triage</h3>
+                            <p>Calculate your daily safe spend ceiling and freeze non-essential cash leaks.</p>
+                        </div>
+                        <div class="dashboard-card" onclick="switchView('tool2')">
+                            <div class="icon-wrapper"><i class="fa-solid fa-list-check"></i></div>
+                            <h3>Payment Priority</h3>
+                            <p>Rank bills by survival tier and allocate available cash in strict order.</p>
+                        </div>
+                        <div class="dashboard-card" onclick="switchView('tool3')">
+                            <div class="icon-wrapper"><i class="fa-solid fa-user-shield"></i></div>
+                            <h3>Embarrassment Shield</h3>
+                            <p>Decline costly invitations gracefully without financial shame or debt.</p>
+                        </div>
+                        <div class="dashboard-card" onclick="switchView('tool4')">
+                            <div class="icon-wrapper"><i class="fa-solid fa-handshake-slash"></i></div>
+                            <h3>Panic-Free Negotiator</h3>
+                            <p>Draft copyable extension scripts and access source-derived rights prompts.</p>
+                        </div>
+                        <div class="dashboard-card" onclick="switchView('tool5')">
+                            <div class="icon-wrapper"><i class="fa-solid fa-bridge"></i></div>
+                            <h3>Micro-Payday Bridge</h3>
+                            <p>Explore safe 24-hour income paths while avoiding dangerous debt traps.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- GUIDED RESET WORKFLOW VIEW -->
+                <section id="resetWorkflow" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-arrows-spin" style="color:var(--primary)"></i> Payday Survival Reset Sequence</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Follow this 7-step guided workflow to systematically navigate the gap before your next payday without panic.</p>
+
+                        <div class="output-block info">
+                            <h4>Day 1 — Count the Gap & Freeze Drains</h4>
+                            <p>Set your countdown target date and complete the <strong>Cash Leak Triage</strong> to determine your absolute daily spending limit.</p>
+                            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="switchView('tool1')">Go to Cash Leak Triage</button>
+                        </div>
+
+                        <div class="output-block info">
+                            <h4>Day 2 — Rank Priorities & Allocate Funds</h4>
+                            <p>Use <strong>Payment Priority</strong> to categorize housing, utilities, and obligations so essential survival needs are satisfied first.</p>
+                            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="switchView('tool2')">Go to Payment Priority</button>
+                        </div>
+
+                        <div class="output-block info">
+                            <h4>Day 3 — Proactive Provider Outreach</h4>
+                            <p>For any obligations marked as held or delayed, use <strong>Panic-Free Negotiator</strong> to request formal payment extensions.</p>
+                            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="switchView('tool4')">Go to Panic-Free Negotiator</button>
+                        </div>
+
+                        <div class="output-block info">
+                            <h4>Day 4 — Protect Social Boundaries</h4>
+                            <p>Handle upcoming social obligations without debt using <strong>Embarrassment Shield</strong> copyable responses.</p>
+                            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="switchView('tool3')">Go to Embarrassment Shield</button>
+                        </div>
+
+                        <div class="output-block info">
+                            <h4>Day 5 — Explore Safe Income Opportunities</h4>
+                            <p>If essential cash gaps remain, use <strong>Micro-Payday Bridge</strong> to evaluate realistic micro-income options.</p>
+                            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="switchView('tool5')">Go to Micro-Payday Bridge</button>
+                        </div>
+
+                        <div class="output-block info">
+                            <h4>Day 6–7 — Review Plan & Maintain Hard Stop</h4>
+                            <p>Review your complete synthesized <strong>Survival Plan</strong> and commit to your daily cash limit until payday arrives.</p>
+                            <button class="btn btn-primary btn-sm" style="margin-top:10px;" onclick="switchView('summaryPlan')">View My Survival Plan</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: CASH LEAK TRIAGE -->
+                <section id="tool1" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-filter-circle-dollar" style="color:var(--primary)"></i> Tool 1 — Cash Leak Triage</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Use this triage tool when money has run early to establish a daily spending limit and freeze cash drains.</p>
+
+                        <div id="sampleBadge_triage" class="sample-badge" style="display:none;">Sample scenario loaded — this is not your personal result.</div>
+
+                        <form id="triageForm" onsubmit="event.preventDefault(); processTriage();">
+                            <div class="form-group">
+                                <label class="form-label" for="triageCash">Cash remaining right now ($):</label>
+                                <input type="number" step="0.01" id="triageCash" class="form-control" placeholder="e.g. 45.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="triageDays">Days left until payday:</label>
+                                <input type="number" id="triageDays" class="form-control" min="1" placeholder="e.g. 6" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Must-spend essentials needed before payday:</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="essentials" value="Food"> Food</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="essentials" value="Transport"> Transport to Work</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="essentials" value="Meds"> Essential Medication</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="essentials" value="Utilities"> Utilities</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="essentials" value="Phone"> Phone Data</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Do you have unused groceries/pantry items?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="pantry" value="Yes" checked> Yes (Fully stocked staples)</label>
+                                    <label class="radio-label"><input type="radio" name="pantry" value="Moderate"> Moderate (Bits & pieces)</label>
+                                    <label class="radio-label"><input type="radio" name="pantry" value="Barely"> Barely anything</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="triageRisk">Biggest impulse cash risk right now:</label>
+                                <select id="triageRisk" class="form-control">
+                                    <option value="Takeout delivery">Takeout delivery</option>
+                                    <option value="Convenience stores">Convenience stores / Snacks</option>
+                                    <option value="Coffee runs">Coffee runs</option>
+                                    <option value="Subscriptions">Auto-debit Subscriptions</option>
+                                    <option value="Lending to others">Lending cash to others</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Run Triage Analysis</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleTriage()"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetModule('triage')"><i class="fa-solid fa-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+
+                        <!-- Results Output -->
+                        <div id="triageResults" class="results-container">
+                            <div class="metric-badge">
+                                <div class="val" id="resDailySpend">$0.00</div>
+                                <div class="lbl">Daily Safe Spend Ceiling</div>
+                            </div>
+
+                            <div class="output-block danger">
+                                <h4><i class="fa-solid fa-ban"></i> RED-LIGHT EXPENSES (Freeze Immediately)</h4>
+                                <p id="resRedLight"></p>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-utensils"></i> GREEN-LIGHT SURVIVAL MENU</h4>
+                                <p id="resGreenMenu"></p>
+                            </div>
+
+                            <div class="output-block warning">
+                                <h4><i class="fa-solid fa-shield-cat"></i> HARD STOP RULE</h4>
+                                <p id="resHardStop"></p>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-piggy-bank"></i> EMERGENCY LEAK BUFFER</h4>
+                                <p id="resBuffer"></p>
+                            </div>
+
+                            <!-- Next Best Step Widget -->
+                            <div class="next-step-box" id="triageNextStep"></div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-header" onclick="toggleHistory('triage')">
+                                <h4><i class="fa-solid fa-clock-rotate-left"></i> Recent Triage History</h4>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); clearHistory('triage')">Clear</button>
+                            </div>
+                            <div id="triageHistoryList" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: PAYMENT PRIORITY CALCULATOR -->
+                <section id="tool2" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-list-check" style="color:var(--primary)"></i> Tool 2 — Payment Priority Calculator</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">When cash is insufficient to clear all due bills, rank obligations by survival tiers and allocate available funds.</p>
+
+                        <div id="sampleBadge_priority" class="sample-badge" style="display:none;">Sample scenario loaded — this is not your personal result.</div>
+
+                        <form id="priorityForm" onsubmit="event.preventDefault(); processPriority();">
+                            <div class="form-group">
+                                <label class="form-label" for="priorityFunds">Total Available Funds ($):</label>
+                                <input type="number" step="0.01" id="priorityFunds" class="form-control" placeholder="e.g. 400.00" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">List Obligations Due:</label>
+                                <div id="repeaterContainer">
+                                    <!-- Dynamic rows inserted via JS -->
+                                </div>
+                                <button type="button" class="btn btn-outline btn-sm" style="margin-top: 8px;" onclick="addRepeaterRow()">
+                                    <i class="fa-solid fa-plus"></i> Add Bill / Obligation
+                                </button>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-layer-group"></i> Calculate Priority Order</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSamplePriority()"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetModule('priority')"><i class="fa-solid fa-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+
+                        <!-- Results Output -->
+                        <div id="priorityResults" class="results-container">
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-ranking-star"></i> SURVIVAL TIER BREAKDOWN</h4>
+                                <div id="resTierList"></div>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-table-list"></i> EXACT PAYMENT ALLOCATION TODAY</h4>
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Bill Name</th>
+                                            <th>Category</th>
+                                            <th>Original Due</th>
+                                            <th>Allocated</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="resAllocationTable"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="output-block warning">
+                                <h4><i class="fa-solid fa-comment-dollar"></i> BILL-HOLD EXTENSION SCRIPTS</h4>
+                                <div id="resHoldScripts"></div>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-chart-pie"></i> LATE FEE / CONSEQUENCE MATRIX</h4>
+                                <div id="resLateMatrix"></div>
+                            </div>
+
+                            <!-- Next Best Step Widget -->
+                            <div class="next-step-box" id="priorityNextStep"></div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-header" onclick="toggleHistory('priority')">
+                                <h4><i class="fa-solid fa-clock-rotate-left"></i> History Log</h4>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); clearHistory('priority')">Clear</button>
+                            </div>
+                            <div id="priorityHistoryList" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: EMBARRASSMENT SHIELD -->
+                <section id="tool3" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-user-shield" style="color:var(--primary)"></i> Tool 3 — Embarrassment Shield</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Protect your budget and peace of mind when social invitations clash with your balance.</p>
+
+                        <div id="sampleBadge_shield" class="sample-badge" style="display:none;">Sample scenario loaded — this is not your personal result.</div>
+
+                        <form id="shieldForm" onsubmit="event.preventDefault(); processShield();">
+                            <div class="form-group">
+                                <label class="form-label" for="shieldEvent">Social event / invitation details:</label>
+                                <textarea id="shieldEvent" class="form-control" placeholder="e.g. Dinner out for a friend's birthday at an expensive steakhouse" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="shieldCost">Estimated cost of event ($):</label>
+                                <input type="number" step="0.01" id="shieldCost" class="form-control" placeholder="e.g. 60.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="shieldRelation">Relationship to host / group:</label>
+                                <select id="shieldRelation" class="form-control">
+                                    <option value="Close Friend">Close Friend</option>
+                                    <option value="Co-worker">Co-worker</option>
+                                    <option value="Family Member">Family Member</option>
+                                    <option value="Casual Acquaintance">Casual Acquaintance</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">How comfortable are you sharing financial reality?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="comfort" value="High"> High (Open book)</label>
+                                    <label class="radio-label"><input type="radio" name="comfort" value="Low" checked> Low (Prefer privacy)</label>
+                                    <label class="radio-label"><input type="radio" name="comfort" value="Not at all"> Not at all (Strict boundary)</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield"></i> Generate Response Strategy</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleShield()"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetModule('shield')"><i class="fa-solid fa-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+
+                        <!-- Results Output -->
+                        <div id="shieldResults" class="results-container">
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-message"></i> DIGNIFIED DECLINE SCRIPTS</h4>
+                                <div id="resDeclineScripts"></div>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-lightbulb"></i> COUNTER-PROPOSAL IDEAS (Zero-Cost Connections)</h4>
+                                <div id="resCounterIdeas"></div>
+                            </div>
+
+                            <div class="output-block warning">
+                                <h4><i class="fa-solid fa-heart-pulse"></i> INTERNAL REFRAME (Combatting Shame)</h4>
+                                <p id="resInternalReframe"></p>
+                            </div>
+
+                            <div class="output-block danger">
+                                <h4><i class="fa-solid fa-triangle-exclamation"></i> WHAT NOT TO DO</h4>
+                                <ul id="resWhatNotToDo"></ul>
+                            </div>
+
+                            <!-- Next Best Step Widget -->
+                            <div class="next-step-box" id="shieldNextStep"></div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-header" onclick="toggleHistory('shield')">
+                                <h4><i class="fa-solid fa-clock-rotate-left"></i> Saved Responses</h4>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); clearHistory('shield')">Clear</button>
+                            </div>
+                            <div id="shieldHistoryList" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: PANIC-FREE NEGOTIATOR -->
+                <section id="tool4" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-handshake-slash" style="color:var(--primary)"></i> Tool 4 — Panic-Free Negotiator</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Communicate proactively with creditors before missed payments spiral into major penalties.</p>
+
+                        <div id="sampleBadge_negotiator" class="sample-badge" style="display:none;">Sample scenario loaded — this is not your personal result.</div>
+
+                        <form id="negotiatorForm" onsubmit="event.preventDefault(); processNegotiator();">
+                            <div class="form-group">
+                                <label class="form-label" for="negType">Creditor / Service provider type:</label>
+                                <select id="negType" class="form-control">
+                                    <option value="Utility">Utility (Electric / Water / Gas)</option>
+                                    <option value="Mobile Service">Mobile / Internet Service</option>
+                                    <option value="Landlord">Landlord / Property Manager</option>
+                                    <option value="Credit Card">Credit Card Issuer</option>
+                                    <option value="Loan">Personal / Auto Loan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="negAmount">Amount overdue / due ($):</label>
+                                <input type="number" step="0.01" id="negAmount" class="form-control" placeholder="e.g. 180.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="negLate">Current status:</label>
+                                <select id="negLate" class="form-control">
+                                    <option value="Not late yet">Not late yet (Upcoming due date)</option>
+                                    <option value="1-15 days">1–15 days late</option>
+                                    <option value="30+ days">30+ days late</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="negPayDate">Target payment date (When can you pay?):</label>
+                                <input type="date" id="negPayDate" class="form-control" required>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-file-signature"></i> Draft Negotiation Plan</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleNegotiator()"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetModule('negotiator')"><i class="fa-solid fa-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+
+                        <!-- Results Output -->
+                        <div id="negotiatorResults" class="results-container">
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-scroll"></i> FORMAL NEGOTIATION SCRIPT</h4>
+                                <div class="script-box">
+                                    <button class="copy-btn" onclick="copyTextFromElement('resNegScript')"><i class="fa-regular fa-copy"></i> Copy</button>
+                                    <span id="resNegScript"></span>
+                                </div>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-scale-balanced"></i> YOUR RIGHTS CHEATSHEET (Source-Derived Guidance)</h4>
+                                <ul id="resRightsSheet"></ul>
+                            </div>
+
+                            <div class="output-block danger">
+                                <h4><i class="fa-solid fa-circle-xmark"></i> DO NOT SAY (Phrasing Traps)</h4>
+                                <ul id="resDoNotSay"></ul>
+                            </div>
+
+                            <div class="output-block warning">
+                                <h4><i class="fa-solid fa-calendar-check"></i> FOLLOW-UP CALENDAR PROMPT</h4>
+                                <p id="resFollowUpPrompt"></p>
+                            </div>
+
+                            <!-- Next Best Step Widget -->
+                            <div class="next-step-box" id="negotiatorNextStep"></div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-header" onclick="toggleHistory('negotiator')">
+                                <h4><i class="fa-solid fa-clock-rotate-left"></i> Past Negotiation Logs</h4>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); clearHistory('negotiator')">Clear</button>
+                            </div>
+                            <div id="negotiatorHistoryList" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: MICRO-PAYDAY BRIDGE -->
+                <section id="tool5" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-bridge" style="color:var(--primary)"></i> Tool 5 — Micro-Payday Bridge</h3>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Identify legal, short-term ways to generate small emergency cash safely within 24 hours.</p>
+
+                        <div id="sampleBadge_bridge" class="sample-badge" style="display:none;">Sample scenario loaded — this is not your personal result.</div>
+
+                        <form id="bridgeForm" onsubmit="event.preventDefault(); processBridge();">
+                            <div class="form-group">
+                                <label class="form-label" for="bridgeTime">Time available today:</label>
+                                <select id="bridgeTime" class="form-control">
+                                    <option value="1-2 hours">1–2 hours</option>
+                                    <option value="3-5 hours">3–5 hours</option>
+                                    <option value="All day">All day available</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Available assets:</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="assets" value="Smartphone" checked> Smartphone</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="assets" value="Car"> Car / Bicycle</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="assets" value="Items"> Spare clothes or household items</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="assets" value="Skills"> Basic manual skills / Yardwork</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="assets" value="Internet"> High-speed internet</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Physical mobility level:</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="mobility" value="High" checked> High (Can move & travel)</label>
+                                    <label class="radio-label"><input type="radio" name="mobility" value="Limited"> Limited (Home-bound focus)</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Find Immediate Income Paths</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleBridge()"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetModule('bridge')"><i class="fa-solid fa-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+
+                        <!-- Results Output -->
+                        <div id="bridgeResults" class="results-container">
+                            <div class="metric-badge">
+                                <div class="val" id="resEstYield">$20 - $50</div>
+                                <div class="lbl">Illustrative Net Yield (Variable by Location & Market)</div>
+                            </div>
+
+                            <div class="output-block">
+                                <h4><i class="fa-solid fa-person-running"></i> FASTEST CASH PATHS (Top Options)</h4>
+                                <div id="resFastPaths"></div>
+                            </div>
+
+                            <div class="output-block danger">
+                                <h4><i class="fa-solid fa-shield-virus"></i> SCAM WARNING SHIELD</h4>
+                                <ul id="resScamWarnings"></ul>
+                            </div>
+
+                            <div class="output-block warning">
+                                <h4><i class="fa-solid fa-list-ol"></i> STEP-BY-STEP TODAY ACTION PLAN</h4>
+                                <div id="resActionPlan"></div>
+                            </div>
+
+                            <!-- Next Best Step Widget -->
+                            <div class="next-step-box" id="bridgeNextStep"></div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-header" onclick="toggleHistory('bridge')">
+                                <h4><i class="fa-solid fa-clock-rotate-left"></i> Saved Micro-Income Ideas</h4>
+                                <button class="btn btn-outline btn-sm" onclick="event.stopPropagation(); clearHistory('bridge')">Clear</button>
+                            </div>
+                            <div id="bridgeHistoryList" class="history-list"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MY SURVIVAL PLAN SUMMARY VIEW -->
+                <section id="summaryPlan" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-file-invoice" style="color:var(--primary)"></i> My Payday Survival Plan</h3>
+                            <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Plan</button>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">A synthesized overview of your completed analyses across all five tactical tools.</p>
+
+                        <div id="planContainer">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UNIFIED HISTORY VIEW -->
+                <section id="historyView" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary)"></i> Unified Local History Log</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearAllHistoryGlobal()" style="color:var(--danger)"><i class="fa-solid fa-trash"></i> Clear All History</button>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px;">Review all saved calculations stored locally in your browser session.</p>
+
+                        <div id="unifiedHistoryContainer">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PRIVACY & SAFETY VIEW -->
+                <section id="privacyView" class="view-panel">
+                    <div class="card">
+                        <div class="section-header">
+                            <h3><i class="fa-solid fa-lock" style="color:var(--primary)"></i> Privacy & Operational Safety</h3>
+                        </div>
+                        
+                        <div class="output-block info">
+                            <h4><i class="fa-solid fa-hard-drive"></i> 100% Local Browser Storage</h4>
+                            <p>Payday Survival Field Guide™ operates completely inside your web browser. No personal financial information, custom entries, or calculations are ever submitted to an external server or stored in a remote database.</p>
+                        </div>
+
+                        <div class="output-block warning">
+                            <h4><i class="fa-solid fa-triangle-exclamation"></i> Educational & Budgeting Framework Disclaimer</h4>
+                            <p>This software provides structured planning heuristics for short-term financial triage. It is not certified financial, legal, tax, or credit repair advice. Provider policies, legal grace periods, and micro-income yields vary by jurisdiction and market context.</p>
+                        </div>
+
+                        <div class="output-block">
+                            <h4><i class="fa-solid fa-hand-holding-heart"></i> Local Emergency Resources</h4>
+                            <p>If you are facing immediate housing insecurity, food shortages, or utility disconnection, please contact your local 211 helpline or community social support services immediately.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Global Footer -->
+            <footer class="app-footer">
+                Payday Survival Field Guide™ OS. For practical budgeting and financial triage purposes only. Not certified financial advice.
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Component -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        /* Product Mode Config */
+        const PRODUCT_MODE = "complete";
+
+        /* Global Central Data Model State */
+        let paydaySurvivalState = {
+            completedTools: [],
+            toolResults: {},
+            nextPayDate: null,
+            lastUpdated: null
+        };
+
+        /* Helper: Escape HTML to prevent script injection (XSS) */
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        /* Initialization */
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initCountdown();
+            initPriorityRepeater();
+            loadStateFromStorage();
+            loadAllHistories();
+            renderUnifiedHistory();
+            renderSurvivalPlan();
+            updateSnapshotDisplay();
+        });
+
+        /* Navigation Management */
+        function initNavigation() {
+            const navButtons = document.querySelectorAll('.nav-btn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.getElementById('sidebar');
+            const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+            navButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const target = btn.getAttribute('data-target');
+                    switchView(target);
+                    sidebar.classList.remove('open');
+                    sidebarOverlay.classList.remove('open');
+                });
+            });
+
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('open');
+            });
+
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('open');
+            });
+        }
+
+        function switchView(targetId) {
+            document.querySelectorAll('.view-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.getAttribute('data-target') === targetId) {
+                    btn.classList.add('active');
+                }
+            });
+            const activePanel = document.getElementById(targetId);
+            if (activePanel) {
+                activePanel.classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            if (targetId === 'summaryPlan') renderSurvivalPlan();
+            if (targetId === 'historyView') renderUnifiedHistory();
+        }
+
+        /* Toast Component & Copy Utilities */
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function copyTextFromElement(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Copied to clipboard!");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy text.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* Countdown Widget */
+        function initCountdown() {
+            const dateInput = document.getElementById('nextPaydate');
+            const display = document.getElementById('countdownDisplay');
+
+            const defaultDate = new Date();
+            defaultDate.setDate(defaultDate.getDate() + 7);
+            dateInput.value = defaultDate.toISOString().split('T')[0];
+
+            function calculateDays() {
+                const val = dateInput.value;
+                if (!val) return;
+                paydaySurvivalState.nextPayDate = val;
+                saveStateToStorage();
+
+                const target = new Date(val);
+                const today = new Date();
+                today.setHours(0,0,0,0);
+                target.setHours(0,0,0,0);
+
+                const diffTime = target - today;
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays < 0) {
+                    display.innerText = "Payday has passed!";
+                } else if (diffDays === 0) {
+                    display.innerText = "Payday is TODAY! 🎉";
+                } else if (diffDays === 1) {
+                    display.innerText = "1 day remaining!";
+                } else {
+                    display.innerText = `${diffDays} days remaining`;
+                }
+            }
+
+            dateInput.addEventListener('change', calculateDays);
+            calculateDays();
+        }
+
+        /* TOOL 1: CASH LEAK TRIAGE */
+        function processTriage() {
+            const cash = parseFloat(document.getElementById('triageCash').value) || 0;
+            const days = parseInt(document.getElementById('triageDays').value) || 1;
+            const essentials = Array.from(document.querySelectorAll('input[name="essentials"]:checked')).map(cb => cb.value);
+            const pantry = document.querySelector('input[name="pantry"]:checked').value;
+            const risk = document.getElementById('triageRisk').value;
+
+            const dailySpend = (cash / days).toFixed(2);
+            document.getElementById('resDailySpend').innerText = `$${dailySpend} / day`;
+
+            const redLightText = `Halt all spend on: ${escapeHTML(risk)}, restaurant dining, streaming add-ons, non-essential travel, and soft drinks/snacks. Every cent must be funneled to direct survival priorities (${essentials.length > 0 ? essentials.map(e => escapeHTML(e)).join(', ') : 'Basic shelter/food'}).`;
+            document.getElementById('resRedLight').innerText = redLightText;
+
+            let menuText = "";
+            if (pantry === "Yes") {
+                menuText = "You have pantry staples available! Prioritize zero-cost cooking: Rice & beans, pasta base, oatmeal breakfasts, and frozen veggie stir-fry. Avoid supermarket trips completely until 24 hrs before payday.";
+            } else if (pantry === "Moderate") {
+                menuText = "Target high-yield, budget-dense staples: Eggs, giant bag of rice, dry beans, bulk oats, and store-brand peanut butter. Limit spending to < $3.50 per day on grocery top-ups.";
+            } else {
+                menuText = "Emergency low-cost fuel list: Ramen enriched with eggs, canned tuna/beans, bananas, loaf of whole-wheat bread + store-brand peanut butter. Look for community food pantries if food budget falls below $2/day.";
+            }
+            document.getElementById('resGreenMenu').innerText = menuText;
+
+            const hardStopText = `STRICT Cash Cap: Move exactly $${dailySpend} to your active spending debit card or physical wallet each morning. Leave all secondary cards at home. Once $${dailySpend} is spent, spending for that day is HARD LOCKED.`;
+            document.getElementById('resHardStop').innerText = hardStopText;
+
+            const bufferText = `Planning Buffer Rule: Reserve a flat $5.00 emergency buffer at the bottom of your account to prevent bank account overdraft fees or minimum balance penalties. Treat your account zero balance as $5.00.`;
+            document.getElementById('resBuffer').innerText = bufferText;
+
+            // Render Next Step
+            document.getElementById('triageNextStep').innerHTML = `
+                <div class="info-side">
+                    <h5><i class="fa-solid fa-compass"></i> Recommended Next Step</h5>
+                    <p>Now that you have your daily spend ceiling ($${dailySpend}), rank your upcoming due bills to see what can be paid safely.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="switchView('tool2')">Go to Payment Priority <i class="fa-solid fa-arrow-right"></i></button>
+            `;
+
+            document.getElementById('triageResults').classList.add('active');
+
+            // Save to State
+            paydaySurvivalState.toolResults.triage = {
+                cash, days, dailySpend, risk, pantry, essentials
+            };
+            markToolCompleted('triage');
+            updateSnapshotDisplay();
+
+            // Save to LocalStorage History
+            saveHistory('triage', {
+                title: `$${cash.toFixed(2)} for ${days} days`,
+                details: `Daily limit: $${dailySpend} | Primary Risk: ${risk}`
+            });
+        }
+
+        function loadSampleTriage() {
+            document.getElementById('triageCash').value = "35.00";
+            document.getElementById('triageDays').value = "5";
+            document.getElementById('triageRisk').value = "Takeout delivery";
+            const checkboxes = document.querySelectorAll('input[name="essentials"]');
+            checkboxes.forEach((cb, idx) => cb.checked = (idx === 0 || idx === 1));
+            document.querySelector('input[name="pantry"][value="Moderate"]').checked = true;
+            document.getElementById('sampleBadge_triage').style.display = 'inline-block';
+            processTriage();
+        }
+
+        /* TOOL 2: PAYMENT PRIORITY */
+        function initPriorityRepeater() {
+            const container = document.getElementById('repeaterContainer');
+            container.innerHTML = '';
+            addRepeaterRow("Rent / Shelter", 550, "Rent/Shelter", "Yes");
+            addRepeaterRow("Electric Bill", 120, "Electric/Water", "Yes");
+            addRepeaterRow("Phone Line", 60, "Phone", "No");
+            addRepeaterRow("Credit Card Min", 120, "Credit Card", "No");
+        }
+
+        function addRepeaterRow(name="", amount="", category="Rent/Shelter", lateFee="No") {
+            const container = document.getElementById('repeaterContainer');
+            const row = document.createElement('div');
+            row.className = 'repeater-row';
+            
+            row.innerHTML = `
+                <input type="text" class="form-control row-name" placeholder="Bill Name" value="${escapeHTML(name)}" required>
+                <input type="number" step="0.01" class="form-control row-amount" placeholder="Amount ($)" value="${amount}" required>
+                <select class="form-control row-cat">
+                    <option value="Rent/Shelter" ${category === 'Rent/Shelter' ? 'selected' : ''}>Rent/Shelter</option>
+                    <option value="Electric/Water" ${category === 'Electric/Water' ? 'selected' : ''}>Electric/Water</option>
+                    <option value="Car/Transport" ${category === 'Car/Transport' ? 'selected' : ''}>Car/Transport</option>
+                    <option value="Phone" ${category === 'Phone' ? 'selected' : ''}>Phone/Internet</option>
+                    <option value="Credit Card" ${category === 'Credit Card' ? 'selected' : ''}>Credit Card</option>
+                    <option value="Subscriptions" ${category === 'Subscriptions' ? 'selected' : ''}>Subscriptions</option>
+                </select>
+                <select class="form-control row-fee">
+                    <option value="Yes" ${lateFee === 'Yes' ? 'selected' : ''}>Late Fee: Yes</option>
+                    <option value="No" ${lateFee === 'No' ? 'selected' : ''}>Late Fee: No</option>
+                </select>
+                <button type="button" class="btn btn-outline btn-sm btn-remove" onclick="this.parentElement.remove()" style="color:var(--danger); border-color:var(--border-color);"><i class="fa-solid fa-trash"></i></button>
+            `;
+            container.appendChild(row);
+        }
+
+        function processPriority() {
+            let available = parseFloat(document.getElementById('priorityFunds').value) || 0;
+            const rows = document.querySelectorAll('.repeater-row');
+            
+            let obligations = [];
+            rows.forEach(row => {
+                obligations.push({
+                    name: row.querySelector('.row-name').value || 'Unnamed Bill',
+                    amount: parseFloat(row.querySelector('.row-amount').value) || 0,
+                    category: row.querySelector('.row-cat').value,
+                    lateFee: row.querySelector('.row-fee').value
+                });
+            });
+
+            const categoryWeight = {
+                "Rent/Shelter": 1,
+                "Electric/Water": 2,
+                "Car/Transport": 3,
+                "Phone": 4,
+                "Credit Card": 5,
+                "Subscriptions": 6
+            };
+
+            obligations.sort((a, b) => categoryWeight[a.category] - categoryWeight[b.category]);
+
+            let remainingCash = available;
+            let tableHTML = "";
+            let tier1 = [], tier2 = [], tier3 = [];
+            let holdScriptsHTML = "";
+            let hasHeldBills = false;
+
+            obligations.forEach((item, index) => {
+                let status = "";
+                let allocated = 0;
+
+                if (categoryWeight[item.category] <= 2) {
+                    tier1.push(escapeHTML(item.name));
+                } else if (categoryWeight[item.category] <= 4) {
+                    tier2.push(escapeHTML(item.name));
+                } else {
+                    tier3.push(escapeHTML(item.name));
+                }
+
+                if (remainingCash >= item.amount) {
+                    allocated = item.amount;
+                    remainingCash -= item.amount;
+                    status = "<span style='color: var(--primary-dark); font-weight:600;'>Paid in Full</span>";
+                } else if (remainingCash > 0) {
+                    allocated = remainingCash;
+                    remainingCash = 0;
+                    status = `<span style='color: var(--warning); font-weight:600;'>Partial ($${allocated.toFixed(2)})</span>`;
+                    hasHeldBills = true;
+                } else {
+                    allocated = 0;
+                    status = "<span style='color: var(--danger); font-weight:600;'>HOLD PAYMENT</span>";
+                    hasHeldBills = true;
+
+                    const safeId = `script_hold_${index}`;
+                    const targetPaydateStr = paydaySurvivalState.nextPayDate || "[Payday Date]";
+                    holdScriptsHTML += `
+                        <div style="margin-bottom:12px;">
+                            <strong>Hold Request for ${escapeHTML(item.name)} (${escapeHTML(item.category)}):</strong>
+                            <div class="script-box">
+                                <button class="copy-btn" onclick="copyTextFromElement('${safeId}')"><i class="fa-regular fa-copy"></i> Copy</button>
+                                <span id="${safeId}">Hello, I am contacting you regarding account [Account #]. I am experiencing a temporary cash delay before my next payday. I can commit to paying $${allocated.toFixed(2)} today, and resolving the balance of $${(item.amount - allocated).toFixed(2)} on ${escapeHTML(targetPaydateStr)}. Please note this on my file to avoid service disruption.</span>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                tableHTML += `
+                    <tr>
+                        <td><strong>${escapeHTML(item.name)}</strong></td>
+                        <td>${escapeHTML(item.category)}</td>
+                        <td>$${item.amount.toFixed(2)}</td>
+                        <td>$${allocated.toFixed(2)}</td>
+                        <td>${status}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('resTierList').innerHTML = `
+                <p><strong>Tier 1 (Shelter & Essential Transport):</strong> ${tier1.length > 0 ? tier1.join(', ') : 'None'}</p>
+                <p><strong>Tier 2 (Critical Utilities & Phone):</strong> ${tier2.length > 0 ? tier2.join(', ') : 'None'}</p>
+                <p><strong>Tier 3 (Flexible Credit Cards & Subscriptions):</strong> ${tier3.length > 0 ? tier3.join(', ') : 'None'}</p>
+            `;
+
+            document.getElementById('resAllocationTable').innerHTML = tableHTML;
+            document.getElementById('resHoldScripts').innerHTML = holdScriptsHTML || "<p>All obligations were paid in full with available funds!</p>";
+            
+            document.getElementById('resLateMatrix').innerHTML = `
+                <ul style="padding-left:20px;">
+                    <li><strong>Credit Cards:</strong> General source guidance notes cards usually afford a grace period before credit reporting; lowest immediate survival tier.</li>
+                    <li><strong>Rent / Shelter:</strong> High legal and practical priority. Keep landlord updated if payment is delayed.</li>
+                    <li><strong>Utilities:</strong> Generally require formal written notice before shutoff. Contact provider to request an extension.</li>
+                </ul>
+            `;
+
+            // Render Next Step
+            if (hasHeldBills) {
+                document.getElementById('priorityNextStep').innerHTML = `
+                    <div class="info-side">
+                        <h5><i class="fa-solid fa-compass"></i> Recommended Next Step</h5>
+                        <p>You have obligations marked as delayed or partial. Use the Panic-Free Negotiator to draft formal creditor outreach scripts.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="switchView('tool4')">Go to Negotiator <i class="fa-solid fa-arrow-right"></i></button>
+                `;
+            } else {
+                document.getElementById('priorityNextStep').innerHTML = `
+                    <div class="info-side">
+                        <h5><i class="fa-solid fa-compass"></i> Recommended Next Step</h5>
+                        <p>All obligations cleared! Review your full survival summary plan.</p>
+                    </div>
+                    <button class="btn btn-primary btn-sm" onclick="switchView('summaryPlan')">View Survival Plan <i class="fa-solid fa-arrow-right"></i></button>
+                `;
+            }
+
+            document.getElementById('priorityResults').classList.add('active');
+
+            // Save State
+            paydaySurvivalState.toolResults.priority = {
+                available, obligations, remainingCash, hasHeldBills
+            };
+            markToolCompleted('priority');
+            updateSnapshotDisplay();
+
+            saveHistory('priority', {
+                title: `$${available.toFixed(2)} allocated across ${obligations.length} bills`,
+                details: `Tier 1 Priority focus | Remaining unallocated cash: $${remainingCash.toFixed(2)}`
+            });
+        }
+
+        function loadSamplePriority() {
+            document.getElementById('priorityFunds').value = "400.00";
+            initPriorityRepeater();
+            document.getElementById('sampleBadge_priority').style.display = 'inline-block';
+            processPriority();
+        }
+
+        /* TOOL 3: EMBARRASSMENT SHIELD */
+        function processShield() {
+            const eventName = document.getElementById('shieldEvent').value;
+            const cost = parseFloat(document.getElementById('shieldCost').value) || 0;
+            const relation = document.getElementById('shieldRelation').value;
+            const comfort = document.querySelector('input[name="comfort"]:checked').value;
+
+            let script1 = "", script2 = "", script3 = "";
+
+            if (comfort === "High") {
+                script1 = `Hey! Thanks so much for inviting me to ${eventName}. I’m currently keeping a super tight cap on my cash until my next payday, so I’ll have to skip this round. Let's hang out soon!`;
+                script2 = `I'm laying low on spending right now, but I'd love to catch up! How about coming over for coffee/tea at my place this weekend instead?`;
+                script3 = `I won't be able to make ${eventName} due to my current monthly budget goals, but thank you for thinking of me!`;
+            } else if (comfort === "Low") {
+                script1 = `Thank you for the invite to ${eventName}! I have a strict personal budget goal I'm sticking to this month, so I'm passing on eating out right now. Hope you all have a blast!`;
+                script2 = `I can't make the full dinner for ${eventName}, but I'd love to drop by right after for a quick catch-up or meet for a walk tomorrow!`;
+                script3 = `Thanks for asking me! My schedule and current plans don't allow for ${eventName} right now, so I'll catch you on the next one.`;
+            } else {
+                script1 = `I appreciate the invite to ${eventName}! I won't be able to make it this time around, but let's plan something simple together soon.`;
+                script2 = `I have prior commitments and can't join ${eventName}. Let's catch up over a phone call or quick coffee next week!`;
+                script3 = `I have to pass on ${eventName} this time. Thanks so much for inviting me!`;
+            }
+
+            document.getElementById('resDeclineScripts').innerHTML = `
+                <div style="margin-bottom:12px;">
+                    <strong>Option 1: Graceful Raincheck</strong>
+                    <div class="script-box">
+                        <button class="copy-btn" onclick="copyTextFromElement('scr_opt1')"><i class="fa-regular fa-copy"></i> Copy</button>
+                        <span id="scr_opt1">${escapeHTML(script1)}</span>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <strong>Option 2: Low-Cost Alternative</strong>
+                    <div class="script-box">
+                        <button class="copy-btn" onclick="copyTextFromElement('scr_opt2')"><i class="fa-regular fa-copy"></i> Copy</button>
+                        <span id="scr_opt2">${escapeHTML(script2)}</span>
+                    </div>
+                </div>
+                <div style="margin-bottom:12px;">
+                    <strong>Option 3: Firm Boundary</strong>
+                    <div class="script-box">
+                        <button class="copy-btn" onclick="copyTextFromElement('scr_opt3')"><i class="fa-regular fa-copy"></i> Copy</button>
+                        <span id="scr_opt3">${escapeHTML(script3)}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('resCounterIdeas').innerHTML = `
+                <ul style="padding-left:20px;">
+                    <li><strong>Home Beverage Catch-up:</strong> Invite them over for tea or coffee. Cost: < $1.00.</li>
+                    <li><strong>Outdoor Walk & Talk:</strong> Meet at a local park or trail. Cost: $0.00.</li>
+                    <li><strong>BYO Potluck / Movie Night:</strong> Low-key home hangout with existing snacks.</li>
+                </ul>
+            `;
+
+            document.getElementById('resInternalReframe').innerText = 
+                `Protecting your cash buffer is a sign of high self-respect, financial intelligence, and discipline—not failure. Saying "no" to a $${cost.toFixed(2)} event protects your peace of mind and keeps you safe from high-cost debt. True friends respect boundaries.`;
+
+            document.getElementById('resWhatNotToDo').innerHTML = `
+                <li><strong>DO NOT use high-interest credit cards or Buy-Now-Pay-Later (BNPL) apps</strong> just to fund temporary social outings.</li>
+                <li><strong>DO NOT order food/drinks and hope someone else covers the bill</strong> without prior agreement.</li>
+                <li><strong>DO NOT offer vague excuses that require lying</strong>—simple, direct boundaries build confidence.</li>
+            `;
+
+            document.getElementById('shieldNextStep').innerHTML = `
+                <div class="info-side">
+                    <h5><i class="fa-solid fa-compass"></i> Recommended Next Step</h5>
+                    <p>Boundary established! Return to Cash Leak Triage to ensure your daily cash limit stays intact.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="switchView('tool1')">Go to Cash Leak Triage <i class="fa-solid fa-arrow-right"></i></button>
+            `;
+
+            document.getElementById('shieldResults').classList.add('active');
+
+            // Save State
+            paydaySurvivalState.toolResults.shield = {
+                eventName, cost, relation, comfort, script1
+            };
+            markToolCompleted('shield');
+            updateSnapshotDisplay();
+
+            saveHistory('shield', {
+                title: `Declined ${eventName} ($${cost.toFixed(2)})`,
+                details: `Relationship: ${relation} | Comfort level: ${comfort}`
+            });
+        }
+
+        function loadSampleShield() {
+            document.getElementById('shieldEvent').value = "Dinner out for a friend's birthday at a restaurant";
+            document.getElementById('shieldCost').value = "60.00";
+            document.getElementById('shieldRelation').value = "Close Friend";
+            document.querySelector('input[name="comfort"][value="Low"]').checked = true;
+            document.getElementById('sampleBadge_shield').style.display = 'inline-block';
+            processShield();
+        }
+
+        /* TOOL 4: PANIC-FREE NEGOTIATOR */
+        function processNegotiator() {
+            const type = document.getElementById('negType').value;
+            const amount = parseFloat(document.getElementById('negAmount').value) || 0;
+            const lateStatus = document.getElementById('negLate').value;
+            const payDate = document.getElementById('negPayDate').value || "the upcoming payday";
+
+            const scriptText = `Hello, my name is [Your Name], account number [Account #]. I am calling proactively regarding my upcoming bill of $${amount.toFixed(2)}. Due to a temporary cash flow constraint before my next payday, I am requesting a temporary payment arrangement. I am fully committed to paying this balance in full on ${payDate}. Could you please note an extension or hardship deferral on my account so my service remains active?`;
+
+            let rightsList = [];
+            let doNotSayList = [];
+
+            if (type === "Utility") {
+                rightsList = [
+                    "Source guidance: Regulated utility providers often require written disconnection notice prior to shutoff.",
+                    "Many utilities offer emergency hardship waivers or payment extensions upon request.",
+                    "Medical necessity programs exist if life-support equipment depends on utility power."
+                ];
+                doNotSayList = [
+                    "Do NOT say: 'I just don't have any money.' (Be professional: 'I am experiencing a temporary cash flow constraint.')",
+                    "Do NOT say: 'Shut it off if you have to.'",
+                    "Do NOT make a payment date promise you cannot strictly guarantee."
+                ];
+            } else if (type === "Landlord") {
+                rightsList = [
+                    "Lease agreements frequently include 3–5 day grace periods before late charges accrue.",
+                    "Written payment arrangements signed by both parties form clear legal records.",
+                    "Proactive communication before rent is overdue improves owner cooperation."
+                ];
+                doNotSayList = [
+                    "Do NOT avoid communication until after rent is late.",
+                    "Do NOT make emotional complaints about maintenance during an extension request.",
+                    "Do NOT promise funds from unconfirmed sources."
+                ];
+            } else {
+                rightsList = [
+                    "Card issuers have dedicated hardship departments that can waive late fees or adjust terms temporarily.",
+                    "Reporting to credit bureaus generally occurs after 30 consecutive days of delinquency.",
+                    "Formal extensions help preserve long-term account standing."
+                ];
+                doNotSayList = [
+                    "Do NOT say: 'I refuse to pay this debt.'",
+                    "Do NOT agree to auto-debit withdrawals if your account balance is uncertain.",
+                    "Do NOT admit fault needlessly."
+                ];
+            }
+
+            document.getElementById('resNegScript').innerText = scriptText;
+            document.getElementById('resRightsSheet').innerHTML = rightsList.map(item => `<li>${escapeHTML(item)}</li>`).join('');
+            document.getElementById('resDoNotSay').innerHTML = doNotSayList.map(item => `<li>${escapeHTML(item)}</li>`).join('');
+
+            document.getElementById('resFollowUpPrompt').innerText = 
+                `Set a reminder on your mobile calendar for 1 day before ${payDate}. Re-verify that the agreed funds are ready and call back to confirm transaction reference numbers.`;
+
+            document.getElementById('negotiatorNextStep').innerHTML = `
+                <div class="info-side">
+                    <h5><i class="fa-solid fa-compass"></i> Recommended Next Step</h5>
+                    <p>Extension plan drafted. Set a follow-up reminder date in your calendar for ${payDate}.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="switchView('summaryPlan')">View Full Survival Plan <i class="fa-solid fa-arrow-right"></i></button>
+            `;
+
+            document.getElementById('negotiatorResults').classList.add('active');
+
+            // Save State
+            paydaySurvivalState.toolResults.negotiator = {
+                type, amount, lateStatus, payDate, scriptText
+            };
+            markToolCompleted('negotiator');
+            updateSnapshotDisplay();
+
+            saveHistory('negotiator', {
+                title: `${type} negotiation ($${amount.toFixed(2)})`,
+                details: `Target payment date: ${payDate} | Status: ${lateStatus}`
+            });
+        }
+
+        function loadSampleNegotiator() {
+            document.getElementById('negType').value = "Utility";
+            document.getElementById('negAmount').value = "180.00";
+            document.getElementById('negLate').value = "Not late yet";
+            
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + 5);
+            document.getElementById('negPayDate').value = targetDate.toISOString().split('T')[0];
+
+            document.getElementById('sampleBadge_negotiator').style.display = 'inline-block';
+            processNegotiator();
+        }
+
+        /* TOOL 5: MICRO-PAYDAY BRIDGE */
+        function processBridge() {
+            const time = document.getElementById('bridgeTime').value;
+            const assets = Array.from(document.querySelectorAll('input[name="assets"]:checked')).map(cb => cb.value);
+            const mobility = document.querySelector('input[name="mobility"]:checked').value;
+
+            let pathsHTML = "";
+            let actionPlanHTML = "";
+            let yieldEst = "$20 – $50 (Illustrative)";
+
+            if (assets.includes("Items")) {
+                pathsHTML += `
+                    <div style="margin-bottom:10px;">
+                        <strong>1. Direct Selling Unused Items (Marketplace / Local Groups):</strong>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">List spare electronics, apparel, or tools priced low for quick local pickup.</p>
+                    </div>
+                `;
+            }
+
+            if (mobility === "High" && assets.includes("Car")) {
+                pathsHTML += `
+                    <div style="margin-bottom:10px;">
+                        <strong>2. Rapid Delivery / Gig Work:</strong>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">Complete delivery shifts with instant daily payout enabled where supported.</p>
+                    </div>
+                `;
+            } else {
+                pathsHTML += `
+                    <div style="margin-bottom:10px;">
+                        <strong>2. Local Yardwork or Household Assistance:</strong>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">Offer quick yard cleanup or neighborhood assistance via community boards.</p>
+                    </div>
+                `;
+            }
+
+            pathsHTML += `
+                <div style="margin-bottom:10px;">
+                    <strong>3. Donor Centers or Scrap Recycling:</strong>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">Explore local verified donor centers or metal recycling yards for immediate card/cash disbursements.</p>
+                </div>
+            `;
+
+            actionPlanHTML = `
+                <ol style="padding-left:20px; font-size:0.88rem; line-height:1.6;">
+                    <li><strong>Hour 1:</strong> Take clear, well-lit photos of unused items and post them on local marketplaces priced for instant pickup.</li>
+                    <li><strong>Hour 2–3:</strong> Check donor centers or post a polite message offering 2 hours of immediate manual help.</li>
+                    <li><strong>Hour 4:</strong> Secure cash payout, deposit into account, and lock down your essential survival budget.</li>
+                </ol>
+            `;
+
+            document.getElementById('resEstYield').innerText = yieldEst;
+            document.getElementById('resFastPaths').innerHTML = pathsHTML;
+            document.getElementById('resScamWarnings').innerHTML = `
+                <li><strong>AVOID Payday Loans or High-Cost Cash Advances:</strong> High APRs and rollover fees create compounding debt cycles.</li>
+                <li><strong>AVOID Check Overpayment Schemes:</strong> Any buyer asking you to refund excess funds from a check is a scam.</li>
+                <li><strong>AVOID Upfront Payment Requests:</strong> Never pay cash upfront for job equipment, registration, or background checks.</li>
+            `;
+            document.getElementById('resActionPlan').innerHTML = actionPlanHTML;
+
+            document.getElementById('bridgeNextStep').innerHTML = `
+                <div class="info-side">
+                    <h5><i class="fa-solid fa-compass"></i> Recommended Next Step</h5>
+                    <p>Once micro-income is generated, apply it directly inside Cash Leak Triage to update your daily capacity.</p>
+                </div>
+                <button class="btn btn-primary btn-sm" onclick="switchView('tool1')">Return to Cash Leak Triage <i class="fa-solid fa-arrow-right"></i></button>
+            `;
+
+            document.getElementById('bridgeResults').classList.add('active');
+
+            // Save State
+            paydaySurvivalState.toolResults.bridge = {
+                time, assets, mobility, yieldEst
+            };
+            markToolCompleted('bridge');
+            updateSnapshotDisplay();
+
+            saveHistory('bridge', {
+                title: `Micro-Bridge for ${time}`,
+                details: `Assets: ${assets.join(', ') || 'None selected'} | Mobility: ${mobility}`
+            });
+        }
+
+        function loadSampleBridge() {
+            document.getElementById('bridgeTime').value = "1-2 hours";
+            document.querySelector('input[name="mobility"][value="High"]').checked = true;
+            const checkboxes = document.querySelectorAll('input[name="assets"]');
+            checkboxes.forEach(cb => {
+                cb.checked = (cb.value === "Smartphone" || cb.value === "Items");
+            });
+            document.getElementById('sampleBadge_bridge').style.display = 'inline-block';
+            processBridge();
+        }
+
+        /* Reset & Start Over */
+        function resetModule(toolId) {
+            if (confirm("Reset inputs and results for this tool? (History logs will be preserved)")) {
+                const form = document.getElementById(`${toolId}Form`);
+                if (form) form.reset();
+                
+                const results = document.getElementById(`${toolId}Results`);
+                if (results) results.classList.remove('active');
+
+                const badge = document.getElementById(`sampleBadge_${toolId}`);
+                if (badge) badge.style.display = 'none';
+
+                if (toolId === 'priority') initPriorityRepeater();
+
+                delete paydaySurvivalState.toolResults[toolId];
+                paydaySurvivalState.completedTools = paydaySurvivalState.completedTools.filter(t => t !== toolId);
+                saveStateToStorage();
+                updateSnapshotDisplay();
+                showToast("Tool reset");
+            }
+        }
+
+        /* Central State & Qualitative Snapshot Engine */
+        function markToolCompleted(toolId) {
+            if (!paydaySurvivalState.completedTools.includes(toolId)) {
+                paydaySurvivalState.completedTools.push(toolId);
+            }
+            paydaySurvivalState.lastUpdated = new Date().toISOString();
+            saveStateToStorage();
+        }
+
+        function saveStateToStorage() {
+            try {
+                localStorage.setItem('paydaysurvival_v2_state', JSON.stringify(paydaySurvivalState));
+            } catch (e) {}
+        }
+
+        function loadStateFromStorage() {
+            try {
+                const saved = localStorage.getItem('paydaysurvival_v2_state');
+                if (saved) {
+                    paydaySurvivalState = JSON.parse(saved);
+                }
+            } catch (e) {}
+        }
+
+        function updateSnapshotDisplay() {
+            const tr = paydaySurvivalState.toolResults;
+
+            // Cash Gap
+            const cashGapEl = document.getElementById('snapCashGap');
+            if (tr.triage) {
+                cashGapEl.innerText = `$${tr.triage.cash.toFixed(2)} (${tr.triage.days}d left)`;
+            } else {
+                cashGapEl.innerText = "Not Analyzed";
+            }
+
+            // Daily Capacity
+            const capEl = document.getElementById('snapCapacity');
+            if (tr.triage) {
+                capEl.innerText = `$${tr.triage.dailySpend} / day`;
+            } else {
+                capEl.innerText = "--";
+            }
+
+            // Payment Pressure
+            const pressEl = document.getElementById('snapPressure');
+            if (tr.priority) {
+                pressEl.innerText = tr.priority.hasHeldBills ? "Immediate Attention" : "Contained";
+                pressEl.style.color = tr.priority.hasHeldBills ? "var(--danger)" : "var(--primary-dark)";
+            } else {
+                pressEl.innerText = "Contained";
+                pressEl.style.color = "var(--navy)";
+            }
+
+            // Spending Leak
+            const leakEl = document.getElementById('snapLeak');
+            if (tr.triage) {
+                leakEl.innerText = tr.triage.risk || "None";
+            } else {
+                leakEl.innerText = "None Identified";
+            }
+        }
+
+        /* Printable Survival Plan View */
+        function renderSurvivalPlan() {
+            const container = document.getElementById('planContainer');
+            if (!container) return;
+
+            const tr = paydaySurvivalState.toolResults;
+            const targetDate = paydaySurvivalState.nextPayDate || "Not Set";
+
+            let html = `
+                <div style="margin-bottom: 20px; padding: 12px; background: #F8FAFC; border-radius: 8px; border: 1px solid var(--border-color);">
+                    <strong>Target Paydate:</strong> ${escapeHTML(targetDate)} | <strong>Completed Analyses:</strong> ${paydaySurvivalState.completedTools.length} / 5
+                </div>
+            `;
+
+            if (tr.triage) {
+                html += `
+                    <div class="output-block">
+                        <h4><i class="fa-solid fa-filter-circle-dollar"></i> Cash Leak Triage Summary</h4>
+                        <p><strong>Daily Safe Spend Ceiling:</strong> $${tr.triage.dailySpend} / day</p>
+                        <p><strong>Frozen Leak Category:</strong> ${escapeHTML(tr.triage.risk)}</p>
+                    </div>
+                `;
+            }
+
+            if (tr.priority) {
+                html += `
+                    <div class="output-block">
+                        <h4><i class="fa-solid fa-list-check"></i> Payment Priority Summary</h4>
+                        <p><strong>Available Funds Allocated:</strong> $${tr.priority.available.toFixed(2)}</p>
+                        <p><strong>Status:</strong> ${tr.priority.hasHeldBills ? 'Payment extension needed for held bills' : 'All listed bills cleared'}</p>
+                    </div>
+                `;
+            }
+
+            if (tr.negotiator) {
+                html += `
+                    <div class="output-block warning">
+                        <h4><i class="fa-solid fa-handshake-slash"></i> Creditor Extension Summary</h4>
+                        <p><strong>Provider Type:</strong> ${escapeHTML(tr.negotiator.type)} ($${tr.negotiator.amount.toFixed(2)})</p>
+                        <p><strong>Target Commitment Date:</strong> ${escapeHTML(tr.negotiator.payDate)}</p>
+                    </div>
+                `;
+            }
+
+            if (tr.shield) {
+                html += `
+                    <div class="output-block">
+                        <h4><i class="fa-solid fa-user-shield"></i> Social Spending Boundary</h4>
+                        <p><strong>Event:</strong> ${escapeHTML(tr.shield.eventName)} ($${tr.shield.cost.toFixed(2)})</p>
+                    </div>
+                `;
+            }
+
+            if (tr.bridge) {
+                html += `
+                    <div class="output-block info">
+                        <h4><i class="fa-solid fa-bridge"></i> Micro-Income Plan</h4>
+                        <p><strong>Target Time:</strong> ${escapeHTML(tr.bridge.time)}</p>
+                    </div>
+                `;
+            }
+
+            if (paydaySurvivalState.completedTools.length === 0) {
+                html += `<p style="color:var(--text-muted);">No tool analyses completed yet. Run any tactical tool to generate your customized plan.</p>`;
+            }
+
+            container.innerHTML = html;
+        }
+
+        /* Unified History & Storage Engine */
+        function saveHistory(toolId, data) {
+            const key = `paydaysurvival_v2_history`;
+            let history = JSON.parse(localStorage.getItem(key)) || [];
+            
+            const newItem = {
+                id: Date.now(),
+                toolId: toolId,
+                timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+                title: data.title,
+                details: data.details
+            };
+
+            history.unshift(newItem);
+            if (history.length > 30) history = history.slice(0, 30);
+
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory(toolId);
+        }
+
+        function loadAllHistories() {
+            ['triage', 'priority', 'shield', 'negotiator', 'bridge'].forEach(toolId => {
+                renderHistory(toolId);
+            });
+        }
+
+        function renderHistory(toolId) {
+            const history = JSON.parse(localStorage.getItem('paydaysurvival_v2_history')) || [];
+            const container = document.getElementById(`${toolId}HistoryList`);
+
+            if (!container) return;
+
+            const toolItems = history.filter(item => item.toolId === toolId);
+
+            if (toolItems.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); font-size:0.85rem;">No recent history logged.</p>`;
+                return;
+            }
+
+            container.innerHTML = toolItems.map(item => `
+                <div class="history-item">
+                    <div>
+                        <strong>${escapeHTML(item.title)}</strong>
+                        <div style="color:var(--text-muted); font-size:0.75rem;">${escapeHTML(item.details)}</div>
+                    </div>
+                    <span style="color:var(--text-muted); font-size:0.75rem;">${escapeHTML(item.timestamp)}</span>
+                </div>
+            `).join('');
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryContainer');
+            if (!container) return;
+
+            const history = JSON.parse(localStorage.getItem('paydaysurvival_v2_history')) || [];
+
+            if (history.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted);">No saved analysis history available.</p>`;
+                return;
+            }
+
+            container.innerHTML = history.map(item => `
+                <div class="history-item" style="margin-bottom:8px;">
+                    <div>
+                        <span class="sample-badge" style="background:#E2E8F0; color:var(--navy); margin-bottom:4px;">${escapeHTML(item.toolId.toUpperCase())}</span>
+                        <div><strong>${escapeHTML(item.title)}</strong></div>
+                        <div style="color:var(--text-muted); font-size:0.8rem;">${escapeHTML(item.details)}</div>
+                    </div>
+                    <span style="color:var(--text-muted); font-size:0.75rem;">${escapeHTML(item.timestamp)}</span>
+                </div>
+            `).join('');
+        }
+
+        function clearHistory(toolId) {
+            if (confirm("Clear history log for this tool?")) {
+                let history = JSON.parse(localStorage.getItem('paydaysurvival_v2_history')) || [];
+                history = history.filter(item => item.toolId !== toolId);
+                localStorage.setItem('paydaysurvival_v2_history', JSON.stringify(history));
+                renderHistory(toolId);
+                showToast("Tool history cleared");
+            }
+        }
+
+        function clearAllHistoryGlobal() {
+            if (confirm("Clear all browser-saved history logs across all tools?")) {
+                localStorage.removeItem('paydaysurvival_v2_history');
+                loadAllHistories();
+                renderUnifiedHistory();
+                showToast("All history cleared");
+            }
+        }
+
+        function toggleHistory(toolId) {
+            const list = document.getElementById(`${toolId}HistoryList`);
+            if (list) {
+                list.style.display = list.style.display === 'none' ? 'flex' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>

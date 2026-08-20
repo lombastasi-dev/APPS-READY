@@ -1,0 +1,2368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>First 90 Days™ — Survival & Growth Kit</title>
+  
+  <!-- Google Fonts & Font Awesome CDN -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* CSS VARIABLES & SYSTEM RESET */
+    :root {
+      --color-chocolate: #7F4F24;
+      --color-chocolate-dark: #633c1a;
+      --color-chocolate-light: #f5efe9;
+      --color-sky: #90E0EF;
+      --color-sky-dark: #0077b6;
+      --color-sky-light: #e6f8fc;
+      --color-bg-start: #FFF8F0;
+      --color-bg-end: #F0F9FF;
+      --color-card: #FFFFFF;
+      --color-text-main: #2D3748;
+      --color-text-muted: #718096;
+      --color-border: #E2E8F0;
+      --color-success: #10B981;
+      --color-warning: #F59E0B;
+      --color-danger: #EF4444;
+      --sidebar-width: 270px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(135deg, var(--color-bg-start) 0%, var(--color-bg-end) 100%);
+      color: var(--color-text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* LAYOUT STRUCTURE */
+    .app-container {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--color-card);
+      border-right: 1px solid var(--color-border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .sidebar-header i {
+      font-size: 1.6rem;
+      color: var(--color-chocolate);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--color-chocolate);
+      line-height: 1.2;
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      overflow-y: auto;
+    }
+
+    .nav-divider {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      padding: 12px 12px 4px 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border: none;
+      background: transparent;
+      border-radius: 8px;
+      color: var(--color-text-main);
+      font-weight: 500;
+      font-size: 0.88rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      width: 100%;
+      position: relative;
+    }
+
+    .nav-btn i {
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+      color: var(--color-text-muted);
+      transition: color 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      background-color: var(--color-chocolate-light);
+      color: var(--color-chocolate);
+    }
+
+    .nav-btn:hover i {
+      color: var(--color-chocolate);
+    }
+
+    .nav-btn.active {
+      background-color: var(--color-chocolate);
+      color: #FFFFFF;
+    }
+
+    .nav-btn.active i {
+      color: #FFFFFF;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.25);
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 10px;
+      color: currentColor;
+    }
+
+    /* MOBILE HEADER & OVERLAY */
+    .mobile-header {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background: var(--color-card);
+      border-bottom: 1px solid var(--color-border);
+      padding: 0 20px;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 90;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .mobile-hamburger {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--color-chocolate);
+      cursor: pointer;
+      padding: 6px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.4);
+      z-index: 95;
+    }
+
+    /* MAIN CONTENT */
+    .main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 860px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* CARDS & CONTAINERS */
+    .card {
+      background-color: var(--color-card);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.1);
+      padding: 24px;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .tool-header {
+      margin-bottom: 24px;
+    }
+
+    .tool-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--color-chocolate);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .tool-problem {
+      font-size: 0.95rem;
+      color: var(--color-text-muted);
+      font-style: italic;
+      background: var(--color-bg-start);
+      padding: 10px 14px;
+      border-left: 4px solid var(--color-chocolate);
+      border-radius: 0 6px 6px 0;
+    }
+
+    /* FORMS & INPUTS */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-bottom: 6px;
+      color: var(--color-text-main);
+    }
+
+    .form-helper {
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.92rem;
+      color: var(--color-text-main);
+      background-color: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--color-sky-dark);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(144, 224, 239, 0.3);
+    }
+
+    textarea.form-control {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      font-weight: 400;
+    }
+
+    /* BUTTONS */
+    .button-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--color-chocolate);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--color-chocolate-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background-color: var(--color-sky);
+      color: #004b6e;
+    }
+
+    .btn-secondary:hover {
+      background-color: #76d3e3;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--color-border);
+      color: var(--color-text-main);
+    }
+
+    .btn-outline:hover {
+      background-color: #F7FAFC;
+      border-color: #CBD5E0;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .btn:focus-visible {
+      outline: 2px solid var(--color-chocolate);
+      outline-offset: 2px;
+    }
+
+    /* RECOMMENDATION BANNER */
+    .rec-banner {
+      background: linear-gradient(135deg, #E6F8FC 0%, #F5EFE9 100%);
+      border: 1px solid var(--color-sky);
+      border-radius: 10px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+
+    .rec-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .rec-banner-icon {
+      font-size: 1.4rem;
+      color: var(--color-sky-dark);
+    }
+
+    /* OUTPUT SECTIONS & RESULTS */
+    .output-section {
+      margin-top: 32px;
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .output-card {
+      background: var(--color-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .output-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--color-sky-light);
+    }
+
+    .output-card-title {
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--color-chocolate);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .script-box {
+      background-color: #F8FAFC;
+      border: 1px dashed var(--color-sky-dark);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: inherit;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #334155;
+      white-space: pre-wrap;
+      margin: 12px 0;
+      position: relative;
+    }
+
+    .next-step-box {
+      background: var(--color-chocolate-light);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-top: 24px;
+      border: 1px solid rgba(127, 79, 36, 0.2);
+    }
+
+    .next-step-title {
+      font-weight: 700;
+      color: var(--color-chocolate);
+      font-size: 0.95rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* MATRIX & DIAGRAMS */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .matrix-quadrant {
+      padding: 16px;
+      border-radius: 8px;
+      min-height: 110px;
+    }
+
+    .quadrant-1 { background-color: #DEF7EC; border: 1px solid #BCF0DA; }
+    .quadrant-2 { background-color: #E1EFFE; border: 1px solid #B4C6FC; }
+    .quadrant-3 { background-color: #FFE4E6; border: 1px solid #FECDD3; }
+    .quadrant-4 { background-color: #F3F4F6; border: 1px solid #E5E7EB; }
+
+    .quadrant-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 6px;
+    }
+
+    .q1-title { color: #03543F; }
+    .q2-title { color: #1E429F; }
+    .q3-title { color: #9B1C1C; }
+    .q4-title { color: #374151; }
+
+    .quadrant-content {
+      font-size: 0.85rem;
+      color: var(--color-text-main);
+    }
+
+    .stakeholder-diagram {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+      background: #FAFAFA;
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+    }
+
+    .diagram-level {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .diagram-node {
+      padding: 8px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+
+    .node-skip { background: #E0F2FE; color: #0369A1; border: 1px solid #BAE6FD; }
+    .node-manager { background: #FEF3C7; color: #B45309; border: 1px solid #FDE68A; }
+    .node-peer { background: #DCFCE7; color: #15803D; border: 1px solid #BBF7D0; }
+    .node-cross { background: #F3E8FF; color: #6B21A8; border: 1px solid #E9D5FF; }
+
+    /* DASHBOARD GRID & SNAPSHOT */
+    .dashboard-hero {
+      text-align: center;
+      padding: 32px 20px;
+      background: var(--color-card);
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      margin-bottom: 24px;
+    }
+
+    .dashboard-hero h2 {
+      font-size: 2rem;
+      color: var(--color-chocolate);
+      margin-bottom: 8px;
+    }
+
+    .dashboard-hero p {
+      font-size: 1.05rem;
+      color: var(--color-text-muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .dash-card {
+      background: var(--color-card);
+      border-radius: 12px;
+      padding: 22px;
+      border: 1px solid var(--color-border);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 12px rgba(0,0,0,0.05);
+      border-color: var(--color-sky);
+    }
+
+    .dash-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--color-chocolate-light);
+      color: var(--color-chocolate);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .dash-card h3 {
+      font-size: 1.08rem;
+      color: var(--color-chocolate);
+    }
+
+    .dash-card p {
+      font-size: 0.85rem;
+      color: var(--color-text-muted);
+      line-height: 1.4;
+    }
+
+    .dash-status {
+      align-self: flex-start;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 12px;
+      text-transform: uppercase;
+    }
+
+    .status-completed { background: #DEF7EC; color: #03543F; }
+    .status-pending { background: #F3F4F6; color: #6B7280; }
+
+    /* SNAPSHOT GRID */
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .snapshot-item {
+      background: #FAFAFA;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 12px 14px;
+    }
+
+    .snapshot-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--color-text-muted);
+      text-transform: uppercase;
+    }
+
+    .snapshot-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-chocolate);
+      margin-top: 4px;
+    }
+
+    /* HISTORY ACCORDION */
+    .history-section {
+      margin-top: 32px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 20px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      padding: 8px 0;
+    }
+
+    .history-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--color-text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list {
+      display: none;
+      margin-top: 12px;
+      gap: 8px;
+      flex-direction: column;
+    }
+
+    .history-item {
+      background: #FAFAFA;
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid var(--color-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: #F1F5F9;
+    }
+
+    /* GUIDED 7-DAY RESET */
+    .reset-step {
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: var(--color-card);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .reset-day-badge {
+      background: var(--color-chocolate-light);
+      color: var(--color-chocolate);
+      font-weight: 700;
+      font-size: 0.8rem;
+      padding: 6px 12px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+
+    /* FOOTER */
+    .app-footer {
+      margin-top: auto;
+      padding: 24px 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--color-text-muted);
+      border-top: 1px solid var(--color-border);
+      background-color: rgba(255,255,255,0.6);
+      width: 100%;
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1E293B;
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* PRINT STYLING */
+    @media print {
+      .sidebar, .mobile-header, .sidebar-overlay, .app-footer, .button-group, .history-section, .next-step-box, .rec-banner, #toast {
+        display: none !important;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .content-wrapper {
+        max-width: 100% !important;
+      }
+      .card, .output-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        page-break-inside: avoid;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+    }
+
+    /* RESPONSIVE MEDIA QUERIES */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding-top: 80px;
+      }
+
+      .matrix-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <i class="fa-solid fa-compass" style="color: var(--color-chocolate); font-size:1.2rem;"></i>
+      <span style="font-weight:700; color:var(--color-chocolate);">First 90 Days™</span>
+    </div>
+    <button class="mobile-hamburger" id="hamburgerBtn" aria-label="Toggle Navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <!-- OVERLAY FOR MOBILE SIDEBAR -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-compass"></i>
+        <h1>First 90 Days™<br><span style="font-size:0.75rem; font-weight:400; color:var(--color-text-muted);">Survival & Growth Kit</span></h1>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-tool="dashboard">
+          <i class="fa-solid fa-house"></i> Dashboard
+        </button>
+
+        <div class="nav-divider">Core Modules</div>
+        <button class="nav-btn" data-tool="tool1">
+          <i class="fa-solid fa-sitemap"></i> Relationship Mapper
+          <span class="nav-badge" id="badge-tool1"></span>
+        </button>
+        <button class="nav-btn" data-tool="tool2">
+          <i class="fa-solid fa-bullseye"></i> Quick Win Planner
+          <span class="nav-badge" id="badge-tool2"></span>
+        </button>
+        <button class="nav-btn" data-tool="tool3">
+          <i class="fa-solid fa-key"></i> Unwritten Rules Decoder
+          <span class="nav-badge" id="badge-tool3"></span>
+        </button>
+        <button class="nav-btn" data-tool="tool4">
+          <i class="fa-solid fa-comments"></i> Feedback Accelerator
+          <span class="nav-badge" id="badge-tool4"></span>
+        </button>
+        <button class="nav-btn" data-tool="tool5">
+          <i class="fa-solid fa-calendar-check"></i> The 30-60-90 Plan
+          <span class="nav-badge" id="badge-tool5"></span>
+        </button>
+
+        <div class="nav-divider">Synthesis & Guided</div>
+        <button class="nav-btn" data-tool="full-plan">
+          <i class="fa-solid fa-file-contract"></i> My First 90 Days Plan
+        </button>
+        <button class="nav-btn" data-tool="reset-7day">
+          <i class="fa-solid fa-route"></i> 7-Day First 90 Days Reset
+        </button>
+        <button class="nav-btn" data-tool="all-history">
+          <i class="fa-solid fa-clock-rotate-left"></i> My History
+        </button>
+        <button class="nav-btn" data-tool="about-view">
+          <i class="fa-solid fa-circle-info"></i> About & Scope
+        </button>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <!-- DYNAMIC RECOMMENDATION BANNER -->
+        <div id="recommendation-banner" class="rec-banner" style="display:none;">
+          <div class="rec-banner-content">
+            <i class="fa-solid fa-lightbulb rec-banner-icon"></i>
+            <div>
+              <strong id="rec-title">Next Recommended Action</strong>
+              <div id="rec-desc" style="font-size:0.85rem; color:var(--color-text-muted);">...</div>
+            </div>
+          </div>
+          <button id="rec-btn" class="btn btn-secondary btn-sm" onclick="">Go Now</button>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <section id="dashboard" class="tool-view">
+          <div class="dashboard-hero">
+            <h2>First 90 Days™</h2>
+            <p>Learn the rules, build trust, and prove you belong. A structured operating system for career onboarding, organizational navigation, and first-quarter momentum.</p>
+          </div>
+
+          <!-- QUALITATIVE SNAPSHOT -->
+          <div class="card" style="margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div class="tool-title" style="font-size:1.15rem;"><i class="fa-solid fa-chart-pie"></i> First 90 Days Qualitative Snapshot</div>
+              <span style="font-size:0.8rem; color:var(--color-text-muted);">Non-numeric progress tracking</span>
+            </div>
+            <div class="snapshot-grid">
+              <div class="snapshot-item">
+                <div class="snapshot-label">Relationships</div>
+                <div id="snap-rel" class="snapshot-value">Not yet mapped</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">Priorities</div>
+                <div id="snap-prio" class="snapshot-value">Uncalculated</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">Quick Wins</div>
+                <div id="snap-win" class="snapshot-value">Not yet identified</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">Culture</div>
+                <div id="snap-cult" class="snapshot-value">Pending observation</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">Feedback Rhythm</div>
+                <div id="snap-feed" class="snapshot-value">Not established</div>
+              </div>
+              <div class="snapshot-item">
+                <div class="snapshot-label">90-Day Roadmap</div>
+                <div id="snap-road" class="snapshot-value">Not drafted</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTool('tool1')">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div class="dash-icon"><i class="fa-solid fa-sitemap"></i></div>
+                <span class="dash-status" id="dash-status-t1">Pending</span>
+              </div>
+              <h3>Relationship Mapper</h3>
+              <p>Identify key stakeholders, prioritize intros, and find early allies.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool2')">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div class="dash-icon"><i class="fa-solid fa-bullseye"></i></div>
+                <span class="dash-status" id="dash-status-t2">Pending</span>
+              </div>
+              <h3>Quick Win Planner</h3>
+              <p>Spot low-hanging fruit and deliver value early without stepping on toes.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool3')">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div class="dash-icon"><i class="fa-solid fa-key"></i></div>
+                <span class="dash-status" id="dash-status-t3">Pending</span>
+              </div>
+              <h3>Unwritten Rules Decoder</h3>
+              <p>Understand implicit culture, communication styles, and unstated expectations.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool4')">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div class="dash-icon"><i class="fa-solid fa-comments"></i></div>
+                <span class="dash-status" id="dash-status-t4">Pending</span>
+              </div>
+              <h3>Feedback Accelerator</h3>
+              <p>Get early constructive input and run proactive check-ins.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool5')">
+              <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                <div class="dash-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                <span class="dash-status" id="dash-status-t5">Pending</span>
+              </div>
+              <h3>The 30-60-90 Plan</h3>
+              <p>Build a clear, phase-by-phase roadmap for your first quarter.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1: RELATIONSHIP MAPPER -->
+        <section id="tool1" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-header">
+              <div class="tool-title"><i class="fa-solid fa-sitemap"></i> Relationship Mapper</div>
+              <div class="tool-problem">"I don't know who matters or who to trust yet."</div>
+            </div>
+            <form id="form-tool1" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label for="t1-manager">Your direct manager:</label>
+                <input type="text" id="t1-manager" class="form-control" placeholder="e.g., Alex Rivera, Marketing Director" />
+              </div>
+              <div class="form-group">
+                <label for="t1-skiplevel">Your skip-level manager:</label>
+                <input type="text" id="t1-skiplevel" class="form-control" placeholder="e.g., Sam Vance, CMO" />
+              </div>
+              <div class="form-group">
+                <label for="t1-peers">Key peers you'll work with:</label>
+                <textarea id="t1-peers" class="form-control" placeholder="List names/roles (e.g., Sarah - Content Lead, Mark - Product Lead)"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t1-cross">Key cross-functional partners:</label>
+                <textarea id="t1-cross" class="form-control" placeholder="List names/roles (e.g., Dave - Sales Ops, Priya - Legal)"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t1-approachable">Who seems most approachable?</label>
+                <textarea id="t1-approachable" class="form-control" placeholder="Name and why..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t1-influential">Who seems most influential?</label>
+                <textarea id="t1-influential" class="form-control" placeholder="Name and why..."></textarea>
+              </div>
+
+              <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="generateTool1()">Analyze Relationships</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()">Load Sample Scenario</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('tool1')">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- OUTPUT T1 -->
+          <div id="output-tool1" class="output-section">
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-diagram-project"></i> Stakeholder Map</div>
+              </div>
+              <div id="t1-diagram-target" class="stakeholder-diagram"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-list-check"></i> Priority Contacts</div>
+              </div>
+              <div id="t1-priority-target"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-mug-hot"></i> The Coffee Chat Script</div>
+                <button class="btn btn-outline btn-sm" onclick="copyText('t1-script-target')"><i class="fa-regular fa-copy"></i> Copy</button>
+              </div>
+              <div id="t1-script-target" class="script-box"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-shield-halved"></i> Trust Indicators</div>
+              </div>
+              <div id="t1-trust-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-user-graduate"></i> The Mentor Hunt</div>
+              </div>
+              <div id="t1-mentor-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <!-- NEXT STEP NAVIGATION -->
+            <div class="next-step-box">
+              <div class="next-step-title"><i class="fa-solid fa-circle-check"></i> You've got your next step.</div>
+              <p style="font-size:0.88rem; color:var(--color-text-main); margin-bottom:12px;">Now that your stakeholders are prioritized, identify where you can deliver safe, low-risk early value.</p>
+              <button class="btn btn-primary btn-sm" onclick="switchTool('tool2')">Proceed to Quick Win Planner <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- HISTORY T1 -->
+          <div class="history-section">
+            <div class="history-header" onclick="toggleHistory('tool1')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Tool History</span>
+              <i class="fa-solid fa-chevron-down" id="t1-history-icon"></i>
+            </div>
+            <div class="history-list" id="t1-history-list"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: QUICK WIN PLANNER -->
+        <section id="tool2" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-header">
+              <div class="tool-title"><i class="fa-solid fa-bullseye"></i> Quick Win Planner</div>
+              <div class="tool-problem">"I need to show value fast without overpromising."</div>
+            </div>
+            <form id="form-tool2" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label for="t2-hiredToFix">What were you hired to fix or improve?</label>
+                <textarea id="t2-hiredToFix" class="form-control" placeholder="e.g., Lower email churn rates and revamp campaign messaging"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t2-lowFruit">What low-hanging fruit do you see?</label>
+                <textarea id="t2-lowFruit" class="form-control" placeholder="e.g., Fixing broken email templates, organizing team documentation"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t2-resources">What resources do you control?</label>
+                <textarea id="t2-resources" class="form-control" placeholder="e.g., ESP access, direct control over weekly copy"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t2-breakRisks">What could you break if you move too fast?</label>
+                <textarea id="t2-breakRisks" class="form-control" placeholder="e.g., Automated trigger sequences that sales relies on"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t2-patience">Your manager's patience level:</label>
+                <select id="t2-patience" class="form-control">
+                  <option value="Wants immediate results">Wants immediate results</option>
+                  <option value="Balanced" selected>Balanced</option>
+                  <option value="Willing to wait for right approach">Willing to wait for right approach</option>
+                </select>
+              </div>
+
+              <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="generateTool2()">Plan Quick Wins</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()">Load Sample Scenario</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('tool2')">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- OUTPUT T2 -->
+          <div id="output-tool2" class="output-section">
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-border-all"></i> Quick Win Matrix</div>
+              </div>
+              <div id="t2-matrix-target" class="matrix-grid"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-flag-checkered"></i> 30-60-90 Targets</div>
+              </div>
+              <div id="t2-targets-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-paper-plane"></i> The Pitch</div>
+                <button class="btn btn-outline btn-sm" onclick="copyText('t2-pitch-target')"><i class="fa-regular fa-copy"></i> Copy</button>
+              </div>
+              <div id="t2-pitch-target" class="script-box"></div>
+            </div>
+
+            <!-- NEXT STEP NAVIGATION -->
+            <div class="next-step-box">
+              <div class="next-step-title"><i class="fa-solid fa-circle-check"></i> You've got your next step.</div>
+              <p style="font-size:0.88rem; color:var(--color-text-main); margin-bottom:12px;">Before executing, decode the unwritten rules to make sure your proposal aligns with cultural norms.</p>
+              <button class="btn btn-primary btn-sm" onclick="switchTool('tool3')">Proceed to Unwritten Rules Decoder <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- HISTORY T2 -->
+          <div class="history-section">
+            <div class="history-header" onclick="toggleHistory('tool2')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Tool History</span>
+              <i class="fa-solid fa-chevron-down" id="t2-history-icon"></i>
+            </div>
+            <div class="history-list" id="t2-history-list"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: UNWRITTEN RULES DECODER -->
+        <section id="tool3" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-header">
+              <div class="tool-title"><i class="fa-solid fa-key"></i> Unwritten Rules Decoder</div>
+              <div class="tool-problem">"Nobody tells you how things really work here."</div>
+            </div>
+            <form id="form-tool3" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label for="t3-surprised">What surprised you in your first week?</label>
+                <textarea id="t3-surprised" class="form-control" placeholder="e.g., Major decisions happen in Slack DMs before official meetings"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t3-workHours">When do people actually work?</label>
+                <select id="t3-workHours" class="form-control">
+                  <option value="Strict 9-5">Strict 9-5</option>
+                  <option value="Flexible hours" selected>Flexible hours</option>
+                  <option value="Always on">Always on</option>
+                  <option value="Early birds">Early birds</option>
+                  <option value="Night owls">Night owls</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="t3-commStyle">How do people communicate?</label>
+                <select id="t3-commStyle" class="form-control">
+                  <option value="Email formal">Email formal</option>
+                  <option value="Chat casual" selected>Chat casual (Slack/Teams)</option>
+                  <option value="Meetings for everything">Meetings for everything</option>
+                  <option value="Direct in-person">Direct in-person</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="t3-praised">What gets praised?</label>
+                <select id="t3-praised" class="form-control">
+                  <option value="Speed & Action">Speed & Action</option>
+                  <option value="Quality & Thoroughness">Quality & Thoroughness</option>
+                  <option value="Collaboration & Consensus" selected>Collaboration & Consensus</option>
+                  <option value="Innovation & Risk Taking">Innovation & Risk Taking</option>
+                  <option value="Execution & Process Compliance">Execution & Process Compliance</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="t3-punished">What gets punished?</label>
+                <select id="t3-punished" class="form-control">
+                  <option value="Missing deadlines">Missing deadlines</option>
+                  <option value="Rocking the boat / Bypassing people" selected>Rocking the boat / Bypassing people</option>
+                  <option value="Asking too many questions">Asking too many questions</option>
+                  <option value="Working alone / Silo mentality">Working alone / Silo mentality</option>
+                  <option value="Saying no to requests">Saying no to requests</option>
+                </select>
+              </div>
+
+              <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="generateTool3()">Decode Culture</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()">Load Sample Scenario</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('tool3')">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- OUTPUT T3 -->
+          <div id="output-tool3" class="output-section">
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-masks-theater"></i> Culture Profile</div>
+              </div>
+              <div id="t3-culture-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-sliders"></i> The Adaptation Plan</div>
+              </div>
+              <div id="t3-adapt-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-circle-question"></i> The Question Strategy</div>
+              </div>
+              <div id="t3-question-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-life-ring"></i> The Mistake Recovery & Insider Signals</div>
+              </div>
+              <div id="t3-recovery-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <!-- NEXT STEP NAVIGATION -->
+            <div class="next-step-box">
+              <div class="next-step-title"><i class="fa-solid fa-circle-check"></i> You've got your next step.</div>
+              <p style="font-size:0.88rem; color:var(--color-text-main); margin-bottom:12px;">Now calibrate your early progress by setting up an intentional feedback request.</p>
+              <button class="btn btn-primary btn-sm" onclick="switchTool('tool4')">Proceed to Feedback Accelerator <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- HISTORY T3 -->
+          <div class="history-section">
+            <div class="history-header" onclick="toggleHistory('tool3')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Tool History</span>
+              <i class="fa-solid fa-chevron-down" id="t3-history-icon"></i>
+            </div>
+            <div class="history-list" id="t3-history-list"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 4: FEEDBACK ACCELERATOR -->
+        <section id="tool4" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-header">
+              <div class="tool-title"><i class="fa-solid fa-comments"></i> Feedback Accelerator</div>
+              <div class="tool-problem">"I don't want to wait 6 months to find out I'm doing something wrong."</div>
+            </div>
+            <form id="form-tool4" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label for="t4-freq">How often do you want feedback?</label>
+                <select id="t4-freq" class="form-control">
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly" selected>Weekly</option>
+                  <option value="Bi-weekly">Bi-weekly</option>
+                  <option value="Monthly">Monthly</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="t4-source">Who can give you the most useful feedback right now?</label>
+                <select id="t4-source" class="form-control">
+                  <option value="Manager" selected>Manager</option>
+                  <option value="Peer">Peer</option>
+                  <option value="Mentor">Mentor</option>
+                  <option value="Skip-level">Skip-level</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="t4-unsure">What are you most unsure about?</label>
+                <textarea id="t4-unsure" class="form-control" placeholder="e.g., My meeting participation style and technical documentation level"></textarea>
+              </div>
+              <div class="form-group">
+                <label>Have you received any feedback yet?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t4-received" value="Yes, positive" /> Yes, positive</label>
+                  <label class="radio-label"><input type="radio" name="t4-received" value="Yes, constructive" /> Yes, constructive</label>
+                  <label class="radio-label"><input type="radio" name="t4-received" value="No" checked /> No</label>
+                  <label class="radio-label"><input type="radio" name="t4-received" value="Mixed" /> Mixed</label>
+                </div>
+              </div>
+
+              <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="generateTool4()">Generate Feedback Strategy</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()">Load Sample Scenario</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('tool4')">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- OUTPUT T4 -->
+          <div id="output-tool4" class="output-section">
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-comment-dots"></i> The Feedback Request</div>
+                <button class="btn btn-outline btn-sm" onclick="copyText('t4-script-target')"><i class="fa-regular fa-copy"></i> Copy</button>
+              </div>
+              <div id="t4-script-target" class="script-box"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-clipboard-list"></i> The 1:1 Agenda & Peer Check-in</div>
+              </div>
+              <div id="t4-agenda-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-magnifying-glass"></i> Self-Audit Milestones (Day 30, 60, 90)</div>
+              </div>
+              <div id="t4-audit-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-heart-pulse"></i> Constructive Feedback Survival Guide</div>
+              </div>
+              <div id="t4-harsh-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <!-- NEXT STEP NAVIGATION -->
+            <div class="next-step-box">
+              <div class="next-step-title"><i class="fa-solid fa-circle-check"></i> You've got your next step.</div>
+              <p style="font-size:0.88rem; color:var(--color-text-main); margin-bottom:12px;">Synthesize all learnings into your official 30-60-90 Day Plan.</p>
+              <button class="btn btn-primary btn-sm" onclick="switchTool('tool5')">Proceed to The 30-60-90 Plan <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- HISTORY T4 -->
+          <div class="history-section">
+            <div class="history-header" onclick="toggleHistory('tool4')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Tool History</span>
+              <i class="fa-solid fa-chevron-down" id="t4-history-icon"></i>
+            </div>
+            <div class="history-list" id="t4-history-list"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 5: THE 30-60-90 PLAN -->
+        <section id="tool5" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-header">
+              <div class="tool-title"><i class="fa-solid fa-calendar-check"></i> The 30-60-90 Plan</div>
+              <div class="tool-problem">"I need a structured roadmap for my first three months."</div>
+            </div>
+            <form id="form-tool5" onsubmit="event.preventDefault();">
+              <div class="form-group">
+                <label for="t5-role">Your role:</label>
+                <input type="text" id="t5-role" class="form-control" placeholder="e.g., Senior Product Marketing Manager" />
+              </div>
+              <div class="form-group">
+                <label for="t5-priorities">Top 3 priorities your manager mentioned:</label>
+                <textarea id="t5-priorities" class="form-control" placeholder="e.g., Launch readiness, competitive analysis, sales enablement"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t5-risk">Biggest risk to your success:</label>
+                <textarea id="t5-risk" class="form-control" placeholder="e.g., Unclear decision-making authority between product and marketing"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t5-learn">What do you want to learn?</label>
+                <textarea id="t5-learn" class="form-control" placeholder="e.g., Deep dive into customer personas and legacy codebase"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="t5-relationships">What relationships do you need to build?</label>
+                <textarea id="t5-relationships" class="form-control" placeholder="e.g., Sales leads, Product Managers, Customer Success managers"></textarea>
+              </div>
+
+              <div class="button-group">
+                <button type="button" class="btn btn-primary" onclick="generateTool5()">Build 30-60-90 Plan</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()">Load Sample Scenario</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('tool5')">Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- OUTPUT T5 -->
+          <div id="output-tool5" class="output-section">
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-file-contract"></i> Complete Plan Document</div>
+                <button class="btn btn-outline btn-sm" onclick="copyText('t5-doc-target')"><i class="fa-regular fa-copy"></i> Copy Full Document</button>
+              </div>
+              <div id="t5-doc-target" class="script-box"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-bars-staggered"></i> Phase Breakdowns</div>
+              </div>
+              <div id="t5-phases-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <div class="output-card">
+              <div class="output-card-header">
+                <div class="output-card-title"><i class="fa-solid fa-triangle-exclamation"></i> Reality Check & Checkpoints</div>
+              </div>
+              <div id="t5-checkpoints-target" style="line-height:1.6; font-size:0.9rem;"></div>
+            </div>
+
+            <!-- NEXT STEP NAVIGATION -->
+            <div class="next-step-box">
+              <div class="next-step-title"><i class="fa-solid fa-crown"></i> Complete Onboarding System Ready</div>
+              <p style="font-size:0.88rem; color:var(--color-text-main); margin-bottom:12px;">View your full synthesized First 90 Days Plan combining all module outputs.</p>
+              <button class="btn btn-primary btn-sm" onclick="switchTool('full-plan')">View Consolidated Operating Plan <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+
+          <!-- HISTORY T5 -->
+          <div class="history-section">
+            <div class="history-header" onclick="toggleHistory('tool5')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Tool History</span>
+              <i class="fa-solid fa-chevron-down" id="t5-history-icon"></i>
+            </div>
+            <div class="history-list" id="t5-history-list"></div>
+          </div>
+        </section>
+
+        <!-- SYNTHESIZED FULL PLAN VIEW -->
+        <section id="full-plan" class="tool-view" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div class="tool-title"><i class="fa-solid fa-file-contract"></i> My First 90 Days Plan</div>
+              <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Export Plan</button>
+            </div>
+            <p style="font-size:0.9rem; color:var(--color-text-muted); margin-bottom:20px;">
+              This synthesized executive briefing consolidates your inputs from all completed modules into a unified first-quarter strategy.
+            </p>
+            <div id="full-plan-content" class="script-box" style="font-family:inherit; white-space:pre-wrap; line-height:1.6;">
+              Please complete at least one core module to generate your consolidated First 90 Days Operating Plan.
+            </div>
+          </div>
+        </section>
+
+        <!-- GUIDED 7-DAY RESET VIEW -->
+        <section id="reset-7day" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-title" style="margin-bottom:8px;"><i class="fa-solid fa-route"></i> 7-Day First 90 Days Reset</div>
+            <p style="font-size:0.9rem; color:var(--color-text-muted); margin-bottom:20px;">
+              A structured step-by-step guided sequence designed to orient you during your critical first week or whenever you need to regain momentum.
+            </p>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 1</span>
+              <div>
+                <strong>Map Your Stakeholder Landscape</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Identify managers, direct peers, and early approachable allies.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="switchTool('tool1')">Open Relationship Mapper</button>
+              </div>
+            </div>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 2</span>
+              <div>
+                <strong>Identify Your First Safe Contribution</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Find low-hanging opportunities that deliver value without breaking existing workflows.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="switchTool('tool2')">Open Quick Win Planner</button>
+              </div>
+            </div>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 3</span>
+              <div>
+                <strong>Decode Unwritten Cultural Norms</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Observe decision-making pathways, communication channels, and unstated expectations.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="switchTool('tool3')">Open Unwritten Rules Decoder</button>
+              </div>
+            </div>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 4</span>
+              <div>
+                <strong>Establish a Proactive Feedback Loop</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Request early calibration from your manager and peers before formal review cycles.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="switchTool('tool4')">Open Feedback Accelerator</button>
+              </div>
+            </div>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 5</span>
+              <div>
+                <strong>Build Your 30-60-90 Roadmap</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Structure learning, contribution, and leadership targets across three distinct phases.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="switchTool('tool5')">Open 30-60-90 Plan</button>
+              </div>
+            </div>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 6</span>
+              <div>
+                <strong>Review Consolidated First 90 Days Snapshot</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Check qualitative indicators across relationships, priorities, culture, and roadmap clarity.</p>
+                <button class="btn btn-outline btn-sm" style="margin-top:8px;" onclick="switchTool('dashboard')">View Dashboard Snapshot</button>
+              </div>
+            </div>
+
+            <div class="reset-step">
+              <span class="reset-day-badge">Day 7</span>
+              <div>
+                <strong>Create the First 30-Day Action Plan</strong>
+                <p style="font-size:0.85rem; color:var(--color-text-muted); margin-top:4px;">Commit to one single priority, one coffee chat, one quick win, and one feedback review date.</p>
+                <button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="switchTool('full-plan')">View Consolidated Plan</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- CENTRAL HISTORY VIEW -->
+        <section id="all-history" class="tool-view" style="display:none;">
+          <div class="card">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div class="tool-title"><i class="fa-solid fa-clock-rotate-left"></i> Centralized Tool History</div>
+              <button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Clear All History</button>
+            </div>
+            <p style="font-size:0.88rem; color:var(--color-text-muted); margin-bottom:16px;">
+              View and reload all historical inputs and analysis sessions stored locally in your browser.
+            </p>
+            <div id="central-history-container" style="display:flex; flex-direction:column; gap:10px;"></div>
+          </div>
+        </section>
+
+        <!-- ABOUT / SCOPE VIEW -->
+        <section id="about-view" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="tool-title" style="margin-bottom:12px;"><i class="fa-solid fa-circle-info"></i> About First 90 Days™ System Scope & Safety</div>
+            <p style="font-size:0.9rem; color:var(--color-text-main); line-height:1.6; margin-bottom:12px;">
+              <strong>First 90 Days™</strong> is a commercial career onboarding, organizational navigation, and first-quarter success system designed to assist newly hired or promoted professionals.
+            </p>
+
+            <div style="background:#FAFAFA; border-left:4px solid var(--color-chocolate); padding:14px; border-radius:0 8px 8px 0; font-size:0.88rem; margin-bottom:16px;">
+              <strong>Local Privacy Guarantee:</strong> All inputs, analyses, and saved records remain strictly local to your web browser (`localStorage`). No information is transmitted to external servers, cloud databases, or company HR portals.
+            </div>
+
+            <h4 style="font-size:0.95rem; color:var(--color-chocolate); margin-bottom:6px;">Important Scope & Boundary Disclaimers:</h4>
+            <ul style="padding-left:20px; font-size:0.88rem; line-height:1.6; color:var(--color-text-muted);">
+              <li>This product provides planning heuristics, conversational templates, and organizational frameworks. It is not HR, legal, or formal psychological advice.</li>
+              <li>Outputs are non-diagnostic working hypotheses meant to prompt productive dialogue and deliberate planning. They do not predict guaranteed employment outcomes or promotions.</li>
+              <li>Always align onboarding deliverables and commitments with your official company policies, manager expectations, and departmental guidelines.</li>
+            </ul>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- GLOBAL FOOTER -->
+  <footer class="app-footer">
+    For career onboarding planning only. Not a substitute for your company's official onboarding process. For HR or policy questions, consult your manager or HR representative. All data stored locally in browser.
+  </footer>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <i class="fa-solid fa-check-circle" style="color:var(--color-sky);"></i>
+    <span id="toast-message">Copied!</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* ==========================================================================
+       PRODUCT CONFIGURATION & GLOBAL STATE
+       ========================================================================== */
+    const PRODUCT_MODE = "complete"; // Supports: 'complete', 'relationships', 'quickwins', 'culture', 'feedback', 'plan', '7-day'
+
+    let first90State = {
+      completedTools: [],
+      toolResults: {},
+      historyMeta: {},
+      currentInputs: {},
+      recommendations: [],
+      onboardingPhase: null,
+      productMode: PRODUCT_MODE,
+      lastUpdated: null
+    };
+
+    const DB_KEYS = {
+      STATE: 'first90_v2_state',
+      HISTORY: 'first90_v2_history',
+      PREFS: 'first90_v2_preferences'
+    };
+
+    /* ==========================================================================
+       SECURITY & ESCAPING UTILITY
+       ========================================================================== */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* ==========================================================================
+       NAVIGATION & UI LOGIC
+       ========================================================================== */
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const toolViews = document.querySelectorAll('.tool-view');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+    function switchTool(toolId) {
+      toolViews.forEach(view => view.style.display = 'none');
+      navButtons.forEach(btn => btn.classList.remove('active'));
+
+      const targetView = document.getElementById(toolId);
+      if (targetView) targetView.style.display = 'block';
+
+      const activeBtn = document.querySelector(`.nav-btn[data-tool="${toolId}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      // Close mobile menu
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+
+      if (toolId === 'full-plan') {
+        renderFullPlan();
+      } else if (toolId === 'all-history') {
+        renderCentralHistory();
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        switchTool(btn.getAttribute('data-tool'));
+      });
+    });
+
+    hamburgerBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+    });
+
+    /* ==========================================================================
+       UTILITY FUNCTIONS (Toast, Copy, Storage, Recommendations)
+       ========================================================================== */
+    function showToast(msg = "Copied!") {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyText(containerId) {
+      const el = document.getElementById(containerId);
+      if (!el) return;
+      const textToCopy = el.innerText;
+      
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          showToast("Copied to clipboard!");
+        }).catch(() => {
+          fallbackCopyText(textToCopy);
+        });
+      } else {
+        fallbackCopyText(textToCopy);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Copied to clipboard!");
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function saveStateToStorage() {
+      first90State.lastUpdated = new Date().toISOString();
+      try {
+        localStorage.setItem(DB_KEYS.STATE, JSON.stringify(first90State));
+      } catch (e) {
+        console.warn("localStorage quota exceeded or disabled.");
+      }
+    }
+
+    function loadStateFromStorage() {
+      try {
+        const saved = localStorage.getItem(DB_KEYS.STATE);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          first90State = Object.assign(first90State, parsed);
+        }
+      } catch (e) {
+        console.warn("Could not load saved state.");
+      }
+      updateDashboardSnapshot();
+      updateRecommendations();
+    }
+
+    function saveToHistory(toolId, inputData, summaryText) {
+      const key = `first90_v2_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key) || '[]');
+      } catch (e) { history = []; }
+      
+      const newItem = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString() + " " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        summary: summaryText,
+        data: inputData
+      };
+
+      history.unshift(newItem);
+      if (history.length > 30) history = history.slice(0, 30);
+      
+      try {
+        localStorage.setItem(key, JSON.stringify(history));
+      } catch (e) {}
+
+      if (!first90State.completedTools.includes(toolId)) {
+        first90State.completedTools.push(toolId);
+      }
+      first90State.toolResults[toolId] = inputData;
+      saveStateToStorage();
+
+      renderHistory(toolId);
+      updateDashboardSnapshot();
+      updateRecommendations();
+    }
+
+    function renderHistory(toolId) {
+      const key = `first90_v2_history_${toolId}`;
+      const legacyKey = `first90_history_${toolId}`;
+      const historyList = document.getElementById(`${toolId.replace('tool', 't')}-history-list`);
+      if (!historyList) return;
+
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key) || localStorage.getItem(legacyKey) || '[]');
+      } catch (e) { history = []; }
+      
+      if (history.length === 0) {
+        historyList.innerHTML = `<div style="padding:10px; font-size:0.85rem; color:var(--color-text-muted);">No history saved yet.</div>`;
+        return;
+      }
+
+      let html = history.map(item => `
+        <div class="history-item" onclick="loadHistoryItem('${toolId}', ${item.id})">
+          <span><strong>${escapeHTML(item.date)}:</strong> ${escapeHTML(item.summary)}</span>
+          <i class="fa-solid fa-arrow-rotate-left" style="color:var(--color-chocolate);"></i>
+        </div>
+      `).join('');
+
+      html += `<button type="button" class="btn btn-outline btn-sm" style="margin-top:8px; align-self:flex-start;" onclick="clearToolHistory('${toolId}')">Clear History</button>`;
+      historyList.innerHTML = html;
+    }
+
+    function toggleHistory(toolId) {
+      const prefix = toolId.replace('tool', 't');
+      const list = document.getElementById(`${prefix}-history-list`);
+      const icon = document.getElementById(`${prefix}-history-icon`);
+      if (list.style.display === 'flex') {
+        list.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      } else {
+        list.style.display = 'flex';
+        icon.className = 'fa-solid fa-chevron-up';
+        renderHistory(toolId);
+      }
+    }
+
+    function clearToolHistory(toolId) {
+      localStorage.removeItem(`first90_v2_history_${toolId}`);
+      localStorage.removeItem(`first90_history_${toolId}`);
+      renderHistory(toolId);
+      showToast("History cleared");
+    }
+
+    function clearAllHistory() {
+      if (confirm("Are you sure you want to clear all history across all tools?")) {
+        ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+          localStorage.removeItem(`first90_v2_history_${t}`);
+          localStorage.removeItem(`first90_history_${t}`);
+          renderHistory(t);
+        });
+        first90State.completedTools = [];
+        first90State.toolResults = {};
+        saveStateToStorage();
+        updateDashboardSnapshot();
+        updateRecommendations();
+        renderCentralHistory();
+        showToast("All history cleared");
+      }
+    }
+
+    function resetTool(toolId) {
+      const form = document.getElementById(`form-${toolId}`);
+      if (form) form.reset();
+      const output = document.getElementById(`output-${toolId}`);
+      if (output) output.style.display = 'none';
+      showToast("Form reset");
+    }
+
+    /* ==========================================================================
+       DASHBOARD SNAPSHOT & RECOMMENDATIONS ENGINE
+       ========================================================================== */
+    function updateDashboardSnapshot() {
+      const c = first90State.completedTools;
+
+      // Update Badges & Statuses
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach((t, idx) => {
+        const badge = document.getElementById(`badge-${t}`);
+        const status = document.getElementById(`dash-status-t${idx+1}`);
+        const isDone = c.includes(t);
+        
+        if (badge) badge.innerText = isDone ? '✓' : '';
+        if (status) {
+          status.innerText = isDone ? 'Completed' : 'Pending';
+          status.className = `dash-status ${isDone ? 'status-completed' : 'status-pending'}`;
+        }
+      });
+
+      // Snapshot Indicators
+      document.getElementById('snap-rel').innerText = c.includes('tool1') ? 'Mapped & Prioritized' : 'Not yet mapped';
+      document.getElementById('snap-prio').innerText = c.includes('tool5') ? '3-Month Roadmap Ready' : (c.includes('tool2') ? '30-Day Focus Set' : 'Uncalculated');
+      document.getElementById('snap-win').innerText = c.includes('tool2') ? 'Quick Win Identified' : 'Not yet identified';
+      document.getElementById('snap-cult').innerText = c.includes('tool3') ? 'Culture Profile Decoded' : 'Pending observation';
+      document.getElementById('snap-feed').innerText = c.includes('tool4') ? '1:1 Rhythm Established' : 'Not established';
+      document.getElementById('snap-road').innerText = c.includes('tool5') ? 'Phase 1-3 Built' : 'Not drafted';
+    }
+
+    function updateRecommendations() {
+      const c = first90State.completedTools;
+      const banner = document.getElementById('recommendation-banner');
+      const title = document.getElementById('rec-title');
+      const desc = document.getElementById('rec-desc');
+      const btn = document.getElementById('rec-btn');
+
+      if (!c.includes('tool1')) {
+        title.innerText = "Next Step: Map Your Stakeholders";
+        desc.innerText = "Identify who matters most and establish your Week 1-3 introduction sequence.";
+        btn.onclick = () => switchTool('tool1');
+        banner.style.display = 'flex';
+      } else if (!c.includes('tool2')) {
+        title.innerText = "Next Step: Plan Your Quick Win";
+        desc.innerText = "Find low-hanging opportunities to demonstrate value safely early on.";
+        btn.onclick = () => switchTool('tool2');
+        banner.style.display = 'flex';
+      } else if (!c.includes('tool3')) {
+        title.innerText = "Next Step: Decode Unwritten Rules";
+        desc.innerText = "Understand implicit communication styles and praised behaviors.";
+        btn.onclick = () => switchTool('tool3');
+        banner.style.display = 'flex';
+      } else if (!c.includes('tool4')) {
+        title.innerText = "Next Step: Feedback Calibration";
+        desc.innerText = "Set up proactive feedback touchpoints before formal 6-month reviews.";
+        btn.onclick = () => switchTool('tool4');
+        banner.style.display = 'flex';
+      } else if (!c.includes('tool5')) {
+        title.innerText = "Final Step: Build Your 30-60-90 Plan";
+        desc.innerText = "Convert all insights into a structured first-quarter roadmap.";
+        btn.onclick = () => switchTool('tool5');
+        banner.style.display = 'flex';
+      } else {
+        title.innerText = "System Fully Configured";
+        desc.innerText = "Review your synthesized executive briefing in 'My First 90 Days Plan'.";
+        btn.onclick = () => switchTool('full-plan');
+        banner.style.display = 'flex';
+      }
+    }
+
+    /* ==========================================================================
+       TOOL 1 LOGIC — RELATIONSHIP MAPPER
+       ========================================================================== */
+    function loadSampleTool1() {
+      document.getElementById('t1-manager').value = "Director of Marketing (Alex Rivera)";
+      document.getElementById('t1-skiplevel').value = "CMO (Sam Vance)";
+      document.getElementById('t1-peers').value = "Sarah (Content Lead), Mark (Growth Lead), Priya (Brand Manager)";
+      document.getElementById('t1-cross').value = "Dave (Sales Operations), Jessica (Product Lead)";
+      document.getElementById('t1-approachable').value = "Sarah (Content Lead) — very welcoming during orientation";
+      document.getElementById('t1-influential').value = "Sam Vance (CMO) — sets company-wide priorities";
+      showToast("Sample loaded!");
+    }
+
+    function generateTool1() {
+      const manager = document.getElementById('t1-manager').value.trim() || "Your Direct Manager";
+      const skiplevel = document.getElementById('t1-skiplevel').value.trim() || "Skip-level Manager";
+      const peers = document.getElementById('t1-peers').value.trim() || "Core Peers";
+      const cross = document.getElementById('t1-cross').value.trim() || "Cross-functional Partners";
+      const approachable = document.getElementById('t1-approachable').value.trim() || "Approachable Team Member";
+      const influential = document.getElementById('t1-influential').value.trim() || "Influential Stakeholder";
+
+      const data = { manager, skiplevel, peers, cross, approachable, influential };
+
+      // 1. Diagram
+      document.getElementById('t1-diagram-target').innerHTML = `
+        <div class="diagram-level">
+          <div class="diagram-node node-skip"><i class="fa-solid fa-crown"></i> ${escapeHTML(skiplevel)} (Skip-Level)</div>
+        </div>
+        <i class="fa-solid fa-arrow-down" style="color:var(--color-text-muted); font-size:0.8rem;"></i>
+        <div class="diagram-level">
+          <div class="diagram-node node-manager"><i class="fa-solid fa-user-tie"></i> ${escapeHTML(manager)} (Direct)</div>
+        </div>
+        <i class="fa-solid fa-arrow-down" style="color:var(--color-text-muted); font-size:0.8rem;"></i>
+        <div class="diagram-level">
+          <div class="diagram-node node-peer"><i class="fa-solid fa-users"></i> ${escapeHTML(peers)}</div>
+          <div class="diagram-node node-cross"><i class="fa-solid fa-handshake"></i> ${escapeHTML(cross)}</div>
+        </div>
+      `;
+
+      // 2. Priority Contacts
+      document.getElementById('t1-priority-target').innerHTML = `
+        <ul style="padding-left:20px; line-height:1.7; font-size:0.9rem;">
+          <li><strong>Week 1 (Essential):</strong> ${escapeHTML(manager)} & ${escapeHTML(approachable)}. Focus on role clarity and rapid baseline setup.</li>
+          <li><strong>Week 2 (Operational):</strong> Key peers (${escapeHTML(peers)}). Focus on day-to-day workflow dependencies.</li>
+          <li><strong>Week 3 (Strategic):</strong> Cross-functional (${escapeHTML(cross)}) & Skip-level (${escapeHTML(skiplevel)}). Focus on broader business context.</li>
+        </ul>
+      `;
+
+      // 3. Script
+      const scriptText = `Hi [Name],\n\nI'm new to the team as [Your Role]! As I get up to speed during my first few weeks, I'm reaching out to key colleagues to learn more about how our teams work together.\n\nDo you have 15 minutes in the coming week for a quick coffee (or virtual coffee)? I'd love to learn about your priorities and how I can best support our shared goals.\n\nNo pre-work needed on your end! Thanks so much,\n[Your Name]`;
+      document.getElementById('t1-script-target').innerText = scriptText;
+
+      // 4. Trust Indicators
+      document.getElementById('t1-trust-target').innerHTML = `
+        <p><strong><i class="fa-solid fa-circle-check" style="color:#10B981;"></i> Safe Allies (e.g., ${escapeHTML(approachable)}):</strong> Give balanced feedback, freely share documentation, explain historical context without cynicism.</p>
+        <p style="margin-top:8px;"><strong><i class="fa-solid fa-triangle-exclamation" style="color:#F59E0B;"></i> High Political Influence (e.g., ${escapeHTML(influential)}):</strong> Highly protective of team resources; validate alignment with them early before making public proposals.</p>
+      `;
+
+      // 5. Mentor Hunt
+      document.getElementById('t1-mentor-target').innerHTML = `
+        <p>Look for someone who has been at the company 18–36 months, is respected by ${escapeHTML(skiplevel)}, but isn't your direct evaluation manager. Approach them after 30 days with: <em>"I really admire how you navigate project approvals here—could I grab 15 minutes to learn from your experience?"</em></p>
+      `;
+
+      document.getElementById('output-tool1').style.display = 'block';
+      saveToHistory('tool1', data, `Mapped relationships under ${manager}`);
+      window.scrollTo({ top: document.getElementById('output-tool1').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    /* ==========================================================================
+       TOOL 2 LOGIC — QUICK WIN PLANNER
+       ========================================================================== */
+    function loadSampleTool2() {
+      document.getElementById('t2-hiredToFix').value = "Improve overall email open and conversion rates across lifecycle campaigns.";
+      document.getElementById('t2-lowFruit').value = "Outdated, unformatted lifecycle email templates and broken links.";
+      document.getElementById('t2-resources').value = "Full admin access to email automation platform & copy draft approval.";
+      document.getElementById('t2-breakRisks').value = "Automated sales trigger workflows and lead scoring syncs.";
+      document.getElementById('t2-patience').value = "Balanced";
+      showToast("Sample loaded!");
+    }
+
+    function generateTool2() {
+      const hiredToFix = document.getElementById('t2-hiredToFix').value.trim() || "Core responsibilities";
+      const lowFruit = document.getElementById('t2-lowFruit').value.trim() || "Quick fixes";
+      const resources = document.getElementById('t2-resources').value.trim() || "Assigned tools";
+      const breakRisks = document.getElementById('t2-breakRisks').value.trim() || "Existing workflows";
+      const patience = document.getElementById('t2-patience').value;
+
+      const data = { hiredToFix, lowFruit, resources, breakRisks, patience };
+
+      document.getElementById('t2-matrix-target').innerHTML = `
+        <div class="matrix-quadrant quadrant-1">
+          <div class="quadrant-title q1-title"><i class="fa-solid fa-star"></i> Quick Wins (Do First)</div>
+          <div class="quadrant-content">${escapeHTML(lowFruit)}</div>
+        </div>
+        <div class="matrix-quadrant quadrant-2">
+          <div class="quadrant-title q2-title"><i class="fa-solid fa-chess-knight"></i> Major Projects (Plan)</div>
+          <div class="quadrant-content">${escapeHTML(hiredToFix)}</div>
+        </div>
+        <div class="matrix-quadrant quadrant-3">
+          <div class="quadrant-title q3-title"><i class="fa-solid fa-triangle-exclamation"></i> Fill-Ins (Delegate/Limit)</div>
+          <div class="quadrant-content">Minor administrative requests using ${escapeHTML(resources)}</div>
+        </div>
+        <div class="matrix-quadrant quadrant-4">
+          <div class="quadrant-title q4-title"><i class="fa-solid fa-ban"></i> Hard & Low Value (Avoid)</div>
+          <div class="quadrant-content">Overhauling ${escapeHTML(breakRisks)} without prior consensus</div>
+        </div>
+      `;
+
+      document.getElementById('t2-targets-target').innerHTML = `
+        <p><strong><i class="fa-solid fa-bullseye" style="color:var(--color-chocolate);"></i> 30-Day Target:</strong> Fix "${escapeHTML(lowFruit)}". Focus on immediate visibility without disrupting ${escapeHTML(breakRisks)}.</p>
+        <p style="margin-top:8px;"><strong><i class="fa-solid fa-chart-line" style="color:var(--color-chocolate);"></i> 60-Day Target:</strong> Initiate medium project addressing "${escapeHTML(hiredToFix)}".</p>
+        <p style="margin-top:8px;"><strong><i class="fa-solid fa-trophy" style="color:var(--color-chocolate);"></i> 90-Day Target:</strong> Present measurable impact and optimization strategy for ${escapeHTML(resources)}.</p>
+      `;
+
+      const pitchText = `Hi [Manager Name],\n\nBased on my observations during my first few weeks, I noticed a great low-hanging opportunity regarding ${lowFruit}.\n\nI'd like to take a quick swing at improving this over the next two weeks. It utilizes our current ${resources} and won't disrupt ${breakRisks}.\n\nDoes this align with your expectations for my early focus?`;
+      document.getElementById('t2-pitch-target').innerText = pitchText;
+
+      document.getElementById('output-tool2').style.display = 'block';
+      saveToHistory('tool2', data, `Quick Win: ${lowFruit.substring(0, 25)}...`);
+      window.scrollTo({ top: document.getElementById('output-tool2').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    /* ==========================================================================
+       TOOL 3 LOGIC — UNWRITTEN RULES DECODER
+       ========================================================================== */
+    function loadSampleTool3() {
+      document.getElementById('t3-surprised').value = "Decisions seem to happen in Slack DMs before official meetings start.";
+      document.getElementById('t3-workHours').value = "Flexible hours";
+      document.getElementById('t3-commStyle').value = "Chat casual";
+      document.getElementById('t3-praised').value = "Collaboration & Consensus";
+      document.getElementById('t3-punished').value = "Rocking the boat / Bypassing people";
+      showToast("Sample loaded!");
+    }
+
+    function generateTool3() {
+      const surprised = document.getElementById('t3-surprised').value.trim() || "Implicit norms";
+      const workHours = document.getElementById('t3-workHours').value;
+      const commStyle = document.getElementById('t3-commStyle').value;
+      const praised = document.getElementById('t3-praised').value;
+      const punished = document.getElementById('t3-punished').value;
+
+      const data = { surprised, workHours, commStyle, praised, punished };
+
+      document.getElementById('t3-culture-target').innerHTML = `
+        <p>Your team operates on a <strong>${escapeHTML(commStyle)}</strong> baseline with <strong>${escapeHTML(workHours)}</strong>. Success is tied to <strong>${escapeHTML(praised)}</strong>, while <strong>${escapeHTML(punished)}</strong> carries significant career friction risk.</p>
+        <p style="margin-top:8px; background:#F1F5F9; padding:10px; border-radius:6px;"><em>Surprise Insight:</em> "${escapeHTML(surprised)}" indicates that informal pre-alignment holds higher weight than formal presentation sessions.</p>
+      `;
+
+      document.getElementById('t3-adapt-target').innerHTML = `
+        <ol style="padding-left:20px; line-height:1.7;">
+          <li><strong>Pre-socialize Ideas:</strong> Never introduce a major idea cold in a meeting. Ping key stakeholders in chat beforehand.</li>
+          <li><strong>Match Communication Tempo:</strong> Adapt to ${escapeHTML(commStyle)} norms—keep updates concise and accessible.</li>
+          <li><strong>Protect Consensus:</strong> Avoid actions that could be seen as ${escapeHTML(punished)}; frame changes around ${escapeHTML(praised)}.</li>
+        </ol>
+      `;
+
+      document.getElementById('t3-question-target').innerHTML = `
+        <p>Use the <strong>"Context-First"</strong> framework when asking questions:</p>
+        <div style="background:#F8FAFC; border-left:3px solid var(--color-sky-dark); padding:10px; margin-top:8px; font-style:italic;">
+          "I checked the documentation regarding [X], and I noticed [Y]. To make sure I align with team standards, how do we usually handle [Z]?"
+        </div>
+      `;
+
+      document.getElementById('t3-recovery-target').innerHTML = `
+        <p><strong>Handling Errors:</strong> Acknowledge quickly via ${escapeHTML(commStyle)}, outline the resolution plan, and focus on systemic improvement.</p>
+        <p style="margin-top:8px;"><strong>Insider Signal:</strong> Pay attention to who gets tagged in Slack for quick approvals—they are the true unstated gatekeepers.</p>
+      `;
+
+      document.getElementById('output-tool3').style.display = 'block';
+      saveToHistory('tool3', data, `Culture: Praises ${praised}`);
+      window.scrollTo({ top: document.getElementById('output-tool3').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    /* ==========================================================================
+       TOOL 4 LOGIC — FEEDBACK ACCELERATOR
+       ========================================================================== */
+    function loadSampleTool4() {
+      document.getElementById('t4-freq').value = "Weekly";
+      document.getElementById('t4-source').value = "Manager";
+      document.getElementById('t4-unsure').value = "Meeting participation style and level of technical documentation depth.";
+      const checked = document.querySelector('input[name="t4-received"][value="No"]');
+      if (checked) checked.checked = true;
+      showToast("Sample loaded!");
+    }
+
+    function generateTool4() {
+      const freq = document.getElementById('t4-freq').value;
+      const source = document.getElementById('t4-source').value;
+      const unsure = document.getElementById('t4-unsure').value.trim() || "overall progress";
+      const rad = document.querySelector('input[name="t4-received"]:checked');
+      const received = rad ? rad.value : "No";
+
+      const data = { freq, source, unsure, received };
+
+      const scriptText = `Hi [${source} Name],\n\nAs I wrap up my early weeks, I want to make sure I'm calibrating well to expectations.\n\nI'm specifically looking to ensure I'm on track regarding ${unsure}.\n\nCould we take 5 minutes during our next 1:1 to review one thing I should keep doing and one area where I can adjust course?`;
+      document.getElementById('t4-script-target').innerText = scriptText;
+
+      document.getElementById('t4-agenda-target').innerHTML = `
+        <p><strong>Recommended ${escapeHTML(freq)} 1:1 Agenda Structure:</strong></p>
+        <ul style="padding-left:20px; line-height:1.7;">
+          <li>1. Key wins & completed tasks this week (2 mins)</li>
+          <li>2. Current priorities & blockers regarding ${escapeHTML(unsure)} (5 mins)</li>
+          <li>3. Feedback check: "Is my pacing matching your expectations?" (3 mins)</li>
+        </ul>
+      `;
+
+      document.getElementById('t4-audit-target').innerHTML = `
+        <ul style="padding-left:20px; line-height:1.7;">
+          <li><strong>Day 30:</strong> "Do I understand the core metrics and unwritten cultural norms?"</li>
+          <li><strong>Day 60:</strong> "Have I delivered at least one validated quick win?"</li>
+          <li><strong>Day 90:</strong> "Am I operating proactively with minimal supervision?"</li>
+        </ul>
+      `;
+
+      document.getElementById('t4-harsh-target').innerHTML = `
+        <p>If you receive unexpected constructive feedback (Current state: <em>${escapeHTML(received)}</em>):</p>
+        <ol style="padding-left:20px; line-height:1.7; margin-top:6px;">
+          <li><strong>Pause & Thank:</strong> "Thank you for sharing that with me. I appreciate the clarity."</li>
+          <li><strong>Clarify with Examples:</strong> Ask for specific instances without being defensive.</li>
+          <li><strong>Propose Action Plan:</strong> "I will adjust this by doing X. Let's touch base next week to verify progress."</li>
+        </ol>
+      `;
+
+      document.getElementById('output-tool4').style.display = 'block';
+      saveToHistory('tool4', data, `Feedback request for ${source}`);
+      window.scrollTo({ top: document.getElementById('output-tool4').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    /* ==========================================================================
+       TOOL 5 LOGIC — THE 30-60-90 PLAN
+       ========================================================================== */
+    function loadSampleTool5() {
+      document.getElementById('t5-role').value = "Product Marketing Manager";
+      document.getElementById('t5-priorities').value = "Product launch readiness, competitive analysis matrix, and sales enablement collateral.";
+      document.getElementById('t5-risk').value = "Unclear decision-making ownership between Product and Marketing teams.";
+      document.getElementById('t5-learn').value = "Customer buyer personas, platform architecture, and core product metrics.";
+      document.getElementById('t5-relationships').value = "Sales Leadership, Product Leads, Customer Success Directors.";
+      showToast("Sample loaded!");
+    }
+
+    function generateTool5() {
+      const role = document.getElementById('t5-role').value.trim() || "New Employee";
+      const priorities = document.getElementById('t5-priorities').value.trim() || "Core goals";
+      const risk = document.getElementById('t5-risk').value.trim() || "Execution friction";
+      const learn = document.getElementById('t5-learn').value.trim() || "Internal processes";
+      const relationships = document.getElementById('t5-relationships').value.trim() || "Key stakeholders";
+
+      const data = { role, priorities, risk, learn, relationships };
+
+      const fullDocText = `=======================================================
+30-60-90 DAY ONBOARDING PLAN: ${role.toUpperCase()}
+=======================================================
+
+MONTH 1: LEARN & OBSERVE (Days 1–30)
+-------------------------------------------------------
+• Primary Objective: Absorption, relationship building, and baseline mapping.
+• Key Priorities: ${priorities}
+• Learning Target: ${learn}
+• Key Stakeholder Relationships: ${relationships}
+• Month 1 Milestone: Complete stakeholder listening tour and identify quick win.
+
+MONTH 2: CONTRIBUTE & BUILD (Days 31–60)
+-------------------------------------------------------
+• Primary Objective: Executing initial quick win and contributing to core workflows.
+• Strategic Focus: Address potential risk factor: "${risk}".
+• Collaboration Focus: Begin joint initiatives with ${relationships}.
+• Month 2 Milestone: Execute quick win; present first draft of major strategic deliverable.
+
+MONTH 3: LEAD & OPTIMIZE (Days 61–90)
+-------------------------------------------------------
+• Primary Objective: Full autonomy, process optimization, and leadership.
+• Key Deliverable: Drive long-term goals for ${priorities}.
+• Month 3 Milestone: Conduct 90-day review with manager and set annual performance goals.
+
+=======================================================`;
+
+      document.getElementById('t5-doc-target').innerText = fullDocText;
+
+      document.getElementById('t5-phases-target').innerHTML = `
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div style="background:#EFF6FF; padding:12px; border-radius:8px; border-left:4px solid #3B82F6;">
+            <strong>Month 1 (Learn):</strong> Focus on understanding ${escapeHTML(learn)} without rushing changes.
+          </div>
+          <div style="background:#FEF3C7; padding:12px; border-radius:8px; border-left:4px solid #F59E0B;">
+            <strong>Month 2 (Contribute):</strong> Execute quick wins while actively navigating risk factor: <em>${escapeHTML(risk)}</em>.
+          </div>
+          <div style="background:#ECFDF5; padding:12px; border-radius:8px; border-left:4px solid #10B981;">
+            <strong>Month 3 (Lead):</strong> Proactively own priorities (${escapeHTML(priorities)}) and anchor key partnerships (${escapeHTML(relationships)}).
+          </div>
+        </div>
+      `;
+
+      document.getElementById('t5-checkpoints-target').innerHTML = `
+        <p><strong>Monthly Review Checkpoints with Manager:</strong></p>
+        <ul style="padding-left:20px; line-height:1.7;">
+          <li><strong>End of Day 30:</strong> Review learning findings and gain approval for Quick Win proposal.</li>
+          <li><strong>End of Day 60:</strong> Evaluate early impact metrics and realign priorities if obstacles emerge.</li>
+          <li><strong>End of Day 90:</strong> Formal transition into core performance review cycles.</li>
+        </ul>
+      `;
+
+      document.getElementById('output-tool5').style.display = 'block';
+      saveToHistory('tool5', data, `Plan for ${role}`);
+      window.scrollTo({ top: document.getElementById('output-tool5').offsetTop - 20, behavior: 'smooth' });
+    }
+
+    /* ==========================================================================
+       SYNTHESIS & HISTORY RENDERING
+       ========================================================================== */
+    function renderFullPlan() {
+      const target = document.getElementById('full-plan-content');
+      const r = first90State.toolResults;
+
+      if (Object.keys(r).length === 0) {
+        target.innerText = "No module outputs completed yet. Please fill out at least one tool (e.g. Relationship Mapper, Quick Win Planner) to view your consolidated plan.";
+        return;
+      }
+
+      let doc = `====================================================================
+FIRST 90 DAYS™ CONSOLIDATED OPERATING STRATEGY
+====================================================================\n\n`;
+
+      if (r.tool5) {
+        doc += `[ROLE & GOALS]\n`;
+        doc += `• Target Role: ${r.tool5.role}\n`;
+        doc += `• Priorities: ${r.tool5.priorities}\n`;
+        doc += `• Risk Mitigation: ${r.tool5.risk}\n\n`;
+      }
+
+      if (r.tool1) {
+        doc += `[KEY STAKEHOLDER STRUCTURE]\n`;
+        doc += `• Manager: ${r.tool1.manager}\n`;
+        doc += `• Skip-Level: ${r.tool1.skiplevel}\n`;
+        doc += `• Peers: ${r.tool1.peers}\n`;
+        doc += `• Early Ally: ${r.tool1.approachable}\n\n`;
+      }
+
+      if (r.tool2) {
+        doc += `[EARLY QUICK WIN STRATEGY]\n`;
+        doc += `• Quick Win Focus: ${r.tool2.lowFruit}\n`;
+        doc += `• Hired to Fix: ${r.tool2.hiredToFix}\n`;
+        doc += `• Controlled Resources: ${r.tool2.resources}\n\n`;
+      }
+
+      if (r.tool3) {
+        doc += `[CULTURE & UNWRITTEN NORMS]\n`;
+        doc += `• Praised Norms: ${r.tool3.praised}\n`;
+        doc += `• Communication Style: ${r.tool3.commStyle}\n`;
+        doc += `• Key Observation: ${r.tool3.surprised}\n\n`;
+      }
+
+      if (r.tool4) {
+        doc += `[FEEDBACK CALIBRATION]\n`;
+        doc += `• Target Frequency: ${r.tool4.freq}\n`;
+        doc += `• Feedback Partner: ${r.tool4.source}\n`;
+        doc += `• Uncertainty Area: ${r.tool4.unsure}\n\n`;
+      }
+
+      doc += `====================================================================
+FIRST 30-DAY ACTION ITEM
+Focus on executing your early quick win while confirming alignment with your manager.
+====================================================================`;
+
+      target.innerText = doc;
+    }
+
+    function renderCentralHistory() {
+      const container = document.getElementById('central-history-container');
+      let html = '';
+
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+        const key = `first90_v2_history_${t}`;
+        const legacyKey = `first90_history_${t}`;
+        let history = [];
+        try {
+          history = JSON.parse(localStorage.getItem(key) || localStorage.getItem(legacyKey) || '[]');
+        } catch(e) {}
+
+        const toolNameMap = {
+          tool1: 'Relationship Mapper',
+          tool2: 'Quick Win Planner',
+          tool3: 'Unwritten Rules Decoder',
+          tool4: 'Feedback Accelerator',
+          tool5: '30-60-90 Plan'
+        };
+
+        if (history.length > 0) {
+          html += `<div style="font-weight:700; color:var(--color-chocolate); margin-top:12px;">${toolNameMap[t]}</div>`;
+          history.forEach(item => {
+            html += `
+              <div class="history-item" onclick="loadHistoryItem('${t}', ${item.id})">
+                <span><strong>${escapeHTML(item.date)}:</strong> ${escapeHTML(item.summary)}</span>
+                <i class="fa-solid fa-arrow-rotate-left" style="color:var(--color-chocolate);"></i>
+              </div>
+            `;
+          });
+        }
+      });
+
+      if (!html) {
+        container.innerHTML = `<div style="padding:16px; color:var(--color-text-muted);">No history records saved across any tools yet.</div>`;
+      } else {
+        container.innerHTML = html;
+      }
+    }
+
+    function loadHistoryItem(toolId, itemId) {
+      const key = `first90_v2_history_${toolId}`;
+      const legacyKey = `first90_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key) || localStorage.getItem(legacyKey) || '[]');
+      } catch (e) {}
+
+      const item = history.find(i => i.id === itemId);
+      if (!item) return;
+
+      switchTool(toolId);
+
+      if (toolId === 'tool1') {
+        document.getElementById('t1-manager').value = item.data.manager || '';
+        document.getElementById('t1-skiplevel').value = item.data.skiplevel || '';
+        document.getElementById('t1-peers').value = item.data.peers || '';
+        document.getElementById('t1-cross').value = item.data.cross || '';
+        document.getElementById('t1-approachable').value = item.data.approachable || '';
+        document.getElementById('t1-influential').value = item.data.influential || '';
+        generateTool1();
+      } else if (toolId === 'tool2') {
+        document.getElementById('t2-hiredToFix').value = item.data.hiredToFix || '';
+        document.getElementById('t2-lowFruit').value = item.data.lowFruit || '';
+        document.getElementById('t2-resources').value = item.data.resources || '';
+        document.getElementById('t2-breakRisks').value = item.data.breakRisks || '';
+        document.getElementById('t2-patience').value = item.data.patience || 'Balanced';
+        generateTool2();
+      } else if (toolId === 'tool3') {
+        document.getElementById('t3-surprised').value = item.data.surprised || '';
+        document.getElementById('t3-workHours').value = item.data.workHours || 'Flexible hours';
+        document.getElementById('t3-commStyle').value = item.data.commStyle || 'Chat casual';
+        document.getElementById('t3-praised').value = item.data.praised || 'Collaboration & Consensus';
+        document.getElementById('t3-punished').value = item.data.punished || 'Rocking the boat / Bypassing people';
+        generateTool3();
+      } else if (toolId === 'tool4') {
+        document.getElementById('t4-freq').value = item.data.freq || 'Weekly';
+        document.getElementById('t4-source').value = item.data.source || 'Manager';
+        document.getElementById('t4-unsure').value = item.data.unsure || '';
+        generateTool4();
+      } else if (toolId === 'tool5') {
+        document.getElementById('t5-role').value = item.data.role || '';
+        document.getElementById('t5-priorities').value = item.data.priorities || '';
+        document.getElementById('t5-risk').value = item.data.risk || '';
+        document.getElementById('t5-learn').value = item.data.learn || '';
+        document.getElementById('t5-relationships').value = item.data.relationships || '';
+        generateTool5();
+      }
+      showToast("Loaded historical record!");
+    }
+
+    /* ==========================================================================
+       INITIALIZATION
+       ========================================================================== */
+    window.addEventListener('DOMContentLoaded', () => {
+      loadStateFromStorage();
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+    });
+  </script>
+</body>
+</html>

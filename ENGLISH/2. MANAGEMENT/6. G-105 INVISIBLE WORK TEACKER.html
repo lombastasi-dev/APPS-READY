@@ -1,0 +1,2493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invisible Work Tracker™ — Operating System</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --dusty-blue: #5E81AC;
+      --dusty-blue-dark: #4C6A92;
+      --dusty-blue-light: #EBF0F6;
+      --warm-peach: #F4A261;
+      --warm-peach-dark: #E76F51;
+      --warm-peach-light: #FDF0E6;
+      --bg-gradient: linear-gradient(135deg, #F0F4F8 0%, #FFF5E6 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2E3440;
+      --text-muted: #4C566A;
+      --border-color: #E5E9F0;
+      --sidebar-width: 260px;
+      --radius-xl: 0.75rem;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-gradient);
+      background-attachment: fixed;
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Layout */
+    #app-container {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+      position: relative;
+    }
+
+    /* Sidebar */
+    #sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      border-right: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.25rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-header i {
+      font-size: 1.5rem;
+      color: var(--dusty-blue);
+    }
+
+    .sidebar-title {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--text-main);
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 0.75rem 0;
+      overflow-y: auto;
+    }
+
+    .nav-category {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 0.75rem 1.25rem 0.25rem;
+      font-weight: 700;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 1.25rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+      border-left: 4px solid transparent;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+    }
+
+    .nav-item.active {
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+      border-left-color: var(--dusty-blue);
+      font-weight: 600;
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    /* Mobile Header & Overlay */
+    #mobile-header {
+      display: none;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 1.25rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .mobile-logo i {
+      color: var(--dusty-blue);
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    #sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 95;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Main Content Area */
+    #main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 2rem 1.5rem;
+      max-width: 920px;
+      width: 100%;
+      margin-right: auto;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    .view-container {
+      display: none;
+      flex: 1;
+    }
+
+    .view-container.active {
+      display: block;
+    }
+
+    /* Common Card Styling */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0, 0, 0, 0.03);
+    }
+
+    /* Dashboard Styles */
+    .hero-card {
+      background: linear-gradient(135deg, #5E81AC 0%, #4C6A92 100%);
+      color: #FFFFFF;
+      padding: 2.25rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card::after {
+      content: '';
+      position: absolute;
+      right: -20px;
+      bottom: -30px;
+      width: 180px;
+      height: 180px;
+      background: rgba(244, 162, 97, 0.25);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .hero-title {
+      font-size: 2rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-tagline {
+      font-size: 1.1rem;
+      opacity: 0.92;
+      font-weight: 400;
+      max-width: 620px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem;
+    }
+
+    .tool-grid-card {
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .tool-grid-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--dusty-blue-light);
+    }
+
+    .tool-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .tool-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .tool-card-desc {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    .tool-card-action {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--dusty-blue);
+    }
+
+    /* Page Titles & Headers */
+    .page-header {
+      margin-bottom: 1.5rem;
+    }
+
+    .page-title {
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .problem-box {
+      background-color: var(--warm-peach-light);
+      border-left: 4px solid var(--warm-peach);
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin-top: 0.75rem;
+      font-size: 0.95rem;
+      color: #7A4219;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+    }
+
+    .problem-box i {
+      margin-top: 0.15rem;
+      color: var(--warm-peach-dark);
+    }
+
+    .orientation-panel {
+      background-color: #FFFFFF;
+      border-left: 4px solid var(--dusty-blue);
+      padding: 1.25rem;
+      border-radius: var(--radius-xl);
+      margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .orientation-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--dusty-blue-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .orientation-list {
+      padding-left: 1.2rem;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-hint {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      font-family: inherit;
+      font-size: 0.925rem;
+      border: 1px solid #D8DEE9;
+      border-radius: 8px;
+      background-color: #FAFAFA;
+      color: var(--text-main);
+      transition: border-color 0.2s ease, background-color 0.2s ease;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--dusty-blue);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.15);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .radio-group, .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.0rem;
+      margin-top: 0.35rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-weight: 400;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .btn-primary {
+      background-color: var(--dusty-blue);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--dusty-blue-dark);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary {
+      background-color: #E5E9F0;
+      color: var(--text-main);
+    }
+
+    .btn-secondary:hover {
+      background-color: #D8DEE9;
+    }
+
+    .btn-sample {
+      background-color: var(--warm-peach-light);
+      color: var(--warm-peach-dark);
+      border: 1px solid rgba(244, 162, 97, 0.4);
+    }
+
+    .btn-sample:hover {
+      background-color: #FCE3D0;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+    }
+
+    .btn-copy {
+      background-color: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+    }
+
+    .btn-copy:hover {
+      background-color: #DCE5F0;
+    }
+
+    .btn-danger {
+      background-color: #ECEFF4;
+      color: #BF616A;
+    }
+
+    .btn-danger:hover {
+      background-color: #BF616A;
+      color: #FFFFFF;
+    }
+
+    /* Output Sections */
+    .output-container {
+      margin-top: 1.75rem;
+      display: none;
+    }
+
+    .output-container.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-header {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--dusty-blue-light);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .output-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      margin-bottom: 1.25rem;
+      border-left: 4px solid var(--dusty-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .output-card.accent-border {
+      border-left-color: var(--warm-peach);
+    }
+
+    .output-title {
+      font-size: 0.825rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: var(--dusty-blue-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .output-content {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    .stat-hero {
+      text-align: center;
+      padding: 1.5rem;
+      background: linear-gradient(135deg, var(--dusty-blue-light), #F0F4F8);
+      border-radius: 12px;
+      margin: 1rem 0;
+    }
+
+    .stat-number {
+      font-size: 2.75rem;
+      font-weight: 800;
+      color: var(--dusty-blue);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      margin-top: 0.4rem;
+    }
+
+    .formatted-list {
+      list-style: none;
+    }
+
+    .formatted-list li {
+      padding: 0.5rem 0;
+      border-bottom: 1px dashed var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .formatted-list li:last-child {
+      border-bottom: none;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: var(--dusty-blue-light);
+      color: var(--dusty-blue-dark);
+    }
+
+    .badge-accent {
+      background: var(--warm-peach-light);
+      color: var(--warm-peach-dark);
+    }
+
+    .badge-verdict {
+      font-size: 1.25rem;
+      padding: 0.5rem 1.25rem;
+      border-radius: 8px;
+      text-align: center;
+      margin: 0.75rem 0;
+      font-weight: 700;
+      display: inline-block;
+    }
+
+    /* Next Steps Experience Card */
+    .completion-experience-card {
+      background: linear-gradient(135deg, #2E3440 0%, #4C566A 100%);
+      color: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .completion-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #ECEFF4;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .completion-desc {
+      font-size: 0.875rem;
+      color: #D8DEE9;
+      margin-bottom: 1rem;
+      line-height: 1.5;
+    }
+
+    .completion-priority {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 0.85rem 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      border-left: 3px solid var(--warm-peach);
+      font-size: 0.9rem;
+    }
+
+    /* History Accordion */
+    .history-section {
+      margin-top: 2.5rem;
+    }
+
+    .history-accordion {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .history-header {
+      padding: 1rem 1.25rem;
+      background: #FAFAFA;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .history-header h4 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .history-body {
+      display: none;
+      padding: 1.25rem;
+      border-top: 1px solid var(--border-color);
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .history-body.show {
+      display: block;
+    }
+
+    .history-item {
+      padding: 0.85rem;
+      background: #F8FAFC;
+      border-radius: 8px;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      border: 1px solid var(--border-color);
+    }
+
+    .history-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .history-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+    }
+
+    /* Reset Sequence Timeline */
+    .reset-day-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid var(--dusty-blue);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .reset-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .reset-day-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text-main);
+    }
+
+    /* Print Specific Styling */
+    @media print {
+      #sidebar, #mobile-header, .btn-row, .btn, .history-section, .problem-box, .orientation-panel, #toast, footer {
+        display: none !important;
+      }
+      #main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .card, .output-card {
+        box-shadow: none !important;
+        border: 1px solid #CCC !important;
+        page-break-inside: avoid;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+    }
+
+    /* Footer */
+    footer {
+      margin-top: auto;
+      padding: 1.5rem 0;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(0, 0, 0, 0.05);
+      line-height: 1.4;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background-color: #2E3440;
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      z-index: 1000;
+    }
+
+    #toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 768px) {
+      #sidebar {
+        transform: translateX(-100%);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      #mobile-header {
+        display: flex;
+      }
+
+      #sidebar-overlay.open {
+        display: block;
+      }
+
+      #main-content {
+        margin-left: 0;
+        padding: 4.5rem 1rem 1.5rem 1rem;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-title {
+        font-size: 1.6rem;
+      }
+
+      .stat-number {
+        font-size: 2.2rem;
+      }
+
+      .btn-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app-container">
+    <!-- Mobile Header -->
+    <header id="mobile-header">
+      <div class="mobile-logo">
+        <i class="fa-solid fa-eye-slash"></i>
+        <span>Invisible Work Tracker™</span>
+      </div>
+      <button class="hamburger-btn" id="hamburger-toggle" aria-label="Toggle menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </header>
+
+    <!-- Overlay for mobile sidebar -->
+    <div id="sidebar-overlay"></div>
+
+    <!-- Fixed Left Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-eye-slash"></i>
+        <div class="sidebar-title">Invisible Work Tracker™</div>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-category">Core Engine</div>
+        <a class="nav-item active" data-view="dashboard">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </a>
+        <a class="nav-item" data-view="tool1">
+          <i class="fa-solid fa-clipboard-check"></i>
+          <span>1. Invisible Audit</span>
+        </a>
+        <a class="nav-item" data-view="tool2">
+          <i class="fa-solid fa-language"></i>
+          <span>2. Value Translator</span>
+        </a>
+        <a class="nav-item" data-view="tool3">
+          <i class="fa-solid fa-bullhorn"></i>
+          <span>3. Visibility Campaign</span>
+        </a>
+        <a class="nav-item" data-view="tool4">
+          <i class="fa-solid fa-handshake"></i>
+          <span>4. Renegotiation</span>
+        </a>
+        <a class="nav-item" data-view="tool5">
+          <i class="fa-solid fa-door-open"></i>
+          <span>5. Exit or Elevate</span>
+        </a>
+
+        <div class="nav-category" style="margin-top: 0.5rem;">Guided Programs</div>
+        <a class="nav-item" data-view="reset">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>7-Day Reset</span>
+        </a>
+
+        <div class="nav-category" style="margin-top: 0.5rem;">Synthesis & Control</div>
+        <a class="nav-item" data-view="plan">
+          <i class="fa-solid fa-file-contract"></i>
+          <span>My Invisible Work Plan</span>
+        </a>
+        <a class="nav-item" data-view="history">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>My History</span>
+        </a>
+        <a class="nav-item" data-view="privacy">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Privacy & Security</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main id="main-content">
+
+      <!-- DASHBOARD VIEW -->
+      <div id="view-dashboard" class="view-container active">
+        <div class="card hero-card">
+          <h1 class="hero-title">Invisible Work Tracker™</h1>
+          <p class="hero-tagline">The work nobody sees is still work. Let's count it.</p>
+        </div>
+
+        <!-- Orientation Panel -->
+        <div class="orientation-panel">
+          <div class="orientation-title">
+            <i class="fa-solid fa-compass"></i> Strategy Before Escalation
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+            A large amount of workplace contribution happens outside formal job descriptions: coordination, onboarding, meeting maintenance, knowledge sharing, and process cleanup. However, invisible work is not automatically strategic or compensable.
+          </p>
+          <ul class="orientation-list">
+            <li><strong>Identify:</strong> Audit uncounted labor and hidden team dependencies.</li>
+            <li><strong>Translate:</strong> Convert raw effort into evidence, business terms, and transferable skills.</li>
+            <li><strong>Surface:</strong> Make work discoverable without constant self-promotion.</li>
+            <li><strong>Negotiate:</strong> Establish clear boundaries, formal ownership, or scope trade-offs.</li>
+          </ul>
+        </div>
+
+        <div class="grid-2">
+          <div class="card tool-grid-card" onclick="switchView('tool1')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+              <h3 class="tool-card-title">1. The Invisible Audit</h3>
+              <p class="tool-card-desc">Identify uncounted labor, estimate recurring time investment, and map hidden team dependencies.</p>
+            </div>
+            <div class="tool-card-action">Launch Audit <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool2')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-language"></i></div>
+              <h3 class="tool-card-title">2. The Value Translator</h3>
+              <p class="tool-card-desc">Turn behind-the-scenes work into evidence, business language, and transferable skills.</p>
+            </div>
+            <div class="tool-card-action">Translate Work <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool3')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-bullhorn"></i></div>
+              <h3 class="tool-card-title">3. The Visibility Campaign</h3>
+              <p class="tool-card-desc">Make meaningful contributions easier to discover without constant self-promotion.</p>
+            </div>
+            <div class="tool-card-action">Plan Campaign <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool4')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-handshake"></i></div>
+              <h3 class="tool-card-title">4. Workload Renegotiation</h3>
+              <p class="tool-card-desc">Decide what to keep, stop, formalize, recognize, or exchange for reduced scope.</p>
+            </div>
+            <div class="tool-card-action">Draft Proposal <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" onclick="switchView('tool5')">
+            <div>
+              <div class="tool-card-icon"><i class="fa-solid fa-door-open"></i></div>
+              <h3 class="tool-card-title">5. Exit or Elevate</h3>
+              <p class="tool-card-desc">Evaluate whether to expand your role internally, redesign scope, or leverage skills elsewhere.</p>
+            </div>
+            <div class="tool-card-action">Assess Strategy <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="card tool-grid-card" style="background: linear-gradient(135deg, #FDF0E6, #FFF5E6);" onclick="switchView('reset')">
+            <div>
+              <div class="tool-card-icon" style="background:#F4A261; color:#FFF;"><i class="fa-solid fa-calendar-check"></i></div>
+              <h3 class="tool-card-title">7-Day Reset Program</h3>
+              <p class="tool-card-desc">Execute a guided, step-by-step 7-day progression through the entire invisible work system.</p>
+            </div>
+            <div class="tool-card-action" style="color:#E76F51;">Start Reset <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL 1: THE INVISIBLE AUDIT -->
+      <div id="view-tool1" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-clipboard-check"></i> Tool 1 — The Invisible Audit</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Problem:</strong> "I know I do a lot that nobody notices, but I can't name it all."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool1">
+            <div class="form-group">
+              <label for="t1-tasks">Tasks you do that aren't in your job description:</label>
+              <div class="form-hint">Enter one task per line (e.g., Scheduling meetings, informal onboarding, document cleanup)</div>
+              <textarea id="t1-tasks" rows="5" placeholder="Scheduling team meetings&#10;Onboarding new hires informally&#10;Taking notes in every meeting"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t1-freq">How often do you do each?</label>
+                <select id="t1-freq">
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                  <option value="As needed">As needed</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-duration">How long does each take on average?</label>
+                <select id="t1-duration">
+                  <option value="<15min">&lt;15 min</option>
+                  <option value="15-30min" selected>15 - 30 min</option>
+                  <option value="30-60min">30 - 60 min</option>
+                  <option value="1-2hr">1 - 2 hours</option>
+                  <option value="2hr+">2+ hours</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t1-benefits">Who benefits from each?</label>
+              <textarea id="t1-benefits" rows="2" placeholder="e.g. The whole team, new engineers, direct management..."></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t1-notice">Who would notice if you stopped?</label>
+              <textarea id="t1-notice" rows="2" placeholder="e.g. Nobody right away, but meeting scheduling would stall and onboarding questions would double..."></textarea>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Run Invisible Audit</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool1()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tool 1 Output Container -->
+        <div id="output-tool1" class="output-container">
+          <div class="section-header">
+            <span>Audit Results</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool1')"><i class="fa-solid fa-copy"></i> Copy Analysis</button>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-clock"></i> The Hours Reveal</div>
+            <div class="stat-hero">
+              <div class="stat-number" id="t1-out-hours">0 hrs</div>
+              <div class="stat-label">Planning estimate per week (~<span id="t1-out-annual">0</span> hours/year based on selected frequency & duration assumptions)</div>
+            </div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-list-check"></i> The Invisible List</div>
+            <div class="output-content">
+              <ul class="formatted-list" id="t1-out-list"></ul>
+            </div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-sitemap"></i> The Dependency Map</div>
+            <div class="output-content" id="t1-out-deps"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-triangle-exclamation"></i> The Scope / Recognition Gap</div>
+            <div class="output-content" id="t1-out-gap"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title"><i class="fa-solid fa-plug-circle-xmark"></i> The Stop Test</div>
+            <div class="output-content" id="t1-out-stop"></div>
+          </div>
+
+          <!-- Unified Completion / Next Step Block -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Audit Complete — What's Next?</div>
+            <p class="completion-desc">You don't need to solve your entire workload today. Start with the one piece of evidence or decision that makes the next conversation easier.</p>
+            <div class="completion-priority" id="t1-comp-priority">
+              <strong>Your Priority:</strong> Convert these raw tasks into professional business language using Tool 2.
+            </div>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool2')">Proceed to Tool 2: Value Translator <i class="fa-solid fa-arrow-right"></i></button>
+              <button class="btn btn-sm btn-secondary" onclick="switchView('plan')">View Master Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Accordion -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool1')">
+              <h4><i class="fa-solid fa-history"></i> Recent Audit History</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool1"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool1">
+              <div id="hist-list-tool1">No history saved yet.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool1')">Clear History</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL 2: THE VALUE TRANSLATOR -->
+      <div id="view-tool2" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-language"></i> Tool 2 — The Value Translator</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Problem:</strong> "I need to describe this invisible work in ways that matter to my boss and the business."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool2">
+            <div class="form-group">
+              <label for="t2-task">Your invisible task:</label>
+              <textarea id="t2-task" rows="2" placeholder="e.g. Informal onboarding of new team members"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t2-problem">What problem does it solve?</label>
+              <textarea id="t2-problem" rows="2" placeholder="e.g. Eliminates ramp-up confusion and prevents early client mistakes"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t2-without">What would happen without it?</label>
+              <textarea id="t2-without" rows="2" placeholder="e.g. New hires struggle for weeks, make mistakes, and constantly interrupt senior devs"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t2-beneficiary">Who is the primary beneficiary?</label>
+                <select id="t2-beneficiary">
+                  <option value="My boss">My boss</option>
+                  <option value="My team" selected>My team</option>
+                  <option value="Cross-functional">Cross-functional</option>
+                  <option value="Clients">Clients</option>
+                  <option value="The company">The company</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Can it be quantified with factual numbers?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t2-quant" value="Yes"> Yes (I have real metrics)</label>
+                  <label class="radio-label"><input type="radio" name="t2-quant" value="Partially" checked> Partially (Estimable)</label>
+                  <label class="radio-label"><input type="radio" name="t2-quant" value="No"> No (Qualitative impact)</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group" id="t2-metric-input-group">
+              <label for="t2-factual-metric">Factual Metric / Specific Number (Optional):</label>
+              <input type="text" id="t2-factual-metric" placeholder="e.g. Onboarded 5 hires, saved ~3 hours per onboarding doc, zero critical errors">
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic"></i> Translate Work</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool2()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tool 2 Output Container -->
+        <div id="output-tool2" class="output-container">
+          <div class="section-header">
+            <span>Translated Value Artifacts</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool2')"><i class="fa-solid fa-copy"></i> Copy All</button>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title">
+              <span><i class="fa-solid fa-briefcase"></i> The Business Case</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t2-out-case')"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+            <div class="output-content" id="t2-out-case"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-chart-line"></i> The Impact Metric Opportunity</div>
+            <div class="output-content" id="t2-out-metric"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-coins"></i> Capacity / Resource Considerations</div>
+            <div class="output-content" id="t2-out-comp"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-award"></i> Transferable Capability</div>
+            <div class="output-content" id="t2-out-skill"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-file-lines"></i> Portfolio / Resume Entry</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t2-out-port')"><i class="fa-solid fa-copy"></i> Copy</button>
+            </div>
+            <div class="output-content" id="t2-out-port"></div>
+          </div>
+
+          <!-- Completion Card -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Translation Complete</div>
+            <p class="completion-desc">Now that you've articulated the business value, make these contributions discoverable through normal team channels.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool3')">Proceed to Tool 3: Visibility Campaign <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Accordion -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool2')">
+              <h4><i class="fa-solid fa-history"></i> Translation History</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool2"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool2">
+              <div id="hist-list-tool2">No history saved yet.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool2')">Clear History</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL 3: THE VISIBILITY CAMPAIGN -->
+      <div id="view-tool3" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-bullhorn"></i> Tool 3 — The Visibility Campaign</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Problem:</strong> "I need people to see this work without me having to announce it constantly."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool3">
+            <div class="form-group">
+              <label for="t3-what">What contribution do you want recognized?</label>
+              <textarea id="t3-what" rows="2" placeholder="e.g. Meeting coordination, agenda planning, and note-taking"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t3-who">Who needs to know?</label>
+                <select id="t3-who">
+                  <option value="My boss" selected>My boss</option>
+                  <option value="Skip-level manager">Skip-level manager</option>
+                  <option value="My team">My team</option>
+                  <option value="HR / Leadership">HR / Leadership</option>
+                  <option value="Cross-functional stakeholders">Cross-functional stakeholders</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t3-flow">How does information flow here?</label>
+                <select id="t3-flow">
+                  <option value="Email updates">Email updates</option>
+                  <option value="Team meetings">Team meetings</option>
+                  <option value="1:1s" selected>1:1s</option>
+                  <option value="Project docs">Project docs</option>
+                  <option value="Chat (Slack/Teams)">Chat (Slack/Teams)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t3-comfort">Your comfort with self-promotion:</label>
+              <select id="t3-comfort">
+                <option value="Comfortable">Comfortable</option>
+                <option value="Okay">Okay</option>
+                <option value="Uncomfortable" selected>Uncomfortable</option>
+                <option value="Hate it">Hate it</option>
+              </select>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Build Campaign</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool3()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tool 3 Output Container -->
+        <div id="output-tool3" class="output-container">
+          <div class="section-header">
+            <span>Visibility Strategy Plan</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool3')"><i class="fa-solid fa-copy"></i> Copy Campaign</button>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-satellite-dish"></i> The Subtle Signal</div>
+            <div class="output-content" id="t3-out-signal"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-arrows-rotate"></i> Capacity & Rotation Proposal</div>
+            <div class="output-content" id="t3-out-rotation"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-folder-open"></i> Shared Documentation Strategy</div>
+            <div class="output-content" id="t3-out-doc"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-comments"></i> The 1:1 Conversation Script</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t3-out-script')"><i class="fa-solid fa-copy"></i> Copy Script</button>
+            </div>
+            <div class="output-content" id="t3-out-script"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-diagram-project"></i> Standardizing Team Process</div>
+            <div class="output-content" id="t3-out-process"></div>
+          </div>
+
+          <!-- Completion Card -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Visibility Plan Ready</div>
+            <p class="completion-desc">With discoverability mechanisms in place, prepare to negotiate formal scope boundaries or compensation adjustments.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool4')">Proceed to Tool 4: Renegotiation <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Accordion -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool3')">
+              <h4><i class="fa-solid fa-history"></i> Campaign History</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool3"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool3">
+              <div id="hist-list-tool3">No history saved yet.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool3')">Clear History</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL 4: THE WORKLOAD RENEGOTIATION -->
+      <div id="view-tool4" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-handshake"></i> Tool 4 — The Workload Renegotiation</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Problem:</strong> "I want to either get paid for this extra work or stop doing so much of it."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool4">
+            <div class="form-group">
+              <label for="t4-hours">Total estimated invisible hours per week:</label>
+              <input type="number" id="t4-hours" min="1" max="40" value="8">
+            </div>
+
+            <div class="form-group">
+              <label for="t4-keep">Which tasks do you want to keep & formalize?</label>
+              <textarea id="t4-keep" rows="2" placeholder="e.g. Mentoring junior team members and technical onboarding"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t4-drop">Which tasks do you want to drop, rotate, or reduce?</label>
+              <textarea id="t4-drop" rows="2" placeholder="e.g. All ad-hoc meeting scheduling, note-taking, and document reformatting"></textarea>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t4-return">What do you seek in return?</label>
+                <select id="t4-return">
+                  <option value="Raise / Compensation bump">Raise / Compensation bump</option>
+                  <option value="Title change">Title change</option>
+                  <option value="Reduced other work" selected>Reduced other work</option>
+                  <option value="Formal Recognition / OKR inclusion">Formal Recognition / OKR inclusion</option>
+                  <option value="Formal role / Ownership">Formal role / Ownership</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Manager's likely reaction:</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Receptive"> Receptive</label>
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Neutral" checked> Neutral</label>
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Defensive"> Defensive</label>
+                  <label class="radio-label"><input type="radio" name="t4-react" value="Will ignore"> Will ignore</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Generate Renegotiation Proposal</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool4()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tool 4 Output Container -->
+        <div id="output-tool4" class="output-container">
+          <div class="section-header">
+            <span>Renegotiation Strategy Plan</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool4')"><i class="fa-solid fa-copy"></i> Copy Proposal</button>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-scroll"></i> Collaborative Proposal Script</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t4-out-prop')"><i class="fa-solid fa-copy"></i> Copy Script</button>
+            </div>
+            <div class="output-content" id="t4-out-prop"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-scale-balanced"></i> Scope Trade-Off Map</div>
+            <div class="output-content" id="t4-out-trade"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-route"></i> Formalization Path</div>
+            <div class="output-content" id="t4-out-path"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-shield-halved"></i> Capacity Priority & Boundary Strategy</div>
+            <div class="output-content" id="t4-out-refuse"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title">
+              <span><i class="fa-solid fa-file-contract"></i> Post-Meeting Summary Email</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t4-out-doc')"><i class="fa-solid fa-copy"></i> Copy Email</button>
+            </div>
+            <div class="output-content" id="t4-out-doc"></div>
+          </div>
+
+          <!-- Completion Card -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-circle-check"></i> Negotiation Plan Ready</div>
+            <p class="completion-desc">Evaluate whether to leverage your expanded skills internally or evaluate market options if recognition stalls.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('tool5')">Proceed to Tool 5: Exit or Elevate <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Accordion -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool4')">
+              <h4><i class="fa-solid fa-history"></i> Proposal History</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool4"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool4">
+              <div id="hist-list-tool4">No history saved yet.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool4')">Clear History</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TOOL 5: THE EXIT OR ELEVATE -->
+      <div id="view-tool5" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-door-open"></i> Tool 5 — The Exit or Elevate</h2>
+          <div class="problem-box">
+            <i class="fa-solid fa-circle-info"></i>
+            <div><strong>Problem:</strong> "If this work stays invisible, I need to know whether to leave or find a place that values it."</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-tool5">
+            <div class="grid-2">
+              <div class="form-group">
+                <label for="t5-duration">How long has your invisible work been unaddressed?</label>
+                <select id="t5-duration">
+                  <option value="<3mo">&lt; 3 months</option>
+                  <option value="3-6mo">3 - 6 months</option>
+                  <option value="6mo-1yr">6 months - 1 year</option>
+                  <option value="1yr+" selected>1 year +</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Have you attempted systematic visibility?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-tried" value="Yes multiple times" checked> Yes multiple times</label>
+                  <label class="radio-label"><input type="radio" name="t5-tried" value="Once"> Once</label>
+                  <label class="radio-label"><input type="radio" name="t5-tried" value="Not yet"> Not yet</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="grid-2">
+              <div class="form-group">
+                <label>Are these skills valued in other roles/departments?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Yes" checked> Yes</label>
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Maybe"> Maybe</label>
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="No"> No</label>
+                  <label class="radio-label"><input type="radio" name="t5-valued" value="Not sure"> Not sure</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Are you building skills or experiencing burnout?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-status" value="Building skills"> Building skills</label>
+                  <label class="radio-label"><input type="radio" name="t5-status" value="Stalled"> Stalled</label>
+                  <label class="radio-label"><input type="radio" name="t5-status" value="Burning out" checked> Burning out</label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t5-flex">Financial flexibility & runway considerations:</label>
+              <select id="t5-flex">
+                <option value="High flexibility">High flexibility / Strong savings cushion</option>
+                <option value="Need 3-6mo" selected>Need 3-6 months runway planning</option>
+                <option value="Need 6mo+">Need 6+ months runway planning</option>
+                <option value="Financially constrained">Financially constrained / Conservative timeline</option>
+              </select>
+            </div>
+
+            <div class="btn-row">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Calculate Career Direction</button>
+              <button type="button" class="btn btn-sample" onclick="loadSampleTool5()"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Tool 5 Output Container -->
+        <div id="output-tool5" class="output-container">
+          <div class="section-header">
+            <span>Career Assessment Direction</span>
+            <button class="btn btn-sm btn-copy" onclick="copySection('output-tool5')"><i class="fa-solid fa-copy"></i> Copy Assessment</button>
+          </div>
+
+          <div class="card output-card" style="text-align: center;">
+            <div class="output-title" style="justify-content: center;"><i class="fa-solid fa-compass"></i> Strategic Career Direction</div>
+            <div id="t5-out-verdict"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-arrow-up-right-dots"></i> Internal Opportunity / Role Redesign</div>
+            <div class="output-content" id="t5-out-internal"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-briefcase"></i> External Market Possibilities</div>
+            <div class="output-content" id="t5-out-external"></div>
+          </div>
+
+          <div class="card output-card accent-border">
+            <div class="output-title">
+              <span><i class="fa-solid fa-id-card"></i> Resume / Profile Reframing</span>
+              <button class="btn btn-sm btn-copy" onclick="copyText('t5-out-resume')"><i class="fa-solid fa-copy"></i> Copy Bullets</button>
+            </div>
+            <div class="output-content" id="t5-out-resume"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-timeline"></i> Action Timeline</div>
+            <div class="output-content" id="t5-out-timeline"></div>
+          </div>
+
+          <div class="card output-card">
+            <div class="output-title"><i class="fa-solid fa-piggy-bank"></i> Financial & Practical Planning</div>
+            <div class="output-content" id="t5-out-fin"></div>
+          </div>
+
+          <!-- Completion Card -->
+          <div class="completion-experience-card">
+            <div class="completion-title"><i class="fa-solid fa-clipboard-check"></i> System Evaluation Complete</div>
+            <p class="completion-desc">You have completed the assessment. Generate your full consolidated Master Plan to guide your career discussions.</p>
+            <div class="btn-row" style="margin-top:0;">
+              <button class="btn btn-sm btn-primary" onclick="switchView('plan')"><i class="fa-solid fa-file-contract"></i> Open My Invisible Work Plan</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Accordion -->
+        <div class="history-section">
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool5')">
+              <h4><i class="fa-solid fa-history"></i> Assessment History</h4>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool5"></i>
+            </div>
+            <div class="history-body" id="hist-body-tool5">
+              <div id="hist-list-tool5">No history saved yet.</div>
+              <div class="btn-row" style="margin-top: 1rem;">
+                <button class="btn btn-sm btn-secondary" onclick="clearToolHistory('tool5')">Clear History</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: 7-DAY RESET PROGRAM -->
+      <div id="view-reset" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-calendar-check"></i> 7-Day Invisible Work Reset</h2>
+          <p style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.35rem;">
+            A guided step-by-step progression through the operating system to turn uncounted work into clear scope, visibility, and career direction.
+          </p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-magnifying-glass"></i> Day 1 — Find the Work</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool1')">Run Audit</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Audit uncounted labor, estimate recurring hours spent, and map who depends on your glue work.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-pen-to-square"></i> Day 2 — Name the Value</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool2')">Translate</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Convert raw tasks into business problem statements, risk mitigation, and transferable capabilities.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-eye"></i> Day 3 — Make It Visible</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool3')">Plan Visibility</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Establish low-friction attribution through shared documentation, SOPs, and subtle signals.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-scale-balanced"></i> Day 4 — Reset the Scope</span>
+            <button class="btn btn-sm btn-secondary" onclick="switchView('tool4')">Draft Proposal</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Draft a collaborative scope proposal detailing tasks to keep, tasks to drop, and trade-offs.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-flask"></i> Day 5 — Test the System</span>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Initiate your initial 1:1 briefing or publish your shared process document. Observe manager & team responses.</p>
+        </div>
+
+        <div class="reset-day-card">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-comments"></i> Day 6 — Review Response</span>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Evaluate manager receptivity, team operational friction, and initial scope adjustments.</p>
+        </div>
+
+        <div class="reset-day-card" style="border-left-color: var(--warm-peach);">
+          <div class="reset-day-header">
+            <span class="reset-day-title"><i class="fa-solid fa-compass"></i> Day 7 — Elevate or Explore</span>
+            <button class="btn btn-sm btn-primary" onclick="switchView('tool5')">Assess Career</button>
+          </div>
+          <p style="font-size: 0.875rem; color: var(--text-muted);">Synthesize findings into a 30-day career roadmap: internal role expansion or external market exploration.</p>
+        </div>
+      </div>
+
+      <!-- VIEW: MY INVISIBLE WORK PLAN (SYNTHESIS) -->
+      <div id="view-plan" class="view-container">
+        <div class="page-header">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="page-title"><i class="fa-solid fa-file-contract"></i> My Invisible Work Plan</h2>
+            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Export Plan</button>
+          </div>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-top:0.35rem;">Consolidated master synthesis generated from your current tool inputs and saved analyses.</p>
+        </div>
+
+        <div class="card" id="plan-synthesis-content">
+          <p style="color:var(--text-muted); font-style:italic;">Loading consolidated analysis...</p>
+        </div>
+      </div>
+
+      <!-- VIEW: UNIFIED HISTORY -->
+      <div id="view-history" class="view-container">
+        <div class="page-header">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h2 class="page-title"><i class="fa-solid fa-clock-rotate-left"></i> Unified Analysis History</h2>
+            <button class="btn btn-danger btn-sm" onclick="clearAllHistoryGlobal()"><i class="fa-solid fa-trash"></i> Clear All History</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div id="unified-history-list">Loading saved history records...</div>
+        </div>
+      </div>
+
+      <!-- VIEW: PRIVACY & SECURITY -->
+      <div id="view-privacy" class="view-container">
+        <div class="page-header">
+          <h2 class="page-title"><i class="fa-solid fa-shield-halved"></i> Privacy & Data Control</h2>
+        </div>
+
+        <div class="card">
+          <h3 style="font-size: 1.1rem; font-weight:700; margin-bottom: 0.75rem;"><i class="fa-solid fa-lock" style="color:var(--dusty-blue);"></i> Local-First Architecture</h3>
+          <p style="font-size: 0.925rem; line-height: 1.6; color: var(--text-muted); margin-bottom: 1rem;">
+            Invisible Work Tracker™ operates as a local-first application executing entirely within your web browser. 
+            No data is transmitted to external server databases or tracking networks.
+          </p>
+
+          <ul style="padding-left: 1.25rem; font-size: 0.9rem; color: var(--text-main); line-height: 1.7; margin-bottom: 1.5rem;">
+            <li><strong>Browser Storage:</strong> Saved histories and custom task inventories remain stored in your browser's <code>localStorage</code>.</li>
+            <li><strong>Full Control:</strong> You can clear individual tool records or reset all stored application state at any time.</li>
+            <li><strong>Input Safety:</strong> Free-text fields are sanitized to prevent scripting vulnerabilities.</li>
+          </ul>
+
+          <button class="btn btn-secondary" onclick="clearAllHistoryGlobal()"><i class="fa-solid fa-broom"></i> Reset Application Local Storage</button>
+        </div>
+      </div>
+
+      <!-- FOOTER ON EVERY VIEW -->
+      <footer>
+        Invisible Work Tracker™ — For workload visibility and career planning only. Not legal, HR, or financial advice.
+      </footer>
+    </main>
+  </div>
+
+  <!-- Toast Notification element -->
+  <div id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toast-message">Copied!</span>
+  </div>
+
+  <script>
+    /* GLOBAL STATE & STORAGE ARCHITECTURE */
+    const STATE_KEY = 'invisiblework_v2_state';
+    const HISTORY_KEY = 'invisiblework_v2_history';
+
+    let appState = {
+      completedTools: [],
+      toolResults: {},
+      lastUpdated: null
+    };
+
+    /* Security Utility: HTML Escaping */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    /* Global Navigation Logic */
+    function switchView(viewId) {
+      document.querySelectorAll('.view-container').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+      const targetView = document.getElementById(`view-${viewId}`);
+      if (targetView) targetView.classList.add('active');
+
+      const targetNav = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+      if (targetNav) targetNav.classList.add('active');
+
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (viewId === 'plan') renderMasterPlanView();
+      if (viewId === 'history') renderUnifiedHistoryView();
+    }
+
+    function setupNavigation() {
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const view = item.getAttribute('data-view');
+          switchView(view);
+        });
+      });
+
+      const burger = document.getElementById('hamburger-toggle');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      burger.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+      });
+
+      overlay.addEventListener('click', closeMobileSidebar);
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+
+    /* Toast Helper */
+    function showToast(message = "Copied!") {
+      const toast = document.getElementById('toast');
+      const msgSpan = document.getElementById('toast-message');
+      msgSpan.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    /* Safe Copy Helpers */
+    function copyText(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText || el.textContent;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast("Copied to clipboard!")).catch(() => fallbackCopy(text));
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand('copy');
+        showToast("Copied to clipboard!");
+      } catch (err) {
+        showToast("Failed to copy");
+      }
+      document.body.removeChild(textarea);
+    }
+
+    function copySection(sectionId) {
+      copyText(sectionId);
+    }
+
+    /* Unified Storage & History Manager */
+    function saveHistory(toolId, data) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const timestamp = new Date().toLocaleString([], { dateStyle: 'short', timeStyle: 'short' });
+      const record = { id: Date.now(), toolId, timestamp, data };
+      
+      history.unshift(record);
+      if (history.length > 50) history = history.slice(0, 50);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+
+      // Update state
+      appState.toolResults[toolId] = data;
+      if (!appState.completedTools.includes(toolId)) {
+        appState.completedTools.push(toolId);
+      }
+      appState.lastUpdated = timestamp;
+      localStorage.setItem(STATE_KEY, JSON.stringify(appState));
+
+      renderToolHistoryAccordion(toolId);
+    }
+
+    function renderToolHistoryAccordion(toolId) {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      const toolRecords = history.filter(h => h.toolId === toolId);
+      const container = document.getElementById(`hist-list-${toolId}`);
+      if (!container) return;
+
+      if (toolRecords.length === 0) {
+        container.innerHTML = '<em>No history saved yet.</em>';
+        return;
+      }
+
+      container.innerHTML = toolRecords.map((item, idx) => {
+        let summary = '';
+        if (toolId === 'tool1') summary = `${item.data.taskCount} tasks audited (${item.data.weeklyHours} hrs/wk)`;
+        else if (toolId === 'tool2') summary = `Task: "${escapeHTML(item.data.task.substring(0, 35))}..."`;
+        else if (toolId === 'tool3') summary = `Target: ${escapeHTML(item.data.who)} via ${escapeHTML(item.data.flow)}`;
+        else if (toolId === 'tool4') summary = `Renegotiating ${item.data.hours} hrs/wk for ${escapeHTML(item.data.desiredReturn)}`;
+        else if (toolId === 'tool5') summary = `Direction: ${escapeHTML(item.data.verdictTitle)}`;
+
+        return `
+          <div class="history-item">
+            <div class="history-meta">
+              <span><strong>#${toolRecords.length - idx}</strong> — ${escapeHTML(item.timestamp)}</span>
+              <button class="btn btn-sm btn-danger" style="padding:0.1rem 0.4rem; font-size:0.7rem;" onclick="deleteHistoryItem(${item.id}, '${toolId}')">Delete</button>
+            </div>
+            <div>${summary}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function deleteHistoryItem(id, toolId) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history = history.filter(h => h.id !== id);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      if (toolId) renderToolHistoryAccordion(toolId);
+      renderUnifiedHistoryView();
+      showToast("Record deleted");
+    }
+
+    function clearToolHistory(toolId) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history = history.filter(h => h.toolId !== toolId);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderToolHistoryAccordion(toolId);
+      showToast("Tool history cleared");
+    }
+
+    function clearAllHistoryGlobal() {
+      if (confirm("Are you sure you want to clear all stored history and application state?")) {
+        localStorage.removeItem(HISTORY_KEY);
+        localStorage.removeItem(STATE_KEY);
+        appState = { completedTools: [], toolResults: {}, lastUpdated: null };
+        ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderToolHistoryAccordion);
+        renderUnifiedHistoryView();
+        showToast("All data cleared");
+      }
+    }
+
+    function toggleHistory(toolId) {
+      const body = document.getElementById(`hist-body-${toolId}`);
+      const icon = document.getElementById(`hist-icon-${toolId}`);
+      if (body) {
+        body.classList.toggle('show');
+        if (icon) {
+          icon.className = body.classList.contains('show') ? 'fa-solid fa-chevron-up' : 'fa-solid fa-chevron-down';
+        }
+      }
+    }
+
+    function migrateLegacyHistory() {
+      let unifiedHistory = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      let migratedCount = 0;
+
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(tKey => {
+        const legacyKey = `invisible_history_${tKey}`;
+        const legacyData = localStorage.getItem(legacyKey);
+        if (legacyData) {
+          try {
+            const parsed = JSON.parse(legacyData);
+            if (Array.isArray(parsed)) {
+              parsed.forEach(item => {
+                unifiedHistory.push({
+                  id: Date.now() + Math.random(),
+                  toolId: tKey,
+                  timestamp: item.timestamp || new Date().toLocaleString(),
+                  data: item.data || {}
+                });
+                migratedCount++;
+              });
+            }
+          } catch(e){}
+          localStorage.removeItem(legacyKey);
+        }
+      });
+
+      if (migratedCount > 0) {
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(unifiedHistory));
+      }
+    }
+
+    /* TOOL 1 LOGIC & SAMPLE */
+    function loadSampleTool1() {
+      document.getElementById('t1-tasks').value =
+        "Scheduling team meetings\nInformal onboarding of new team members\nTaking notes in key meetings\nDocument cleanup and formatting\nReminding team members of upcoming deadlines";
+      document.getElementById('t1-freq').value = "Daily";
+      document.getElementById('t1-duration').value = "15-30min";
+      document.getElementById('t1-benefits').value = "Direct team, project leads, incoming hires";
+      document.getElementById('t1-notice').value = "Scheduling conflicts would arise, onboarding duration would lengthen, and deadline awareness would drop.";
+      showToast("Loaded Sample Scenario");
+    }
+
+    document.getElementById('form-tool1').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const rawTasks = document.getElementById('t1-tasks').value.trim();
+      if (!rawTasks) return alert("Please enter at least one task.");
+
+      const tasks = rawTasks.split('\n').filter(t => t.trim().length > 0);
+      const freq = document.getElementById('t1-freq').value;
+      const durationStr = document.getElementById('t1-duration').value;
+      const benefits = document.getElementById('t1-benefits').value.trim() || "Wider team and project stakeholders";
+      const notice = document.getElementById('t1-notice').value.trim() || "Operational processes would experience friction and delays.";
+
+      let durHours = 0.375;
+      if (durationStr === '<15min') durHours = 0.2;
+      else if (durationStr === '15-30min') durHours = 0.375;
+      else if (durationStr === '30-60min') durHours = 0.75;
+      else if (durationStr === '1-2hr') durHours = 1.5;
+      else if (durationStr === '2hr+') durHours = 2.5;
+
+      let freqMult = 5;
+      if (freq === 'Weekly') freqMult = 1;
+      else if (freq === 'Monthly') freqMult = 0.25;
+      else if (freq === 'As needed') freqMult = 1.5;
+
+      const totalWeeklyHours = Math.round((tasks.length * durHours * freqMult) * 10) / 10;
+      const totalAnnualHours = Math.round(totalWeeklyHours * 48);
+
+      document.getElementById('t1-out-hours').innerText = `${totalWeeklyHours} hrs/wk`;
+      document.getElementById('t1-out-annual').innerText = totalAnnualHours;
+
+      const listEl = document.getElementById('t1-out-list');
+      listEl.innerHTML = tasks.map(t => `
+        <li>
+          <span><i class="fa-solid fa-check text-muted" style="margin-right:8px;"></i>${escapeHTML(t.trim())}</span>
+          <span class="badge">${escapeHTML(freq)} • ~${Math.round(durHours * 60)}m</span>
+        </li>
+      `).join('');
+
+      document.getElementById('t1-out-deps').innerHTML = `
+        <p><strong>Primary Beneficiaries:</strong> ${escapeHTML(benefits)}</p>
+        <p style="margin-top:0.5rem;"><strong>Operational Dependency:</strong> <span class="badge badge-accent">Significant Reliance</span></p>
+        <p style="margin-top:0.5rem; font-size: 0.9rem; color: var(--text-muted);">Your team relies on this labor to maintain daily workflow momentum without formal role allocation.</p>
+      `;
+
+      document.getElementById('t1-out-gap').innerHTML = `
+        <p>You identified <strong>${tasks.length} recurring tasks</strong> outside your core job description. This indicates a scope-visibility question worth discussing with management to establish clear ownership boundaries.</p>
+      `;
+
+      document.getElementById('t1-out-stop').innerHTML = `
+        <p><strong>Impact of Pausing:</strong> "${escapeHTML(notice)}"</p>
+        <div style="background: rgba(244,162,97,0.15); padding: 0.75rem; border-radius:6px; margin-top:0.75rem; font-size:0.875rem;">
+          <i class="fa-solid fa-lightbulb" style="color:var(--warm-peach-dark);"></i> <strong>Stop Test Insight:</strong> Operational friction upon stopping suggests this work is a functional process dependency rather than optional effort.
+        </div>
+      `;
+
+      const outContainer = document.getElementById('output-tool1');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool1', {
+        taskCount: tasks.length,
+        weeklyHours: totalWeeklyHours,
+        tasks: tasks,
+        benefits: benefits,
+        notice: notice
+      });
+    });
+
+    /* TOOL 2 LOGIC & SAMPLE */
+    function loadSampleTool2() {
+      document.getElementById('t2-task').value = "Informal onboarding of new hires and documentation maintenance";
+      document.getElementById('t2-problem').value = "Solves ramp-up confusion, addresses repeat questions, and prevents early operational mistakes";
+      document.getElementById('t2-without').value = "New hires struggle for weeks, make preventable mistakes, and interrupt senior engineers";
+      document.getElementById('t2-beneficiary').value = "My team";
+      document.getElementById('t2-factual-metric').value = "Onboarded 4 team members; reduced initial support questions";
+      showToast("Loaded Sample Scenario");
+    }
+
+    document.getElementById('form-tool2').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const task = document.getElementById('t2-task').value.trim();
+      const problem = document.getElementById('t2-problem').value.trim();
+      const without = document.getElementById('t2-without').value.trim();
+      const beneficiary = document.getElementById('t2-beneficiary').value;
+      const quantType = document.querySelector('input[name="t2-quant"]:checked')?.value || "Partially";
+      const factualMetric = document.getElementById('t2-factual-metric').value.trim();
+
+      if (!task || !problem) return alert("Please fill out the task and problem fields.");
+
+      const businessCase = `Proactively supported operational enablement for ${escapeHTML(beneficiary.toLowerCase())} by managing ${escapeHTML(task.toLowerCase())}, addressing operational friction ("${escapeHTML(problem)}") and protecting core team capacity.`;
+
+      let metricContent = '';
+      if (quantType === 'Yes' && factualMetric) {
+        metricContent = `<p><strong>Measured Outcome:</strong> ${escapeHTML(factualMetric)}</p>`;
+      } else if (quantType === 'Partially') {
+        metricContent = `
+          <ul style="padding-left:1.25rem; line-height:1.7;">
+            <li><strong>Time-to-Productivity Opportunity:</strong> Helps streamline team onboarding and ramp-up timing.</li>
+            <li><strong>Risk Mitigation:</strong> Reduces likelihood of recurring errors ("${escapeHTML(without.substring(0, 70))}...").</li>
+            <li><strong>Capacity Protection:</strong> Protects senior capacity by absorbing ad-hoc support inquiries.</li>
+          </ul>
+        `;
+      } else {
+        metricContent = `<p><strong>Qualitative Impact:</strong> Improves process continuity, team coordination, and operational stability across ${escapeHTML(beneficiary.toLowerCase())}.</p>`;
+      }
+
+      const comparison = `
+        <p>If formalized as a dedicated function, executing <strong>${escapeHTML(task)}</strong> would require explicit capacity allocation, formal ownership tags, or dedicated process management.</p>
+      `;
+
+      const skillRecognition = `
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:0.5rem;">
+          <span class="badge">Operational Coordination</span>
+          <span class="badge">Knowledge Management</span>
+          <span class="badge">Process Enablement</span>
+          <span class="badge">Stakeholder Alignment</span>
+        </div>
+        <p style="font-size:0.9rem; color:var(--text-muted);">Demonstrates proactive coordination, system organization, and process stewardship.</p>
+      `;
+
+      const portfolioEntry = `• Championed ${escapeHTML(task.toLowerCase())} across ${escapeHTML(beneficiary)}, addressing key operational bottlenecks ("${escapeHTML(problem)}").`;
+
+      document.getElementById('t2-out-case').innerText = businessCase;
+      document.getElementById('t2-out-metric').innerHTML = metricContent;
+      document.getElementById('t2-out-comp').innerHTML = comparison;
+      document.getElementById('t2-out-skill').innerHTML = skillRecognition;
+      document.getElementById('t2-out-port').innerText = portfolioEntry;
+
+      const outContainer = document.getElementById('output-tool2');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool2', { task, problem, beneficiary, businessCase, portfolioEntry });
+    });
+
+    /* TOOL 3 LOGIC & SAMPLE */
+    function loadSampleTool3() {
+      document.getElementById('t3-what').value = "Meeting coordination, agenda curation, and post-meeting action item tracking";
+      document.getElementById('t3-who').value = "My boss";
+      document.getElementById('t3-flow').value = "1:1s";
+      document.getElementById('t3-comfort').value = "Uncomfortable";
+      showToast("Loaded Sample Scenario");
+    }
+
+    document.getElementById('form-tool3').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const what = document.getElementById('t3-what').value.trim();
+      const who = document.getElementById('t3-who').value;
+      const flow = document.getElementById('t3-flow').value;
+      const comfort = document.getElementById('t3-comfort').value;
+
+      if (!what) return alert("Please specify what contribution you want recognized.");
+
+      const subtleSignal = `
+        <p>Maintain a shared, centralized <strong>Work Artifact Hub</strong> in ${escapeHTML(flow)}. List your name as owner or curator on shared documentation so attribution occurs naturally during daily references.</p>
+      `;
+
+      const rotationProposal = `
+        <p>Propose a rotating schedule for administrative or coordination aspects of <em>${escapeHTML(what)}</em>. Frame this as a shared team capacity practice, allowing ${escapeHTML(who.toLowerCase())} to see the required effort directly.</p>
+      `;
+
+      const docStrategy = `
+        <p>Establish a standard checklist titled <code>[SOP] ${escapeHTML(what.substring(0, 30))}</code>. Maintain a concise 2-line update log to create a visible, auditable track record.</p>
+      `;
+
+      const script1on1 = `"In our 1:1, I wanted to brief you on a coordination system I've maintained around ${escapeHTML(what)}. It takes approximately 2-3 hours weekly, and I'd like to align on formalizing this within our team workflow."`;
+
+      const teamProcess = `
+        <p>Develop a 1-page Standard Operating Procedure (SOP) for ${escapeHTML(what)} to transition individual glue work into a standardized team process.</p>
+      `;
+
+      document.getElementById('t3-out-signal').innerHTML = subtleSignal;
+      document.getElementById('t3-out-rotation').innerHTML = rotationProposal;
+      document.getElementById('t3-out-doc').innerHTML = docStrategy;
+      document.getElementById('t3-out-script').innerText = script1on1;
+      document.getElementById('t3-out-process').innerHTML = teamProcess;
+
+      const outContainer = document.getElementById('output-tool3');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool3', { what, who, flow, comfort, script1on1 });
+    });
+
+    /* TOOL 4 LOGIC & SAMPLE */
+    function loadSampleTool4() {
+      document.getElementById('t4-hours').value = 8;
+      document.getElementById('t4-keep').value = "Mentoring junior team members and technical onboarding";
+      document.getElementById('t4-drop').value = "Ad-hoc meeting scheduling, note-taking, and doc reformatting";
+      document.getElementById('t4-return').value = "Reduced other work";
+      document.querySelectorAll('input[name="t4-react"]').forEach(r => { if (r.value === 'Neutral') r.checked = true; });
+      showToast("Loaded Sample Scenario");
+    }
+
+    document.getElementById('form-tool4').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const hours = document.getElementById('t4-hours').value;
+      const keep = document.getElementById('t4-keep').value.trim() || "high-impact mentoring/coordination";
+      const drop = document.getElementById('t4-drop').value.trim() || "administrative ad-hoc tasks";
+      const desiredReturn = document.getElementById('t4-return').value;
+      const react = document.querySelector('input[name="t4-react"]:checked')?.value || "Neutral";
+
+      const propScript = `"Over recent months, I've allocated roughly ${escapeHTML(hours)} hours weekly to uncounted coordination work—specifically ${escapeHTML(keep)} and ${escapeHTML(drop)}. To maintain high quality on my primary goals, I propose formalizing ${escapeHTML(keep)} while transitioning ${escapeHTML(drop)} to a shared rotation or automated workflow in exchange for ${escapeHTML(desiredReturn.toLowerCase())}. How does this trade-off sound?"`;
+
+      const tradeOff = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem; font-size:0.9rem;">
+          <div style="background:#EBF0F6; padding:0.75rem; border-radius:6px;">
+            <strong style="color:var(--dusty-blue-dark);">Keep & Formalize:</strong><br>${escapeHTML(keep)}
+          </div>
+          <div style="background:#FDF0E6; padding:0.75rem; border-radius:6px;">
+            <strong style="color:var(--warm-peach-dark);">Offload, Rotate, or Stop:</strong><br>${escapeHTML(drop)}
+          </div>
+        </div>
+      `;
+
+      const formalPath = `
+        <ol style="padding-left:1.25rem; line-height:1.7; font-size:0.9rem;">
+          <li>Incorporate <strong>${escapeHTML(keep)}</strong> into official role expectations or quarterly goals.</li>
+          <li>Update role descriptions during review cycles to reflect formal ownership.</li>
+          <li>Establish capacity expectations so workload is accounted for in team planning.</li>
+        </ol>
+      `;
+
+      let refuseAdvice = "";
+      if (react === "Defensive" || react === "Will ignore") {
+        refuseAdvice = `<p style="color:#C53030;"><strong>Capacity Boundary Strategy:</strong> If your manager is resistant, do not withhold essential work unannounced. Instead, request explicit prioritization guidance: <em>"I want to ensure core deliverables remain on schedule. Which priority should move to accommodate these extra coordination tasks?"</em></p>`;
+      } else {
+        refuseAdvice = `<p>If deferred, request a 30-day review point: <em>"Let's revisit this in 30 days after I track weekly hours against core deliverables."</em></p>`;
+      }
+
+      const emailDoc = `Subject: Summary & Workload Alignment Follow-up
+
+Hi [Manager Name],
+
+Thank you for discussing my current workload bandwidth today. As discussed, I am spending ~${escapeHTML(hours)} hours weekly on non-core coordination tasks.
+
+Moving forward, we agreed to prioritize ${escapeHTML(keep)} while evaluating options to transition ${escapeHTML(drop)} to free up core capacity.
+
+Best regards,
+[Your Name]`;
+
+      document.getElementById('t4-out-prop').innerText = propScript;
+      document.getElementById('t4-out-trade').innerHTML = tradeOff;
+      document.getElementById('t4-out-path').innerHTML = formalPath;
+      document.getElementById('t4-out-refuse').innerHTML = refuseAdvice;
+      document.getElementById('t4-out-doc').innerText = emailDoc;
+
+      const outContainer = document.getElementById('output-tool4');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool4', { hours, keep, drop, desiredReturn, propScript, emailDoc });
+    });
+
+    /* TOOL 5 LOGIC & SAMPLE */
+    function loadSampleTool5() {
+      document.getElementById('t5-duration').value = "1yr+";
+      document.querySelectorAll('input[name="t5-tried"]').forEach(r => { if (r.value === 'Yes multiple times') r.checked = true; });
+      document.querySelectorAll('input[name="t5-valued"]').forEach(r => { if (r.value === 'Yes') r.checked = true; });
+      document.querySelectorAll('input[name="t5-status"]').forEach(r => { if (r.value === 'Burning out') r.checked = true; });
+      document.getElementById('t5-flex').value = "Need 3-6mo";
+      showToast("Loaded Sample Scenario");
+    }
+
+    document.getElementById('form-tool5').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const duration = document.getElementById('t5-duration').value;
+      const tried = document.querySelector('input[name="t5-tried"]:checked')?.value || "Not yet";
+      const valued = document.querySelector('input[name="t5-valued"]:checked')?.value || "Not sure";
+      const status = document.querySelector('input[name="t5-status"]:checked')?.value || "Stalled";
+      const flex = document.getElementById('t5-flex').value;
+
+      let verdict = "RENEGOTIATE BOUNDARIES";
+      let verdictClass = "background:#EBF0F6; color:var(--dusty-blue-dark);";
+      let reason = "";
+
+      if (status === "Burning out" && (duration === "1yr+" || duration === "6mo-1yr") && tried === "Yes multiple times") {
+        verdict = "EXPLORE EXTERNAL OPTIONS";
+        verdictClass = "background:#FCE3D0; color:#C53030;";
+        reason = "Systematic efforts over an extended period have not yielded scope adjustments. The pattern supports beginning a structured external job search while maintaining core responsibilities.";
+      } else if (tried === "Not yet" || tried === "Once") {
+        verdict = "ELEVATE & ADVOCATE";
+        verdictClass = "background:#EBF0F6; color:var(--dusty-blue-dark);";
+        reason = "Work remains unaddressed primarily due to lack of systematic documentation. Execute Tools 2 & 3 before evaluating role exit.";
+      } else if (valued === "Yes" && status !== "Burning out") {
+        verdict = "INTERNAL TRANSFER";
+        verdictClass = "background:#FEFCBF; color:#744210;";
+        reason = "Your coordination and leadership capabilities have strong market value elsewhere in the organization. Explore formal internal transfer opportunities.";
+      } else {
+        verdict = "RENEGOTIATE BOUNDARIES";
+        verdictClass = "background:#EBF0F6; color:var(--dusty-blue-dark);";
+        reason = "Reset scope using Tool 4 while continuing to evaluate market alignment.";
+      }
+
+      const verdictHtml = `
+        <div class="badge-verdict" style="${verdictClass}">${escapeHTML(verdict)}</div>
+        <p style="font-size:0.925rem; color:var(--text-muted); margin-top:0.5rem;">${escapeHTML(reason)}</p>
+      `;
+
+      const internalPath = `
+        <p>Explore internal role adjustments toward formal operational functions (e.g., Program Manager, Operations Lead, Enablement Specialist) where coordination labor is explicitly structured.</p>
+      `;
+
+      const externalPath = `
+        <p>Target external roles with explicit title matches:</p>
+        <div style="display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.5rem;">
+          <span class="badge">Operations Manager</span>
+          <span class="badge">Technical Program Manager</span>
+          <span class="badge">Customer Success Lead</span>
+          <span class="badge">Enablement Lead</span>
+        </div>
+      `;
+
+      const resumeReframe = `• Directed cross-functional enablement initiatives, optimizing operational workflows and reducing administrative friction.
+• Established standardized team onboarding frameworks, accelerating time-to-productivity for technical staff.`;
+
+      const timeline = `
+        <ul style="padding-left:1.25rem; line-height:1.7; font-size:0.9rem;">
+          <li><strong>Month 1:</strong> Document current accomplishments using Tool 2.</li>
+          <li><strong>Month 2:</strong> Set strict scope boundaries; initiate internal or external networking.</li>
+          <li><strong>Months 3-4:</strong> Submit target applications or formal internal transfer requests.</li>
+        </ul>
+      `;
+
+      const finPrep = `
+        <p>Financial Strategy: <strong>${escapeHTML(flex)}</strong>.</p>
+        <p style="font-size:0.875rem; color:var(--text-muted); margin-top:0.35rem;">Define a comfortable personal runway that supports a stress-free transition without hasty decisions.</p>
+      `;
+
+      document.getElementById('t5-out-verdict').innerHTML = verdictHtml;
+      document.getElementById('t5-out-internal').innerHTML = internalPath;
+      document.getElementById('t5-out-external').innerHTML = externalPath;
+      document.getElementById('t5-out-resume').innerText = resumeReframe;
+      document.getElementById('t5-out-timeline').innerHTML = timeline;
+      document.getElementById('t5-out-fin').innerHTML = finPrep;
+
+      const outContainer = document.getElementById('output-tool5');
+      outContainer.classList.add('show');
+      outContainer.scrollIntoView({ behavior: 'smooth' });
+
+      saveHistory('tool5', { verdictTitle: verdict, duration, status, reason });
+    });
+
+    /* MASTER PLAN SYNTHESIS VIEW */
+    function renderMasterPlanView() {
+      const container = document.getElementById('plan-synthesis-content');
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding: 2rem 1rem;">
+            <i class="fa-solid fa-clipboard-list" style="font-size: 2.5rem; color: var(--dusty-blue); margin-bottom: 1rem;"></i>
+            <h3>No Analysis History Found</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.5rem; max-width:450px; margin-left:auto; margin-right:auto;">
+              Complete one or more tools (Audit, Translator, Visibility, Renegotiation, or Exit/Elevate) to generate your consolidated Master Plan.
+            </p>
+            <button class="btn btn-primary" style="margin-top:1.25rem;" onclick="switchView('tool1')">Start Invisible Audit</button>
+          </div>
+        `;
+        return;
+      }
+
+      const latestT1 = history.find(h => h.toolId === 'tool1')?.data;
+      const latestT2 = history.find(h => h.toolId === 'tool2')?.data;
+      const latestT3 = history.find(h => h.toolId === 'tool3')?.data;
+      const latestT4 = history.find(h => h.toolId === 'tool4')?.data;
+      const latestT5 = history.find(h => h.toolId === 'tool5')?.data;
+
+      container.innerHTML = `
+        <div style="margin-bottom:1.5rem; padding-bottom:1rem; border-bottom:2px solid var(--dusty-blue-light);">
+          <h3 style="font-size:1.25rem; font-weight:700;">Executive Summary & Strategy Synthesis</h3>
+          <p style="font-size:0.875rem; color:var(--text-muted);">Generated on ${escapeHTML(new Date().toLocaleDateString())}</p>
+        </div>
+
+        ${latestT1 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-clock"></i> 1. Workload Audit Snapshot</h4>
+            <p style="font-size:0.9rem; margin-top:0.35rem;">
+              Audited <strong>${latestT1.taskCount} recurring tasks</strong> representing ~<strong>${latestT1.weeklyHours} hours/week</strong> of uncounted labor (~${Math.round(latestT1.weeklyHours * 48)} hrs/year).
+            </p>
+          </div>
+        ` : ''}
+
+        ${latestT2 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-briefcase"></i> 2. Core Value Position</h4>
+            <p style="font-size:0.9rem; margin-top:0.35rem;">${escapeHTML(latestT2.businessCase)}</p>
+          </div>
+        ` : ''}
+
+        ${latestT3 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-comments"></i> 3. Visibility Script</h4>
+            <blockquote style="background:#F8FAFC; padding:0.75rem; border-left:3px solid var(--dusty-blue); font-size:0.875rem; font-style:italic; margin-top:0.35rem;">
+              ${escapeHTML(latestT3.script1on1)}
+            </blockquote>
+          </div>
+        ` : ''}
+
+        ${latestT4 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-scale-balanced"></i> 4. Scope Renegotiation Alignment</h4>
+            <p style="font-size:0.9rem; margin-top:0.35rem;">
+              <strong>Keep:</strong> ${escapeHTML(latestT4.keep)}<br>
+              <strong>Transition/Offload:</strong> ${escapeHTML(latestT4.drop)}
+            </p>
+          </div>
+        ` : ''}
+
+        ${latestT5 ? `
+          <div style="margin-bottom:1.5rem;">
+            <h4 style="font-size:1rem; color:var(--dusty-blue-dark);"><i class="fa-solid fa-compass"></i> 5. Strategic Career Direction</h4>
+            <div class="badge" style="background:#EBF0F6; color:var(--dusty-blue-dark); font-size:0.9rem; margin-top:0.35rem;">${escapeHTML(latestT5.verdictTitle)}</div>
+            <p style="font-size:0.875rem; color:var(--text-muted); margin-top:0.35rem;">${escapeHTML(latestT5.reason)}</p>
+          </div>
+        ` : ''}
+      `;
+    }
+
+    /* UNIFIED HISTORY VIEW */
+    function renderUnifiedHistoryView() {
+      const container = document.getElementById('unified-history-list');
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = '<em>No history records stored. Run any tool to save results automatically.</em>';
+        return;
+      }
+
+      container.innerHTML = history.map((item) => {
+        let toolName = 'Tool Analysis';
+        if (item.toolId === 'tool1') toolName = 'Invisible Audit';
+        else if (item.toolId === 'tool2') toolName = 'Value Translator';
+        else if (item.toolId === 'tool3') toolName = 'Visibility Campaign';
+        else if (item.toolId === 'tool4') toolName = 'Workload Renegotiation';
+        else if (item.toolId === 'tool5') toolName = 'Exit or Elevate';
+
+        return `
+          <div class="history-item" style="margin-bottom:1rem;">
+            <div class="history-meta">
+              <span><strong>${toolName}</strong> — ${escapeHTML(item.timestamp)}</span>
+              <button class="btn btn-sm btn-danger" style="padding:0.1rem 0.5rem; font-size:0.75rem;" onclick="deleteHistoryItem(${item.id})">Delete</button>
+            </div>
+            <div style="font-size:0.875rem; color:var(--text-main);">
+              ${item.data.businessCase ? escapeHTML(item.data.businessCase) : ''}
+              ${item.data.weeklyHours ? `Audited ${item.data.taskCount} tasks (${item.data.weeklyHours} hrs/wk)` : ''}
+              ${item.data.verdictTitle ? `Career Direction: ${escapeHTML(item.data.verdictTitle)}` : ''}
+              ${item.data.propScript ? `Script generated for ${item.data.hours} hrs/wk` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    /* INITIALIZATION */
+    window.addEventListener('DOMContentLoaded', () => {
+      setupNavigation();
+      migrateLegacyHistory();
+
+      // Load appState if stored
+      const savedState = localStorage.getItem(STATE_KEY);
+      if (savedState) {
+        try { appState = JSON.parse(savedState); } catch(e){}
+      }
+
+      // Render tool accordion histories
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderToolHistoryAccordion);
+    });
+  </script>
+</body>
+</html>

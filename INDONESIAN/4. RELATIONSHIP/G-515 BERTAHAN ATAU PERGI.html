@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keputusan Putus™ — Kejelasan Sebelum Babak Baru</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --mauve: #6D597A;
+            --mauve-dark: #554461;
+            --mauve-light: #F2EFF4;
+            --gold: #D4A373;
+            --gold-light: #FAEDDF;
+            --bg-gradient: linear-gradient(135deg, #F8F5F2 0%, #FDF6EC 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 12px rgba(109, 89, 122, 0.08);
+            --shadow-md: 0 8px 24px rgba(109, 89, 122, 0.12);
+            --transition: all 0.25s ease-in-out;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; }
+        .app-container { display: flex; flex: 1; position: relative; }
+
+        /* Sidebar */
+        .sidebar {
+            width: 270px; background: #FFFFFF; border-right: 1px solid var(--border-color);
+            display: flex; flex-direction: column; position: fixed; top: 0; bottom: 0; left: 0;
+            z-index: 100; box-shadow: 2px 0 10px rgba(0,0,0,0.02); transition: var(--transition);
+        }
+        .sidebar-brand { padding: 1.75rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; border-bottom: 1px solid var(--border-color); }
+        .sidebar-brand i { font-size: 1.5rem; color: var(--mauve); }
+        .sidebar-brand h1 { font-size: 1.2rem; font-weight: 700; color: var(--mauve); letter-spacing: -0.5px; }
+        .nav-links { list-style: none; padding: 1rem 0.75rem; display: flex; flex-direction: column; gap: 0.25rem; }
+        .nav-item {
+            display: flex; align-items: center; gap: 0.85rem; padding: 0.7rem 1rem; border-radius: 0.6rem;
+            color: var(--text-muted); text-decoration: none; font-weight: 500; font-size: 0.9rem;
+            cursor: pointer; transition: var(--transition);
+        }
+        .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+        .nav-item:hover { background: var(--mauve-light); color: var(--mauve); }
+        .nav-item.active { background: var(--mauve); color: #FFFFFF; }
+
+        /* Main */
+        .main-content { margin-left: 270px; flex: 1; padding: 2.5rem 2rem; max-width: 950px; width: 100%; margin-right: auto; transition: var(--transition); display: flex; flex-direction: column; }
+        .mobile-header { display: none; background: #FFFFFF; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90; }
+        .hamburger { background: none; border: none; font-size: 1.4rem; color: var(--mauve); cursor: pointer; }
+        .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 95; backdrop-filter: blur(2px); }
+        .view { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-sm); border: 1px solid rgba(109, 89, 122, 0.08); margin-bottom: 1.75rem; }
+        .hero-banner {
+            background: linear-gradient(135deg, var(--mauve) 0%, var(--mauve-dark) 100%);
+            color: #FFFFFF; padding: 3rem 2rem; border-radius: var(--radius-xl); margin-bottom: 2rem;
+            box-shadow: var(--shadow-md); text-align: center; position: relative; overflow: hidden;
+        }
+        .hero-banner::before { content: ''; position: absolute; top: -50%; right: -20%; width: 300px; height: 300px; background: rgba(212, 163, 115, 0.15); border-radius: 50%; pointer-events: none; }
+        .hero-banner h2 { font-size: 2.2rem; font-weight: 700; margin-bottom: 0.75rem; letter-spacing: -0.5px; }
+        .hero-banner p { font-size: 1.1rem; color: rgba(255,255,255,0.9); font-weight: 300; max-width: 600px; margin: 0 auto; }
+        .tools-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+        .tool-card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: var(--transition); cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; }
+        .tool-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--gold); }
+        .tool-card-header { display: flex; align-items: center; gap: 1rem; margin-bottom: 0.75rem; }
+        .tool-card-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--mauve-light); color: var(--mauve); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+        .tool-card-title { font-size: 1.1rem; font-weight: 600; color: var(--mauve); }
+        .tool-card-desc { font-size: 0.88rem; color: var(--text-muted); margin-bottom: 1rem; }
+
+        .tool-header { margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; }
+        .tool-title-group h2 { font-size: 1.75rem; color: var(--mauve); font-weight: 700; }
+        .tool-title-group p { color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem; }
+        .form-group { margin-bottom: 1.35rem; }
+        .form-label { display: block; font-size: 0.9rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.4rem; }
+        .form-control, select, textarea { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--border-color); border-radius: 0.6rem; font-size: 0.95rem; color: var(--text-main); background: #FAFAFA; transition: var(--transition); }
+        .form-control:focus, select:focus, textarea:focus { outline: none; border-color: var(--mauve); background: #FFFFFF; box-shadow: 0 0 0 3px rgba(109, 89, 122, 0.12); }
+        textarea { resize: vertical; min-height: 80px; }
+        .checkbox-grid, .radio-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.6rem; }
+        .custom-option { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.8rem; border: 1px solid var(--border-color); border-radius: 0.6rem; background: #FAFAFA; cursor: pointer; font-size: 0.85rem; transition: var(--transition); }
+        .custom-option:hover { border-color: var(--mauve); background: var(--mauve-light); }
+        .custom-option input[type="checkbox"], .custom-option input[type="radio"] { accent-color: var(--mauve); width: 16px; height: 16px; }
+
+        .slider-container { display: flex; align-items: center; gap: 1.25rem; }
+        .slider-container input[type="range"] { flex: 1; accent-color: var(--mauve); }
+        .slider-value { font-weight: 700; color: var(--mauve); font-size: 1.1rem; min-width: 30px; text-align: right; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.5rem; border-radius: 0.6rem; font-size: 0.92rem; font-weight: 600; cursor: pointer; transition: var(--transition); border: none; text-decoration: none; }
+        .btn-primary { background: var(--mauve); color: #FFFFFF; }
+        .btn-primary:hover { background: var(--mauve-dark); box-shadow: 0 4px 12px rgba(109, 89, 122, 0.25); }
+        .btn-secondary { background: var(--gold-light); color: #8C5E2B; border: 1px solid rgba(212, 163, 115, 0.3); }
+        .btn-secondary:hover { background: #F3DEC9; }
+        .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); }
+        .btn-outline:hover { background: #F5F5F5; color: var(--text-main); }
+        .btn-sm { padding: 0.35rem 0.85rem; font-size: 0.8rem; border-radius: 0.4rem; }
+        .form-actions { display: flex; gap: 1rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+        .output-card { background: #FFFFFF; border-left: 4px solid var(--mauve); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-sm); margin-top: 2rem; display: none; animation: fadeIn 0.4s ease; }
+        .output-card.active { display: block; }
+        .output-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .output-header h3 { color: var(--mauve); font-size: 1.3rem; display: flex; align-items: center; gap: 0.6rem; }
+        .analysis-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-bottom: 1.5rem; }
+        .analysis-item { background: var(--mauve-light); padding: 1rem 1.25rem; border-radius: 0.75rem; }
+        .analysis-item-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; color: var(--mauve-dark); margin-bottom: 0.25rem; }
+        .analysis-item-content { font-size: 0.95rem; color: var(--text-main); font-weight: 500; }
+
+        .validation-box { background: var(--gold-light); border: 1px solid rgba(212, 163, 115, 0.4); border-radius: 0.75rem; padding: 1.25rem; color: #6A4517; margin-top: 1.25rem; font-style: italic; }
+        .script-box { background: #2B2D42; color: #EDF2F4; padding: 1.25rem; border-radius: 0.75rem; position: relative; font-family: monospace; font-size: 0.9rem; line-height: 1.5; margin-top: 0.75rem; white-space: pre-wrap; }
+        .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; background: rgba(255,255,255,0.15); border: none; color: #FFFFFF; padding: 0.3rem 0.6rem; border-radius: 0.35rem; font-size: 0.7rem; cursor: pointer; transition: var(--transition); }
+        .copy-btn:hover { background: rgba(255,255,255,0.3); }
+
+        .history-section { margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
+        .history-title { font-size: 1rem; font-weight: 600; color: var(--text-muted); margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; }
+        .history-list { display: flex; flex-direction: column; gap: 0.6rem; }
+        .history-item { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: 0.6rem; overflow: hidden; }
+        .history-header { padding: 0.7rem 1rem; background: #FAFAFA; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; font-weight: 500; }
+        .history-body { padding: 1rem; display: none; border-top: 1px solid var(--border-color); font-size: 0.88rem; background: #FFFFFF; }
+        .history-item.open .history-body { display: block; }
+
+        .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--text-main); color: #FFFFFF; padding: 0.75rem 1.25rem; border-radius: 0.5rem; font-size: 0.88rem; font-weight: 500; box-shadow: var(--shadow-md); z-index: 1000; opacity: 0; transform: translateY(10px); transition: var(--transition); pointer-events: none; }
+        .toast.show { opacity: 1; transform: translateY(0); }
+
+        footer { margin-top: auto; background: #FFFFFF; border-top: 1px solid var(--border-color); padding: 1.5rem 2rem; text-align: center; font-size: 0.8rem; color: var(--text-muted); }
+        .reset-progress { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+        .reset-day { background: var(--mauve-light); padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; color: var(--mauve); }
+        .reset-day.done { background: var(--mauve); color: white; }
+
+        @media (max-width: 850px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .mobile-header { display: flex; }
+            .main-content { margin-left: 0; padding: 1.5rem 1rem; }
+            .sidebar-overlay.active { display: block; }
+            .hero-banner { padding: 2rem 1.25rem; }
+            .hero-banner h2 { font-size: 1.75rem; }
+            .checkbox-grid, .radio-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header class="mobile-header">
+        <div style="display:flex; align-items:center; gap:0.6rem;">
+            <i class="fa-solid fa-compass" style="color:var(--mauve); font-size:1.2rem;"></i>
+            <span style="font-weight:700; color:var(--mauve);">Keputusan Putus™</span>
+        </div>
+        <button class="hamburger" id="hamburgerBtn"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand"><i class="fa-solid fa-compass"></i><h1>Keputusan Putus™</h1></div>
+            <ul class="nav-links">
+                <li><a class="nav-item active" data-target="homeView"><i class="fa-solid fa-house"></i> Beranda</a></li>
+                <li><a class="nav-item" data-target="clarityView"><i class="fa-solid fa-magnifying-glass-chart"></i> Pemindai Kejelasan</a></li>
+                <li><a class="nav-item" data-target="fearView"><i class="fa-solid fa-shield-halved"></i> Penerjemah Ketakutan</a></li>
+                <li><a class="nav-item" data-target="stayView"><i class="fa-solid fa-sliders"></i> Uji Tetap</a></li>
+                <li><a class="nav-item" data-target="leaveView"><i class="fa-solid fa-map"></i> Rencana Pergi</a></li>
+                <li><a class="nav-item" data-target="gutView"><i class="fa-solid fa-heart-pulse"></i> Cek Hati Nurani</a></li>
+                <li><a class="nav-item" data-target="resetView"><i class="fa-solid fa-rotate"></i> Reset Keputusan</a></li>
+                <li><a class="nav-item" data-target="planView"><i class="fa-solid fa-list-check"></i> Rencana Keputusanku</a></li>
+                <li><a class="nav-item" data-target="historyView"><i class="fa-solid fa-clock-rotate-left"></i> Riwayatku</a></li>
+                <li><a class="nav-item" data-target="privacyView"><i class="fa-solid fa-lock"></i> Privasi & Keamanan</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <!-- BERANDA -->
+            <section id="homeView" class="view active">
+                <div class="hero-banner">
+                    <h2>Kamu tidak harus menderita untuk bertanya apakah ini yang tepat.</h2>
+                    <p>Keputusan Putus adalah alat bantu refleksi dan perencanaan pribadi untuk orang yang butuh kejelasan tentang apakah harus bertahan, apa yang perlu berubah, atau bagaimana menjalani kemungkinan akhir dengan bijaksana.</p>
+                </div>
+                <div style="margin-bottom:1.5rem;">
+                    <h3 style="color:var(--mauve);">Apa yang ingin kamu jernihkan saat ini?</h3>
+                </div>
+                <div class="tools-grid">
+                    <div class="tool-card" onclick="switchView('clarityView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div><div class="tool-card-title">Pemindai Kejelasan</div></div><div class="tool-card-desc">Aku tidak tahu apakah ini masa sulit atau hubungan yang salah.</div></div><div style="font-weight:600;color:var(--gold);">Mulai Pemindai Kejelasan →</div></div>
+                    <div class="tool-card" onclick="switchView('fearView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-shield-halved"></i></div><div class="tool-card-title">Penerjemah Ketakutan</div></div><div class="tool-card-desc">Aku bertahan karena takut, bukan karena bahagia.</div></div><div style="font-weight:600;color:var(--gold);">Mulai Penerjemah Ketakutan →</div></div>
+                    <div class="tool-card" onclick="switchView('stayView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-sliders"></i></div><div class="tool-card-title">Uji Tetap</div></div><div class="tool-card-desc">Aku ingin tahu apakah bertahan bisa benar-benar berhasil.</div></div><div style="font-weight:600;color:var(--gold);">Mulai Uji Tetap →</div></div>
+                    <div class="tool-card" onclick="switchView('leaveView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-map"></i></div><div class="tool-card-title">Rencana Pergi</div></div><div class="tool-card-desc">Aku perlu memahami sisi praktis dari pergi.</div></div><div style="font-weight:600;color:var(--gold);">Mulai Rencana Pergi →</div></div>
+                    <div class="tool-card" onclick="switchView('gutView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-heart-pulse"></i></div><div class="tool-card-title">Cek Hati Nurani</div></div><div class="tool-card-desc">Aku sudah terlalu banyak menganalisis. Aku perlu tahu apa yang tubuhku rasakan.</div></div><div style="font-weight:600;color:var(--gold);">Mulai Cek Hati Nurani →</div></div>
+                    <div class="tool-card" onclick="switchView('resetView')"><div><div class="tool-card-header"><div class="tool-card-icon"><i class="fa-solid fa-rotate"></i></div><div class="tool-card-title">Reset Keputusan</div></div><div class="tool-card-desc">Tidak tahu harus mulai dari mana? Mulai Reset Keputusan 7 Hari.</div></div><div style="font-weight:600;color:var(--gold);">Mulai Reset Keputusan →</div></div>
+                </div>
+            </section>
+
+            <!-- PEMINDAI KEJELASAN -->
+            <section id="clarityView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Pemindai Kejelasan</h2><p>Aku tidak tahu apakah ini masa sulit atau hubungan yang salah.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('clarity')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh</button></div>
+                <div class="card"><form id="clarityForm">
+                    <div class="form-group"><label class="form-label">Durasi hubungan:</label><select id="clarityLength" class="form-control"><option value="<6mo">&lt; 6 bulan</option><option value="6mo-1yr">6 bulan - 1 tahun</option><option value="1-2yr">1 - 2 tahun</option><option value="2-5yr">2 - 5 tahun</option><option value="5+yr">5+ tahun</option></select></div>
+                    <div class="form-group"><label class="form-label">Sudah berapa lama kamu merasa ragu?</label><select id="clarityUnsureTime" class="form-control"><option value="Just started">Baru saja</option><option value="Few weeks">Beberapa minggu</option><option value="Few months">Beberapa bulan</option><option value="6mo-1yr">6 bulan - 1 tahun</option><option value="1yr+">1 tahun+</option><option value="On and off whole relationship">Sering, selama hubungan</option></select></div>
+                    <div class="form-group"><label class="form-label">Aspek terbaik dari hubungan:</label><textarea id="clarityBest" placeholder="Apa yang membuatmu bertahan? Persahabatan, kenyamanan, sejarah..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Aspek terburuk dari hubungan:</label><textarea id="clarityWorst" placeholder="Apa yang terasa hilang atau menyakitkan? Kesepian, tujuan yang tidak sejalan..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Jika tidak ada yang berubah, bisakah kamu hidup seperti ini selama 5 tahun?</label><select id="clarityFiveYears" class="form-control"><option value="Yes, happily">Ya, dengan bahagia</option><option value="Yes, but sadly">Ya, tetapi dengan sedih</option><option value="Unsure">Tidak yakin</option><option value="No">Tidak</option><option value="I'd be miserable">Aku akan menderita</option></select></div>
+                    <div class="form-group"><label class="form-label">Pernahkah kamu berbicara dengan pasangan tentang keraguanmu?</label><select id="clarityTalked" class="form-control"><option value="Yes, openly">Ya, secara terbuka</option><option value="Yes, vaguely">Ya, secara samar</option><option value="No, I'm afraid">Tidak, aku takut</option><option value="No, I don't want to hurt them">Tidak, aku tidak mau menyakiti mereka</option></select></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-pie"></i> Jalankan Pemindai</button></div>
+                </form></div>
+                <div id="clarityOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-square-poll-vertical"></i> Peta Kejelasan</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">Jenis Ketidakpastian</div><div class="analysis-item-content" id="resUncertaintyType">--</div></div><div class="analysis-item"><div class="analysis-item-title">Pertanyaan Inti</div><div class="analysis-item-content" id="resCoreQuestion">--</div></div><div class="analysis-item"><div class="analysis-item-title">Pemeriksaan Percakapan</div><div class="analysis-item-content" id="resTalkedCheck">--</div></div><div class="analysis-item"><div class="analysis-item-title">Refleksi Lima Tahun</div><div class="analysis-item-content" id="resFiveYearTest">--</div></div><div class="analysis-item"><div class="analysis-item-title">Keseimbangan Pro/Kontra</div><div class="analysis-item-content" id="resProConBalance">--</div></div></div><div class="validation-box"><strong>Satu langkah selanjutnya:</strong> <span id="resClarityNextStep">Amati, komunikasikan, uji perubahan, atau cari dukungan.</span></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Pemindaian Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('clarity')">Hapus Riwayat</button></div><div class="history-list" id="clarityHistory"></div></div>
+            </section>
+
+            <!-- PENERJEMAH KETAKUTAN -->
+            <section id="fearView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Penerjemah Ketakutan</h2><p>Aku bertahan karena takut, bukan karena bahagia.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('fear')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh</button></div>
+                <div class="card"><form id="fearForm">
+                    <div class="form-group"><label class="form-label">Apa yang paling kamu takutkan jika pergi?</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Being alone"> Kesepian</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Financial impact"> Dampak finansial</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Hurting them"> Menyakiti mereka</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Losing shared friends"> Kehilangan teman bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Starting over"> Memulai dari awal</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Regret"> Penyesalan</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Their reaction"> Reaksi mereka</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="No one else will love me"> Tidak ada yang akan mencintaiku lagi</label>
+                        <label class="custom-option"><input type="checkbox" name="fearLeaving" value="Practical entanglement"> Belitan praktis</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Apa yang paling kamu takutkan jika bertahan?</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Wasting my life"> Menyia-nyiakan hidup</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Becoming resentful"> Menjadi pendendam</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Missing someone better"> Kehilangan seseorang yang lebih baik</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Losing myself"> Kehilangan diriku sendiri</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Repeating parents marriage"> Mengulangi pernikahan orang tua</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="Sexual regret"> Penyesalan seksual</label>
+                        <label class="custom-option"><input type="checkbox" name="fearStaying" value="No growth"> Tidak ada pertumbuhan</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Ketakutan mana yang lebih besar?</label><select id="fearBigger" class="form-control"><option value="Fear of leaving">Takut pergi</option><option value="Fear of staying">Takut bertahan</option><option value="Equal">Sama</option><option value="I don't know">Aku tidak tahu</option></select></div>
+                    <div class="form-group"><label class="form-label">Apa yang akan kamu lakukan jika kamu tidak takut?</label><textarea id="fearUnafraid" placeholder="Bayangkan tanpa konsekuensi, keamanan penuh..."></textarea></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> Terjemahkan Ketakutan</button></div>
+                </form></div>
+                <div id="fearOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-shield-cat"></i> Laporan Terjemahan Ketakutan</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">Ketakutan Pergi</div><div class="analysis-item-content" id="resLeavingFears">--</div></div><div class="analysis-item"><div class="analysis-item-title">Ketakutan Bertahan</div><div class="analysis-item-content" id="resStayingFears">--</div></div><div class="analysis-item"><div class="analysis-item-title">Dekoder Ketakutan</div><div class="analysis-item-content" id="resFearDecoder">--</div></div><div class="analysis-item"><div class="analysis-item-title">Peta Dukungan</div><div class="analysis-item-content" id="resSupportMap">--</div></div><div class="analysis-item"><div class="analysis-item-title">Skenario Terburuk</div><div class="analysis-item-content" id="resWorstCase">--</div></div></div><div class="validation-box"><strong>Pertanyaan Keberanian:</strong> <span id="resCourageQuestion">Apa yang akan kamu pilih jika kamu tahu kamu bisa menjalani transisi dengan aman?</span></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Terjemahan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('fear')">Hapus Riwayat</button></div><div class="history-list" id="fearHistory"></div></div>
+            </section>
+
+            <!-- UJI TETAP -->
+            <section id="stayView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Uji Tetap</h2><p>Apa yang perlu berubah agar ini terasa benar?</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('stay')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh</button></div>
+                <div class="card"><form id="stayForm">
+                    <div class="form-group"><label class="form-label">Satu hal yang perlu berubah dari MEREKA:</label><textarea id="stayChangeThey" placeholder="Perilaku, keterlibatan, komunikasi..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Satu hal yang perlu berubah dari KAMU:</label><textarea id="stayChangeYou" placeholder="Ekspektasi, batasan, kerentanan..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Satu hal tentang DINAMIKA hubungan yang perlu berubah:</label><textarea id="stayChangeDynamic" placeholder="Gaya konflik, waktu berkualitas, pembagian rumah tangga..."></textarea></div>
+                    <div class="form-group"><label class="form-label">Kemungkinan perubahan itu terjadi:</label><select id="stayLikelihood" class="form-control"><option value="Very likely">Sangat mungkin</option><option value="Possible but hard">Mungkin tetapi sulit</option><option value="Unlikely">Tidak mungkin</option><option value="Impossible">Mustahil</option><option value="Already tried">Sudah dicoba</option></select></div>
+                    <div class="form-group"><label class="form-label">Kesediaanmu untuk berusaha: <span id="yourWillingnessVal" class="slider-value">5</span>/10</label><div class="slider-container"><input type="range" id="yourWillingness" min="1" max="10" value="5" oninput="document.getElementById('yourWillingnessVal').textContent=this.value"></div></div>
+                    <div class="form-group"><label class="form-label">Kesediaan mereka untuk berusaha: <span id="theirWillingnessVal" class="slider-value">5</span>/10</label><div class="slider-container"><input type="range" id="theirWillingness" min="1" max="10" value="5" oninput="document.getElementById('theirWillingnessVal').textContent=this.value"></div></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-vial"></i> Evaluasi Kemungkinan</button></div>
+                </form></div>
+                <div id="stayOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-clipboard-check"></i> Peta Kelayakan Bertahan</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">Daftar Perubahan</div><div class="analysis-item-content" id="resChangeList">--</div></div><div class="analysis-item"><div class="analysis-item-title">Pemeriksaan Realitas</div><div class="analysis-item-content" id="resRealityCheck">--</div></div><div class="analysis-item"><div class="analysis-item-title">Kesenjangan Usaha</div><div class="analysis-item-content" id="resEffortGap">--</div></div><div class="analysis-item"><div class="analysis-item-title">Eksperimen 30 Hari</div><div class="analysis-item-content" id="resExperiment">--</div></div><div class="analysis-item"><div class="analysis-item-title">Jendela Tinjauan</div><div class="analysis-item-content" id="resDeadline">--</div></div></div><div class="validation-box"><strong>Pemeriksaan Penerimaan:</strong> <span id="resAcceptanceCheck">Jika tidak ada yang berubah sama sekali, bisakah kamu menerima hubungan ini apa adanya tanpa menyimpan dendam?</span></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Uji Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('stay')">Hapus Riwayat</button></div><div class="history-list" id="stayHistory"></div></div>
+            </section>
+
+            <!-- RENCANA PERGI -->
+            <section id="leaveView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Rencana Pergi</h2><p>Jika aku memutuskan pergi, aku perlu memikirkan kekacauan praktisnya.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('leave')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh</button></div>
+                <div class="card"><form id="leaveForm">
+                    <div class="form-group"><label class="form-label">Situasi tempat tinggal:</label><select id="leaveLiving" class="form-control"><option value="Live together">Tinggal bersama</option><option value="One owns, other stays">Satu memiliki, satu tinggal</option><option value="Separate places">Tempat terpisah</option><option value="Long distance">Jarak jauh</option></select></div>
+                    <div class="form-group"><label class="form-label">Belitan finansial:</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared lease"> Sewa bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared mortgage"> KPR bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Joint bank account"> Rekening bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared debt"> Utang bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared car"> Mobil bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="Shared pets"> Hewan peliharaan bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveFinancial" value="None"> Tidak ada</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Belitan sosial:</label><div class="checkbox-grid">
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Shared friend group"> Teman bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Close to their family"> Dekat dengan keluarganya</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Work together"> Bekerja bersama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Same hobby communities"> Komunitas hobi yang sama</label>
+                        <label class="custom-option"><input type="checkbox" name="leaveSocial" value="Minimal overlap"> Sedikit tumpang tindih</label>
+                    </div></div>
+                    <div class="form-group"><label class="form-label">Ada anak?</label><div class="radio-grid"><label class="custom-option"><input type="radio" name="leaveChildren" value="Yes"> Ya</label><label class="custom-option"><input type="radio" name="leaveChildren" value="No" checked> Tidak</label></div></div>
+                    <div class="form-group"><label class="form-label">Sistem dukungan jika kamu pergi:</label><select id="leaveSupport" class="form-control"><option value="Strong">Kuat (Teman/Keluarga siap)</option><option value="Moderate">Sedang (Beberapa orang)</option><option value="Weak">Lemah (Pilihan terbatas)</option><option value="None">Tidak ada (Sendiri)</option></select></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass-drafting"></i> Buat Rencana Pergi</button></div>
+                </form></div>
+                <div id="leaveOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-route"></i> Strategi Pelepasan Praktis</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">Kompleksitas Keluar</div><div class="analysis-item-content" id="resExitComplexity">--</div></div><div class="analysis-item"><div class="analysis-item-title">Rencana Tempat Tinggal</div><div class="analysis-item-content" id="resHousingPlan">--</div></div><div class="analysis-item"><div class="analysis-item-title">Pemisahan Finansial</div><div class="analysis-item-content" id="resFinancialSeparation">--</div></div><div class="analysis-item"><div class="analysis-item-title">Navigasi Sosial</div><div class="analysis-item-content" id="resSocialNavigation">--</div></div><div class="analysis-item"><div class="analysis-item-title">Protokol Perawatan Diri</div><div class="analysis-item-content" id="resSelfCare">--</div></div></div><div style="margin-top:1.5rem;"><label class="form-label">Naskah Percakapan:</label><div class="script-box"><button class="copy-btn" onclick="copyToClipboard('resConversationScript')"><i class="fa-regular fa-copy"></i> Salin</button><div id="resConversationScript">--</div></div></div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Rencana Tersimpan</span><button class="btn btn-outline btn-sm" onclick="clearHistory('leave')">Hapus Riwayat</button></div><div class="history-list" id="leaveHistory"></div></div>
+            </section>
+
+            <!-- CEK HATI NURANI -->
+            <section id="gutView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Cek Hati Nurani</h2><p>Aku sudah terlalu banyak menganalisis. Aku perlu tahu apa yang tubuhku rasakan.</p></div><button class="btn btn-secondary btn-sm" onclick="loadSampleScenario('gut')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh</button></div>
+                <div class="card"><form id="gutForm">
+                    <div class="form-group"><label class="form-label">Saat kamu membayangkan bertahan:</label><select id="gutImagineStaying" class="form-control"><option value="Relieved">Legah</option><option value="Heavy">Berat</option><option value="Anxious">Cemas</option><option value="Resigned">Pasrah</option><option value="Hopeful">Berharap</option><option value="Trapped">Terjebak</option></select></div>
+                    <div class="form-group"><label class="form-label">Saat kamu membayangkan pergi:</label><select id="gutImagineLeaving" class="form-control"><option value="Terrified">Ketakutan</option><option value="Free">Bebas</option><option value="Sad but clear">Sedih tapi jelas</option><option value="Panicked">Panik</option><option value="Excited">Bersemangat</option><option value="Guilty">Bersalah</option></select></div>
+                    <div class="form-group"><label class="form-label">Saat bersama mereka, tubuhmu terasa:</label><select id="gutWithThem" class="form-control"><option value="Relaxed">Santai</option><option value="Tense">Tegang</option><option value="Neutral">Netral</option><option value="Checked out">Mati rasa</option><option value="Happy">Bahagia</option><option value="On guard">Siaga</option></select></div>
+                    <div class="form-group"><label class="form-label">Saat berjauhan, tubuhmu terasa:</label><select id="gutApart" class="form-control"><option value="Lonely">Kesepian</option><option value="Peaceful">Damai</option><option value="Anxious">Cemas</option><option value="Free">Bebas</option><option value="Missing them">Rindu</option><option value="Nothing">Hampa</option></select></div>
+                    <div class="form-group"><label class="form-label">Kata pertama yang terlintas tentang hubungan ini:</label><textarea id="gutFirstWord" placeholder="Kata spontan tanpa diedit..."></textarea></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-wave-square"></i> Baca Sinyal Tubuh</button></div>
+                </form></div>
+                <div id="gutOutput" class="output-card"><div class="output-header"><h3><i class="fa-solid fa-dna"></i> Refleksi Somatik & Intuitif</h3></div><div class="analysis-grid"><div class="analysis-item"><div class="analysis-item-title">Sinyal Tubuh</div><div class="analysis-item-content" id="resBodyVote">--</div></div><div class="analysis-item"><div class="analysis-item-title">Sinyal Emosional</div><div class="analysis-item-content" id="resEmotionalVote">--</div></div><div class="analysis-item"><div class="analysis-item-title">Sinyal Kognitif</div><div class="analysis-item-content" id="resCognitiveVote">--</div></div><div class="analysis-item"><div class="analysis-item-title">Pemeriksaan Kesesuaian</div><div class="analysis-item-content" id="resAlignmentCheck">--</div></div><div class="analysis-item"><div class="analysis-item-title">Langkah Selanjutnya</div><div class="analysis-item-content" id="resNextStep">--</div></div></div><div class="validation-box"><strong>Kerangka Keputusan:</strong> Tidak ada pilihan yang salah, hanya pilihan yang harus dipertanggungjawabkan. Kedua jalan mengandung duka dan pertumbuhan.</div></div>
+                <div class="history-section"><div class="history-title"><span><i class="fa-solid fa-clock-rotate-left"></i> Cek Hati Nurani Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('gut')">Hapus Riwayat</button></div><div class="history-list" id="gutHistory"></div></div>
+            </section>
+
+            <!-- RESET KEPUTUSAN -->
+            <section id="resetView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Reset Keputusan 7 Hari</h2><p>Perjalanan terpandu melalui kelima alat untuk membangun kejelasan dan rencana.</p></div></div>
+                <div class="card">
+                    <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+                        <span class="reset-day" id="resetDay1">Hari 1: Kejelasan</span>
+                        <span class="reset-day" id="resetDay2">Hari 2: Ketakutan</span>
+                        <span class="reset-day" id="resetDay3">Hari 3: Tetap</span>
+                        <span class="reset-day" id="resetDay4">Hari 4: Pergi</span>
+                        <span class="reset-day" id="resetDay5">Hari 5: Hati Nurani</span>
+                        <span class="reset-day" id="resetDay6">Hari 6: Sintesis</span>
+                        <span class="reset-day" id="resetDay7">Hari 7: Rencana</span>
+                    </div>
+                    <div id="resetContent">
+                        <p style="color:var(--text-muted);">Mulai dengan Hari 1: Pemindai Kejelasan. Selesaikan setiap alat secara berurutan untuk membangun Rencana Keputusanmu.</p>
+                        <button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Mulai Hari 1</button>
+                    </div>
+                    <div id="resetPlanOutput" class="output-card" style="margin-top:1.5rem;">
+                        <div class="output-header"><h3><i class="fa-solid fa-list-check"></i> Rencana Keputusanmu</h3></div>
+                        <div id="resetPlanContent"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RENCANA KEPUTUSANKU -->
+            <section id="planView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Rencana Keputusan Putusku</h2><p>Disintesis dari alat yang telah kamu selesaikan.</p></div></div>
+                <div class="card" id="planCard">
+                    <div id="planDisplay"><p style="color:var(--text-muted);">Selesaikan Reset Keputusan 7 Hari atau jalankan alat individu untuk membangun rencanamu.</p></div>
+                </div>
+            </section>
+
+            <!-- RIWAYATKU -->
+            <section id="historyView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Riwayatku</h2><p>Semua refleksi tersimpanmu dalam satu tempat.</p></div></div>
+                <div class="card">
+                    <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+                        <button class="btn btn-outline btn-sm" onclick="renderAllHistory()">Segarkan</button>
+                        <button class="btn btn-outline btn-sm" onclick="if(confirm('Hapus semua riwayat?')){clearAllHistory();}">Hapus Semua Riwayat</button>
+                    </div>
+                    <div id="allHistoryContainer"></div>
+                </div>
+            </section>
+
+            <!-- PRIVASI & KEAMANAN -->
+            <section id="privacyView" class="view">
+                <div class="tool-header"><div class="tool-title-group"><h2>Privasi & Keamanan</h2></div></div>
+                <div class="card">
+                    <p><strong>Dirancang untuk privasi.</strong> Refleksimu tetap ada di perangkatmu. Kami tidak mengirimkan data ke server mana pun.</p>
+                    <p style="margin-top:1rem;"><strong>Penting:</strong> Keputusan Putus adalah alat bantu refleksi dan perencanaan mandiri. Ini bukan terapi, diagnosis, intervensi krisis, nasihat hukum, atau pengganti perawatan profesional yang berkualifikasi.</p>
+                    <p style="margin-top:1rem;">Jika hubungan melibatkan kekerasan, ancaman, kontrol koersif, penguntitan, kecanduan serius, atau bahaya langsung, jangan mengandalkan latihan ini. Utamakan keselamatan dan dukungan profesional yang tepat.</p>
+                    <p style="margin-top:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--gold);"></i> Jangan pernah menghadapi pasangan yang berbahaya berdasarkan latihan yang dihasilkan.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <footer><p>Untuk hiburan dan refleksi semata. Bukan terapi atau nasihat profesional. Jika kamu berada dalam hubungan yang kasar, hubungi hotline kekerasan dalam rumah tangga atau layanan darurat.</p></footer>
+    <div id="toast" class="toast">Disalin!</div>
+
+    <script>
+        // --- NAVIGASI ---
+        const navItems = document.querySelectorAll('.nav-item');
+        const views = document.querySelectorAll('.view');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function switchView(targetId) {
+            views.forEach(v => v.classList.remove('active'));
+            navItems.forEach(n => n.classList.remove('active'));
+            const tv = document.getElementById(targetId);
+            if (tv) tv.classList.add('active');
+            const an = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+            if (an) an.classList.add('active');
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const target = item.getAttribute('data-target');
+                if (target) switchView(target);
+            });
+        });
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('mobile-open');
+            overlay.classList.toggle('active');
+        });
+        overlay.addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            overlay.classList.remove('active');
+        });
+
+        // --- TOAST & UTIL ---
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
+        }
+        function copyToClipboard(id) {
+            const text = document.getElementById(id).innerText;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => showToast("Disalin!")).catch(() => fallbackCopy(text));
+            } else { fallbackCopy(text); }
+        }
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast("Disalin!");
+        }
+
+        // --- PENYIMPANAN LOKAL (riwayat terpadu) ---
+        function getHistory(moduleId) {
+            const key = `breakup_history_${moduleId}`;
+            return JSON.parse(localStorage.getItem(key) || '[]');
+        }
+        function setHistory(moduleId, data) {
+            const key = `breakup_history_${moduleId}`;
+            let h = getHistory(moduleId);
+            h.unshift({ timestamp: new Date().toLocaleString('id-ID'), data: data });
+            if (h.length > 30) h = h.slice(0, 30);
+            localStorage.setItem(key, JSON.stringify(h));
+        }
+        function clearHistory(moduleId) {
+            localStorage.removeItem(`breakup_history_${moduleId}`);
+            renderHistory(moduleId);
+            showToast("Riwayat dihapus");
+        }
+        function clearAllHistory() {
+            ['clarity','fear','stay','leave','gut','reset'].forEach(id => localStorage.removeItem(`breakup_history_${id}`));
+            renderAllHistory();
+            showToast("Semua riwayat dihapus");
+        }
+
+        function renderHistory(moduleId) {
+            const container = document.getElementById(`${moduleId}History`);
+            if (!container) return;
+            const h = getHistory(moduleId);
+            if (h.length === 0) { container.innerHTML = '<div style="color:var(--text-muted);font-size:0.85rem;">Tidak ada riwayat tersimpan.</div>'; return; }
+            container.innerHTML = h.map((item, i) => `
+                <div class="history-item">
+                    <div class="history-header" onclick="this.parentElement.classList.toggle('open')">
+                        <span>${item.timestamp}</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="history-body"><ul style="padding-left:1rem;list-style:square;">${Object.entries(item.data).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('')}</ul></div>
+                </div>
+            `).join('');
+        }
+
+        function renderAllHistory() {
+            const container = document.getElementById('allHistoryContainer');
+            if (!container) return;
+            const modules = ['clarity','fear','stay','leave','gut','reset'];
+            let html = '';
+            modules.forEach(m => {
+                const h = getHistory(m);
+                if (h.length === 0) return;
+                const labelMap = { clarity:'Kejelasan', fear:'Ketakutan', stay:'Tetap', leave:'Pergi', gut:'Hati Nurani', reset:'Reset' };
+                html += `<h4 style="margin:1rem 0 0.5rem;color:var(--mauve);">${labelMap[m] || m}</h4>`;
+                html += h.map(item => `
+                    <div class="history-item">
+                        <div class="history-header" onclick="this.parentElement.classList.toggle('open')">
+                            <span>${item.timestamp}</span>
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                        <div class="history-body"><ul style="padding-left:1rem;list-style:square;">${Object.entries(item.data).map(([k,v]) => `<li><strong>${k}:</strong> ${v}</li>`).join('')}</ul></div>
+                    </div>
+                `).join('');
+            });
+            container.innerHTML = html || '<p style="color:var(--text-muted);">Tidak ada riwayat ditemukan.</p>';
+        }
+
+        // --- SKENARIO CONTOH ---
+        function loadSampleScenario(toolId) {
+            if (toolId === 'clarity') {
+                document.getElementById('clarityLength').value = "2-5yr";
+                document.getElementById('clarityUnsureTime').value = "6mo-1yr";
+                document.getElementById('clarityBest').value = "Kami memiliki persahabatan yang kuat, kebaikan tulus, sejarah bersama, dan rasa aman.";
+                document.getElementById('clarityWorst').value = "Tidak ada gairah romantis, keintiman terasa seperti kewajiban, dan kami lebih seperti teman sekamar.";
+                document.getElementById('clarityFiveYears').value = "Yes, but sadly";
+                document.getElementById('clarityTalked').value = "No, I don't want to hurt them";
+                showToast("Contoh dimuat untuk Pemindai Kejelasan");
+            } else if (toolId === 'fear') {
+                document.querySelectorAll('#fearForm input[name="fearLeaving"]').forEach(cb => { cb.checked = ["Being alone","Hurting them"].includes(cb.value); });
+                document.querySelectorAll('#fearForm input[name="fearStaying"]').forEach(cb => { cb.checked = ["Becoming resentful","Losing myself"].includes(cb.value); });
+                document.getElementById('fearBigger').value = "Fear of leaving";
+                document.getElementById('fearUnafraid').value = "Aku akan memulai perpisahan dengan lembut, menyewa apartemen sendiri, dan memulai proses penyembuhan.";
+                showToast("Contoh dimuat untuk Penerjemah Ketakutan");
+            } else if (toolId === 'stay') {
+                document.getElementById('stayChangeThey').value = "Memulai koneksi emosional dan menunjukkan minat aktif pada dunia batin saya.";
+                document.getElementById('stayChangeYou').value = "Berhenti menarik diri dan mengomunikasikan kebutuhan sebelum menjadi pendendam.";
+                document.getElementById('stayChangeDynamic').value = "Beralih dari dinamika teman sekamar pasif ke kencan yang disengaja dan percakapan mendalam.";
+                document.getElementById('stayLikelihood').value = "Already tried";
+                document.getElementById('yourWillingness').value = 4; document.getElementById('yourWillingnessVal').textContent = "4";
+                document.getElementById('theirWillingness').value = 4; document.getElementById('theirWillingnessVal').textContent = "4";
+                showToast("Contoh dimuat untuk Uji Tetap");
+            } else if (toolId === 'leave') {
+                document.getElementById('leaveLiving').value = "Live together";
+                document.querySelectorAll('#leaveForm input[name="leaveFinancial"]').forEach(cb => { cb.checked = cb.value === "Shared lease"; });
+                document.querySelectorAll('#leaveForm input[name="leaveSocial"]').forEach(cb => { cb.checked = cb.value === "Shared friend group"; });
+                document.querySelector('#leaveForm input[name="leaveChildren"][value="No"]').checked = true;
+                document.getElementById('leaveSupport').value = "Moderate";
+                showToast("Contoh dimuat untuk Rencana Pergi");
+            } else if (toolId === 'gut') {
+                document.getElementById('gutImagineStaying').value = "Heavy";
+                document.getElementById('gutImagineLeaving').value = "Sad but clear";
+                document.getElementById('gutWithThem').value = "Tense";
+                document.getElementById('gutApart').value = "Peaceful";
+                document.getElementById('gutFirstWord').value = "Menguras";
+                showToast("Contoh dimuat untuk Cek Hati Nurani");
+            }
+        }
+
+        // --- LOGIKA ALAT: KEJELASAN ---
+        document.getElementById('clarityForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const unsure = document.getElementById('clarityUnsureTime').value;
+            const five = document.getElementById('clarityFiveYears').value;
+            const talked = document.getElementById('clarityTalked').value;
+            let type = "";
+            let core = "";
+            if (unsure === "On and off whole relationship" || unsure === "1yr+") {
+                type = "Ambiguitas Berkepanjangan / Semakin Menjauh";
+                core = "Apakah kamu berpegang pada potensi daripada siapa mereka sebenarnya?";
+            } else if (unsure === "Just started" || unsure === "Few weeks") {
+                type = "Masa Sulit / Stres Eksternal";
+                core = "Apakah ketidakpastian ini terkait dengan stres eksternal (pekerjaan, penyakit, keluarga)?";
+            } else {
+                type = "Prioritas yang Berubah / Ketidakcocokan";
+                core = "Apakah nilai-nilai inti atau visi masa depanmu mengarah ke arah yang berbeda?";
+            }
+            let talkCheck = talked.includes("No") ? "Keraguan yang Tidak Terungkap. Hubungan belum mendapat kesempatan untuk merespons." : "Komunikasi Terbuka. Kamu telah menyampaikan kekhawatiran; sekarang evaluasi perubahan.";
+            let fiveRef = five.includes("sadly") || five.includes("miserable") ? "Peringatan tinggi: bertahan membutuhkan pengorbanan kesejahteraan demi kenyamanan." : five.includes("happily") ? "Penerimaan tinggi: keadaan saat ini dapat diterima." : "Bersyarat: ketahanan bergantung pada perubahan di masa depan.";
+            document.getElementById('resUncertaintyType').textContent = type;
+            document.getElementById('resCoreQuestion').textContent = core;
+            document.getElementById('resTalkedCheck').textContent = talkCheck;
+            document.getElementById('resFiveYearTest').textContent = fiveRef;
+            document.getElementById('resProConBalance').textContent = "Timbang kenyamanan/sejarah/keamanan versus kebutuhan yang tidak terpenuhi/sakit.";
+            document.getElementById('resClarityNextStep').textContent = "Amati, komunikasikan, uji perubahan, atau cari dukungan.";
+            document.getElementById('clarityOutput').classList.add('active');
+            setHistory('clarity', { "Ketidakpastian": type, "5 Tahun": five, "Pembicaraan": talked });
+            renderHistory('clarity');
+            updateDecisionPlan();
+        });
+
+        // --- LOGIKA ALAT: KETAKUTAN ---
+        document.getElementById('fearForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const leaving = Array.from(document.querySelectorAll('input[name="fearLeaving"]:checked')).map(c=>c.value);
+            const staying = Array.from(document.querySelectorAll('input[name="fearStaying"]:checked')).map(c=>c.value);
+            const bigger = document.getElementById('fearBigger').value;
+            const unafraid = document.getElementById('fearUnafraid').value;
+            let leavingAnalysis = leaving.some(f => ["Financial impact","Practical entanglement"].includes(f)) ? "Hambatan praktis/logistik (masalah perencanaan yang dapat dipecahkan)." : "Terutama ketakutan emosional (kesepian, rasa bersalah).";
+            let stayingAnalysis = staying.length ? `Ketakutan akan ${staying.join(', ')} menunjukkan nilai-nilai inti yang terancam.` : "Ketakutan bertahan rendah; hubungan terasa aman tetapi tidak memuaskan.";
+            let decoder = bigger === "Fear of leaving" ? "Ketakutan adalah jangkar yang membuatmu tetap dalam ketidaknyamanan yang akrab." : bigger === "Fear of staying" ? "Ketakutan adalah alarm yang memperingatkan biaya jangka panjang." : "Keseimbangan ketakutan antara rasa sakit bertahan dan rasa sakit mengakhiri.";
+            document.getElementById('resLeavingFears').textContent = leavingAnalysis;
+            document.getElementById('resStayingFears').textContent = stayingAnalysis;
+            document.getElementById('resFearDecoder').textContent = decoder;
+            document.getElementById('resSupportMap').textContent = "Identifikasi 2 kontak tepercaya, cadangan finansial, atau penasihat profesional.";
+            document.getElementById('resWorstCase').textContent = "Terburuk dari pergi: ketidaknyamanan sementara & duka. Terburuk dari bertahan: erosi diri jangka panjang.";
+            document.getElementById('resCourageQuestion').textContent = `Apa yang akan kamu pilih jika kamu tahu kamu bisa menjalani transisi dengan aman? "${unafraid || 'Renungkan ini.'}"`;
+            document.getElementById('fearOutput').classList.add('active');
+            setHistory('fear', { "Ketakutan Lebih Besar": bigger, "Ketakutan Pergi": leaving.join(', ')||"Tidak ada", "Ketakutan Bertahan": staying.join(', ')||"Tidak ada" });
+            renderHistory('fear');
+            updateDecisionPlan();
+        });
+
+        // --- LOGIKA ALAT: TETAP ---
+        document.getElementById('stayForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const they = document.getElementById('stayChangeThey').value;
+            const you = document.getElementById('stayChangeYou').value;
+            const like = document.getElementById('stayLikelihood').value;
+            const yw = parseInt(document.getElementById('yourWillingness').value);
+            const tw = parseInt(document.getElementById('theirWillingness').value);
+            let reality = ["Already tried","Impossible","Unlikely"].includes(like) ? "Risiko tinggi: membutuhkan perubahan inti jarang berhasil tanpa dorongan pribadi." : "Layak: perubahan bersifat perilaku dan dalam parameter pertumbuhan.";
+            let gap = Math.abs(yw - tw);
+            let effort = gap >= 3 ? `Asimetri signifikan (celah ${gap} poin).` : (yw <=4 && tw <=4) ? "Kelelahan bersama: kedua pasangan memiliki energi rendah untuk perbaikan." : "Investasi seimbang: tingkat energi yang selaras.";
+            document.getElementById('resChangeList').textContent = `Mereka: ${they.substring(0,40)}... Kamu: ${you.substring(0,40)}...`;
+            document.getElementById('resRealityCheck').textContent = reality;
+            document.getElementById('resEffortGap').textContent = effort;
+            document.getElementById('resExperiment').textContent = "Pilih SATU perubahan. Minta dengan tenang. Amati perilaku selama 30 hari.";
+            document.getElementById('resDeadline').textContent = "Tetapkan pemeriksaan kalender 30-60 hari dari hari ini.";
+            document.getElementById('resAcceptanceCheck').textContent = "Jika tidak ada yang berubah sama sekali, bisakah kamu menerima hubungan ini apa adanya tanpa menyimpan dendam?";
+            document.getElementById('stayOutput').classList.add('active');
+            setHistory('stay', { "Kemungkinan": like, "Kesediaanmu": `${yw}/10`, "Kesediaannya": `${tw}/10` });
+            renderHistory('stay');
+            updateDecisionPlan();
+        });
+
+        // --- LOGIKA ALAT: PERGI ---
+        document.getElementById('leaveForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const living = document.getElementById('leaveLiving').value;
+            const financial = Array.from(document.querySelectorAll('input[name="leaveFinancial"]:checked')).map(c=>c.value);
+            const social = Array.from(document.querySelectorAll('input[name="leaveSocial"]:checked')).map(c=>c.value);
+            const kids = document.querySelector('input[name="leaveChildren"]:checked')?.value || "Tidak";
+            let score = (living === "Live together"||living==="One owns, other stays")?2:0;
+            if (financial.length > 2) score += 2;
+            if (kids === "Ya") score += 3;
+            if (social.length > 2) score += 1;
+            let complexity = score >= 5 ? "Tinggi (membutuhkan keluar bertahap)" : score >= 3 ? "Sedang (membutuhkan perencanaan terstruktur)" : "Rendah";
+            let housing = living === "Live together" ? "Identifikasi tempat tinggal sementara (teman/keluarga/Airbnb) selama 1-2 minggu. Tentukan akhir sewa atau pembelian." : "Pertahankan ruang terpisah; batasan fisik yang sederhana.";
+            let fin = financial.includes("None") ? "Tidak diperlukan pelepasan finansial." : `Pisahkan: ${financial.join(', ')}. Buka rekening individu.`;
+            let script = "Aku menghargai apa yang telah kita bagi, tetapi aku menyadari hubungan ini bukanlah kecocokan jangka panjang untukku. Aku ingin kita berdua menemukan apa yang benar-benar kita butuhkan, dan aku ingin menangani langkah selanjutnya dengan hormat.";
+            document.getElementById('resExitComplexity').textContent = complexity;
+            document.getElementById('resHousingPlan').textContent = housing;
+            document.getElementById('resFinancialSeparation').textContent = fin;
+            document.getElementById('resSocialNavigation').textContent = "Beritahu teman dekat bersama secara individu. Hindari meminta orang memilih pihak.";
+            document.getElementById('resSelfCare').textContent = "48 jam pertama: tidak ada keputusan besar. Siapkan makanan nyaman, amankan teman pendukung, matikan lokasi bersama.";
+            document.getElementById('resConversationScript').textContent = script;
+            document.getElementById('leaveOutput').classList.add('active');
+            setHistory('leave', { "Kompleksitas Keluar": complexity, "Tempat Tinggal": living, "Anak": kids });
+            renderHistory('leave');
+            updateDecisionPlan();
+        });
+
+        // --- LOGIKA ALAT: HATI NURANI ---
+        document.getElementById('gutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const staying = document.getElementById('gutImagineStaying').value;
+            const leaving = document.getElementById('gutImagineLeaving').value;
+            const withThem = document.getElementById('gutWithThem').value;
+            const apart = document.getElementById('gutApart').value;
+            let body = ["Tense","Checked out","On guard"].includes(withThem) ? "Kontraksi sistem saraf: kewaspadaan kronis atau penarikan diri." : "Regulasi sistem saraf: stabil dan membumi.";
+            let emotional = `Bertahan memicu [${staying}], pergi memicu [${leaving}].`;
+            let alignment = (["Heavy","Trapped"].includes(staying) && ["Free","Sad but clear"].includes(leaving)) ? "Kesesuaian kuat menuju pergi." :
+                (["Relieved","Hopeful"].includes(staying)) ? "Kesesuaian menuju perbaikan." : "Sinyal bertentangan: ketakutan mungkin menutupi intuisi.";
+            document.getElementById('resBodyVote').textContent = body;
+            document.getElementById('resEmotionalVote').textContent = emotional;
+            document.getElementById('resCognitiveVote').textContent = "Logika mencoba mengoptimalkan secara berlebihan, tetapi kebenaran emosional mendahului kejelasan intelektual.";
+            document.getElementById('resAlignmentCheck').textContent = alignment;
+            document.getElementById('resNextStep').textContent = "Lakukan 'Puasa Keputusan' 24 jam: bertindaklah seolah-olah kamu telah memilih secara diam-diam, dan amati bagaimana tubuhmu terasa.";
+            document.getElementById('gutOutput').classList.add('active');
+            setHistory('gut', { "Perasaan Bertahan": staying, "Perasaan Pergi": leaving, "Keadaan Somatik": withThem });
+            renderHistory('gut');
+            updateDecisionPlan();
+        });
+
+        // --- RESET KEPUTUSAN ---
+        let resetDays = JSON.parse(localStorage.getItem('breakup_reset_days') || '{"day":0}');
+        function startReset() {
+            const day = resetDays.day || 0;
+            const tools = ['clarity','fear','stay','leave','gut'];
+            const labelMap = ['Kejelasan','Ketakutan','Tetap','Pergi','Hati Nurani'];
+            if (day < 5) {
+                switchView(tools[day]+'View');
+                showToast(`Memulai Hari ${day+1}: ${labelMap[day]}`);
+                resetDays.day = day + 1;
+                localStorage.setItem('breakup_reset_days', JSON.stringify(resetDays));
+            } else if (day === 5) {
+                synthesizeReset();
+                resetDays.day = 6;
+                localStorage.setItem('breakup_reset_days', JSON.stringify(resetDays));
+            } else if (day === 6) {
+                showToast("Reset selesai! Lihat rencanamu di Rencana Keputusanku.");
+                switchView('planView');
+            }
+            updateResetUI();
+        }
+
+        function synthesizeReset() {
+            const plan = {
+                clarity: getHistory('clarity')[0]?.data || {},
+                fear: getHistory('fear')[0]?.data || {},
+                stay: getHistory('stay')[0]?.data || {},
+                leave: getHistory('leave')[0]?.data || {},
+                gut: getHistory('gut')[0]?.data || {}
+            };
+            const output = document.getElementById('resetPlanContent');
+            output.innerHTML = `
+                <div class="analysis-grid">
+                    <div class="analysis-item"><div class="analysis-item-title">Yang Kuketahui Sekarang</div><div class="analysis-item-content">${plan.clarity.Ketidakpastian || 'Renungkan kejelasan.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Yang Kutakuti</div><div class="analysis-item-content">${plan.fear['Ketakutan Lebih Besar'] || 'Renungkan ketakutan.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Syarat Bertahan</div><div class="analysis-item-content">${plan.stay.Kemungkinan || 'Renungkan syarat bertahan.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Kompleksitas Pergi</div><div class="analysis-item-content">${plan.leave['Kompleksitas Keluar'] || 'Renungkan rencana pergi.'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Sinyal Tubuh</div><div class="analysis-item-content">${plan.gut['Keadaan Somatik'] || 'Renungkan cek hati nurani.'}</div></div>
+                </div>
+                <div class="validation-box"><strong>Tindakan Pertamamu:</strong> Pilih satu langkah kecil: amati, eksperimen, rencanakan, atau cari dukungan. Tinjau dalam 30-60 hari.</div>
+            `;
+            document.getElementById('resetPlanOutput').classList.add('active');
+            setHistory('reset', { "Reset Selesai": "Reset Keputusan 7 Hari", "Rencana": "Disintesis" });
+            renderAllHistory();
+        }
+
+        function updateResetUI() {
+            const day = resetDays.day || 0;
+            for (let i=1; i<=7; i++) {
+                const el = document.getElementById(`resetDay${i}`);
+                if (el) el.classList.toggle('done', i <= day);
+            }
+            const content = document.getElementById('resetContent');
+            const labelMap = ['Pemindai Kejelasan','Penerjemah Ketakutan','Uji Tetap','Rencana Pergi','Cek Hati Nurani'];
+            if (day === 0) content.innerHTML = '<p>Mulai dengan Hari 1: Pemindai Kejelasan. Selesaikan setiap alat secara berurutan untuk membangun Rencana Keputusanmu.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Mulai Hari 1</button>';
+            else if (day < 5) content.innerHTML = `<p>Hari ${day+1} dari 7: Selesaikan ${labelMap[day]}.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-arrow-right"></i> Lanjutkan</button>`;
+            else if (day === 5) content.innerHTML = `<p>Kamu telah menyelesaikan semua alat. Siap untuk mensintesis Rencana Keputusanmu?</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-list-check"></i> Sintesis Rencana</button>`;
+            else if (day === 6) content.innerHTML = `<p>✅ Reset selesai. Lihat rencanamu di Rencana Keputusanku.</p><button class="btn btn-secondary" onclick="switchView('planView')">Lihat Rencana</button>`;
+        }
+
+        // --- RENCANA KEPUTUSAN (sintesis) ---
+        function updateDecisionPlan() {
+            const container = document.getElementById('planDisplay');
+            const c = getHistory('clarity')[0]?.data || {};
+            const f = getHistory('fear')[0]?.data || {};
+            const s = getHistory('stay')[0]?.data || {};
+            const l = getHistory('leave')[0]?.data || {};
+            const g = getHistory('gut')[0]?.data || {};
+            const hasData = Object.keys(c).length || Object.keys(f).length || Object.keys(s).length || Object.keys(l).length || Object.keys(g).length;
+            if (!hasData) {
+                container.innerHTML = '<p style="color:var(--text-muted);">Selesaikan Reset Keputusan 7 Hari atau jalankan alat individu untuk membangun rencanamu.</p>';
+                return;
+            }
+            container.innerHTML = `
+                <div class="analysis-grid">
+                    <div class="analysis-item"><div class="analysis-item-title">Yang Kuketahui Sekarang</div><div class="analysis-item-content">${c.Ketidakpastian || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Yang Kutakuti</div><div class="analysis-item-content">${f['Ketakutan Lebih Besar'] || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Syarat Bertahan</div><div class="analysis-item-content">${s.Kemungkinan || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Kompleksitas Pergi</div><div class="analysis-item-content">${l['Kompleksitas Keluar'] || '—'}</div></div>
+                    <div class="analysis-item"><div class="analysis-item-title">Sinyal Tubuh</div><div class="analysis-item-content">${g['Keadaan Somatik'] || '—'}</div></div>
+                </div>
+                <div class="validation-box"><strong>Langkah Selanjutnya:</strong> Pilih satu tindakan: amati, eksperimen, rencanakan, atau cari dukungan. Tinjau dalam 30-60 hari.</div>
+            `;
+        }
+
+        // --- INISIALISASI ---
+        document.addEventListener('DOMContentLoaded', function() {
+            ['clarity','fear','stay','leave','gut'].forEach(renderHistory);
+            renderAllHistory();
+            updateResetUI();
+            updateDecisionPlan();
+        });
+    </script>
+</body>
+</html>

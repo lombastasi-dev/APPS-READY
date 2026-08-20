@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Friendship Reality Check™ — Reciprocity Without The Drama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-slate: #457B9D;
+      --color-slate-hover: #366380;
+      --color-lavender: #C77DAD;
+      --color-lavender-light: #F3E8F0;
+      --color-bg-start: #F8F9FA;
+      --color-bg-end: #F8F5FA;
+      --color-text-main: #2D3748;
+      --color-text-muted: #718096;
+      --color-card-bg: #FFFFFF;
+      --color-border: #E2E8F0;
+      --sidebar-width: 270px;
+      --radius-xl: 1rem;
+      --radius-lg: 0.75rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+      --transition: all 0.25s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end)); color: var(--color-text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.5; }
+    .app-container { display: flex; flex: 1; position: relative; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width); background: var(--color-card-bg); border-right: 1px solid var(--color-border);
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
+      display: flex; flex-direction: column; box-shadow: var(--shadow-sm); transition: transform 0.3s ease;
+    }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: 0.75rem; }
+    .sidebar-header i { font-size: 1.5rem; color: var(--color-lavender); }
+    .sidebar-header h1 { font-size: 1.1rem; font-weight: 700; color: var(--color-slate); line-height: 1.2; }
+    .sidebar-nav { padding: 1rem 0; flex: 1; overflow-y: auto; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.875rem; padding: 0.75rem 1.5rem;
+      color: var(--color-text-muted); text-decoration: none; font-weight: 500; font-size: 0.92rem;
+      cursor: pointer; transition: var(--transition); border-left: 4px solid transparent;
+    }
+    .nav-item:hover { background: #F7FAFC; color: var(--color-slate); }
+    .nav-item.active { background: var(--color-lavender-light); color: var(--color-slate); border-left-color: var(--color-slate); font-weight: 600; }
+    .nav-item i { width: 20px; text-align: center; }
+
+    /* Mobile */
+    .mobile-header { display: none; background: var(--color-card-bg); padding: 1rem 1.5rem; border-bottom: 1px solid var(--color-border); align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90; box-shadow: var(--shadow-sm); }
+    .hamburger-btn { background: none; border: none; font-size: 1.35rem; color: var(--color-slate); cursor: pointer; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 95; }
+
+    /* Main */
+    .main-wrapper { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
+    .main-content { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card { background: var(--color-card-bg); border-radius: var(--radius-xl); padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--color-border); margin-bottom: 1.5rem; }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.85rem; font-weight: 700; color: var(--color-slate); margin-bottom: 0.35rem; }
+    .page-subtitle { color: var(--color-text-muted); font-size: 1.05rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-weight: 600; font-size: 0.9rem; color: var(--color-text-main); margin-bottom: 0.5rem; }
+    .form-control { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; color: var(--color-text-main); background: #FAFAFA; transition: var(--transition); }
+    .form-control:focus { outline: none; border-color: var(--color-slate); background: #FFF; box-shadow: 0 0 0 3px rgba(69,123,157,0.15); }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+    .slider-container { display: flex; align-items: center; gap: 1rem; }
+    .slider-container input[type="range"] { flex: 1; accent-color: var(--color-slate); }
+    .slider-value { font-weight: 700; color: var(--color-slate); min-width: 2.5rem; text-align: right; }
+
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; font-size: 0.95rem; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; transition: var(--transition); }
+    .btn-primary { background: var(--color-slate); color: white; }
+    .btn-primary:hover { background: var(--color-slate-hover); }
+    .btn-secondary { background: #EDF2F7; color: var(--color-text-main); }
+    .btn-secondary:hover { background: #E2E8F0; }
+    .btn-outline { background: transparent; border: 1px solid var(--color-slate); color: var(--color-slate); }
+    .btn-outline:hover { background: rgba(69,123,157,0.08); }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.85rem; }
+
+    .output-container { margin-top: 2rem; display: none; }
+    .output-container.active { display: block; animation: fadeIn 0.4s ease-out; }
+    .output-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    .output-box { background: #FFF; border-left: 4px solid var(--color-slate); padding: 1.25rem; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; box-shadow: var(--shadow-sm); }
+    .output-box.accent-lavender { border-left-color: var(--color-lavender); }
+    .output-box-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-text-muted); margin-bottom: 0.25rem; }
+    .output-box-content { font-size: 1.025rem; font-weight: 600; color: var(--color-text-main); margin-bottom: 0.35rem; }
+    .output-box-desc { font-size: 0.925rem; color: #4A5568; line-height: 1.5; }
+
+    .script-box { background: #F7FAFC; border: 1px dashed var(--color-slate); border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem; position: relative; }
+    .script-text { font-family: 'Inter', sans-serif; font-size: 0.95rem; color: #2D3748; white-space: pre-wrap; margin-bottom: 0.75rem; }
+
+    .history-section { margin-top: 2.5rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; cursor: pointer; }
+    .history-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-main); display: flex; align-items: center; gap: 0.5rem; }
+    .history-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .history-item { background: #FFF; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.75rem 1rem; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+    .history-meta { display: flex; flex-direction: column; }
+    .history-date { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .dash-card { background: #FFF; border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; gap: 0.75rem; }
+    .dash-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-slate); }
+    .dash-card-icon { width: 44px; height: 44px; border-radius: var(--radius-lg); background: var(--color-lavender-light); color: var(--color-slate); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .dash-card-title { font-weight: 700; font-size: 1.1rem; color: var(--color-text-main); }
+    .dash-card-desc { font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.4; }
+
+    .tracker-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.875rem; }
+    .tracker-table th, .tracker-table td { border: 1px solid var(--color-border); padding: 0.5rem 0.8rem; text-align: left; }
+    .tracker-table th { background: #F7FAFC; font-weight: 600; }
+
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--color-text-main); color: #FFF; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 0.5rem; opacity: 0; transform: translateY(10px); transition: all 0.2s ease; z-index: 1000; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    footer { text-align: center; padding: 1.5rem; font-size: 0.8rem; color: var(--color-text-muted); border-top: 1px solid var(--color-border); background: rgba(255,255,255,0.5); margin-top: auto; }
+
+    .reset-progress { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .reset-day { background: var(--color-lavender-light); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; color: var(--color-slate); }
+    .reset-day.done { background: var(--color-slate); color: white; }
+
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-wrapper { margin-left: 0; width: 100%; }
+      .main-content { padding: 1.5rem 1rem; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mobile-header">
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <i class="fa-solid fa-scale-balanced" style="color:var(--color-lavender);font-size:1.2rem;"></i>
+      <span style="font-weight:700;color:var(--color-slate);">Reality Check™</span>
+    </div>
+    <button class="hamburger-btn" id="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+  </header>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <h1>Friendship<br>Reality Check™</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-tool="dashboard"><i class="fa-solid fa-house"></i> Home</a>
+        <a class="nav-item" data-tool="audit"><i class="fa-solid fa-clipboard-check"></i> Friendship Audit</a>
+        <a class="nav-item" data-tool="initiation"><i class="fa-solid fa-hourglass-half"></i> Initiation Test</a>
+        <a class="nav-item" data-tool="conversation"><i class="fa-solid fa-comments"></i> The Conversation</a>
+        <a class="nav-item" data-tool="lettinggo"><i class="fa-solid fa-feather"></i> Letting Go</a>
+        <a class="nav-item" data-tool="reciprocal"><i class="fa-solid fa-seedling"></i> Reciprocal Builder</a>
+        <a class="nav-item" data-tool="reset"><i class="fa-solid fa-rotate"></i> 7-Day Reset</a>
+        <a class="nav-item" data-tool="plan"><i class="fa-solid fa-list-check"></i> My Friendship Plan</a>
+        <a class="nav-item" data-tool="history"><i class="fa-solid fa-clock-rotate-left"></i> My History</a>
+        <a class="nav-item" data-tool="privacy"><i class="fa-solid fa-lock"></i> Privacy & Safety</a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <main class="main-content">
+
+        <!-- DASHBOARD -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="card" style="background:linear-gradient(135deg,#FFF,var(--color-lavender-light));border:none;">
+            <h2 class="page-title" style="font-size:2.1rem;">Friendship Reality Check™</h2>
+            <p class="page-subtitle" style="color:var(--color-slate);font-weight:500;">Not every friendship needs to be equal. But it should feel reciprocal enough to matter.</p>
+            <p style="margin-top:0.8rem;font-size:0.95rem;color:#4A5568;">A practical, grounded toolkit for understanding one-sided dynamics, testing reciprocity, having clearer conversations, stepping back without unnecessary drama, and building healthier friendships.</p>
+          </div>
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTool('audit')"><div class="dash-card-icon"><i class="fa-solid fa-clipboard-check"></i></div><div class="dash-card-title">Friendship Audit</div><div class="dash-card-desc">Evaluate the give/take ratio across 5 key dimensions to see where you stand.</div></div>
+            <div class="dash-card" onclick="switchTool('initiation')"><div class="dash-card-icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="dash-card-title">Initiation Test</div><div class="dash-card-desc">Design a calm observation experiment to see what happens when you stop reaching out first.</div></div>
+            <div class="dash-card" onclick="switchTool('conversation')"><div class="dash-card-icon"><i class="fa-solid fa-comments"></i></div><div class="dash-card-title">The Conversation</div><div class="dash-card-desc">Script a clear, low-pressure conversation to express your needs without ending things.</div></div>
+            <div class="dash-card" onclick="switchTool('lettinggo')"><div class="dash-card-icon"><i class="fa-solid fa-feather"></i></div><div class="dash-card-title">Letting Go</div><div class="dash-card-desc">Construct a graceful plan to step back, manage guilt, and navigate shared social circles.</div></div>
+            <div class="dash-card" onclick="switchTool('reciprocal')"><div class="dash-card-icon"><i class="fa-solid fa-seedling"></i></div><div class="dash-card-title">Reciprocal Builder</div><div class="dash-card-desc">Identify green flags and cultivate new connections where support flows both ways.</div></div>
+            <div class="dash-card" onclick="switchTool('reset')"><div class="dash-card-icon"><i class="fa-solid fa-rotate"></i></div><div class="dash-card-title">7-Day Reset</div><div class="dash-card-desc">Don't know where to start? Begin the guided 7-Day Friendship Reset.</div></div>
+          </div>
+        </section>
+
+        <!-- FRIENDSHIP AUDIT -->
+        <section id="view-audit" class="view-section">
+          <div class="page-header"><h2 class="page-title">Friendship Audit</h2><p class="page-subtitle">"I feel like I'm giving more than I'm getting, but I want clarity on the whole picture."</p></div>
+          <div class="card"><form id="form-audit" onsubmit="event.preventDefault(); processAudit();">
+            <div class="form-group"><label class="form-label">Friend's Name:</label><input type="text" id="audit-name" class="form-control" placeholder="e.g. Sarah" required></div>
+            <div class="form-group"><label class="form-label">Who initiates contact?</label><select id="audit-initiates" class="form-control"><option value="5">Always me</option><option value="4">Mostly me</option><option value="3">Equal</option><option value="2">Mostly them</option><option value="1">Always them</option></select></div>
+            <div class="form-group"><label class="form-label">Who plans activities & hangouts?</label><select id="audit-plans" class="form-control"><option value="5">Always me</option><option value="4">Mostly me</option><option value="3">Equal</option><option value="2">Mostly them</option><option value="1">Always them</option></select></div>
+            <div class="form-group"><label class="form-label">Who provides emotional support & listening?</label><select id="audit-support" class="form-control"><option value="5">Always me</option><option value="4">Mostly me</option><option value="3">Equal</option><option value="2">Mostly them</option><option value="1">Always them</option></select></div>
+            <div class="form-group"><label class="form-label">Who helps in practical ways?</label><select id="audit-practical" class="form-control"><option value="5">Always me</option><option value="4">Mostly me</option><option value="3">Equal</option><option value="2">Mostly them</option><option value="1">Always them</option></select></div>
+            <div class="form-group"><label class="form-label">Last time they checked in just to see how you were:</label><select id="audit-checked" class="form-control"><option value="recently">Recently</option><option value="awhile">A while ago</option><option value="only_reach">Only when I reach out first</option><option value="only_need">Only when they need something</option><option value="cant_remember">Can't remember</option></select></div>
+            <div class="form-group"><label class="form-label">How you usually feel after spending time with them:</label><select id="audit-feeling" class="form-control"><option value="Energized">Energized</option><option value="Neutral">Neutral</option><option value="Drained">Drained</option><option value="Resentful">Resentful</option><option value="Used">Used</option><option value="Happy">Happy</option></select></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-pie"></i> Run Audit</button><button type="button" class="btn btn-secondary" onclick="loadSampleAudit()"><i class="fa-solid fa-folder-open"></i> Load Sample</button></div>
+          </form></div>
+          <div id="output-audit" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Friendship Balance Map</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">The Effort Pattern</div><div class="output-box-content" id="out-audit-score">--</div><div class="output-box-desc" id="out-audit-score-desc">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">The Current Dynamic</div><div class="output-box-content" id="out-audit-type">--</div><div class="output-box-desc" id="out-audit-type-desc">--</div></div>
+              <div class="output-box"><div class="output-box-title">Your-Part Check</div><div class="output-box-content">Over-functioning vs. Under-receiving</div><div class="output-box-desc" id="out-audit-yourpart">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Emotional & Energy Cost</div><div class="output-box-content" id="out-audit-cost">--</div><div class="output-box-desc" id="out-audit-cost-desc">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Recommended Decision Branch</div><div class="output-box-content" id="out-audit-branch">--</div><div class="output-box-desc" id="out-audit-branch-desc">--</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('audit')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Audits</span><i class="fa-solid fa-chevron-down" id="history-icon-audit"></i></div><div id="history-list-audit" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- INITIATION TEST -->
+        <section id="view-initiation" class="view-section">
+          <div class="page-header"><h2 class="page-title">The Initiation Test</h2><p class="page-subtitle">"I want to know what happens if I stop reaching out first—without spiraling."</p></div>
+          <div class="card"><form id="form-initiation" onsubmit="event.preventDefault(); processInitiation();">
+            <div class="form-group"><label class="form-label">Your current initiation frequency:</label><select id="init-freq" class="form-control"><option value="Daily">Daily</option><option value="Weekly">Weekly</option><option value="Few times a month">A few times a month</option><option value="Monthly">Monthly</option><option value="Only when they reach out">Only when they reach out</option></select></div>
+            <div class="form-group"><label class="form-label">How long since THEY initiated reaching out to you?</label><select id="init-last" class="form-control"><option value="Recently">Recently</option><option value="1-2 weeks">1–2 weeks</option><option value="1 month">1 month</option><option value="3 months">3 months</option><option value="6+ months">6+ months</option><option value="Never">Never</option></select></div>
+            <div class="form-group"><label class="form-label">Your primary fear if you stop reaching out:</label><textarea id="init-fear" class="form-control" placeholder="e.g. I'm afraid they will never speak to me again and the friendship will instantly die."></textarea></div>
+            <div class="form-group"><label class="form-label">What do you hope to learn from this test?</label><select id="init-learn" class="form-control"><option value="Whether they care">Whether they care enough to check in</option><option value="Whether I'm overthinking">Whether I'm overthinking the balance</option><option value="Whether the connection exists without my effort">Whether the connection exists without my effort</option><option value="Nothing, I already know">Nothing, I already know the answer</option></select></div>
+            <div class="form-group"><label class="form-label">Willingness to risk a pause or fade in contact (1 to 10):</label><div class="slider-container"><input type="range" id="init-risk" min="1" max="10" value="6" oninput="document.getElementById('init-risk-val').textContent=this.value"><span id="init-risk-val" class="slider-value">6</span></div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-flask"></i> Design Test Protocol</button><button type="button" class="btn btn-secondary" onclick="loadSampleInitiation()"><i class="fa-solid fa-folder-open"></i> Load Sample</button></div>
+          </form></div>
+          <div id="output-initiation" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Your Test Protocol</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">The Observation Window</div><div class="output-box-content" id="out-init-protocol-title">--</div><div class="output-box-desc" id="out-init-protocol-desc">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">The Fear Reality Check</div><div class="output-box-content">Reframing the Outcome</div><div class="output-box-desc" id="out-init-reframe">--</div></div>
+              <div class="output-box"><div class="output-box-title">Self-Soothing Plan</div><div class="output-box-content">Managing Anxiety During the Pause</div><div class="output-box-desc" id="out-init-soothe">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Observation Log</div><div class="output-box-content">Keep It Objective</div><div class="output-box-desc">Use this simple mental log:</div><table class="tracker-table"><thead><tr><th>Date</th><th>Initiated By</th><th>Type / Topic</th><th>Notes</th></tr></thead><tbody><tr><td>Week 1</td><td>---</td><td>---</td><td>Observed baseline</td></tr><tr><td>Week 2</td><td>---</td><td>---</td><td>Resisted urge</td></tr><tr><td>Week 3</td><td>---</td><td>---</td><td>Note any incoming</td></tr></tbody></table></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Interpreting Results</div><div class="output-box-content">What Silence vs. Outreach Means</div><div class="output-box-desc" id="out-init-interpret">--</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('initiation')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Tests</span><i class="fa-solid fa-chevron-down" id="history-icon-initiation"></i></div><div id="history-list-initiation" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- THE CONVERSATION -->
+        <section id="view-conversation" class="view-section">
+          <div class="page-header"><h2 class="page-title">The Conversation</h2><p class="page-subtitle">"I want to address the imbalance directly without sounding needy or causing unnecessary drama."</p></div>
+          <div class="card"><form id="form-conversation" onsubmit="event.preventDefault(); processConversation();">
+            <div class="form-group"><label class="form-label">What core point do you want to convey?</label><textarea id="conv-want" class="form-control" placeholder="e.g. I feel like I am always initiating our hangouts and checking in on you, but it rarely comes back my way."></textarea></div>
+            <div class="form-group"><label class="form-label">Their likely response style:</label><select id="conv-reaction" class="form-control"><option value="Defensive">Defensive / Reversal</option><option value="Dismissive">Dismissive</option><option value="Apologetic">Apologetic</option><option value="Surprised">Surprised</option><option value="Pull away">They'll pull away / Cold shoulder</option><option value="Improve briefly">Improve briefly then relapse</option></select></div>
+            <div class="form-group"><label class="form-label">Your primary goal:</label><select id="conv-goal" class="form-control"><option value="More reciprocity">Establish better reciprocity</option><option value="Just to be heard">Just to express myself and be heard</option><option value="Understand state">To understand what's happening in their life</option><option value="Decide to stay">To see if this friendship is worth saving</option><option value="End gracefully">To bring clear closure and end gracefully</option></select></div>
+            <div class="form-group"><label class="form-label">How important is this relationship to you?</label><select id="conv-importance" class="form-control"><option value="Essential">Essential inner-circle friend</option><option value="Important">Important / Close friend</option><option value="Casual">Casual / Social friend</option><option value="Historical">Historical / Longtime friend</option><option value="Unsure">Unsure right now</option></select></div>
+            <div class="form-group"><label class="form-label">Your typical conflict style:</label><select id="conv-style" class="form-control"><option value="Direct">Direct & Straightforward</option><option value="Hinting">Hinting / Passive</option><option value="Avoidant">Avoidant / Conflict-averse</option><option value="Aggressive">High-emotion / Aggressive</option><option value="Accommodating">Accommodating</option></select></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Generate Scripts</button><button type="button" class="btn btn-secondary" onclick="loadSampleConversation()"><i class="fa-solid fa-folder-open"></i> Load Sample</button></div>
+          </form></div>
+          <div id="output-conversation" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Conversation Framework</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Option A: Direct Approach</div><div class="output-box-desc">Clear, honest, and grounded. Best for close or essential friends.</div><div class="script-box"><div class="script-text" id="out-conv-script-direct">--</div><button class="btn btn-outline btn-sm" onclick="copyToClipboard('out-conv-script-direct')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Option B: Soft Nudge</div><div class="output-box-desc">Low-pressure, casual phrasing focused on opening the door to talk.</div><div class="script-box"><div class="script-text" id="out-conv-script-soft">--</div><button class="btn btn-outline btn-sm" onclick="copyToClipboard('out-conv-script-soft')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+              <div class="output-box"><div class="output-box-title">Observation vs. Accusation</div><div class="output-box-desc" id="out-conv-shift">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Response Playbook</div><div class="output-box-content">Handling Their Reaction</div><div class="output-box-desc" id="out-conv-playbook">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Post-Talk Acceptance Plan</div><div class="output-box-content">Knowing When You've Done Your Part</div><div class="output-box-desc" id="out-conv-posttalk">--</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('conversation')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Scripts</span><i class="fa-solid fa-chevron-down" id="history-icon-conversation"></i></div><div id="history-list-conversation" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- LETTING GO -->
+        <section id="view-lettinggo" class="view-section">
+          <div class="page-header"><h2 class="page-title">Letting Go & Distancing</h2><p class="page-subtitle">"I need to step back from a friendship that drains me without starting a fight."</p></div>
+          <div class="card"><form id="form-lettinggo" onsubmit="event.preventDefault(); processLettingGo();">
+            <div class="form-group"><label class="form-label">Why are you pulling back?</label><textarea id="let-why" class="form-control" placeholder="e.g. Constant one-sided emotional dumping, negativity, and zero support when I go through difficult moments."></textarea></div>
+            <div class="form-group"><label class="form-label">Desired long-term distance:</label><select id="let-target" class="form-control"><option value="Casual acquaintance">Casual acquaintance (say hi in groups, no 1-on-1)</option><option value="Occasional contact">Occasional contact (few times a year)</option><option value="Social media only">Social media connection only</option><option value="Complete cut">Complete cut / No contact</option><option value="Just stop initiating">Just stop initiating and let it find its natural level</option></select></div>
+            <div class="form-group"><label class="form-label">Shared social circle / mutual friends:</label><select id="let-mutual" class="form-control"><option value="Many">Many mutual close friends</option><option value="Some">Some overlapping friends</option><option value="None">None / Completely separate</option><option value="We share a community">We share a workplace, hobby group, or community</option></select></div>
+            <div class="form-group"><label class="form-label">What do you feel most sad about losing?</label><textarea id="let-grief" class="form-control" placeholder="e.g. Grieving the closeness we used to have a few years ago and the memories we built."></textarea></div>
+            <div class="form-group"><label class="form-label">Level of guilt about stepping back (1 to 10):</label><div class="slider-container"><input type="range" id="let-guilt" min="1" max="10" value="7" oninput="document.getElementById('let-guilt-val').textContent=this.value"><span id="let-guilt-val" class="slider-value">7</span></div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Create Distance Strategy</button><button type="button" class="btn btn-secondary" onclick="loadSampleLettingGo()"><i class="fa-solid fa-folder-open"></i> Load Sample</button></div>
+          </form></div>
+          <div id="output-lettinggo" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Your Distance Strategy</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">The Boundary Plan</div><div class="output-box-content">Actionable Boundary Adjustments</div><div class="output-box-desc" id="out-let-fade">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Mutual-Friend Navigation</div><div class="output-box-content">Protecting Group Dynamics</div><div class="output-box-desc" id="out-let-mutual">--</div></div>
+              <div class="output-box"><div class="output-box-title">Guilt Reframe</div><div class="output-box-content" id="out-let-guilt">--</div><div class="output-box-desc">"You are not required to set yourself on fire to keep others warm."</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">The Grief Check</div><div class="output-box-content">Honoring What Was</div><div class="output-box-desc" id="out-let-grief-desc">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">If Direct Closure Is Needed</div><div class="output-box-desc">A respectful script if they ask directly:</div><div class="script-box"><div class="script-text" id="out-let-direct-script">--</div><button class="btn btn-outline btn-sm" onclick="copyToClipboard('out-let-direct-script')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('lettinggo')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Plans</span><i class="fa-solid fa-chevron-down" id="history-icon-lettinggo"></i></div><div id="history-list-lettinggo" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- RECIPROCAL BUILDER -->
+        <section id="view-reciprocal" class="view-section">
+          <div class="page-header"><h2 class="page-title">Reciprocal Friendship Builder</h2><p class="page-subtitle">"I want to find and nurture healthy friendships where support and effort flow both ways."</p></div>
+          <div class="card"><form id="form-reciprocal" onsubmit="event.preventDefault(); processReciprocal();">
+            <div class="form-group"><label class="form-label">Current friendships that feel balanced (if any):</label><textarea id="rec-current" class="form-control" placeholder="e.g. My coworker Alex, or my old college roommate Maya."></textarea></div>
+            <div class="form-group"><label class="form-label">Where do you usually interact with or meet people?</label><textarea id="rec-places" class="form-control" placeholder="e.g. Local climbing gym, work projects, community garden group."></textarea></div>
+            <div class="form-group"><label class="form-label">Your key friendship strengths (what you give):</label><textarea id="rec-strengths" class="form-control" placeholder="e.g. Great listener, reliable when plans are made, thoughtful with check-ins."></textarea></div>
+            <div class="form-group"><label class="form-label">What you need most from a friend right now:</label><textarea id="rec-needs" class="form-control" placeholder="e.g. Someone who checks in on me without me asking, and shows mutual curiosity about my life."></textarea></div>
+            <div class="form-group"><label class="form-label">Your social bandwidth / energy level:</label><select id="rec-energy" class="form-control"><option value="High">High (looking for frequent hangouts)</option><option value="Moderate">Moderate (weekly or bi-weekly)</option><option value="Low">Low (monthly/casual contact)</option><option value="Variable">Variable (fluctuates with stress/work)</option></select></div>
+            <div class="form-group"><label class="form-label">Willingness to share vulnerability with new contacts (1 to 10):</label><div class="slider-container"><input type="range" id="rec-vuln" min="1" max="10" value="5" oninput="document.getElementById('rec-vuln-val').textContent=this.value"><span id="rec-vuln-val" class="slider-value">5</span></div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-tree"></i> Build Blueprint</button><button type="button" class="btn btn-secondary" onclick="loadSampleReciprocal()"><i class="fa-solid fa-folder-open"></i> Load Sample</button></div>
+          </form></div>
+          <div id="output-reciprocal" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Reciprocity Blueprint</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Green Flags of Balanced Friendship</div><div class="output-box-content">What to Look For Early On</div><div class="output-box-desc" id="out-rec-greenflags">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">The Vulnerability Test</div><div class="output-box-content">Safe Micro-Disclosure Steps</div><div class="output-box-desc" id="out-rec-vulntest">--</div></div>
+              <div class="output-box"><div class="output-box-title">Friendship Seeds</div><div class="output-box-content">Opportunities in Your Environment</div><div class="output-box-desc" id="out-rec-seeds">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Pacing & Overgiving Guardrails</div><div class="output-box-content">Protecting Your Balance</div><div class="output-box-desc" id="out-rec-pacing">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Core Affirmation</div><div class="output-box-content" style="font-size:1.1rem;color:var(--color-slate);">"You deserve friendships that fill you up, not just ones you prop up."</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('reciprocal')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Blueprints</span><i class="fa-solid fa-chevron-down" id="history-icon-reciprocal"></i></div><div id="history-list-reciprocal" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- 7-DAY RESET -->
+        <section id="view-reset" class="view-section">
+          <div class="page-header"><h2 class="page-title">7-Day Friendship Reset</h2><p class="page-subtitle">A guided journey through all five tools to build clarity and a plan.</p></div>
+          <div class="card">
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+              <span class="reset-day" id="resetDay1">Day 1: Audit</span>
+              <span class="reset-day" id="resetDay2">Day 2: Initiation</span>
+              <span class="reset-day" id="resetDay3">Day 3: Conversation</span>
+              <span class="reset-day" id="resetDay4">Day 4: Letting Go</span>
+              <span class="reset-day" id="resetDay5">Day 5: Reciprocal</span>
+              <span class="reset-day" id="resetDay6">Day 6: Synthesize</span>
+              <span class="reset-day" id="resetDay7">Day 7: Plan</span>
+            </div>
+            <div id="resetContent">
+              <p style="color:var(--color-text-muted);">Start with Day 1: Friendship Audit. Complete each tool in order to build your Friendship Plan.</p>
+              <button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Start Day 1</button>
+            </div>
+            <div id="resetPlanOutput" class="output-container" style="margin-top:1.5rem;">
+              <div class="output-header"><h3 style="color:var(--color-slate);"><i class="fa-solid fa-list-check"></i> Your Friendship Plan</h3></div>
+              <div id="resetPlanContent"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- MY FRIENDSHIP PLAN -->
+        <section id="view-plan" class="view-section">
+          <div class="page-header"><h2 class="page-title">My Friendship Reality Plan</h2><p class="page-subtitle">Synthesized from your completed tools.</p></div>
+          <div class="card" id="planCard">
+            <div id="planDisplay"><p style="color:var(--color-text-muted);">Complete the 7-Day Friendship Reset or run individual tools to build your plan.</p></div>
+          </div>
+        </section>
+
+        <!-- MY HISTORY -->
+        <section id="view-history" class="view-section">
+          <div class="page-header"><h2 class="page-title">My History</h2><p class="page-subtitle">All your saved reflections in one place.</p></div>
+          <div class="card">
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+              <button class="btn btn-outline btn-sm" onclick="renderAllHistory()">Refresh</button>
+              <button class="btn btn-outline btn-sm" onclick="if(confirm('Clear all history?')){clearAllHistory();}">Clear All History</button>
+            </div>
+            <div id="allHistoryContainer"></div>
+          </div>
+        </section>
+
+        <!-- PRIVACY & SAFETY -->
+        <section id="view-privacy" class="view-section">
+          <div class="page-header"><h2 class="page-title">Privacy & Safety</h2></div>
+          <div class="card">
+            <p><strong>Private by design.</strong> Your reflections remain on your device. We do not send your data to any server.</p>
+            <p style="margin-top:1rem;"><strong>Important:</strong> Friendship Reality Check is a self-guided reflection and planning tool. It is not therapy, diagnosis, crisis intervention, legal advice, or a substitute for qualified professional care.</p>
+            <p style="margin-top:1rem;">If a friendship involves threats, stalking, coercion, harassment, or retaliation risk, do not rely on these exercises. Prioritize safety and appropriate professional support.</p>
+            <p style="margin-top:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--color-slate);"></i> Never confront an unsafe person based on a generated exercise.</p>
+          </div>
+        </section>
+
+      </main>
+      <footer><p>For entertainment and reflection purposes only. Not therapy or professional advice.</p></footer>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> <span id="toast-message">Copied!</span></div>
+
+  <script>
+    /* ===== NAVIGATION ===== */
+    const navItems = document.querySelectorAll('.nav-item');
+    const viewSections = document.querySelectorAll('.view-section');
+    const sidebar = document.getElementById('sidebar');
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function switchTool(toolId) {
+      navItems.forEach(item => item.classList.toggle('active', item.dataset.tool === toolId));
+      viewSections.forEach(section => section.classList.toggle('active', section.id === `view-${toolId}`));
+      closeSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    navItems.forEach(item => item.addEventListener('click', () => switchTool(item.dataset.tool)));
+    function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('open'); }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+    mobileBtn.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ===== UTILITIES ===== */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => fallbackCopy(text));
+      else fallbackCopy(text);
+    }
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('Copied!');
+    }
+
+    /* ===== HISTORY ENGINE ===== */
+    function getHistory(moduleId) {
+      const key = `frch_history_${moduleId}`;
+      try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(moduleId, data) {
+      const key = `frch_history_${moduleId}`;
+      let h = getHistory(moduleId);
+      h.unshift({ id: Date.now(), date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }), data });
+      if (h.length > 30) h.pop();
+      localStorage.setItem(key, JSON.stringify(h));
+    }
+    function clearHistory(moduleId) {
+      localStorage.removeItem(`frch_history_${moduleId}`);
+      renderHistory(moduleId);
+      showToast('History cleared');
+    }
+    function clearAllHistory() {
+      ['audit','initiation','conversation','lettinggo','reciprocal','reset'].forEach(id => localStorage.removeItem(`frch_history_${id}`));
+      renderAllHistory();
+      showToast('All history cleared');
+    }
+
+    function renderHistory(moduleId) {
+      const container = document.getElementById(`history-list-${moduleId}`);
+      if (!container) return;
+      const h = getHistory(moduleId);
+      if (!h.length) { container.innerHTML = '<div style="font-size:0.875rem;color:var(--color-text-muted);padding:0.5rem 0;">No saved history yet.</div>'; return; }
+      container.innerHTML = h.map(item => `
+        <div class="history-item">
+          <div class="history-meta"><span style="font-weight:600;color:var(--color-text-main);">${escapeHtml(item.data.summary || 'Reflection')}</span><span class="history-date">${item.date}</span></div>
+          <button class="btn btn-secondary btn-sm" onclick='loadHistoryItem("${moduleId}", ${item.id})'>View</button>
+        </div>
+      `).join('') + `<button class="btn btn-outline btn-sm" style="margin-top:0.5rem;align-self:flex-start;" onclick="clearHistory('${moduleId}')"><i class="fa-solid fa-trash"></i> Clear History</button>`;
+    }
+
+    function renderAllHistory() {
+      const container = document.getElementById('allHistoryContainer');
+      if (!container) return;
+      const modules = ['audit','initiation','conversation','lettinggo','reciprocal','reset'];
+      let html = '';
+      modules.forEach(m => {
+        const h = getHistory(m);
+        if (!h.length) return;
+        html += `<h4 style="margin:1rem 0 0.5rem;color:var(--color-slate);">${m.charAt(0).toUpperCase()+m.slice(1)}</h4>`;
+        html += h.map(item => `
+          <div class="history-item">
+            <div class="history-meta"><span style="font-weight:600;">${escapeHtml(item.data.summary || 'Reflection')}</span><span class="history-date">${item.date}</span></div>
+          </div>
+        `).join('');
+      });
+      container.innerHTML = html || '<p style="color:var(--color-text-muted);">No history found.</p>';
+    }
+
+    function toggleHistory(moduleId) {
+      const list = document.getElementById(`history-list-${moduleId}`);
+      const icon = document.getElementById(`history-icon-${moduleId}`);
+      if (list.style.display === 'none' || list.style.display === '') {
+        list.style.display = 'flex';
+        icon.className = 'fa-solid fa-chevron-up';
+        renderHistory(moduleId);
+      } else {
+        list.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      }
+    }
+
+    function loadHistoryItem(moduleId, itemId) {
+      const h = getHistory(moduleId);
+      const found = h.find(i => i.id === itemId);
+      if (!found) return;
+      // Re-run the corresponding tool's logic using stored data
+      if (moduleId === 'audit') loadSampleAudit();
+      else if (moduleId === 'initiation') loadSampleInitiation();
+      else if (moduleId === 'conversation') loadSampleConversation();
+      else if (moduleId === 'lettinggo') loadSampleLettingGo();
+      else if (moduleId === 'reciprocal') loadSampleReciprocal();
+      showToast('Loaded saved entry');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* ===== TOOL: AUDIT ===== */
+    function loadSampleAudit() {
+      document.getElementById('audit-name').value = 'Sarah';
+      document.getElementById('audit-initiates').value = '5';
+      document.getElementById('audit-plans').value = '5';
+      document.getElementById('audit-support').value = '5';
+      document.getElementById('audit-practical').value = '5';
+      document.getElementById('audit-checked').value = 'only_need';
+      document.getElementById('audit-feeling').value = 'Drained';
+      processAudit();
+    }
+    function processAudit() {
+      const name = document.getElementById('audit-name').value || 'Your friend';
+      const init = parseInt(document.getElementById('audit-initiates').value);
+      const plan = parseInt(document.getElementById('audit-plans').value);
+      const supp = parseInt(document.getElementById('audit-support').value);
+      const prac = parseInt(document.getElementById('audit-practical').value);
+      const checked = document.getElementById('audit-checked').value;
+      const feeling = document.getElementById('audit-feeling').value;
+      const total = init + plan + supp + prac;
+      const givePct = Math.round((total / 20) * 100);
+      const takePct = 100 - givePct;
+
+      let dynamic = '', desc = '', branch = '', branchDesc = '', yourPart = '', cost = '';
+      if (givePct >= 85) {
+        dynamic = 'Low-initiative friendship pattern';
+        desc = `${name} participates primarily when you carry the interaction. This is a structural imbalance.`;
+        branch = 'Observe or lower investment';
+        branchDesc = 'Step back gradually and redirect energy to more reciprocal connections.';
+      } else if (givePct >= 65) {
+        dynamic = 'Asymmetrical / one-sided pattern';
+        desc = 'You are doing the heavy lifting, though they may participate positively when prompted.';
+        branch = 'Repair or observe';
+        branchDesc = `Worth having a calm conversation with ${name} to express your needs.`;
+      } else if (givePct >= 45) {
+        dynamic = 'Reciprocal & balanced';
+        desc = 'Effort and emotional availability flow smoothly both ways with normal fluctuations.';
+        branch = 'Maintain & enjoy';
+        branchDesc = 'This friendship shows healthy signs. Keep nurturing it.';
+      } else {
+        dynamic = 'Passive or mentorship pattern';
+        desc = 'They are currently initiating or driving more interactions, or you are taking a back seat.';
+        branch = 'Accept & engage';
+        branchDesc = 'This dynamic may be seasonal. Enjoy it without overthinking.';
+      }
+
+      if (givePct >= 75) {
+        yourPart = `You may have trained ${name} to expect 100% effort from you by stepping in immediately whenever there's silence. Overgiving can inadvertently build passive habits in friends.`;
+      } else {
+        yourPart = 'You are offering regular support without completely over-functioning, but the return effort remains lower than what feels nourishing.';
+      }
+
+      if (feeling === 'Drained' || feeling === 'Resentful' || feeling === 'Used') {
+        cost = `High emotional tax. Leaving interactions feeling ${feeling.toLowerCase()} indicates that your generosity is compounding into unspoken resentment.`;
+      } else {
+        cost = 'Low to moderate immediate strain, but long-term imbalance usually leads to quiet emotional detachment over time.';
+      }
+
+      document.getElementById('out-audit-score').textContent = `${givePct}% Your Effort / ${takePct}% Their Effort`;
+      document.getElementById('out-audit-score-desc').textContent = `Based on your inputs, the balance leans ${givePct >= 55 ? 'toward you' : 'toward them'} carrying the relationship.`;
+      document.getElementById('out-audit-type').textContent = dynamic;
+      document.getElementById('out-audit-type-desc').textContent = desc;
+      document.getElementById('out-audit-yourpart').textContent = yourPart;
+      document.getElementById('out-audit-cost').textContent = cost;
+      document.getElementById('out-audit-cost-desc').textContent = `Post-interaction feeling: ${feeling}.`;
+      document.getElementById('out-audit-branch').textContent = branch;
+      document.getElementById('out-audit-branch-desc').textContent = branchDesc;
+
+      document.getElementById('output-audit').classList.add('active');
+      setHistory('audit', { summary: `Audit: ${name} (${dynamic})`, name, givePct, dynamic, branch });
+      renderHistory('audit');
+      updateFriendshipPlan();
+    }
+
+    /* ===== TOOL: INITIATION ===== */
+    function loadSampleInitiation() {
+      document.getElementById('init-freq').value = 'Weekly';
+      document.getElementById('init-last').value = '3 months';
+      document.getElementById('init-fear').value = "I'm afraid if I stop texting first, weeks will go by, confirming they don't care at all.";
+      document.getElementById('init-learn').value = 'Whether the connection exists without my effort';
+      document.getElementById('init-risk').value = '6';
+      document.getElementById('init-risk-val').textContent = '6';
+      processInitiation();
+    }
+    function processInitiation() {
+      const freq = document.getElementById('init-freq').value;
+      const last = document.getElementById('init-last').value;
+      const fear = document.getElementById('init-fear').value || 'They won\'t reach out.';
+      const learn = document.getElementById('init-learn').value;
+      const risk = parseInt(document.getElementById('init-risk').value);
+
+      let waitTime = '2 to 3 weeks';
+      if (freq === 'Daily') waitTime = '7 to 10 days';
+      if (freq === 'Weekly') waitTime = '3 to 4 weeks';
+      if (freq === 'Few times a month') waitTime = '5 to 6 weeks';
+      if (freq === 'Monthly') waitTime = '2 months';
+
+      document.getElementById('out-init-protocol-title').textContent = `Recommended Pause: ${waitTime}`;
+      document.getElementById('out-init-protocol-desc').textContent =
+        `Based on your usual ${freq.toLowerCase()} contact, pause all first-initiations (texts, calls, organizing hangouts) for ${waitTime}. Do not announce the test. Respond warmly if they reach out first.`;
+      document.getElementById('out-init-reframe').textContent =
+        `Your fear: "${fear}"\n\nRealistic Reframe: If silence follows your pause, it reveals their current bandwidth or commitment level. Silence is data, not a personal verdict on your worth.`;
+      document.getElementById('out-init-soothe').textContent =
+        `When you feel the urge to break the pause:\n1. Name the urge: discomfort with uncertainty.\n2. Divert: text a friend who reciprocates or focus on a task.\n3. Remind: "Reaching out now gives temporary relief, but deprives me of the long-term truth I need."`;
+      document.getElementById('out-init-interpret').textContent =
+        `• Outcome A (They reach out within ${waitTime}): They may have been accustomed to you leading. Respond warmly and notice if they follow through.\n\n• Outcome B (Silence past ${waitTime}): They are likely a low-effort friend right now. You can comfortably drop initiation to match theirs without guilt.`;
+
+      document.getElementById('output-initiation').classList.add('active');
+      setHistory('initiation', { summary: `Initiation Test (${waitTime} pause)`, freq, last, waitTime });
+      renderHistory('initiation');
+      updateFriendshipPlan();
+    }
+
+    /* ===== TOOL: CONVERSATION ===== */
+    function loadSampleConversation() {
+      document.getElementById('conv-want').value = "I feel like I'm always the one reaching out and planning, and I'd love more mutual effort.";
+      document.getElementById('conv-reaction').value = 'Dismissive';
+      document.getElementById('conv-goal').value = 'More reciprocity';
+      document.getElementById('conv-importance').value = 'Important';
+      document.getElementById('conv-style').value = 'Hinting';
+      processConversation();
+    }
+    function processConversation() {
+      const want = document.getElementById('conv-want').value || "I'd like more balance in our contact.";
+      const reaction = document.getElementById('conv-reaction').value;
+      const goal = document.getElementById('conv-goal').value;
+
+      document.getElementById('out-conv-script-direct').textContent =
+        `Hey! I was thinking about us recently and wanted to share something openly. I really value our friendship, but lately I've noticed that I've been doing almost all the reaching out and planning. It's made me feel a bit disconnected. I'd love to see more mutual effort from both of us because you matter to me. How do you feel about how things have been going between us?`;
+      document.getElementById('out-conv-script-soft').textContent =
+        `Hey! Miss hanging out with you. I realized I'm usually the one proposing plans or checking in, so I wanted to pause and check in—how are things on your end? Would love it if you wanted to pick our next hangout spot whenever you have space!`;
+      document.getElementById('out-conv-shift').textContent =
+        `Instead of saying: "You never check on me or plan anything." (Triggers defensive walls)\n\nTry saying: "I've noticed I'm usually driving our plans. I love our time together, but I want to make sure it feels equally important to both of us."`;
+      let playbook = '';
+      if (reaction === 'Defensive') playbook = `Stay calm: "I completely understand life gets crazy—I don't expect perfection. I just wanted to express how I was feeling so we can stay close."`;
+      else if (reaction === 'Dismissive') playbook = `Hold your ground: "It might seem small, but it matters to me. I'm telling you because I value us, not to start an argument."`;
+      else playbook = `Receive it gracefully: "Thank you for hearing me out. I really appreciate you listening, and I'm excited to hang out soon."`;
+      document.getElementById('out-conv-playbook').textContent = playbook;
+      document.getElementById('out-conv-posttalk').textContent =
+        `After expressing your goal ("${goal}"):\nGive them space to show, not just tell. Do not immediately step back into over-organizing. Allow them room to take initiative in the coming weeks.`;
+
+      document.getElementById('output-conversation').classList.add('active');
+      setHistory('conversation', { summary: `Script: Goal (${goal})`, goal, reaction });
+      renderHistory('conversation');
+      updateFriendshipPlan();
+    }
+
+    /* ===== TOOL: LETTING GO ===== */
+    function loadSampleLettingGo() {
+      document.getElementById('let-why').value = "One-sided emotional dumping and zero support when I go through difficult moments.";
+      document.getElementById('let-target').value = 'Occasional contact';
+      document.getElementById('let-mutual').value = 'Many';
+      document.getElementById('let-grief').value = "Grieving the close friendship we used to have a few years ago.";
+      document.getElementById('let-guilt').value = '7';
+      document.getElementById('let-guilt-val').textContent = '7';
+      processLettingGo();
+    }
+    function processLettingGo() {
+      const target = document.getElementById('let-target').value;
+      const mutual = document.getElementById('let-mutual').value;
+      const grief = document.getElementById('let-grief').value || 'Losing the connection.';
+      const guilt = parseInt(document.getElementById('let-guilt').value);
+
+      let fade = `To move toward "${target}":\n1. Response Latency: Increase response time to non-urgent texts (reply in hours/next day, not minutes).\n2. Boundary on Emotional Depth: Keep replies polite, friendly, but concise. Avoid deep personal venting.\n3. Availability: Decline 1-on-1 invitations gracefully ("My calendar is pretty full this week, but hope you're doing well!").`;
+      let mutualNav = (mutual === 'Many' || mutual === 'We share a community') ?
+        `High mutual overlap. Keep group interactions warm and civil. Do not ask mutual friends to take sides or gossip. If asked, say: "We're both just busy with different things right now, but all good!"` :
+        `Minimal social overlap. You can transition smoothly without worrying about group dynamics.`;
+      document.getElementById('out-let-fade').textContent = fade;
+      document.getElementById('out-let-mutual').textContent = mutualNav;
+      document.getElementById('out-let-guilt').textContent = `Guilt Level: ${guilt}/10.\nRemember: Pulling back energy from a connection that drains you is not a punishment to them; it is self-preservation for you.`;
+      document.getElementById('out-let-grief-desc').textContent = `Honoring: "${grief}"\nIt is completely normal to mourn what this friendship was or what you hoped it would become. The memories were real, even if the present dynamic no longer serves you.`;
+      document.getElementById('out-let-direct-script').textContent =
+        `Hey, I want to be honest with you. I've realized I need to step back and focus on my own bandwidth right now. I care about the times we've shared, but I don't have the capacity for the same level of closeness moving forward. I wish you nothing but the best.`;
+
+      document.getElementById('output-lettinggo').classList.add('active');
+      setHistory('lettinggo', { summary: `Distance Plan (${target})`, target, guilt });
+      renderHistory('lettinggo');
+      updateFriendshipPlan();
+    }
+
+    /* ===== TOOL: RECIPROCAL ===== */
+    function loadSampleReciprocal() {
+      document.getElementById('rec-current').value = "My coworker Alex, who always asks how my weekend was and remembers small details.";
+      document.getElementById('rec-places').value = "Work projects, local climbing gym, weekend run club.";
+      document.getElementById('rec-strengths').value = "Loyalty, active listening, showing up when someone is down.";
+      document.getElementById('rec-needs').value = "Someone who checks on me without prompting and initiates plans half the time.";
+      document.getElementById('rec-energy').value = 'Moderate';
+      document.getElementById('rec-vuln').value = '5';
+      document.getElementById('rec-vuln-val').textContent = '5';
+      processReciprocal();
+    }
+    function processReciprocal() {
+      const places = document.getElementById('rec-places').value || 'Community events, interest groups';
+      const energy = document.getElementById('rec-energy').value;
+      const vuln = parseInt(document.getElementById('rec-vuln').value);
+
+      document.getElementById('out-rec-greenflags').textContent =
+        `• Curiosity: They ask follow-up questions about your life without immediately pivoting back to themselves.\n• Equal Initiative: They reach out or suggest hangouts without waiting for you to lead every time.\n• Reliability: Their actions match their words; when they commit to plans, they follow through.`;
+      document.getElementById('out-rec-vulntest').textContent =
+        `With your vulnerability score at ${vuln}/10:\nUse the "Micro-Disclosure" test: Share a small, genuine piece of news or personal feeling (e.g. "Work was pretty stressful this week"). Observe if they meet you with empathy and sharing of their own, or if they dismiss/ignore it.`;
+      document.getElementById('out-rec-seeds').textContent =
+        `Based on your spots (${places}):\n1. Identify 1–2 consistent acquaintances in these settings who display low-ego, warm energy.\n2. Extend ONE low-stakes invitation (e.g. grabbing coffee right after run club or gym).\n3. Then wait and see if they initiate the second interaction.`;
+      document.getElementById('out-rec-pacing').textContent =
+        `Energy Level: ${energy}.\nTo prevent overgiving: Match their effort level like a game of tennis. Serve the ball (reach out once), then wait for them to return it before serving again. Do not double-serve.`;
+
+      document.getElementById('output-reciprocal').classList.add('active');
+      setHistory('reciprocal', { summary: `Blueprint (${energy} Energy)`, energy, vuln });
+      renderHistory('reciprocal');
+      updateFriendshipPlan();
+    }
+
+    /* ===== 7-DAY RESET ===== */
+    let resetDays = JSON.parse(localStorage.getItem('frch_reset_days') || '{"day":0}');
+    function startReset() {
+      const day = resetDays.day || 0;
+      const tools = ['audit','initiation','conversation','lettinggo','reciprocal'];
+      if (day < 5) {
+        switchTool(tools[day]);
+        showToast(`Starting Day ${day+1}: ${tools[day].charAt(0).toUpperCase()+tools[day].slice(1)}`);
+        resetDays.day = day + 1;
+        localStorage.setItem('frch_reset_days', JSON.stringify(resetDays));
+      } else if (day === 5) {
+        synthesizeReset();
+        resetDays.day = 6;
+        localStorage.setItem('frch_reset_days', JSON.stringify(resetDays));
+      } else if (day === 6) {
+        showToast('Reset complete! View your plan in My Friendship Plan.');
+        switchTool('plan');
+      }
+      updateResetUI();
+    }
+
+    function synthesizeReset() {
+      const plan = {
+        audit: getHistory('audit')[0]?.data || {},
+        initiation: getHistory('initiation')[0]?.data || {},
+        conversation: getHistory('conversation')[0]?.data || {},
+        lettinggo: getHistory('lettinggo')[0]?.data || {},
+        reciprocal: getHistory('reciprocal')[0]?.data || {}
+      };
+      document.getElementById('resetPlanContent').innerHTML = `
+        <div class="output-grid">
+          <div class="output-box"><div class="output-box-title">What I Am Noticing</div><div class="output-box-content">${plan.audit.dynamic || 'Reflect on your audit.'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">What I May Be Over-Functioning</div><div class="output-box-content">${plan.audit.yourPart || 'Reflect on your part.'}</div></div>
+          <div class="output-box"><div class="output-box-title">What I Need</div><div class="output-box-content">${plan.reciprocal.energy || 'Reflect on your needs.'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">What I Want to Preserve</div><div class="output-box-content">${plan.conversation.goal || 'Reflect on your goals.'}</div></div>
+          <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">My First Action</div><div class="output-box-content">Choose one: observe, experiment, communicate, or set a boundary.</div><div class="output-box-desc">Review in 30-60 days.</div></div>
+        </div>
+      `;
+      document.getElementById('resetPlanOutput').classList.add('active');
+      setHistory('reset', { summary: '7-Day Friendship Reset Completed' });
+      renderAllHistory();
+      updateFriendshipPlan();
+    }
+
+    function updateResetUI() {
+      const day = resetDays.day || 0;
+      for (let i=1; i<=7; i++) {
+        const el = document.getElementById(`resetDay${i}`);
+        if (el) el.classList.toggle('done', i <= day);
+      }
+      const content = document.getElementById('resetContent');
+      if (day === 0) content.innerHTML = '<p style="color:var(--color-text-muted);">Start with Day 1: Friendship Audit. Complete each tool in order to build your Friendship Plan.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Start Day 1</button>';
+      else if (day < 5) content.innerHTML = `<p>Day ${day+1} of 7: Complete the ${['Friendship Audit','Initiation Test','The Conversation','Letting Go','Reciprocal Builder'][day]}.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-arrow-right"></i> Continue</button>`;
+      else if (day === 5) content.innerHTML = `<p>You've completed all tools. Ready to synthesize your Friendship Plan?</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-list-check"></i> Synthesize Plan</button>`;
+      else if (day === 6) content.innerHTML = `<p>✅ Reset complete. View your plan in My Friendship Plan.</p><button class="btn btn-secondary" onclick="switchTool('plan')">View Plan</button>`;
+    }
+
+    /* ===== MY FRIENDSHIP PLAN ===== */
+    function updateFriendshipPlan() {
+      const container = document.getElementById('planDisplay');
+      const a = getHistory('audit')[0]?.data || {};
+      const i = getHistory('initiation')[0]?.data || {};
+      const c = getHistory('conversation')[0]?.data || {};
+      const l = getHistory('lettinggo')[0]?.data || {};
+      const r = getHistory('reciprocal')[0]?.data || {};
+      const hasData = Object.keys(a).length || Object.keys(i).length || Object.keys(c).length || Object.keys(l).length || Object.keys(r).length;
+      if (!hasData) {
+        container.innerHTML = '<p style="color:var(--color-text-muted);">Complete the 7-Day Friendship Reset or run individual tools to build your plan.</p>';
+        return;
+      }
+      container.innerHTML = `
+        <div class="output-grid">
+          <div class="output-box"><div class="output-box-title">What I Am Noticing</div><div class="output-box-content">${a.dynamic || '—'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">What I May Be Over-Functioning</div><div class="output-box-content">${a.yourPart || '—'}</div></div>
+          <div class="output-box"><div class="output-box-title">What I Have Already Tried</div><div class="output-box-content">${i.freq || '—'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">What I Want to Preserve</div><div class="output-box-content">${c.goal || '—'}</div></div>
+          <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">My First Action</div><div class="output-box-content">Choose one: observe, experiment, communicate, or set a boundary.</div><div class="output-box-desc">Review in 30-60 days.</div></div>
+        </div>
+      `;
+    }
+
+    /* ===== INIT ===== */
+    document.addEventListener('DOMContentLoaded', () => {
+      ['audit','initiation','conversation','lettinggo','reciprocal'].forEach(renderHistory);
+      renderAllHistory();
+      updateResetUI();
+      updateFriendshipPlan();
+      switchTool('dashboard');
+    });
+  </script>
+</body>
+</html>

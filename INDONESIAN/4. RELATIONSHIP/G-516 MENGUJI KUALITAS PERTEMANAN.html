@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cek Realitas Persahabatan™ — Timbal Balik Tanpa Drama</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --color-slate: #457B9D;
+      --color-slate-hover: #366380;
+      --color-lavender: #C77DAD;
+      --color-lavender-light: #F3E8F0;
+      --color-bg-start: #F8F9FA;
+      --color-bg-end: #F8F5FA;
+      --color-text-main: #2D3748;
+      --color-text-muted: #718096;
+      --color-card-bg: #FFFFFF;
+      --color-border: #E2E8F0;
+      --sidebar-width: 270px;
+      --radius-xl: 1rem;
+      --radius-lg: 0.75rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07);
+      --transition: all 0.25s ease;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, var(--color-bg-start), var(--color-bg-end)); color: var(--color-text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.5; }
+    .app-container { display: flex; flex: 1; position: relative; }
+
+    /* Sidebar */
+    .sidebar {
+      width: var(--sidebar-width); background: var(--color-card-bg); border-right: 1px solid var(--color-border);
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 100;
+      display: flex; flex-direction: column; box-shadow: var(--shadow-sm); transition: transform 0.3s ease;
+    }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: 0.75rem; }
+    .sidebar-header i { font-size: 1.5rem; color: var(--color-lavender); }
+    .sidebar-header h1 { font-size: 1.1rem; font-weight: 700; color: var(--color-slate); line-height: 1.2; }
+    .sidebar-nav { padding: 1rem 0; flex: 1; overflow-y: auto; }
+    .nav-item {
+      display: flex; align-items: center; gap: 0.875rem; padding: 0.75rem 1.5rem;
+      color: var(--color-text-muted); text-decoration: none; font-weight: 500; font-size: 0.92rem;
+      cursor: pointer; transition: var(--transition); border-left: 4px solid transparent;
+    }
+    .nav-item:hover { background: #F7FAFC; color: var(--color-slate); }
+    .nav-item.active { background: var(--color-lavender-light); color: var(--color-slate); border-left-color: var(--color-slate); font-weight: 600; }
+    .nav-item i { width: 20px; text-align: center; }
+
+    /* Mobile */
+    .mobile-header { display: none; background: var(--color-card-bg); padding: 1rem 1.5rem; border-bottom: 1px solid var(--color-border); align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90; box-shadow: var(--shadow-sm); }
+    .hamburger-btn { background: none; border: none; font-size: 1.35rem; color: var(--color-slate); cursor: pointer; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 95; }
+
+    /* Main */
+    .main-wrapper { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; width: calc(100% - var(--sidebar-width)); }
+    .main-content { flex: 1; width: 100%; max-width: 880px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+    .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+    .view-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+    .card { background: var(--color-card-bg); border-radius: var(--radius-xl); padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--color-border); margin-bottom: 1.5rem; }
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.85rem; font-weight: 700; color: var(--color-slate); margin-bottom: 0.35rem; }
+    .page-subtitle { color: var(--color-text-muted); font-size: 1.05rem; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-label { display: block; font-weight: 600; font-size: 0.9rem; color: var(--color-text-main); margin-bottom: 0.5rem; }
+    .form-control { width: 100%; padding: 0.7rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); font-family: inherit; font-size: 0.95rem; color: var(--color-text-main); background: #FAFAFA; transition: var(--transition); }
+    .form-control:focus { outline: none; border-color: var(--color-slate); background: #FFF; box-shadow: 0 0 0 3px rgba(69,123,157,0.15); }
+    textarea.form-control { resize: vertical; min-height: 80px; }
+    .slider-container { display: flex; align-items: center; gap: 1rem; }
+    .slider-container input[type="range"] { flex: 1; accent-color: var(--color-slate); }
+    .slider-value { font-weight: 700; color: var(--color-slate); min-width: 2.5rem; text-align: right; }
+
+    .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1.5rem; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.7rem 1.25rem; font-size: 0.95rem; font-weight: 600; border-radius: var(--radius-md); border: none; cursor: pointer; transition: var(--transition); }
+    .btn-primary { background: var(--color-slate); color: white; }
+    .btn-primary:hover { background: var(--color-slate-hover); }
+    .btn-secondary { background: #EDF2F7; color: var(--color-text-main); }
+    .btn-secondary:hover { background: #E2E8F0; }
+    .btn-outline { background: transparent; border: 1px solid var(--color-slate); color: var(--color-slate); }
+    .btn-outline:hover { background: rgba(69,123,157,0.08); }
+    .btn-sm { padding: 0.35rem 0.75rem; font-size: 0.85rem; }
+
+    .output-container { margin-top: 2rem; display: none; }
+    .output-container.active { display: block; animation: fadeIn 0.4s ease-out; }
+    .output-grid { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    .output-box { background: #FFF; border-left: 4px solid var(--color-slate); padding: 1.25rem; border-radius: 0 var(--radius-lg) var(--radius-lg) 0; box-shadow: var(--shadow-sm); }
+    .output-box.accent-lavender { border-left-color: var(--color-lavender); }
+    .output-box-title { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--color-text-muted); margin-bottom: 0.25rem; }
+    .output-box-content { font-size: 1.025rem; font-weight: 600; color: var(--color-text-main); margin-bottom: 0.35rem; }
+    .output-box-desc { font-size: 0.925rem; color: #4A5568; line-height: 1.5; }
+
+    .script-box { background: #F7FAFC; border: 1px dashed var(--color-slate); border-radius: var(--radius-md); padding: 1rem; margin-top: 0.75rem; position: relative; }
+    .script-text { font-family: 'Inter', sans-serif; font-size: 0.95rem; color: #2D3748; white-space: pre-wrap; margin-bottom: 0.75rem; }
+
+    .history-section { margin-top: 2.5rem; border-top: 1px solid var(--color-border); padding-top: 1.5rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; cursor: pointer; }
+    .history-title { font-size: 1.1rem; font-weight: 600; color: var(--color-text-main); display: flex; align-items: center; gap: 0.5rem; }
+    .history-list { display: flex; flex-direction: column; gap: 0.75rem; }
+    .history-item { background: #FFF; border: 1px solid var(--color-border); border-radius: var(--radius-md); padding: 0.75rem 1rem; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center; }
+    .history-meta { display: flex; flex-direction: column; }
+    .history-date { font-size: 0.75rem; color: var(--color-text-muted); }
+
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 1.25rem; margin-top: 1.5rem; }
+    .dash-card { background: #FFF; border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; gap: 0.75rem; }
+    .dash-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); border-color: var(--color-slate); }
+    .dash-card-icon { width: 44px; height: 44px; border-radius: var(--radius-lg); background: var(--color-lavender-light); color: var(--color-slate); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .dash-card-title { font-weight: 700; font-size: 1.1rem; color: var(--color-text-main); }
+    .dash-card-desc { font-size: 0.875rem; color: var(--color-text-muted); line-height: 1.4; }
+
+    .tracker-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.875rem; }
+    .tracker-table th, .tracker-table td { border: 1px solid var(--color-border); padding: 0.5rem 0.8rem; text-align: left; }
+    .tracker-table th { background: #F7FAFC; font-weight: 600; }
+
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--color-text-main); color: #FFF; padding: 0.75rem 1.25rem; border-radius: var(--radius-md); font-size: 0.9rem; font-weight: 500; box-shadow: var(--shadow-md); display: flex; align-items: center; gap: 0.5rem; opacity: 0; transform: translateY(10px); transition: all 0.2s ease; z-index: 1000; pointer-events: none; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    footer { text-align: center; padding: 1.5rem; font-size: 0.8rem; color: var(--color-text-muted); border-top: 1px solid var(--color-border); background: rgba(255,255,255,0.5); margin-top: auto; }
+
+    .reset-progress { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .reset-day { background: var(--color-lavender-light); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; color: var(--color-slate); }
+    .reset-day.done { background: var(--color-slate); color: white; }
+
+    @media (max-width: 768px) {
+      .mobile-header { display: flex; }
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .main-wrapper { margin-left: 0; width: 100%; }
+      .main-content { padding: 1.5rem 1rem; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mobile-header">
+    <div style="display:flex; align-items:center; gap:0.5rem;">
+      <i class="fa-solid fa-scale-balanced" style="color:var(--color-lavender);font-size:1.2rem;"></i>
+      <span style="font-weight:700;color:var(--color-slate);">Cek Realitas™</span>
+    </div>
+    <button class="hamburger-btn" id="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+  </header>
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <h1>Cek Realitas<br>Persahabatan™</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <a class="nav-item active" data-tool="dashboard"><i class="fa-solid fa-house"></i> Beranda</a>
+        <a class="nav-item" data-tool="audit"><i class="fa-solid fa-clipboard-check"></i> Audit Persahabatan</a>
+        <a class="nav-item" data-tool="initiation"><i class="fa-solid fa-hourglass-half"></i> Uji Inisiasi</a>
+        <a class="nav-item" data-tool="conversation"><i class="fa-solid fa-comments"></i> Percakapan</a>
+        <a class="nav-item" data-tool="lettinggo"><i class="fa-solid fa-feather"></i> Melepaskan</a>
+        <a class="nav-item" data-tool="reciprocal"><i class="fa-solid fa-seedling"></i> Pembangun Timbal Balik</a>
+        <a class="nav-item" data-tool="reset"><i class="fa-solid fa-rotate"></i> Reset 7 Hari</a>
+        <a class="nav-item" data-tool="plan"><i class="fa-solid fa-list-check"></i> Rencana Persahabatanku</a>
+        <a class="nav-item" data-tool="history"><i class="fa-solid fa-clock-rotate-left"></i> Riwayatku</a>
+        <a class="nav-item" data-tool="privacy"><i class="fa-solid fa-lock"></i> Privasi & Keamanan</a>
+      </nav>
+    </aside>
+
+    <div class="main-wrapper">
+      <main class="main-content">
+
+        <!-- DASHBOARD / BERANDA -->
+        <section id="view-dashboard" class="view-section active">
+          <div class="card" style="background:linear-gradient(135deg,#FFF,var(--color-lavender-light));border:none;">
+            <h2 class="page-title" style="font-size:2.1rem;">Cek Realitas Persahabatan™</h2>
+            <p class="page-subtitle" style="color:var(--color-slate);font-weight:500;">Tidak semua persahabatan harus seimbang. Tapi harus cukup timbal balik untuk berarti.</p>
+            <p style="margin-top:0.8rem;font-size:0.95rem;color:#4A5568;">Perangkat praktis dan membumi untuk memahami dinamika sepihak, menguji timbal balik, melakukan percakapan yang lebih jelas, mundur tanpa drama yang tidak perlu, dan membangun persahabatan yang lebih sehat.</p>
+          </div>
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTool('audit')"><div class="dash-card-icon"><i class="fa-solid fa-clipboard-check"></i></div><div class="dash-card-title">Audit Persahabatan</div><div class="dash-card-desc">Evaluasi rasio memberi/menerima di 5 dimensi utama untuk melihat posisimu.</div></div>
+            <div class="dash-card" onclick="switchTool('initiation')"><div class="dash-card-icon"><i class="fa-solid fa-hourglass-half"></i></div><div class="dash-card-title">Uji Inisiasi</div><div class="dash-card-desc">Rancang eksperimen observasi untuk melihat apa yang terjadi saat kamu berhenti menghubungi pertama kali.</div></div>
+            <div class="dash-card" onclick="switchTool('conversation')"><div class="dash-card-icon"><i class="fa-solid fa-comments"></i></div><div class="dash-card-title">Percakapan</div><div class="dash-card-desc">Buat naskah percakapan yang jelas dan tidak menekan untuk menyampaikan kebutuhan tanpa mengakhiri hubungan.</div></div>
+            <div class="dash-card" onclick="switchTool('lettinggo')"><div class="dash-card-icon"><i class="fa-solid fa-feather"></i></div><div class="dash-card-title">Melepaskan</div><div class="dash-card-desc">Susun rencana mundur dengan anggun, kelola rasa bersalah, dan navigasi lingkaran sosial bersama.</div></div>
+            <div class="dash-card" onclick="switchTool('reciprocal')"><div class="dash-card-icon"><i class="fa-solid fa-seedling"></i></div><div class="dash-card-title">Pembangun Timbal Balik</div><div class="dash-card-desc">Identifikasi bendera hijau dan bangun koneksi baru di mana dukungan mengalir dua arah.</div></div>
+            <div class="dash-card" onclick="switchTool('reset')"><div class="dash-card-icon"><i class="fa-solid fa-rotate"></i></div><div class="dash-card-title">Reset 7 Hari</div><div class="dash-card-desc">Tidak tahu harus mulai dari mana? Mulai Reset Persahabatan 7 Hari yang terpandu.</div></div>
+          </div>
+        </section>
+
+        <!-- AUDIT PERSAHABATAN -->
+        <section id="view-audit" class="view-section">
+          <div class="page-header"><h2 class="page-title">Audit Persahabatan</h2><p class="page-subtitle">"Aku merasa memberi lebih dari yang kuterima, tapi aku ingin kejelasan tentang gambaran keseluruhannya."</p></div>
+          <div class="card"><form id="form-audit" onsubmit="event.preventDefault(); processAudit();">
+            <div class="form-group"><label class="form-label">Nama Teman:</label><input type="text" id="audit-name" class="form-control" placeholder="Misal: Sarah" required></div>
+            <div class="form-group"><label class="form-label">Siapa yang memulai kontak?</label><select id="audit-initiates" class="form-control"><option value="5">Selalu aku</option><option value="4">Sebagian besar aku</option><option value="3">Seimbang</option><option value="2">Sebagian besar mereka</option><option value="1">Selalu mereka</option></select></div>
+            <div class="form-group"><label class="form-label">Siapa yang merencanakan aktivitas & pertemuan?</label><select id="audit-plans" class="form-control"><option value="5">Selalu aku</option><option value="4">Sebagian besar aku</option><option value="3">Seimbang</option><option value="2">Sebagian besar mereka</option><option value="1">Selalu mereka</option></select></div>
+            <div class="form-group"><label class="form-label">Siapa yang memberikan dukungan emosional & mendengarkan?</label><select id="audit-support" class="form-control"><option value="5">Selalu aku</option><option value="4">Sebagian besar aku</option><option value="3">Seimbang</option><option value="2">Sebagian besar mereka</option><option value="1">Selalu mereka</option></select></div>
+            <div class="form-group"><label class="form-label">Siapa yang membantu dalam hal praktis?</label><select id="audit-practical" class="form-control"><option value="5">Selalu aku</option><option value="4">Sebagian besar aku</option><option value="3">Seimbang</option><option value="2">Sebagian besar mereka</option><option value="1">Selalu mereka</option></select></div>
+            <div class="form-group"><label class="form-label">Kapan terakhir kali mereka mengecek kabar hanya untuk menanyakan keadaanmu?</label><select id="audit-checked" class="form-control"><option value="recently">Baru-baru ini</option><option value="awhile">Beberapa waktu lalu</option><option value="only_reach">Hanya saat aku menghubungi duluan</option><option value="only_need">Hanya saat mereka butuh sesuatu</option><option value="cant_remember">Tidak ingat</option></select></div>
+            <div class="form-group"><label class="form-label">Bagaimana perasaanmu biasanya setelah menghabiskan waktu bersama mereka?</label><select id="audit-feeling" class="form-control"><option value="Energized">Bersemangat</option><option value="Neutral">Netral</option><option value="Drained">Terkuras</option><option value="Resentful">Kesal</option><option value="Used">Dimanfaatkan</option><option value="Happy">Bahagia</option></select></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-pie"></i> Jalankan Audit</button><button type="button" class="btn btn-secondary" onclick="loadSampleAudit()"><i class="fa-solid fa-folder-open"></i> Muat Contoh</button></div>
+          </form></div>
+          <div id="output-audit" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Peta Keseimbangan Persahabatan</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Pola Usaha</div><div class="output-box-content" id="out-audit-score">--</div><div class="output-box-desc" id="out-audit-score-desc">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Dinamika Saat Ini</div><div class="output-box-content" id="out-audit-type">--</div><div class="output-box-desc" id="out-audit-type-desc">--</div></div>
+              <div class="output-box"><div class="output-box-title">Cek Peranmu</div><div class="output-box-content">Terlalu berfungsi vs. Kurang menerima</div><div class="output-box-desc" id="out-audit-yourpart">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Biaya Emosional & Energi</div><div class="output-box-content" id="out-audit-cost">--</div><div class="output-box-desc" id="out-audit-cost-desc">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Cabang Keputusan yang Direkomendasikan</div><div class="output-box-content" id="out-audit-branch">--</div><div class="output-box-desc" id="out-audit-branch-desc">--</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('audit')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Audit Sebelumnya</span><i class="fa-solid fa-chevron-down" id="history-icon-audit"></i></div><div id="history-list-audit" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- UJI INISIASI -->
+        <section id="view-initiation" class="view-section">
+          <div class="page-header"><h2 class="page-title">Uji Inisiasi</h2><p class="page-subtitle">"Aku ingin tahu apa yang terjadi jika aku berhenti menghubungi duluan—tanpa khawatir berlebihan."</p></div>
+          <div class="card"><form id="form-initiation" onsubmit="event.preventDefault(); processInitiation();">
+            <div class="form-group"><label class="form-label">Frekuensi inisiasimu saat ini:</label><select id="init-freq" class="form-control"><option value="Daily">Setiap hari</option><option value="Weekly">Mingguan</option><option value="Few times a month">Beberapa kali sebulan</option><option value="Monthly">Bulanan</option><option value="Only when they reach out">Hanya saat mereka menghubungi</option></select></div>
+            <div class="form-group"><label class="form-label">Sudah berapa lama sejak MEREKA menghubungimu?</label><select id="init-last" class="form-control"><option value="Recently">Baru-baru ini</option><option value="1-2 weeks">1–2 minggu</option><option value="1 month">1 bulan</option><option value="3 months">3 bulan</option><option value="6+ months">6+ bulan</option><option value="Never">Tidak pernah</option></select></div>
+            <div class="form-group"><label class="form-label">Ketakutan utamamu jika kamu berhenti menghubungi:</label><textarea id="init-fear" class="form-control" placeholder="Misal: Aku takut mereka tidak akan pernah berbicara denganku lagi dan persahabatan ini akan langsung mati."></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu harap pelajari dari uji ini?</label><select id="init-learn" class="form-control"><option value="Whether they care">Apakah mereka cukup peduli untuk mengecek</option><option value="Whether I'm overthinking">Apakah aku terlalu banyak berpikir</option><option value="Whether the connection exists without my effort">Apakah koneksi itu ada tanpa usahaku</option><option value="Nothing, I already know">Tidak ada, aku sudah tahu jawabannya</option></select></div>
+            <div class="form-group"><label class="form-label">Kesediaan mengambil risiko jeda atau memudarnya kontak (1 hingga 10):</label><div class="slider-container"><input type="range" id="init-risk" min="1" max="10" value="6" oninput="document.getElementById('init-risk-val').textContent=this.value"><span id="init-risk-val" class="slider-value">6</span></div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-flask"></i> Rancang Protokol Uji</button><button type="button" class="btn btn-secondary" onclick="loadSampleInitiation()"><i class="fa-solid fa-folder-open"></i> Muat Contoh</button></div>
+          </form></div>
+          <div id="output-initiation" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Protokol Ujimu</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Jendela Observasi</div><div class="output-box-content" id="out-init-protocol-title">--</div><div class="output-box-desc" id="out-init-protocol-desc">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Cek Realitas Ketakutan</div><div class="output-box-content">Membingkai Ulang Hasil</div><div class="output-box-desc" id="out-init-reframe">--</div></div>
+              <div class="output-box"><div class="output-box-title">Rencana Menenangkan Diri</div><div class="output-box-content">Mengelola Kecemasan Selama Jeda</div><div class="output-box-desc" id="out-init-soothe">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Log Observasi</div><div class="output-box-content">Tetap Objektif</div><div class="output-box-desc">Gunakan catatan mental sederhana ini:</div><table class="tracker-table"><thead><tr><th>Tanggal</th><th>Diinisiasi Oleh</th><th>Jenis / Topik</th><th>Catatan</th></tr></thead><tbody><tr><td>Minggu 1</td><td>---</td><td>---</td><td>Observasi awal</td></tr><tr><td>Minggu 2</td><td>---</td><td>---</td><td>Tahan dorongan</td></tr><tr><td>Minggu 3</td><td>---</td><td>---</td><td>Catat yang masuk</td></tr></tbody></table></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Menafsirkan Hasil</div><div class="output-box-content">Apa Arti Diam vs. Tindakan</div><div class="output-box-desc" id="out-init-interpret">--</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('initiation')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Uji Sebelumnya</span><i class="fa-solid fa-chevron-down" id="history-icon-initiation"></i></div><div id="history-list-initiation" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- PERCAKAPAN -->
+        <section id="view-conversation" class="view-section">
+          <div class="page-header"><h2 class="page-title">Percakapan</h2><p class="page-subtitle">"Aku ingin membahas ketidakseimbangan secara langsung tanpa terdengar membutuhkan atau menyebabkan drama yang tidak perlu."</p></div>
+          <div class="card"><form id="form-conversation" onsubmit="event.preventDefault(); processConversation();">
+            <div class="form-group"><label class="form-label">Apa poin inti yang ingin kamu sampaikan?</label><textarea id="conv-want" class="form-control" placeholder="Misal: Aku merasa aku selalu memulai pertemuan kita dan mengecek kabarmu, tapi jarang kembali padaku."></textarea></div>
+            <div class="form-group"><label class="form-label">Kemungkinan gaya respons mereka:</label><select id="conv-reaction" class="form-control"><option value="Defensive">Bertahan / Membalik</option><option value="Dismissive">Meremehkan</option><option value="Apologetic">Meminta maaf</option><option value="Surprised">Terkejut</option><option value="Pull away">Mereka akan menjauh / Dingin</option><option value="Improve briefly">Membaik sebentar lalu kambuh</option></select></div>
+            <div class="form-group"><label class="form-label">Tujuan utamamu:</label><select id="conv-goal" class="form-control"><option value="More reciprocity">Membangun timbal balik yang lebih baik</option><option value="Just to be heard">Hanya untuk berekspresi dan didengar</option><option value="Understand state">Untuk memahami apa yang terjadi dalam hidup mereka</option><option value="Decide to stay">Untuk melihat apakah persahabatan ini layak dipertahankan</option><option value="End gracefully">Untuk memberikan penutupan yang jelas dan mengakhiri dengan anggun</option></select></div>
+            <div class="form-group"><label class="form-label">Seberapa penting hubungan ini bagimu?</label><select id="conv-importance" class="form-control"><option value="Essential">Teman inti yang esensial</option><option value="Important">Penting / Teman dekat</option><option value="Casual">Kasual / Teman sosial</option><option value="Historical">Historis / Teman lama</option><option value="Unsure">Tidak yakin saat ini</option></select></div>
+            <div class="form-group"><label class="form-label">Gaya konflik tipikalmu:</label><select id="conv-style" class="form-control"><option value="Direct">Langsung & Terbuka</option><option value="Hinting">Mengisyaratkan / Pasif</option><option value="Avoidant">Menghindar / Tidak suka konflik</option><option value="Aggressive">Emosional tinggi / Agresif</option><option value="Accommodating">Mengakomodasi</option></select></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Buat Naskah</button><button type="button" class="btn btn-secondary" onclick="loadSampleConversation()"><i class="fa-solid fa-folder-open"></i> Muat Contoh</button></div>
+          </form></div>
+          <div id="output-conversation" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Kerangka Percakapan</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Opsi A: Pendekatan Langsung</div><div class="output-box-desc">Jelas, jujur, dan membumi. Terbaik untuk teman dekat atau esensial.</div><div class="script-box"><div class="script-text" id="out-conv-script-direct">--</div><button class="btn btn-outline btn-sm" onclick="copyToClipboard('out-conv-script-direct')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Opsi B: Sentuhan Lembut</div><div class="output-box-desc">Frasa santai dan tidak menekan yang berfokus pada membuka pintu untuk berbicara.</div><div class="script-box"><div class="script-text" id="out-conv-script-soft">--</div><button class="btn btn-outline btn-sm" onclick="copyToClipboard('out-conv-script-soft')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+              <div class="output-box"><div class="output-box-title">Observasi vs. Tuduhan</div><div class="output-box-desc" id="out-conv-shift">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Buku Panduan Respons</div><div class="output-box-content">Menangani Reaksi Mereka</div><div class="output-box-desc" id="out-conv-playbook">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Rencana Penerimaan Pasca-Percakapan</div><div class="output-box-content">Mengetahui Kapan Kamu Telah Melakukan Bagianmu</div><div class="output-box-desc" id="out-conv-posttalk">--</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('conversation')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Naskah Sebelumnya</span><i class="fa-solid fa-chevron-down" id="history-icon-conversation"></i></div><div id="history-list-conversation" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- MELEPASKAN -->
+        <section id="view-lettinggo" class="view-section">
+          <div class="page-header"><h2 class="page-title">Melepaskan & Menjauh</h2><p class="page-subtitle">"Aku perlu mundur dari persahabatan yang menguras energiku tanpa memulai pertengkaran."</p></div>
+          <div class="card"><form id="form-lettinggo" onsubmit="event.preventDefault(); processLettingGo();">
+            <div class="form-group"><label class="form-label">Mengapa kamu menarik diri?</label><textarea id="let-why" class="form-control" placeholder="Misal: Sering curhat sepihak, negatif, dan tidak ada dukungan saat aku mengalami masa sulit."></textarea></div>
+            <div class="form-group"><label class="form-label">Jarak yang diinginkan dalam jangka panjang:</label><select id="let-target" class="form-control"><option value="Casual acquaintance">Kenalan kasual (sapa di grup, tidak ada 1-on-1)</option><option value="Occasional contact">Kontak sesekali (beberapa kali setahun)</option><option value="Social media only">Hanya koneksi media sosial</option><option value="Complete cut">Putus total / Tanpa kontak</option><option value="Just stop initiating">Hanya berhenti memulai dan biarkan menemukan level alaminya</option></select></div>
+            <div class="form-group"><label class="form-label">Lingkaran sosial bersama / teman bersama:</label><select id="let-mutual" class="form-control"><option value="Many">Banyak teman dekat bersama</option><option value="Some">Beberapa teman yang tumpang tindih</option><option value="None">Tidak ada / Sepenuhnya terpisah</option><option value="We share a community">Kami berbagi tempat kerja, grup hobi, atau komunitas</option></select></div>
+            <div class="form-group"><label class="form-label">Apa yang paling membuatmu sedih kehilangan?</label><textarea id="let-grief" class="form-control" placeholder="Misal: Berduka atas kedekatan yang dulu kami miliki beberapa tahun lalu dan kenangan yang kami bangun."></textarea></div>
+            <div class="form-group"><label class="form-label">Tingkat rasa bersalah tentang mundur (1 hingga 10):</label><div class="slider-container"><input type="range" id="let-guilt" min="1" max="10" value="7" oninput="document.getElementById('let-guilt-val').textContent=this.value"><span id="let-guilt-val" class="slider-value">7</span></div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Buat Strategi Jarak</button><button type="button" class="btn btn-secondary" onclick="loadSampleLettingGo()"><i class="fa-solid fa-folder-open"></i> Muat Contoh</button></div>
+          </form></div>
+          <div id="output-lettinggo" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Strategi Jarakmu</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Rencana Batasan</div><div class="output-box-content">Penyesuaian Batasan yang Dapat Ditindaklanjuti</div><div class="output-box-desc" id="out-let-fade">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Navigasi Teman Bersama</div><div class="output-box-content">Melindungi Dinamika Kelompok</div><div class="output-box-desc" id="out-let-mutual">--</div></div>
+              <div class="output-box"><div class="output-box-title">Pembingkaian Ulang Rasa Bersalah</div><div class="output-box-content" id="out-let-guilt">--</div><div class="output-box-desc">"Kamu tidak diharuskan membakar dirimu sendiri untuk menghangatkan orang lain."</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Cek Duka</div><div class="output-box-content">Menghormati Apa yang Dulu Ada</div><div class="output-box-desc" id="out-let-grief-desc">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Jika Penutupan Langsung Diperlukan</div><div class="output-box-desc">Naskah hormat jika mereka bertanya langsung:</div><div class="script-box"><div class="script-text" id="out-let-direct-script">--</div><button class="btn btn-outline btn-sm" onclick="copyToClipboard('out-let-direct-script')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('lettinggo')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Rencana Sebelumnya</span><i class="fa-solid fa-chevron-down" id="history-icon-lettinggo"></i></div><div id="history-list-lettinggo" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- PEMBANGUN TIMBAL BALIK -->
+        <section id="view-reciprocal" class="view-section">
+          <div class="page-header"><h2 class="page-title">Pembangun Persahabatan Timbal Balik</h2><p class="page-subtitle">"Aku ingin menemukan dan memelihara persahabatan yang sehat di mana dukungan dan usaha mengalir dua arah."</p></div>
+          <div class="card"><form id="form-reciprocal" onsubmit="event.preventDefault(); processReciprocal();">
+            <div class="form-group"><label class="form-label">Persahabatan saat ini yang terasa seimbang (jika ada):</label><textarea id="rec-current" class="form-control" placeholder="Misal: Rekan kerjaku Alex, atau teman sekamar lamaku Maya."></textarea></div>
+            <div class="form-group"><label class="form-label">Di mana biasanya kamu berinteraksi atau bertemu orang?</label><textarea id="rec-places" class="form-control" placeholder="Misal: Gym panjat lokal, proyek kerja, grup kebun komunitas."></textarea></div>
+            <div class="form-group"><label class="form-label">Kekuatan persahabatan utamamu (apa yang kamu berikan):</label><textarea id="rec-strengths" class="form-control" placeholder="Misal: Pendengar yang baik, dapat diandalkan saat ada rencana, perhatian dengan mengecek kabar."></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang paling kamu butuhkan dari seorang teman saat ini:</label><textarea id="rec-needs" class="form-control" placeholder="Misal: Seseorang yang mengecek kabarku tanpa aku meminta, dan menunjukkan rasa ingin tahu timbal balik tentang hidupku."></textarea></div>
+            <div class="form-group"><label class="form-label">Kapasitas sosial / tingkat energimu:</label><select id="rec-energy" class="form-control"><option value="High">Tinggi (mencari pertemuan sering)</option><option value="Moderate">Sedang (mingguan atau dua mingguan)</option><option value="Low">Rendah (bulanan/kontak kasual)</option><option value="Variable">Berubah-ubah (fluktuatif dengan stres/pekerjaan)</option></select></div>
+            <div class="form-group"><label class="form-label">Kesediaan berbagi kerentanan dengan kontak baru (1 hingga 10):</label><div class="slider-container"><input type="range" id="rec-vuln" min="1" max="10" value="5" oninput="document.getElementById('rec-vuln-val').textContent=this.value"><span id="rec-vuln-val" class="slider-value">5</span></div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-tree"></i> Buat Cetak Biru</button><button type="button" class="btn btn-secondary" onclick="loadSampleReciprocal()"><i class="fa-solid fa-folder-open"></i> Muat Contoh</button></div>
+          </form></div>
+          <div id="output-reciprocal" class="output-container">
+            <h3 style="color:var(--color-slate);margin-bottom:1rem;">Cetak Biru Timbal Balik</h3>
+            <div class="output-grid">
+              <div class="output-box"><div class="output-box-title">Bendera Hijau Persahabatan Seimbang</div><div class="output-box-content">Apa yang Harus Diperhatikan di Awal</div><div class="output-box-desc" id="out-rec-greenflags">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Uji Kerentanan</div><div class="output-box-content">Langkah Pengungkapan Mikro yang Aman</div><div class="output-box-desc" id="out-rec-vulntest">--</div></div>
+              <div class="output-box"><div class="output-box-title">Benih Persahabatan</div><div class="output-box-content">Peluang di Lingkunganmu</div><div class="output-box-desc" id="out-rec-seeds">--</div></div>
+              <div class="output-box accent-lavender"><div class="output-box-title">Kendali Kecepatan & Pemberian Berlebihan</div><div class="output-box-content">Melindungi Keseimbanganmu</div><div class="output-box-desc" id="out-rec-pacing">--</div></div>
+              <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Afirmasi Inti</div><div class="output-box-content" style="font-size:1.1rem;color:var(--color-slate);">"Kamu berhak atas persahabatan yang mengisimu, bukan hanya yang kamu topang."</div></div>
+            </div>
+          </div>
+          <div class="history-section"><div class="history-header" onclick="toggleHistory('reciprocal')"><span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Cetak Biru Sebelumnya</span><i class="fa-solid fa-chevron-down" id="history-icon-reciprocal"></i></div><div id="history-list-reciprocal" class="history-list" style="display:none;"></div></div>
+        </section>
+
+        <!-- RESET 7 HARI -->
+        <section id="view-reset" class="view-section">
+          <div class="page-header"><h2 class="page-title">Reset Persahabatan 7 Hari</h2><p class="page-subtitle">Perjalanan terpandu melalui kelima alat untuk membangun kejelasan dan rencana.</p></div>
+          <div class="card">
+            <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+              <span class="reset-day" id="resetDay1">Hari 1: Audit</span>
+              <span class="reset-day" id="resetDay2">Hari 2: Inisiasi</span>
+              <span class="reset-day" id="resetDay3">Hari 3: Percakapan</span>
+              <span class="reset-day" id="resetDay4">Hari 4: Melepaskan</span>
+              <span class="reset-day" id="resetDay5">Hari 5: Timbal Balik</span>
+              <span class="reset-day" id="resetDay6">Hari 6: Sintesis</span>
+              <span class="reset-day" id="resetDay7">Hari 7: Rencana</span>
+            </div>
+            <div id="resetContent">
+              <p style="color:var(--color-text-muted);">Mulai dengan Hari 1: Audit Persahabatan. Selesaikan setiap alat secara berurutan untuk membangun Rencana Persahabatanmu.</p>
+              <button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Mulai Hari 1</button>
+            </div>
+            <div id="resetPlanOutput" class="output-container" style="margin-top:1.5rem;">
+              <div class="output-header"><h3 style="color:var(--color-slate);"><i class="fa-solid fa-list-check"></i> Rencana Persahabatanmu</h3></div>
+              <div id="resetPlanContent"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RENCANA PERSAHABATANKU -->
+        <section id="view-plan" class="view-section">
+          <div class="page-header"><h2 class="page-title">Rencana Realitas Persahabatanku</h2><p class="page-subtitle">Disintesis dari alat yang telah kamu selesaikan.</p></div>
+          <div class="card" id="planCard">
+            <div id="planDisplay"><p style="color:var(--color-text-muted);">Selesaikan Reset Persahabatan 7 Hari atau jalankan alat individu untuk membangun rencanamu.</p></div>
+          </div>
+        </section>
+
+        <!-- RIWAYATKU -->
+        <section id="view-history" class="view-section">
+          <div class="page-header"><h2 class="page-title">Riwayatku</h2><p class="page-subtitle">Semua refleksi tersimpanmu dalam satu tempat.</p></div>
+          <div class="card">
+            <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+              <button class="btn btn-outline btn-sm" onclick="renderAllHistory()">Segarkan</button>
+              <button class="btn btn-outline btn-sm" onclick="if(confirm('Hapus semua riwayat?')){clearAllHistory();}">Hapus Semua Riwayat</button>
+            </div>
+            <div id="allHistoryContainer"></div>
+          </div>
+        </section>
+
+        <!-- PRIVASI & KEAMANAN -->
+        <section id="view-privacy" class="view-section">
+          <div class="page-header"><h2 class="page-title">Privasi & Keamanan</h2></div>
+          <div class="card">
+            <p><strong>Dirancang untuk privasi.</strong> Refleksimu tetap ada di perangkatmu. Kami tidak mengirimkan data ke server mana pun.</p>
+            <p style="margin-top:1rem;"><strong>Penting:</strong> Cek Realitas Persahabatan adalah alat bantu refleksi dan perencanaan mandiri. Ini bukan terapi, diagnosis, intervensi krisis, nasihat hukum, atau pengganti perawatan profesional yang berkualifikasi.</p>
+            <p style="margin-top:1rem;">Jika persahabatan melibatkan ancaman, penguntitan, paksaan, pelecehan, atau risiko pembalasan, jangan mengandalkan latihan ini. Utamakan keselamatan dan dukungan profesional yang tepat.</p>
+            <p style="margin-top:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--color-slate);"></i> Jangan pernah menghadapi orang yang berbahaya berdasarkan latihan yang dihasilkan.</p>
+          </div>
+        </section>
+
+      </main>
+      <footer><p>Untuk hiburan dan refleksi semata. Bukan terapi atau nasihat profesional.</p></footer>
+    </div>
+  </div>
+
+  <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> <span id="toast-message">Disalin!</span></div>
+
+  <script>
+    /* ===== NAVIGASI ===== */
+    const navItems = document.querySelectorAll('.nav-item');
+    const viewSections = document.querySelectorAll('.view-section');
+    const sidebar = document.getElementById('sidebar');
+    const mobileBtn = document.getElementById('mobile-menu-btn');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function switchTool(toolId) {
+      navItems.forEach(item => item.classList.toggle('active', item.dataset.tool === toolId));
+      viewSections.forEach(section => section.classList.toggle('active', section.id === `view-${toolId}`));
+      closeSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    navItems.forEach(item => item.addEventListener('click', () => switchTool(item.dataset.tool)));
+    function toggleSidebar() { sidebar.classList.toggle('open'); overlay.classList.toggle('open'); }
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+    mobileBtn.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    /* ===== UTILITAS ===== */
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 2000);
+    }
+    function copyToClipboard(id) {
+      const text = document.getElementById(id).textContent;
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => showToast('Disalin!')).catch(() => fallbackCopy(text));
+      else fallbackCopy(text);
+    }
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('Disalin!');
+    }
+
+    /* ===== MESIN RIWAYAT ===== */
+    function getHistory(moduleId) {
+      const key = `frch_history_${moduleId}`;
+      try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(moduleId, data) {
+      const key = `frch_history_${moduleId}`;
+      let h = getHistory(moduleId);
+      h.unshift({ id: Date.now(), date: new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' }), data });
+      if (h.length > 30) h.pop();
+      localStorage.setItem(key, JSON.stringify(h));
+    }
+    function clearHistory(moduleId) {
+      localStorage.removeItem(`frch_history_${moduleId}`);
+      renderHistory(moduleId);
+      showToast('Riwayat dihapus');
+    }
+    function clearAllHistory() {
+      ['audit','initiation','conversation','lettinggo','reciprocal','reset'].forEach(id => localStorage.removeItem(`frch_history_${id}`));
+      renderAllHistory();
+      showToast('Semua riwayat dihapus');
+    }
+
+    function renderHistory(moduleId) {
+      const container = document.getElementById(`history-list-${moduleId}`);
+      if (!container) return;
+      const h = getHistory(moduleId);
+      if (!h.length) { container.innerHTML = '<div style="font-size:0.875rem;color:var(--color-text-muted);padding:0.5rem 0;">Belum ada riwayat tersimpan.</div>'; return; }
+      container.innerHTML = h.map(item => `
+        <div class="history-item">
+          <div class="history-meta"><span style="font-weight:600;color:var(--color-text-main);">${escapeHtml(item.data.summary || 'Refleksi')}</span><span class="history-date">${item.date}</span></div>
+          <button class="btn btn-secondary btn-sm" onclick='loadHistoryItem("${moduleId}", ${item.id})'>Lihat</button>
+        </div>
+      `).join('') + `<button class="btn btn-outline btn-sm" style="margin-top:0.5rem;align-self:flex-start;" onclick="clearHistory('${moduleId}')"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>`;
+    }
+
+    function renderAllHistory() {
+      const container = document.getElementById('allHistoryContainer');
+      if (!container) return;
+      const modules = ['audit','initiation','conversation','lettinggo','reciprocal','reset'];
+      const labelMap = { audit:'Audit', initiation:'Inisiasi', conversation:'Percakapan', lettinggo:'Melepaskan', reciprocal:'Timbal Balik', reset:'Reset' };
+      let html = '';
+      modules.forEach(m => {
+        const h = getHistory(m);
+        if (!h.length) return;
+        html += `<h4 style="margin:1rem 0 0.5rem;color:var(--color-slate);">${labelMap[m] || m}</h4>`;
+        html += h.map(item => `
+          <div class="history-item">
+            <div class="history-meta"><span style="font-weight:600;">${escapeHtml(item.data.summary || 'Refleksi')}</span><span class="history-date">${item.date}</span></div>
+          </div>
+        `).join('');
+      });
+      container.innerHTML = html || '<p style="color:var(--color-text-muted);">Tidak ada riwayat ditemukan.</p>';
+    }
+
+    function toggleHistory(moduleId) {
+      const list = document.getElementById(`history-list-${moduleId}`);
+      const icon = document.getElementById(`history-icon-${moduleId}`);
+      if (list.style.display === 'none' || list.style.display === '') {
+        list.style.display = 'flex';
+        icon.className = 'fa-solid fa-chevron-up';
+        renderHistory(moduleId);
+      } else {
+        list.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      }
+    }
+
+    function loadHistoryItem(moduleId, itemId) {
+      const h = getHistory(moduleId);
+      const found = h.find(i => i.id === itemId);
+      if (!found) return;
+      // Jalankan ulang alat yang sesuai dengan data tersimpan
+      if (moduleId === 'audit') loadSampleAudit();
+      else if (moduleId === 'initiation') loadSampleInitiation();
+      else if (moduleId === 'conversation') loadSampleConversation();
+      else if (moduleId === 'lettinggo') loadSampleLettingGo();
+      else if (moduleId === 'reciprocal') loadSampleReciprocal();
+      showToast('Memuat entri tersimpan');
+    }
+
+    function escapeHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    /* ===== ALAT: AUDIT ===== */
+    function loadSampleAudit() {
+      document.getElementById('audit-name').value = 'Sarah';
+      document.getElementById('audit-initiates').value = '5';
+      document.getElementById('audit-plans').value = '5';
+      document.getElementById('audit-support').value = '5';
+      document.getElementById('audit-practical').value = '5';
+      document.getElementById('audit-checked').value = 'only_need';
+      document.getElementById('audit-feeling').value = 'Drained';
+      processAudit();
+    }
+    function processAudit() {
+      const name = document.getElementById('audit-name').value || 'Temanmu';
+      const init = parseInt(document.getElementById('audit-initiates').value);
+      const plan = parseInt(document.getElementById('audit-plans').value);
+      const supp = parseInt(document.getElementById('audit-support').value);
+      const prac = parseInt(document.getElementById('audit-practical').value);
+      const checked = document.getElementById('audit-checked').value;
+      const feeling = document.getElementById('audit-feeling').value;
+      const total = init + plan + supp + prac;
+      const givePct = Math.round((total / 20) * 100);
+      const takePct = 100 - givePct;
+
+      let dynamic = '', desc = '', branch = '', branchDesc = '', yourPart = '', cost = '';
+      if (givePct >= 85) {
+        dynamic = 'Pola persahabatan inisiatif rendah';
+        desc = `${name} berpartisipasi terutama saat kamu mengarahkan interaksi. Ini adalah ketidakseimbangan struktural.`;
+        branch = 'Amati atau kurangi investasi';
+        branchDesc = 'Mundur secara bertahap dan arahkan energi ke koneksi yang lebih timbal balik.';
+      } else if (givePct >= 65) {
+        dynamic = 'Pola asimetris / sepihak';
+        desc = 'Kamu melakukan pekerjaan berat, meskipun mereka mungkin berpartisipasi positif saat diminta.';
+        branch = 'Perbaiki atau amati';
+        branchDesc = `Layak melakukan percakapan tenang dengan ${name} untuk mengungkapkan kebutuhanmu.`;
+      } else if (givePct >= 45) {
+        dynamic = 'Timbal balik & seimbang';
+        desc = 'Usaha dan ketersediaan emosional mengalir lancar dua arah dengan fluktuasi normal.';
+        branch = 'Pertahankan & nikmati';
+        branchDesc = 'Persahabatan ini menunjukkan tanda-tanda sehat. Terus rawat.';
+      } else {
+        dynamic = 'Pola pasif atau bimbingan';
+        desc = 'Mereka saat ini memulai atau mendorong lebih banyak interaksi, atau kamu mengambil posisi belakang.';
+        branch = 'Terima & libatkan';
+        branchDesc = 'Dinamika ini mungkin musiman. Nikmati tanpa berpikir berlebihan.';
+      }
+
+      if (givePct >= 75) {
+        yourPart = `Kamu mungkin telah melatih ${name} untuk mengharapkan 100% usaha darimu dengan segera melangkah saat ada keheningan. Memberi terlalu banyak dapat secara tidak sengaja membangun kebiasaan pasif pada teman.`;
+      } else {
+        yourPart = 'Kamu menawarkan dukungan rutin tanpa terlalu banyak berfungsi, tetapi usaha balikannya tetap lebih rendah dari yang terasa menyehatkan.';
+      }
+
+      if (feeling === 'Drained' || feeling === 'Resentful' || feeling === 'Used') {
+        cost = `Pajak emosional tinggi. Meninggalkan interaksi dengan perasaan ${feeling.toLowerCase()} menunjukkan bahwa kemurahan hatimu berubah menjadi kebencian yang tidak terucapkan.`;
+      } else {
+        cost = 'Ketegangan langsung rendah hingga sedang, tetapi ketidakseimbangan jangka panjang biasanya menyebabkan pelepasan emosional diam-diam seiring waktu.';
+      }
+
+      document.getElementById('out-audit-score').textContent = `${givePct}% Usahamu / ${takePct}% Usaha Mereka`;
+      document.getElementById('out-audit-score-desc').textContent = `Berdasarkan masukanmu, keseimbangan condong ${givePct >= 55 ? 'ke arahmu' : 'ke arah mereka'} mengemban hubungan.`;
+      document.getElementById('out-audit-type').textContent = dynamic;
+      document.getElementById('out-audit-type-desc').textContent = desc;
+      document.getElementById('out-audit-yourpart').textContent = yourPart;
+      document.getElementById('out-audit-cost').textContent = cost;
+      document.getElementById('out-audit-cost-desc').textContent = `Perasaan pasca-interaksi: ${feeling}.`;
+      document.getElementById('out-audit-branch').textContent = branch;
+      document.getElementById('out-audit-branch-desc').textContent = branchDesc;
+
+      document.getElementById('output-audit').classList.add('active');
+      setHistory('audit', { summary: `Audit: ${name} (${dynamic})`, name, givePct, dynamic, branch });
+      renderHistory('audit');
+      updateFriendshipPlan();
+    }
+
+    /* ===== ALAT: INISIASI ===== */
+    function loadSampleInitiation() {
+      document.getElementById('init-freq').value = 'Weekly';
+      document.getElementById('init-last').value = '3 months';
+      document.getElementById('init-fear').value = "Aku takut jika berhenti mengirim pesan duluan, berminggu-minggu akan berlalu, mengonfirmasi bahwa mereka tidak peduli sama sekali.";
+      document.getElementById('init-learn').value = 'Whether the connection exists without my effort';
+      document.getElementById('init-risk').value = '6';
+      document.getElementById('init-risk-val').textContent = '6';
+      processInitiation();
+    }
+    function processInitiation() {
+      const freq = document.getElementById('init-freq').value;
+      const last = document.getElementById('init-last').value;
+      const fear = document.getElementById('init-fear').value || 'Mereka tidak akan menghubungi.';
+      const learn = document.getElementById('init-learn').value;
+      const risk = parseInt(document.getElementById('init-risk').value);
+
+      let waitTime = '2 hingga 3 minggu';
+      if (freq === 'Daily') waitTime = '7 hingga 10 hari';
+      if (freq === 'Weekly') waitTime = '3 hingga 4 minggu';
+      if (freq === 'Few times a month') waitTime = '5 hingga 6 minggu';
+      if (freq === 'Monthly') waitTime = '2 bulan';
+
+      document.getElementById('out-init-protocol-title').textContent = `Jeda yang Direkomendasikan: ${waitTime}`;
+      document.getElementById('out-init-protocol-desc').textContent =
+        `Berdasarkan kontak ${freq.toLowerCase()}mu yang biasa, hentikan semua inisiasi pertama (pesan, panggilan, mengatur pertemuan) selama ${waitTime}. Jangan umumkan uji ini. Tanggapi dengan hangat jika mereka menghubungi duluan.`;
+      document.getElementById('out-init-reframe').textContent =
+        `Ketakutanmu: "${fear}"\n\nPembingkaian Ulang Realistis: Jika keheningan mengikuti jedamu, itu mengungkapkan kapasitas atau tingkat komitmen mereka saat ini. Diam adalah data, bukan penilaian pribadi atas nilai dirimu.`;
+      document.getElementById('out-init-soothe').textContent =
+        `Saat kamu merasa ingin memutus jeda:\n1. Beri nama dorongan: ketidaknyamanan dengan ketidakpastian.\n2. Alihkan: kirim pesan ke teman yang timbal balik atau fokus pada tugas.\n3. Ingatkan: "Menghubungi sekarang memberi kelegaan sementara, tetapi menghilangkan kebenaran jangka panjang yang kubutuhkan."`;
+      document.getElementById('out-init-interpret').textContent =
+        `• Hasil A (Mereka menghubungi dalam ${waitTime}): Mereka mungkin terbiasa kamu memimpin. Tanggapi dengan hangat dan perhatikan apakah mereka menindaklanjuti.\n\n• Hasil B (Diam melewati ${waitTime}): Mereka kemungkinan adalah teman dengan usaha rendah saat ini. Kamu dapat dengan nyaman menghentikan inisiasi agar sesuai dengan mereka tanpa rasa bersalah.`;
+
+      document.getElementById('output-initiation').classList.add('active');
+      setHistory('initiation', { summary: `Uji Inisiasi (jeda ${waitTime})`, freq, last, waitTime });
+      renderHistory('initiation');
+      updateFriendshipPlan();
+    }
+
+    /* ===== ALAT: PERCAKAPAN ===== */
+    function loadSampleConversation() {
+      document.getElementById('conv-want').value = "Aku merasa aku selalu yang menghubungi dan merencanakan, dan aku ingin lebih banyak usaha bersama.";
+      document.getElementById('conv-reaction').value = 'Dismissive';
+      document.getElementById('conv-goal').value = 'More reciprocity';
+      document.getElementById('conv-importance').value = 'Important';
+      document.getElementById('conv-style').value = 'Hinting';
+      processConversation();
+    }
+    function processConversation() {
+      const want = document.getElementById('conv-want').value || "Aku ingin lebih banyak keseimbangan dalam kontak kita.";
+      const reaction = document.getElementById('conv-reaction').value;
+      const goal = document.getElementById('conv-goal').value;
+
+      document.getElementById('out-conv-script-direct').textContent =
+        `Hai! Aku sedang memikirkan kita akhir-akhir ini dan ingin berbagi sesuatu secara terbuka. Aku sangat menghargai persahabatan kita, tetapi akhir-akhir ini aku menyadari bahwa aku hampir selalu yang menghubungi dan merencanakan. Itu membuatku merasa sedikit terputus. Aku ingin melihat lebih banyak usaha bersama dari kita berdua karena kamu berarti bagiku. Bagaimana perasaanmu tentang bagaimana hubungan kita selama ini?`;
+      document.getElementById('out-conv-script-soft').textContent =
+        `Hai! Kangen hangout bareng kamu. Aku menyadari aku biasanya yang mengusulkan rencana atau mengecek kabar, jadi aku ingin berhenti sejenak dan mengecek—bagaimana kabarmu? Aku akan senang jika kamu mau memilih tempat hangout kita berikutnya kapan pun kamu punya waktu!`;
+      document.getElementById('out-conv-shift').textContent =
+        `Alih-alih mengatakan: "Kamu tidak pernah mengecek atau merencanakan apa pun." (Memicu pertahanan diri)\n\nCoba katakan: "Aku menyadari aku biasanya yang mengatur rencana kita. Aku suka waktu kita bersama, tapi aku ingin memastikan itu terasa sama pentingnya bagi kita berdua."`;
+      let playbook = '';
+      if (reaction === 'Defensive') playbook = `Tetap tenang: "Aku sepenuhnya mengerti hidup itu sibuk—aku tidak mengharapkan kesempurnaan. Aku hanya ingin mengungkapkan perasaanku agar kita tetap dekat."`;
+      else if (reaction === 'Dismissive') playbook = `Tegaskan posisimu: "Mungkin terlihat kecil, tapi itu penting bagiku. Aku memberitahumu karena aku menghargai kita, bukan untuk memulai argumen."`;
+      else playbook = `Terima dengan anggun: "Terima kasih telah mendengarkanku. Aku sangat menghargai kamu mendengarkan, dan aku senang bisa bertemu segera."`;
+      document.getElementById('out-conv-playbook').textContent = playbook;
+      document.getElementById('out-conv-posttalk').textContent =
+        `Setelah mengungkapkan tujuanmu ("${goal}"):\nBerikan mereka ruang untuk menunjukkan, bukan hanya memberi tahu. Jangan segera kembali ke pengaturan berlebihan. Beri mereka kesempatan untuk mengambil inisiatif dalam beberapa minggu mendatang.`;
+
+      document.getElementById('output-conversation').classList.add('active');
+      setHistory('conversation', { summary: `Naskah: Tujuan (${goal})`, goal, reaction });
+      renderHistory('conversation');
+      updateFriendshipPlan();
+    }
+
+    /* ===== ALAT: MELEPASKAN ===== */
+    function loadSampleLettingGo() {
+      document.getElementById('let-why').value = "Curhat emosional sepihak dan tidak ada dukungan saat aku mengalami masa sulit.";
+      document.getElementById('let-target').value = 'Occasional contact';
+      document.getElementById('let-mutual').value = 'Many';
+      document.getElementById('let-grief').value = "Berduka atas persahabatan dekat yang dulu kami miliki beberapa tahun lalu.";
+      document.getElementById('let-guilt').value = '7';
+      document.getElementById('let-guilt-val').textContent = '7';
+      processLettingGo();
+    }
+    function processLettingGo() {
+      const target = document.getElementById('let-target').value;
+      const mutual = document.getElementById('let-mutual').value;
+      const grief = document.getElementById('let-grief').value || 'Kehilangan koneksi.';
+      const guilt = parseInt(document.getElementById('let-guilt').value);
+
+      let fade = `Untuk bergerak menuju "${target}":\n1. Latensi Respons: Tingkatkan waktu respons untuk pesan tidak mendesak (balas dalam jam/hari berikutnya, bukan menit).\n2. Batasan pada Kedalaman Emosional: Jaga balasan tetap sopan, ramah, tetapi singkat. Hindari curhat pribadi yang dalam.\n3. Ketersediaan: Tolak undangan 1-on-1 dengan anggun ("Jadwalku cukup padat minggu ini, tapi semoga kamu baik-baik saja!").`;
+      let mutualNav = (mutual === 'Many' || mutual === 'We share a community') ?
+        `Tumpang tindih sosial yang tinggi. Jaga interaksi kelompok tetap hangat dan sopan. Jangan minta teman bersama untuk memilih pihak atau bergosip. Jika ditanya, katakan: "Kami berdua sedang sibuk dengan hal-hal berbeda saat ini, tapi semuanya baik-baik saja!"` :
+        `Tumpang tindih sosial minimal. Kamu dapat bertransisi dengan lancar tanpa khawatir tentang dinamika kelompok.`;
+      document.getElementById('out-let-fade').textContent = fade;
+      document.getElementById('out-let-mutual').textContent = mutualNav;
+      document.getElementById('out-let-guilt').textContent = `Tingkat Rasa Bersalah: ${guilt}/10.\nIngat: Menarik energi dari koneksi yang mengurasmu bukanlah hukuman bagi mereka; itu adalah pelestarian diri bagimu.`;
+      document.getElementById('out-let-grief-desc').textContent = `Menghormati: "${grief}"\nSangat normal untuk berduka atas apa yang dulu persahabatan ini atau apa yang kamu harapkan menjadi. Kenangan itu nyata, bahkan jika dinamika saat ini tidak lagi melayanimu.`;
+      document.getElementById('out-let-direct-script').textContent =
+        `Hai, aku ingin jujur padamu. Aku menyadari aku perlu mundur dan fokus pada kapasitasku sendiri saat ini. Aku peduli dengan waktu yang telah kita bagi, tetapi aku tidak memiliki kapasitas untuk tingkat kedekatan yang sama ke depannya. Aku hanya mendoakan yang terbaik untukmu.`;
+
+      document.getElementById('output-lettinggo').classList.add('active');
+      setHistory('lettinggo', { summary: `Rencana Jarak (${target})`, target, guilt });
+      renderHistory('lettinggo');
+      updateFriendshipPlan();
+    }
+
+    /* ===== ALAT: TIMBAL BALIK ===== */
+    function loadSampleReciprocal() {
+      document.getElementById('rec-current').value = "Rekan kerjaku Alex, yang selalu menanyakan bagaimana akhir pekanku dan mengingat detail-detail kecil.";
+      document.getElementById('rec-places').value = "Proyek kerja, gym panjat lokal, klub lari akhir pekan.";
+      document.getElementById('rec-strengths').value = "Loyalitas, mendengarkan aktif, hadir saat seseorang sedang down.";
+      document.getElementById('rec-needs').value = "Seseorang yang mengecek kabarku tanpa diminta dan memulai rencana separuh waktu.";
+      document.getElementById('rec-energy').value = 'Moderate';
+      document.getElementById('rec-vuln').value = '5';
+      document.getElementById('rec-vuln-val').textContent = '5';
+      processReciprocal();
+    }
+    function processReciprocal() {
+      const places = document.getElementById('rec-places').value || 'Acara komunitas, grup minat';
+      const energy = document.getElementById('rec-energy').value;
+      const vuln = parseInt(document.getElementById('rec-vuln').value);
+
+      document.getElementById('out-rec-greenflags').textContent =
+        `• Rasa Ingin Tahu: Mereka menanyakan pertanyaan lanjutan tentang hidupmu tanpa segera mengalihkan ke diri mereka sendiri.\n• Inisiatif Setara: Mereka menghubungi atau menyarankan hangout tanpa menunggu kamu memimpin setiap saat.\n• Keandalan: Tindakan mereka sesuai dengan kata-kata; saat mereka berkomitmen pada rencana, mereka menindaklanjuti.`;
+      document.getElementById('out-rec-vulntest').textContent =
+        `Dengan skor kerentananmu ${vuln}/10:\nGunakan uji "Pengungkapan Mikro": Bagikan sedikit berita atau perasaan pribadi yang tulus (misal: "Pekerjaan minggu ini cukup stres"). Amati apakah mereka membalas dengan empati dan berbagi cerita mereka sendiri, atau mengabaikannya.`;
+      document.getElementById('out-rec-seeds').textContent =
+        `Berdasarkan tempatmu (${places}):\n1. Identifikasi 1–2 kenalan yang konsisten di lingkungan ini yang menunjukkan energi hangat dan rendah ego.\n2. Kirim SATU undangan berisiko rendah (misal: minum kopi usai klub lari atau gym).\n3. Lalu tunggu dan lihat apakah mereka memulai interaksi kedua.`;
+      document.getElementById('out-rec-pacing').textContent =
+        `Tingkat Energi: ${energy}.\nUntuk mencegah pemberian berlebihan: Samakan tingkat usaha mereka seperti permainan tenis. Layan bola (hubungi sekali), lalu tunggu mereka mengembalikannya sebelum melayani lagi. Jangan melayani dua kali.`;
+
+      document.getElementById('output-reciprocal').classList.add('active');
+      setHistory('reciprocal', { summary: `Cetak Biru (Energi ${energy})`, energy, vuln });
+      renderHistory('reciprocal');
+      updateFriendshipPlan();
+    }
+
+    /* ===== RESET 7 HARI ===== */
+    let resetDays = JSON.parse(localStorage.getItem('frch_reset_days') || '{"day":0}');
+    function startReset() {
+      const day = resetDays.day || 0;
+      const tools = ['audit','initiation','conversation','lettinggo','reciprocal'];
+      const labelMap = ['Audit','Inisiasi','Percakapan','Melepaskan','Timbal Balik'];
+      if (day < 5) {
+        switchTool(tools[day]);
+        showToast(`Memulai Hari ${day+1}: ${labelMap[day]}`);
+        resetDays.day = day + 1;
+        localStorage.setItem('frch_reset_days', JSON.stringify(resetDays));
+      } else if (day === 5) {
+        synthesizeReset();
+        resetDays.day = 6;
+        localStorage.setItem('frch_reset_days', JSON.stringify(resetDays));
+      } else if (day === 6) {
+        showToast('Reset selesai! Lihat rencanamu di Rencana Persahabatanku.');
+        switchTool('plan');
+      }
+      updateResetUI();
+    }
+
+    function synthesizeReset() {
+      const plan = {
+        audit: getHistory('audit')[0]?.data || {},
+        initiation: getHistory('initiation')[0]?.data || {},
+        conversation: getHistory('conversation')[0]?.data || {},
+        lettinggo: getHistory('lettinggo')[0]?.data || {},
+        reciprocal: getHistory('reciprocal')[0]?.data || {}
+      };
+      document.getElementById('resetPlanContent').innerHTML = `
+        <div class="output-grid">
+          <div class="output-box"><div class="output-box-title">Apa yang Kuperhatikan</div><div class="output-box-content">${plan.audit.dynamic || 'Renungkan auditmu.'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">Aku Mungkin Terlalu Berfungsi</div><div class="output-box-content">${plan.audit.yourPart || 'Renungkan peranmu.'}</div></div>
+          <div class="output-box"><div class="output-box-title">Apa yang Kubutuhkan</div><div class="output-box-content">${plan.reciprocal.energy || 'Renungkan kebutuhannmu.'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">Apa yang Ingin Kupertahankan</div><div class="output-box-content">${plan.conversation.goal || 'Renungkan tujuannmu.'}</div></div>
+          <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Tindakan Pertamaku</div><div class="output-box-content">Pilih satu: amati, eksperimen, komunikasikan, atau tetapkan batasan.</div><div class="output-box-desc">Tinjau dalam 30-60 hari.</div></div>
+        </div>
+      `;
+      document.getElementById('resetPlanOutput').classList.add('active');
+      setHistory('reset', { summary: 'Reset Persahabatan 7 Hari Selesai' });
+      renderAllHistory();
+      updateFriendshipPlan();
+    }
+
+    function updateResetUI() {
+      const day = resetDays.day || 0;
+      for (let i=1; i<=7; i++) {
+        const el = document.getElementById(`resetDay${i}`);
+        if (el) el.classList.toggle('done', i <= day);
+      }
+      const content = document.getElementById('resetContent');
+      if (day === 0) content.innerHTML = '<p style="color:var(--color-text-muted);">Mulai dengan Hari 1: Audit Persahabatan. Selesaikan setiap alat secara berurutan untuk membangun Rencana Persahabatanmu.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Mulai Hari 1</button>';
+      else if (day < 5) content.innerHTML = `<p>Hari ${day+1} dari 7: Selesaikan ${['Audit Persahabatan','Uji Inisiasi','Percakapan','Melepaskan','Pembangun Timbal Balik'][day]}.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-arrow-right"></i> Lanjutkan</button>`;
+      else if (day === 5) content.innerHTML = `<p>Kamu telah menyelesaikan semua alat. Siap untuk mensintesis Rencana Persahabatanmu?</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-list-check"></i> Sintesis Rencana</button>`;
+      else if (day === 6) content.innerHTML = `<p>✅ Reset selesai. Lihat rencanamu di Rencana Persahabatanku.</p><button class="btn btn-secondary" onclick="switchTool('plan')">Lihat Rencana</button>`;
+    }
+
+    /* ===== RENCANA PERSAHABATANKU ===== */
+    function updateFriendshipPlan() {
+      const container = document.getElementById('planDisplay');
+      const a = getHistory('audit')[0]?.data || {};
+      const i = getHistory('initiation')[0]?.data || {};
+      const c = getHistory('conversation')[0]?.data || {};
+      const l = getHistory('lettinggo')[0]?.data || {};
+      const r = getHistory('reciprocal')[0]?.data || {};
+      const hasData = Object.keys(a).length || Object.keys(i).length || Object.keys(c).length || Object.keys(l).length || Object.keys(r).length;
+      if (!hasData) {
+        container.innerHTML = '<p style="color:var(--color-text-muted);">Selesaikan Reset Persahabatan 7 Hari atau jalankan alat individu untuk membangun rencanamu.</p>';
+        return;
+      }
+      container.innerHTML = `
+        <div class="output-grid">
+          <div class="output-box"><div class="output-box-title">Apa yang Kuperhatikan</div><div class="output-box-content">${a.dynamic || '—'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">Aku Mungkin Terlalu Berfungsi</div><div class="output-box-content">${a.yourPart || '—'}</div></div>
+          <div class="output-box"><div class="output-box-title">Apa yang Telah Kucoba</div><div class="output-box-content">${i.freq || '—'}</div></div>
+          <div class="output-box accent-lavender"><div class="output-box-title">Apa yang Ingin Kupertahankan</div><div class="output-box-content">${c.goal || '—'}</div></div>
+          <div class="output-box" style="border-left-color:#319795;"><div class="output-box-title">Tindakan Pertamaku</div><div class="output-box-content">Pilih satu: amati, eksperimen, komunikasikan, atau tetapkan batasan.</div><div class="output-box-desc">Tinjau dalam 30-60 hari.</div></div>
+        </div>
+      `;
+    }
+
+    /* ===== INISIALISASI ===== */
+    document.addEventListener('DOMContentLoaded', () => {
+      ['audit','initiation','conversation','lettinggo','reciprocal'].forEach(renderHistory);
+      renderAllHistory();
+      updateResetUI();
+      updateFriendshipPlan();
+      switchTool('dashboard');
+    });
+  </script>
+</body>
+</html>

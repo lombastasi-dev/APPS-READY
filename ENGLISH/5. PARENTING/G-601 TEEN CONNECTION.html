@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teen Connection - Toolkit for Parents</title>
+<style>
+        :root {
+            --slate: #3D5A80;
+            --coral: #EE6C4D;
+            --light-blue: #E0FBFC;
+            --dark-slate: #293241;
+            --bg-start: #F0F4F8;
+            --bg-end: #FEF1F0;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--slate);
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-brand i {
+            color: var(--coral);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button:hover {
+            background-color: #F8FAFC;
+            color: var(--slate);
+        }
+
+        .nav-item button.active {
+            background-color: var(--slate);
+            color: #FFFFFF;
+        }
+
+        .nav-item button i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            position: sticky;
+            top: 0;
+            background: #FFFFFF;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--slate);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .view-container {
+            width: 100%;
+            max-width: 800px;
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+        }
+
+        /* Common Components */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--dark-slate);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            color: var(--slate);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark-slate);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background: #FAFAFA;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--slate);
+            background: #FFFFFF;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 400;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: #F8FAFC;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-label input {
+            accent-color: var(--coral);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .slider-header span.val {
+            color: var(--coral);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--coral);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--coral);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e05a39;
+        }
+
+        .btn-secondary {
+            background-color: #EDF2F7;
+            color: var(--dark-slate);
+        }
+
+        .btn-secondary:hover {
+            background-color: #E2E8F0;
+        }
+
+        .btn-copy {
+            background: var(--light-blue);
+            color: var(--slate);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .btn-copy:hover {
+            background: #cbf7fa;
+        }
+
+        /* Output Formatting */
+        .results-container {
+            margin-top: 32px;
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .output-section {
+            border-left: 4px solid var(--slate);
+            padding-left: 16px;
+            margin-bottom: 24px;
+        }
+
+        .output-section.accent {
+            border-left-color: var(--coral);
+        }
+
+        .output-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .output-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--dark-slate);
+        }
+
+        .script-box {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Dashboard Specifics */
+        .hero-card {
+            background: linear-gradient(135deg, var(--slate), var(--dark-slate));
+            color: white;
+            border: none;
+        }
+
+        .hero-card h1 {
+            color: white;
+        }
+
+        .hero-card p {
+            color: var(--light-blue);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .dash-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .dash-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: var(--bg-start);
+            color: var(--coral);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        /* Parent Check-In Meters */
+        .meter-group {
+            margin-bottom: 12px;
+        }
+
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .meter-bar {
+            height: 10px;
+            background: #E2E8F0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .bg-red { background-color: #E53E3E; }
+        .bg-yellow { background-color: #DD6B20; }
+        .bg-green { background-color: #38A169; }
+
+        /* Accordion / History */
+        .history-section {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .history-list {
+            display: none;
+            margin-top: 16px;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        .history-list.open {
+            display: flex;
+        }
+
+        .history-item {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-slate);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            background: #FFFFFF;
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px 16px;
+            }
+        }
+
+        .dash-card[role="button"]{cursor:pointer}.dash-card[role="button"]:focus{outline:3px solid rgba(238,108,77,.35);outline-offset:2px}.icon-dot{display:inline-flex;width:1.25rem;justify-content:center;color:var(--coral);font-weight:800}.orientation-card{border-left:4px solid var(--coral)}.eyebrow{font-size:.72rem;letter-spacing:.12em;font-weight:800;color:var(--coral);margin-bottom:8px}.notice-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.notice-chip{padding:7px 10px;border-radius:999px;background:#f3f7fa;border:1px solid var(--border-color);font-size:.78rem;font-weight:700}.safety-mini{margin-top:14px;padding:12px 14px;border-radius:10px;background:#fff8f5;border:1px solid #f3d4c8;font-size:.82rem}.snapshot-card{min-height:80px}.snapshot-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.snapshot-tile{padding:12px;border:1px solid var(--border-color);border-radius:12px;background:#fff}.snapshot-tile strong{display:block;font-size:.78rem;color:var(--text-muted);margin-bottom:5px}.snapshot-tile span{font-weight:700;font-size:.9rem}.reset-list{display:grid;gap:12px}.reset-day{display:flex;gap:14px;align-items:flex-start;padding:15px;border:1px solid var(--border-color);border-radius:12px}.reset-day .day{font-weight:800;color:var(--coral);min-width:52px}.reset-day.done{background:#f6fbfa}.history-tools{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.history-tools select{max-width:260px}.unified-item{padding:14px;border:1px solid var(--border-color);border-radius:12px;margin-bottom:10px;background:#fff}.unified-meta{font-size:.76rem;color:var(--text-muted);margin-bottom:5px}.sample-badge{display:inline-block;margin-left:8px;padding:2px 7px;border-radius:999px;background:#eef3f7;font-size:.7rem;font-weight:700}.plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plan-card{border:1px solid var(--border-color);border-radius:12px;padding:14px}.plan-card h3{font-size:.9rem;margin-bottom:7px}.plan-card p{font-size:.88rem;line-height:1.55}.safety-block{padding:15px;border:1px solid var(--border-color);border-radius:12px;margin:12px 0}.safety-block h3{margin-bottom:7px}.script-box{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border-color);border-radius:10px;margin:8px 0;background:#fff}.script-box span{font-weight:600;line-height:1.5}.btn-copy{flex:0 0 auto}.result-next{margin-top:18px;padding:16px;border-radius:12px;background:#f4f8fb;border:1px solid var(--border-color)}@media(max-width:900px){.snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-grid{grid-template-columns:1fr}}@media(max-width:520px){.snapshot-grid{grid-template-columns:1fr}.script-box{align-items:flex-start;flex-direction:column}.script-box .btn{width:100%}}@media print{.sidebar,.mobile-header,.sidebar-overlay,.btn-group,.history-section,.history-tools,.toast,footer,.nav-list{display:none!important}.main-content{margin:0!important;width:100%!important}.view-container{display:none!important}.view-container#view-plan{display:block!important}.card{box-shadow:none!important;border:0!important}.plan-card{break-inside:avoid}}
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Top Bar -->
+    <div class="mobile-header">
+        <div class="sidebar-brand" style="padding:0; border:none;">
+            <span class="icon-dot" aria-hidden="true">•</span>
+            <span>TeenConnection</span>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle Menu">
+            <span class="icon-dot" aria-hidden="true">•</span>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Fixed Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <span class="icon-dot" aria-hidden="true">•</span>
+                <span>TeenConnection</span>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <button class="nav-btn active" data-view="dashboard">
+                        <span class="icon-dot" aria-hidden="true">•</span>
+                        <span>Dashboard</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-view="tool1">
+                        <span class="icon-dot" aria-hidden="true">•</span>
+                        <span>Distance Decoder</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-view="tool2">
+                        <span class="icon-dot" aria-hidden="true">•</span>
+                        <span>Re-Entry Script</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-view="tool3">
+                        <span class="icon-dot" aria-hidden="true">•</span>
+                        <span>Boundary vs Freedom</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-view="tool4">
+                        <span class="icon-dot" aria-hidden="true">•</span>
+                        <span>The Car Rule</span>
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-view="tool5">
+                        <span class="icon-dot" aria-hidden="true">•</span>
+                        <span>Parent Check-In</span>
+                    </button>
+                </li>
+
+                <li class="nav-item"><button class="nav-btn" data-view="reset7"><span class="icon-dot" aria-hidden="true">•</span><span>7-Day Teen Connection Reset</span></button></li>
+                <li class="nav-item"><button class="nav-btn" data-view="plan"><span class="icon-dot" aria-hidden="true">•</span><span>My Teen Connection Plan</span></button></li>
+                <li class="nav-item"><button class="nav-btn" data-view="history"><span class="icon-dot" aria-hidden="true">•</span><span>My History</span></button></li>
+                <li class="nav-item"><button class="nav-btn" data-view="safety"><span class="icon-dot" aria-hidden="true">•</span><span>Safety / Privacy</span></button></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            
+            <!-- VIEW: DASHBOARD -->
+            <div class="view-container active" id="view-dashboard">
+                <div class="card hero-card">
+                    <h1>Teen Connection</h1>
+                    <p class="subtitle" style="margin-bottom:0;">They need space. You need connection. Find the balance.</p>
+                </div>
+                <div class="card orientation-card">
+                    <div class="eyebrow">START HERE</div>
+                    <h2>Space and connection can coexist.</h2>
+                    <p>Start with the friction you are seeing now. Treat every result as a conversation prompt—not a verdict. Your teen can decline a conversation unless immediate safety requires intervention.</p>
+                    <div class="notice-row"><span class="notice-chip">Observe</span><span class="notice-chip">Lower pressure</span><span class="notice-chip">Clarify safety</span><span class="notice-chip">Regulate yourself</span></div>
+                    <div class="safety-mini">If there is immediate danger, self-harm intent, abuse, a missing teen, or another urgent safety issue, use appropriate emergency or professional support rather than relying on this toolkit.</div>
+                </div>
+                <div class="card snapshot-card" id="dashboard-snapshot"></div>
+
+                <div class="dashboard-grid">
+                    <div class="card dash-card">
+                        <div class="dash-icon"><span class="icon-dot" aria-hidden="true">•</span></div>
+                        <h3>Distance Decoder</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Differentiate increasing independence from patterns that may warrant closer attention.</p>
+                    </div>
+
+                    <div class="card dash-card">
+                        <div class="dash-icon"><span class="icon-dot" aria-hidden="true">•</span></div>
+                        <h3>Re-Entry Script</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Transform interrogation dynamics into non-threatening conversations.</p>
+                    </div>
+
+                    <div class="card dash-card">
+                        <div class="dash-icon"><span class="icon-dot" aria-hidden="true">•</span></div>
+                        <h3>Boundary vs Freedom</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Separate core safety rules from negotiable autonomy preferences.</p>
+                    </div>
+
+                    <div class="card dash-card">
+                        <div class="dash-icon"><span class="icon-dot" aria-hidden="true">•</span></div>
+                        <h3>The Car Rule</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Leverage low-pressure, side-by-side environments for dialogue.</p>
+                    </div>
+
+                    <div class="card dash-card">
+                        <div class="dash-icon"><span class="icon-dot" aria-hidden="true">•</span></div>
+                        <h3>Parent Check-In</h3>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Assess your own emotional state to avoid anxious or controlling behaviors.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TOOL 1 - DISTANCE DECODER -->
+            <div class="view-container" id="view-tool1">
+                <div class="card">
+                    <h2>Distance Decoder</h2>
+                    <p class="subtitle">Analyze whether your teen's space is typical autonomy building or an indicator of distress.</p>
+                    
+                    <form id="form-tool1">
+                        <div class="form-group">
+                            <label for="t1-age">Teen's Age</label>
+                            <select id="t1-age" required>
+                                <option value="13">13</option>
+                                <option value="14">14</option>
+                                <option value="15" selected>15</option>
+                                <option value="16">16</option>
+                                <option value="17">17</option>
+                                <option value="18">18</option>
+                                <option value="19">19</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t1-onset">When the distance started</label>
+                            <select id="t1-onset" required>
+                                <option value="Gradual over months">Gradual over months</option>
+                                <option value="Sudden">Sudden</option>
+                                <option value="After a specific event">After a specific event</option>
+                                <option value="Since starting high school">Since starting high school</option>
+                                <option value="Always been somewhat distant">Always been somewhat distant</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Changes observed</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Less talking"> Less talking</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Door always closed"> Door always closed</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Avoids family meals"> Avoids family meals</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="New friend group"> New friend group</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Grades dropped"> Grades dropped</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Sleep changes"> Sleep changes</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Phone secrecy"> Phone secrecy</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="Mood swings"> Mood swings</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t1-changes" value="No change in mood, just less present"> No mood change, just less present</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t1-engage">What they still engage in (hobbies, sports, texting friends, late snacks):</label>
+                            <textarea id="t1-engage" placeholder="e.g., Playing soccer, gaming with friends online, coming down for late night snacks..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t1-fear">Your biggest fear:</label>
+                            <select id="t1-fear" required>
+                                <option value="Depression">Depression</option>
+                                <option value="Drugs">Drugs or Substance Use</option>
+                                <option value="Bad influence">Bad Influence / Falling with wrong crowd</option>
+                                <option value="They hate me">They dislike or resent me</option>
+                                <option value="Normal but I miss them">Normal separation, but I miss them</option>
+                                <option value="Something happened they won't tell me">Something happened they won't disclose</option>
+                            </select>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary"><span class="icon-dot" aria-hidden="true">•</span> Analyze Pattern</button>
+                            <button type="button" class="btn btn-secondary">Load Sample Scenario</button>
+                        <button type="button" class="btn btn-secondary js-start-over" data-tool="tool1">Start Over</button><button type="button" class="btn btn-secondary js-clear-history" data-tool="tool1">Clear Saved History</button></div>
+                    </form>
+
+                    <div class="results-container" id="results-tool1">
+                        <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);">
+                        <h2>Decoder Analysis</h2>
+                        <div class="output-section">
+                            <div class="output-title">The Normal vs. Concerning</div>
+                            <div class="output-content" id="t1-out-normal"></div>
+                        </div>
+                        <div class="output-section accent">
+                            <div class="output-title">The Pattern Type</div>
+                            <div class="output-content" id="t1-out-pattern"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">What's Still Working</div>
+                            <div class="output-content" id="t1-out-working"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Watch List</div>
+                            <div class="output-content" id="t1-out-watch"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Conversation Prompt</div>
+                            <div class="output-content" id="t1-out-prompt"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Professional Prompt</div>
+                            <div class="output-content" id="t1-out-pro"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span style="font-weight: 600; font-size: 0.9rem;"><span class="icon-dot" aria-hidden="true">•</span> Saved Analyses</span>
+                            <i class="fa-solid fa-chevron-down" id="hist-icon-tool1"></i>
+                        </div>
+                        <div class="history-list" id="hist-list-tool1"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TOOL 2 - RE-ENTRY SCRIPT -->
+            <div class="view-container" id="view-tool2">
+                <div class="card">
+                    <h2>Re-Entry Script Generator</h2>
+                    <p class="subtitle">Formulate non-intrusive openers that reduce defensiveness and invite authentic connection.</p>
+                    
+                    <form id="form-tool2">
+                        <div class="form-group">
+                            <label for="t2-opening">Your typical opening line:</label>
+                            <textarea id="t2-opening" placeholder="e.g., How was your day? What did you do today?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t2-response">Their typical response:</label>
+                            <select id="t2-response" required>
+                                <option value="One word">One word ("Fine", "Good", "Nothing")</option>
+                                <option value="Eye roll">Eye roll / Sigh</option>
+                                <option value="Leave room">Walks away / Leaves room</option>
+                                <option value="Defensive">Defensive ("Why are you asking?")</option>
+                                <option value="Honest but brief">Honest but extremely brief</option>
+                                <option value="Accusatory">Accusatory ("You're always nagging me")</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t2-want-know">What you actually want to know:</label>
+                            <textarea id="t2-want-know" placeholder="e.g., Are you feeling stressed about school? Is anyone picking on you?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t2-think-want">What you think they THINK you want:</label>
+                            <textarea id="t2-think-want" placeholder="e.g., They think I'm auditing their performance or trying to control them."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t2-best-conv">Best recent conversation (optional):</label>
+                            <textarea id="t2-best-conv" placeholder="e.g., Talking about a movie in the car last Friday."></textarea>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary"><span class="icon-dot" aria-hidden="true">•</span> Generate Scripts</button>
+                            <button type="button" class="btn btn-secondary">Load Sample Scenario</button>
+                        <button type="button" class="btn btn-secondary js-start-over" data-tool="tool2">Start Over</button><button type="button" class="btn btn-secondary js-clear-history" data-tool="tool2">Clear Saved History</button></div>
+                    </form>
+
+                    <div class="results-container" id="results-tool2">
+                        <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);">
+                        <h2>Re-Entry Strategy</h2>
+                        <div class="output-section">
+                            <div class="output-title">The Interrogation Check</div>
+                            <div class="output-content" id="t2-out-check"></div>
+                        </div>
+                        <div class="output-section accent">
+                            <div class="output-title">The Re-Entry Scripts</div>
+                            <div id="t2-out-scripts"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Side-by-Side Rule</div>
+                            <div class="output-content" id="t2-out-rule"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Listening Mandate</div>
+                            <div class="output-content" id="t2-out-mandate"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Follow-Up Strategy</div>
+                            <div class="output-content" id="t2-out-followup"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Backoff Signal</div>
+                            <div class="output-content" id="t2-out-backoff"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span style="font-weight: 600; font-size: 0.9rem;"><span class="icon-dot" aria-hidden="true">•</span> Saved Scripts</span>
+                            <i class="fa-solid fa-chevron-down" id="hist-icon-tool2"></i>
+                        </div>
+                        <div class="history-list" id="hist-list-tool2"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TOOL 3 - BOUNDARY VS FREEDOM -->
+            <div class="view-container" id="view-tool3">
+                <div class="card">
+                    <h2>Boundary vs Freedom Mapper</h2>
+                    <p class="subtitle">Clarify non-negotiable safety limits versus areas where giving space builds long-term trust.</p>
+                    
+                    <form id="form-tool3">
+                        <div class="form-group">
+                            <label>Current conflict areas:</label>
+                            <div class="checkbox-grid">
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Curfew"> Curfew</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Phone use"> Phone use</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Grades"> Grades</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Chores"> Chores</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Friends"> Friends</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Dating"> Dating</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Appearance"> Appearance / Clothing</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Language"> Language / Tone</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Privacy"> Bedroom Privacy</label>
+                                <label class="checkbox-label"><input type="checkbox" name="t3-conflict" value="Money"> Money / Spending</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t3-nonneg">Your core non-negotiables (safety/morals):</label>
+                            <textarea id="t3-nonneg" placeholder="e.g., Location sharing when out late, no drinking and driving, maintaining C average..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t3-loosened">What you've already loosened:</label>
+                            <textarea id="t3-loosened" placeholder="e.g., Bedtime on weekends, clothing choices, room cleanliness..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t3-wantfree">What they want more freedom in:</label>
+                            <textarea id="t3-wantfree" placeholder="e.g., Staying out until midnight with friends, fewer phone checks..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t3-fear">Your fear if you say "Yes":</label>
+                            <textarea id="t3-fear" placeholder="e.g., They will get into dangerous situations or make bad choices without supervision."></textarea>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary"><span class="icon-dot" aria-hidden="true">•</span> Map Boundaries</button>
+                            <button type="button" class="btn btn-secondary">Load Sample Scenario</button>
+                        <button type="button" class="btn btn-secondary js-start-over" data-tool="tool3">Start Over</button><button type="button" class="btn btn-secondary js-clear-history" data-tool="tool3">Clear Saved History</button></div>
+                    </form>
+
+                    <div class="results-container" id="results-tool3">
+                        <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);">
+                        <h2>Boundary Analysis</h2>
+                        <div class="output-section">
+                            <div class="output-title">The Boundary Map</div>
+                            <div class="output-content" id="t3-out-map"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Negotiable List</div>
+                            <div class="output-content" id="t3-out-negotiable"></div>
+                        </div>
+                        <div class="output-section accent">
+                            <div class="output-title">The Non-Negotiable List</div>
+                            <div class="output-content" id="t3-out-nonnegotiable"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">Graduated Freedom Plan</div>
+                            <div class="output-content" id="t3-out-graduated"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Trust Deposit</div>
+                            <div class="output-content" id="t3-out-deposit"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">Consequence Clarity</div>
+                            <div class="output-content" id="t3-out-consequence"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span style="font-weight: 600; font-size: 0.9rem;"><span class="icon-dot" aria-hidden="true">•</span> Saved Maps</span>
+                            <i class="fa-solid fa-chevron-down" id="hist-icon-tool3"></i>
+                        </div>
+                        <div class="history-list" id="hist-list-tool3"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TOOL 4 - THE CAR RULE -->
+            <div class="view-container" id="view-tool4">
+                <div class="card">
+                    <h2>The Car Rule & Side-by-Side Planner</h2>
+                    <p class="subtitle">Design indirect, low-pressure environments where teenagers naturally share more.</p>
+                    
+                    <form id="form-tool4">
+                        <div class="form-group">
+                            <label for="t4-easiest">Where conversations happen easiest:</label>
+                            <select id="t4-easiest" required>
+                                <option value="Car">Car drives</option>
+                                <option value="Walks">Walking outdoor / nature</option>
+                                <option value="Meals">Shared meals</option>
+                                <option value="Before bed">Late night / before bed</option>
+                                <option value="While doing activity">While cooking or doing chores together</option>
+                                <option value="Text">Text messaging / sending memes</option>
+                                <option value="They don't">They currently don't happen anywhere</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t4-shutdown">Where they shut down most:</label>
+                            <select id="t4-shutdown" required>
+                                <option value="Meals">Formal sit-down meals</option>
+                                <option value="Car">Car drives</option>
+                                <option value="Walks">Walks</option>
+                                <option value="Before bed">Before bed</option>
+                                <option value="Living room">Living room confrontation</option>
+                                <option value="Text">Text messages</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t4-interests">Your teen's interests & hobbies:</label>
+                            <textarea id="t4-interests" placeholder="e.g., Hip hop music, video games, thrifting, basketball..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t4-voluntary">Topics they bring up voluntarily:</label>
+                            <textarea id="t4-voluntary" placeholder="e.g., Funny videos, clothes they want, friend drama, sports stats..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="t4-offlimit">Topics that immediately close them off:</label>
+                            <textarea id="t4-offlimit" placeholder="e.g., College applications, bad grades, messy room, family events..."></textarea>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary"><span class="icon-dot" aria-hidden="true">•</span> Build Engagement Plan</button>
+                            <button type="button" class="btn btn-secondary">Load Sample Scenario</button>
+                        <button type="button" class="btn btn-secondary js-start-over" data-tool="tool4">Start Over</button><button type="button" class="btn btn-secondary js-clear-history" data-tool="tool4">Clear Saved History</button></div>
+                    </form>
+
+                    <div class="results-container" id="results-tool4">
+                        <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);">
+                        <h2>Environment & Communication Plan</h2>
+                        <div class="output-section">
+                            <div class="output-title">The Safe Zone Mechanics</div>
+                            <div class="output-content" id="t4-out-zone"></div>
+                        </div>
+                        <div class="output-section accent">
+                            <div class="output-title">The Drive / Side-by-Side Scripts</div>
+                            <div id="t4-out-scripts"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Walk / Action Protocol</div>
+                            <div class="output-content" id="t4-out-protocol"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Shared Activity Bridge</div>
+                            <div class="output-content" id="t4-out-bridge"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Text Strategy</div>
+                            <div class="output-content" id="t4-out-text"></div>
+                        </div>
+                        <div class="output-section">
+                            <div class="output-title">The Avoid List</div>
+                            <div class="output-content" id="t4-out-avoid"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span style="font-weight: 600; font-size: 0.9rem;"><span class="icon-dot" aria-hidden="true">•</span> Saved Plans</span>
+                            <i class="fa-solid fa-chevron-down" id="hist-icon-tool4"></i>
+                        </div>
+                        <div class="history-list" id="hist-list-tool4"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- VIEW: TOOL 5 - PARENT CHECK-IN -->
+            <div class="view-container" id="view-tool5">
+                <div class="card">
+                    <h2>Parent Self-Check-In</h2>
+                    <p class="subtitle">Evaluate your emotional capacity and ensure anxiety isn't driving your parenting choices.</p>
+                    
+                    <form id="form-tool5">
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>1. I trust my teen to make good choices:</span>
+                                <span class="val" id="val-t5-s1">5</span>
+                            </div>
+                            <input type="range" id="t5-s1" min="1" max="10" value="5">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>2. I feel connected to my teen:</span>
+                                <span class="val" id="val-t5-s2">5</span>
+                            </div>
+                            <input type="range" id="t5-s2" min="1" max="10" value="5">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>3. My worry about my teen is manageable:</span>
+                                <span class="val" id="val-t5-s3">5</span>
+                            </div>
+                            <input type="range" id="t5-s3" min="1" max="10" value="5">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>4. I can let them fail without rescuing them:</span>
+                                <span class="val" id="val-t5-s4">5</span>
+                            </div>
+                            <input type="range" id="t5-s4" min="1" max="10" value="5">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>5. I have my own life outside of parenting:</span>
+                                <span class="val" id="val-t5-s5">5</span>
+                            </div>
+                            <input type="range" id="t5-s5" min="1" max="10" value="5">
+                        </div>
+
+                        <div class="slider-group">
+                            <div class="slider-header">
+                                <span>6. I feel like I'm doing a good job as a parent:</span>
+                                <span class="val" id="val-t5-s6">5</span>
+                            </div>
+                            <input type="range" id="t5-s6" min="1" max="10" value="5">
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary"><span class="icon-dot" aria-hidden="true">•</span> Evaluate State</button>
+                            <button type="button" class="btn btn-secondary">Load Sample Scenario</button>
+                        <button type="button" class="btn btn-secondary js-start-over" data-tool="tool5">Start Over</button><button type="button" class="btn btn-secondary js-clear-history" data-tool="tool5">Clear Saved History</button></div>
+                    </form>
+
+                    <div class="results-container" id="results-tool5">
+                        <hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);">
+                        <h2>Parent Wellbeing & Mindset Dashboard</h2>
+                        
+                        <div class="output-section">
+                            <div class="output-title">Parent Self-Assessment Meters</div>
+                            <div id="t5-meters"></div>
+                        </div>
+
+                        <div class="output-section accent">
+                            <div class="output-title">The Anxiety Source</div>
+                            <div class="output-content" id="t5-out-anxiety"></div>
+                        </div>
+
+                        <div class="output-section">
+                            <div class="output-title">The Helicopter Check</div>
+                            <div class="output-content" id="t5-out-helicopter"></div>
+                        </div>
+
+                        <div class="output-section">
+                            <div class="output-title">One Letting-Go Action</div>
+                            <div class="output-content" id="t5-out-lettinggo"></div>
+                        </div>
+
+                        <div class="output-section">
+                            <div class="output-title">One Self-Care Action</div>
+                            <div class="output-content" id="t5-out-selfcare"></div>
+                        </div>
+
+                        <div class="output-section">
+                            <div class="output-title">One Connection Action</div>
+                            <div class="output-content" id="t5-out-connection"></div>
+                        </div>
+                    </div>
+
+                    <!-- History Section -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span style="font-weight: 600; font-size: 0.9rem;"><span class="icon-dot" aria-hidden="true">•</span> Saved Check-Ins</span>
+                            <i class="fa-solid fa-chevron-down" id="hist-icon-tool5"></i>
+                        </div>
+                        <div class="history-list" id="hist-list-tool5"></div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="view-container" id="view-reset7">
+              <div class="card"><div class="eyebrow">GUIDED EXPERIENCE</div><h2>7-Day Teen Connection Reset</h2><p class="subtitle">One small step per day using the five tools you already have.</p><div id="reset7-list" class="reset-list"></div></div>
+            </div>
+            <div class="view-container" id="view-plan">
+              <div class="card"><div class="eyebrow">YOUR SYNTHESIS</div><h2>My Teen Connection Plan</h2><p class="subtitle">A concise plan assembled from completed tools. No diagnosis, no risk score.</p><div id="plan-content"></div><div class="btn-group"><button type="button" class="btn btn-primary" id="print-plan">Print Plan</button><button type="button" class="btn btn-secondary" id="copy-plan">Copy Plan</button></div></div>
+            </div>
+            <div class="view-container" id="view-history">
+              <div class="card"><div class="eyebrow">LOCAL HISTORY</div><h2>My History</h2><p class="subtitle">Saved locally in your browser. Samples are clearly marked and are not personal results.</p><div class="history-tools"><select id="history-filter"><option value="all">All tools</option><option value="tool1">Distance Decoder</option><option value="tool2">Re-Entry Script</option><option value="tool3">Boundary vs Freedom</option><option value="tool4">The Car Rule</option><option value="tool5">Parent Check-In</option></select><button class="btn btn-secondary" id="clear-all-history">Clear All History</button></div><div id="unified-history"></div></div>
+            </div>
+            <div class="view-container" id="view-safety">
+              <div class="card"><div class="eyebrow">SAFETY & PRIVACY</div><h2>Use the toolkit as a reflection and planning aid.</h2><div class="safety-block"><h3>Immediate safety</h3><p>If a teen expresses intent to self-harm, is in immediate danger, is missing, is experiencing abuse, or another urgent safety issue is present, seek appropriate emergency/professional help. Do not wait for a toolkit result.</p></div><div class="safety-block"><h3>Privacy</h3><p>This version uses versioned browser localStorage for its core state and history. It does not require an account, backend, or analytics. Browser storage behavior can vary, so do not treat this as a guarantee that information can never leave your device.</p></div><div class="safety-block"><h3>What this app does not do</h3><p>It does not diagnose depression, anxiety, substance use, trauma, attachment problems, or parenting quality. It does not determine what your teen is feeling and it does not recommend covert surveillance, humiliation, threats, or punitive control.</p></div><button class="btn btn-secondary" id="clear-all-data">Clear All Saved Data</button></div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Toast Component -->
+    <div class="toast" id="toast">Copied to clipboard!</div>
+
+    <!-- Footer Required on Every Screen -->
+    <footer>
+        <div class="footer-content">
+            For entertainment and reflection purposes only. Not therapy or professional advice. If you are concerned about depression, self-harm, or substance abuse, contact a mental health professional or your child's physician.
+        </div>
+    </footer>
+
+    <!-- Application Script -->
+    <script id="teen-connection-v2">
+(function(){
+'use strict';
+const PRODUCT_MODE='complete', STATE_KEY='teenconnection_v2_state', HISTORY_KEY='teenconnection_v2_history', PREF_KEY='teenconnection_v2_preferences';
+const TOOL_NAMES={tool1:'Distance Decoder',tool2:'Re-Entry Script',tool3:'Boundary vs Freedom',tool4:'The Car Rule',tool5:'Parent Check-In'};
+const DAYS=[['Day 1','Decode the distance','tool1'],['Day 2','Re-enter without interrogation','tool2'],['Day 3','Separate safety from preference','tool3'],['Day 4','Create a low-pressure connection environment','tool4'],['Day 5','Check the parent’s own state','tool5'],['Day 6','Review the combined Teen Connection Snapshot','plan'],['Day 7','Create a 30-day connection plan','plan']];
+let state=defaultState(); let history=[]; const sampleLoaded={tool1:false,tool2:false,tool3:false,tool4:false,tool5:false};
+function defaultState(){return{version:2,completedTools:[],toolResults:{},currentInputs:{},historyMeta:{},recommendations:[],currentPlan:{},preferences:{},lastUpdated:null};}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function safeJSON(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch(e){return fallback}}
+function saveState(){try{state.lastUpdated=new Date().toISOString();localStorage.setItem(STATE_KEY,JSON.stringify(state))}catch(e){}}
+function loadState(){const s=safeJSON(STATE_KEY,null);if(s&&s.version===2){state=Object.assign(defaultState(),s);return}state=defaultState();}
+function loadHistory(){const h=safeJSON(HISTORY_KEY,[]);history=Array.isArray(h)?h.filter(x=>x&&typeof x==='object').slice(0,150):[]}
+function saveHistory(toolId,inputs,summary,isSample=false){history.unshift({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),timestamp:new Date().toISOString(),toolId,tool:TOOL_NAMES[toolId],summary:String(summary||''),inputs:JSON.parse(JSON.stringify(inputs||{})),sample:!!isSample});history=history.slice(0,150);try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){}renderUnifiedHistory();renderToolHistories();}
+function clearToolHistory(toolId){if(!confirm('Clear saved history for '+TOOL_NAMES[toolId]+'?'))return;history=history.filter(x=>x.toolId!==toolId);persistHistory();renderUnifiedHistory();renderToolHistories();showToast('History cleared');}
+function clearAll(){if(!confirm('Clear all saved Teen Connection data from this browser? This cannot be undone.'))return;try{localStorage.removeItem(STATE_KEY);localStorage.removeItem(HISTORY_KEY);localStorage.removeItem(PREF_KEY)}catch(e){}state=defaultState();history=[];renderAll();showToast('Saved data cleared');}
+function persistHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){}}
+function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)}
+function copyText(text){const fallback=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast('Copied to clipboard!')}catch(e){showToast('Copy unavailable — select the text manually.')}ta.remove()};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(()=>showToast('Copied to clipboard!')).catch(fallback)}else fallback()}
+function switchView(view){document.querySelectorAll('.view-container').forEach(x=>x.classList.toggle('active',x.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===view));if(window.innerWidth<800)closeMobileSidebar();if(view==='history')renderUnifiedHistory();if(view==='plan')renderPlan();if(view==='reset7')renderReset();if(view==='dashboard')renderDashboard()}
+function openMobileSidebar(){document.getElementById('sidebar')?.classList.add('mobile-open');document.getElementById('sidebarOverlay')?.classList.add('active')}
+function closeMobileSidebar(){document.getElementById('sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('active')}
+function setOut(id,html){const el=document.getElementById(id);if(el)el.innerHTML=html}
+function markComplete(toolId,inputs,result,summary){state.completedTools=[...new Set([...state.completedTools,toolId])];state.currentInputs[toolId]=inputs;state.toolResults[toolId]=result;state.recommendations=buildRecommendations();state.currentPlan=buildPlan();saveState();saveHistory(toolId,inputs,summary,!!sampleLoaded[toolId]); sampleLoaded[toolId]=false;renderDashboard()}
+function nextStep(toolId){const rec=state.recommendations[0]||{priority:'Use one small, lower-pressure next step.',action:'Choose one connection action this week and give your teen room to respond in their own time.'};return `<div class="result-next"><div class="eyebrow">YOU’VE GOT YOUR NEXT STEP.</div><strong>YOUR ONE PRIORITY</strong><p>${esc(rec.priority)}</p><strong>TRY THIS THIS WEEK</strong><p>${esc(rec.action)}</p><strong>EXPLORE ANOTHER TOOL</strong><p>${esc(recommendTool(toolId))}</p></div>`}
+function recommendTool(toolId){const map={tool1:'Re-Entry Script or The Car Rule',tool2:'The Car Rule / Side-by-Side Planner',tool3:'Boundary vs Freedom review or Parent Check-In',tool4:'Re-Entry Script',tool5:'Boundary vs Freedom or a low-pressure connection ritual'};return map[toolId]||'Use the remaining tools to build a fuller plan.'}
+function buildRecommendations(){const r=[];const a=state.toolResults.tool1,b=state.toolResults.tool2,c=state.toolResults.tool3,d=state.toolResults.tool4,e=state.toolResults.tool5;if(a?.broaderConcern)r.push({priority:'Observe broader changes without assuming a cause.',action:'Track meaningful changes in school, sleep, mood, social engagement, or safety and seek appropriate professional support if concerns are significant.'});else if(a?.parentPrivacy)r.push({priority:'Protect privacy while keeping a connection door open.',action:'Try a low-pressure opener or shared activity instead of increasing monitoring.'});if(b?.defensive)r.push({priority:'Lower the pressure before asking higher-stakes questions.',action:'Use one observation, one invitation, then a listening pause.'});if(c?.tension)r.push({priority:'Separate actual safety requirements from preferences.',action:'Choose one autonomy area for a small, reviewable experiment with clear conditions.'});if(d?.environment)r.push({priority:'Turn the workable environment into a recurring connection ritual.',action:'Schedule a short shared activity with no requirement for disclosure.'});if(e?.highWorryLowTrust)r.push({priority:'Regulate worry before adding control.',action:'Choose one small autonomy experiment and one self-regulation action this week.'});if(e?.lowConnectionStrongSelfCare)r.push({priority:'Add connection without sacrificing your own life.',action:'Create one low-pressure point of contact and keep your existing self-care.'});if(state.completedTools.length>=2&&!r.length)r.push({priority:'Combine what you learned into one small weekly experiment.',action:'Choose one observation, one script, and one connection ritual; review them in 7 days.'});return r.slice(0,3)}
+function buildPlan(){const r=state.toolResults;return{observation:r.tool1?.watch||'Use the Distance Decoder to identify one observation to keep an eye on.',script:r.tool2?.script||r.tool4?.script||'Use a low-pressure observation + invitation opener.',boundary:r.tool3?.autonomy||'Choose one preference area for a reviewable autonomy experiment.',environment:r.tool4?.environment||'Identify a side-by-side setting that feels comfortable for both of you.',parent:r.tool5?.focus||'Choose one parent self-regulation action.',connection:r.tool4?.ritual||'Create one small recurring connection ritual.',review:'Review this plan in 7 days and adjust based on what actually happened.'}}
+function renderPlan(){const p=buildPlan();setOut('plan-content',`<div class="plan-grid"><div class="plan-card"><h3>Distance / Observation</h3><p>${esc(p.observation)}</p></div><div class="plan-card"><h3>Best Re-Entry Script</h3><p>${esc(p.script)}</p></div><div class="plan-card"><h3>Safety Anchor / Autonomy Area</h3><p>${esc(p.boundary)}</p></div><div class="plan-card"><h3>Best Side-by-Side Environment</h3><p>${esc(p.environment)}</p></div><div class="plan-card"><h3>Parent Check-In Focus</h3><p>${esc(p.parent)}</p></div><div class="plan-card"><h3>One Connection Action</h3><p>${esc(p.connection)}</p></div><div class="plan-card"><h3>Review Date</h3><p>${esc(p.review)}</p></div></div>`)}
+function renderDashboard(){const r=state.toolResults;const vals=[['Distance Pattern',r.tool1?.label||'Not completed'],['Conversation Access',r.tool2?.label||'Not completed'],['Autonomy Map',r.tool3?.label||'Not completed'],['Connection Environment',r.tool4?.label||'Not completed'],['Parent State',r.tool5?.label||'Not completed']];setOut('dashboard-snapshot',`<div class="eyebrow">TEEN CONNECTION SNAPSHOT</div><div class="snapshot-grid">${vals.map(v=>`<div class="snapshot-tile"><strong>${esc(v[0])}</strong><span>${esc(v[1])}</span></div>`).join('')}</div>`)}
+function renderReset(){const done=state.completedTools;setOut('reset7-list',DAYS.map((d,i)=>`<div class="reset-day ${done.includes(d[2])?'done':''}"><div class="day">${d[0]}</div><div><strong>${esc(d[1])}</strong><p>${done.includes(d[2])?'Completed or available from your current work.':'Use '+esc(d[2]==='plan'?'your combined snapshot/plan':TOOL_NAMES[d[2]])+' as the focus for this day.'}</p>${d[2].startsWith('tool')?`<button class="btn btn-secondary reset-open" data-tool="${d[2]}">Open Tool</button>`:''}</div></div>`).join(''));document.querySelectorAll('.reset-open').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.tool)))}
+function renderUnifiedHistory(){const filter=document.getElementById('history-filter')?.value||'all';const items=filter==='all'?history:history.filter(x=>x.toolId===filter);const box=document.getElementById('unified-history');if(!box)return;if(!items.length){box.innerHTML='<div class="unified-item">No saved items yet.</div>';return}box.innerHTML=items.map(x=>`<div class="unified-item"><div class="unified-meta">${esc(new Date(x.timestamp).toLocaleString())} · ${esc(x.tool)} ${x.sample?'<span class="sample-badge">SAMPLE</span>':''}</div><strong>${esc(x.summary)}</strong><div style="margin-top:10px"><button class="btn btn-secondary hist-del" data-id="${esc(x.id)}">Delete</button></div></div>`).join('');document.querySelectorAll('.hist-del').forEach(b=>b.addEventListener('click',()=>{if(!confirm('Delete this saved item?'))return;history=history.filter(x=>x.id!==b.dataset.id);persistHistory();renderUnifiedHistory();renderToolHistories()}))}
+function renderToolHistories(){for(let n=1;n<=5;n++){const id='tool'+n,box=document.getElementById('hist-list-'+id);if(!box)continue;const arr=history.filter(x=>x.toolId===id);box.innerHTML=arr.length?arr.slice(0,30).map(x=>`<div class="history-item"><span>${esc(new Date(x.timestamp).toLocaleString())} — ${esc(x.summary)} ${x.sample?'<span class="sample-badge">SAMPLE</span>':''}</span></div>`).join(''):`<div class="history-item" style="color:var(--text-muted)">No saved items yet.</div>`}}
+function attachCopy(container,text){const b=document.createElement('button');b.type='button';b.className='btn btn-copy';b.textContent='Copy';b.addEventListener('click',()=>copyText(text));container.appendChild(b)}
+function safeRun(fn){try{fn();const m=String(fn.name||'').match(/^analyze([1-5])$/);if(m){const box=document.getElementById('results-tool'+m[1]);if(box){box.classList.add('active');requestAnimationFrame(()=>box.scrollIntoView({behavior:'smooth',block:'start'}));}}}catch(e){console.error(e);showToast("Something didn't calculate correctly. Your answers are still here. Please try again.")}}
+function sample1(){sampleLoaded.tool1=true;document.getElementById('t1-age').value='15';document.getElementById('t1-onset').value='Gradual over months';document.querySelectorAll('[name="t1-changes"]').forEach(x=>x.checked=['Less talking','Door always closed','Avoids family meals'].includes(x.value));document.getElementById('t1-engage').value='High school soccer team, online gaming with school friends, coming down for midnight snacks.';document.getElementById('t1-fear').value='Depression';showToast('Sample scenario loaded — generating result');safeRun(analyze1)}
+function sample2(){sampleLoaded.tool2=true;document.getElementById('t2-opening').value='How was school today? What did you do?';document.getElementById('t2-response').value='One word';document.getElementById('t2-want-know').value='I worry they are being bullied or left out at lunch because they seem stressed.';document.getElementById('t2-think-want').value='They think I am checking up on their grades or trying to control their schedule.';document.getElementById('t2-best-conv').value='Talking about funny TikTok videos in the car on the way to soccer.';showToast('Sample scenario loaded — generating result');safeRun(analyze2)}
+function sample3(){sampleLoaded.tool3=true;document.querySelectorAll('[name="t3-conflict"]').forEach(x=>x.checked=['Curfew','Phone use','Friends'].includes(x.value));document.getElementById('t3-nonneg').value='Location sharing when out late; no drinking or drugs; a clear check-in plan.';document.getElementById('t3-loosened').value='Weekend bedtime and room-cleanliness expectations.';document.getElementById('t3-wantfree').value='Out-of-town sleepovers with friends.';document.getElementById('t3-fear').value='They will end up at an unsafe party or make a choice I cannot undo.';showToast('Sample scenario loaded — generating result');safeRun(analyze3)}
+function sample4(){sampleLoaded.tool4=true;document.getElementById('t4-easiest').value='Car';document.getElementById('t4-shutdown').value='Meals';document.getElementById('t4-interests').value='Indie rock music, thrifting, playing guitar, sneaker collecting.';document.getElementById('t4-voluntary').value='Funny videos, new album drops, gossip about musicians.';document.getElementById('t4-offlimit').value='Math grades, college prep, messy bedroom.';showToast('Sample scenario loaded — generating result');safeRun(analyze4)}
+function sample5(){sampleLoaded.tool5=true;[3,3,2,4,2,4].forEach((v,i)=>{const el=document.getElementById('t5-s'+(i+1));el.value=v;document.getElementById('val-t5-s'+(i+1)).textContent=v});showToast('Sample scenario loaded — generating result');safeRun(analyze5)}
+function analyze1(){const age=document.getElementById('t1-age').value,onset=document.getElementById('t1-onset').value,changes=[...document.querySelectorAll('[name="t1-changes"]:checked')].map(x=>x.value),engage=document.getElementById('t1-engage').value,fear=document.getElementById('t1-fear').value;const broader=changes.some(x=>['Grades dropped','Sleep changes','Mood swings'].includes(x))||onset==='Sudden'||fear==='Depression'||fear==='Drugs';const parentPrivacy=!broader&&changes.some(x=>['Door always closed','Less talking','Avoids family meals'].includes(x))&&!!engage;const label=broader?'Broader concern signals':parentPrivacy?'Mostly private':'Mixed';setOut('t1-out-normal',`At age ${esc(age)}, increased privacy and peer orientation can be part of adolescent development, but individual patterns vary. The tool cannot determine the cause of distance.`);setOut('t1-out-pattern',`<strong>Possible context:</strong> ${broader?'Some changes are worth closer observation across more than one area of life.':'The pattern may be more consistent with increasing privacy or independence, especially if other meaningful engagement remains.'}`);setOut('t1-out-working',engage?`They still engage in: <em>“${esc(engage)}”</em>. Treat these as connection anchors rather than opportunities for interrogation.`:'No clear engagement anchors were entered. Look for small, low-demand points of contact.');setOut('t1-out-watch',`<ul><li>Notice meaningful changes in school, sleep, mood, appetite, social engagement, or previously enjoyed activities.</li><li>Notice whether withdrawal is mostly parent-directed or broad across peers and activities.</li><li>Pay attention to direct safety concerns rather than trying to infer a cause from privacy alone.</li></ul>`);setOut('t1-out-prompt',`<strong>Conversation prompt:</strong> “I’ve noticed you’ve been keeping to yourself a bit more. You don’t have to talk about it now. I’m here if you want company or want me to listen.”`);setOut('t1-out-pro',broader?`If changes are substantial, persistent, or affecting functioning, consider talking with an appropriate health or school professional. If there is immediate danger or self-harm intent, seek urgent help rather than relying on this tool.`:`Use observation and a low-pressure connection first. If meaningful concerns grow or functioning changes significantly, consider appropriate professional support.`);setOut('results-tool1',document.getElementById('results-tool1').innerHTML+nextStep('tool1'));markComplete('tool1',{age,onset,changes,engage,fear},{label,broaderConcern:broader,parentPrivacy,watch:'Watch meaningful changes across school, sleep, mood, social engagement, and safety.',engagement:engage},`Age ${age}; ${label}`)}
+function analyze2(){const opening=document.getElementById('t2-opening').value,response=document.getElementById('t2-response').value,want=document.getElementById('t2-want-know').value,think=document.getElementById('t2-think-want').value,best=document.getElementById('t2-best-conv').value;const defensive=['One word','Eye roll/Sigh','Leaves room','Defensive','Accusatory'].includes(response);setOut('t2-out-check',`Your opening may feel routine to you but can feel like a request for an update when a teen expects evaluation or control. The aim is not to stop asking questions; it is to lower pressure.`);const scripts=[`“I’ve noticed ${want||'something seems different lately'}. No need to explain it right now—I just wanted you to know I’m available.”`,`“I’m curious about what you think, and I’ll try not to fix it. Want to tell me, or would you rather leave it for now?”`,`“We don’t have to have a big conversation. We can just hang out, and if you want to talk, I’ll listen.”`];const box=document.getElementById('t2-out-scripts');box.innerHTML='';scripts.forEach(t=>{const d=document.createElement('div');d.className='script-box';const s=document.createElement('span');s.textContent=t;d.appendChild(s);attachCopy(d,t);box.appendChild(d)});setOut('t2-out-rule',`Try a side-by-side or ordinary shared activity if that feels comfortable for both of you. It may feel less intense than a formal face-to-face conversation, but it is not a guarantee of openness.`);setOut('t2-out-mandate',`Listen for meaning before solving. Reflect what you heard, pause, and ask whether they want ideas or simply company.`);setOut('t2-out-followup',`If they answer briefly, thank them and leave the door open. You can return later rather than stacking questions.`);setOut('t2-out-backoff',`If they clearly ask for space and there is no immediate safety issue: “Okay. I’ll give you some room. I’m here when you want me.”`);setOut('results-tool2',document.getElementById('results-tool2').innerHTML+nextStep('tool2'));markComplete('tool2',{opening,response,wantKnow:want,thinkWant:think,bestConversation:best},{label:defensive?'Defensive':'Brief / Open',defensive,script:scripts[0]},`Response: ${response||'Not specified'}`)}
+function analyze3(){const conflicts=[...document.querySelectorAll('[name="t3-conflict"]:checked')].map(x=>x.value),nonneg=document.getElementById('t3-nonneg').value,loosened=document.getElementById('t3-loosened').value,want=document.getElementById('t3-wantfree').value,fear=document.getElementById('t3-fear').value;const safetyWords=/safety|late|driv|drink|drug|violence|abuse|missing|danger/i.test(nonneg+' '+fear);const tension=!!want&&!!fear;setOut('t3-out-map',`Start by separating immediate safety requirements from household preferences. Current conflict areas: <strong>${esc(conflicts.join(', ')||'None selected')}</strong>. A boundary is easier to explain when the reason, expectation, and review condition are clear.`);setOut('t3-out-negotiable',`Likely negotiation zones include preferences such as clothing, room style, ordinary social choices, and some schedule details—depending on age, maturity, context, and actual risk. Already loosened: <em>${esc(loosened||'Not entered')}</em>.`);setOut('t3-out-nonnegotiable',`Safety anchors to discuss explicitly: <em>${esc(nonneg||'Not entered')}</em>. Avoid turning a preference into a safety claim just because it reduces parental anxiety.`);setOut('t3-out-graduated',`For <em>${esc(want||'the requested freedom')}</em>, try a small, reviewable “yes” with clear conditions, a check-in method proportionate to the real risk, and a date to review whether it worked.`);setOut('t3-out-deposit',`A small autonomy experiment can build trust when expectations are clear and both sides know what would lead to adjusting the plan.`);setOut('t3-out-consequence',`Use predictable, proportionate consequences tied to the agreement rather than humiliation, threats, or broad punishment. If the issue is genuinely safety-critical, prioritize safety over the experiment.`);setOut('results-tool3',document.getElementById('results-tool3').innerHTML+nextStep('tool3'));markComplete('tool3',{conflicts,nonneg,loosened,wantfree:want,fear},{label:tension?(safetyWords?'Major conflict / safety tension':'Mixed / needs graduated plan'):'Clearer boundary map',tension,safetyWords,autonomy:`One reviewable autonomy experiment around ${want||'one low-stakes preference area'}.`},`Conflicts: ${conflicts.slice(0,3).join(', ')||'None selected'}`)}
+function analyze4(){const easiest=document.getElementById('t4-easiest').value,shutdown=document.getElementById('t4-shutdown').value,interests=document.getElementById('t4-interests').value,voluntary=document.getElementById('t4-voluntary').value,offlimit=document.getElementById('t4-offlimit').value;const env=easiest||'a shared activity';const s1=`“Want to put on something you like while we ${easiest==='Car'?'drive':'do this together'}? I’ll just hang out.”`,s2=`“You’ve mentioned ${interests||'your interests'} lately. What do you like about it?”`,s3=`“No big talk needed. I’m happy to just spend some time together.”`;setOut('t4-out-zone',`A workable setting is <strong>${esc(env)}</strong>. It may provide a natural shared focus and an easier exit than a formal conversation. Avoid <strong>${esc(shutdown)}</strong> for higher-stakes topics if that is where your teen tends to shut down.`);const box=document.getElementById('t4-out-scripts');box.innerHTML='';[s1,s2,s3].forEach(t=>{const d=document.createElement('div');d.className='script-box';const sp=document.createElement('span');sp.textContent=t;d.appendChild(sp);attachCopy(d,t);box.appendChild(d)});setOut('t4-out-protocol',`Let the shared activity be the main event. Silence is allowed. Do not use the setting to bypass a clear request for privacy.`);setOut('t4-out-bridge',`Bridge through something concrete: music, food, gaming, errands, sport, pet care, cooking, a project, or another interest you both can tolerate. Voluntary topics entered: <em>${esc(voluntary||'Not entered')}</em>.`);setOut('t4-out-text',`Texting can be light-touch connection—memes, links, photos, or “saw this and thought of you”—without requiring a reply or turning messages into monitoring.`);setOut('t4-out-avoid',`Keep connection time separate from administrative topics where possible. Topics entered as shutdown topics: <em>${esc(offlimit||'Not entered')}</em>.`);setOut('results-tool4',document.getElementById('results-tool4').innerHTML+nextStep('tool4'));markComplete('tool4',{easiest,shutdown,interests,voluntary,offlimit},{label:'Identified',environment:env,ritual:`A short recurring ${env.toLowerCase()} connection ritual with no required disclosure.`,script:s1},`Easiest: ${easiest||'Not specified'}`)}
+function analyze5(){const vals=[1,2,3,4,5,6].map(i=>Number(document.getElementById('t5-s'+i).value));const labels=['Trust in Teen Choices','Sense of Connection','Worry Management','Ability to Let Fail','Personal Identity Outside Parenting','Parenting Confidence'];const avg=(vals.reduce((a,b)=>a+b,0)/6).toFixed(1);const box=document.getElementById('t5-meters');box.innerHTML=`<div class="safety-mini">Reflection index: <strong>${avg}/10</strong>. This is for self-reflection only; it is not a measure of parenting quality or teen wellbeing.</div>`+vals.map((v,i)=>`<div class="meter-group"><div class="meter-label"><span>${esc(labels[i])}</span><span>${v}/10</span></div><div class="meter-bar"><div class="meter-fill" style="width:${v*10}%"></div></div></div>`).join('');const highWorryLowTrust=vals[2]<=4&&vals[0]<=4;const lowConnectionStrongSelfCare=vals[1]<=4&&vals[4]>=7;setOut('t5-out-anxiety',vals[2]<=4?'Your worry rating suggests this may be an area for reflection before taking more controlling action. Try pausing, naming the fear, and choosing one proportionate response.':'Your worry rating suggests more manageable capacity right now. Keep noticing when anxiety rises so it does not automatically become control.');setOut('t5-out-helicopter',(vals[0]<=4||vals[3]<=4)?'Lower trust or difficulty letting go can be useful signals for reflection. This does not diagnose “helicopter parenting” or mean you are doing a poor job.':'Your responses suggest more room for autonomy right now. Continue reviewing boundaries as your teen’s context changes.');const letgo='Choose one small, low-risk area where your teen can handle a task or decision without reminder texts.';const self=vals[4]<=4?'Protect one small block of time for a hobby, relationship, rest, or activity that is not about parenting.':'Keep one part of your life that exists independently of parenting.';const conn='Offer one low-pressure point of contact—a snack, short shared activity, meme, walk, or errand—without requiring a conversation.';setOut('t5-out-lettinggo',letgo);setOut('t5-out-selfcare',self);setOut('t5-out-connection',conn);setOut('results-tool5',document.getElementById('results-tool5').innerHTML+nextStep('tool5'));markComplete('tool5',{scores:vals},{label:vals[2]<=3?'High worry':vals[1]<=3?'Low connection':'Steady / mixed',highWorryLowTrust,lowConnectionStrongSelfCare,focus:highWorryLowTrust?'Self-regulation before additional control.':lowConnectionStrongSelfCare?'One low-pressure connection action without sacrificing self-care.':'One small action that supports connection or autonomy.'},`Reflection index: ${avg}/10 (not a parenting-quality score)`)}
+function resetTool(toolId){const form=document.getElementById('form-'+toolId);form?.reset();document.querySelectorAll('#form-'+toolId+' input[type=checkbox]').forEach(x=>x.checked=false);document.querySelectorAll('#form-'+toolId+' input[type=range]').forEach(x=>{x.value=5;const v=document.getElementById('val-'+x.id);if(v)v.textContent='5'});const result=document.getElementById('results-'+toolId);if(result)result.classList.remove('active');sampleLoaded[toolId]=false;showToast('Tool reset');}
+function renderAll(){renderDashboard();renderUnifiedHistory();renderToolHistories();renderPlan();renderReset()}
+// Bind navigation
+function bind(){document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));document.querySelectorAll('.dash-card').forEach((b,i)=>b.setAttribute('role','button'));const cards=[...document.querySelectorAll('.dash-card')];cards.forEach((c,i)=>c.addEventListener('click',()=>switchView('tool'+(i+1))));document.getElementById('mobileToggle')?.addEventListener('click',()=>document.getElementById('sidebar')?.classList.contains('mobile-open')?closeMobileSidebar():openMobileSidebar());document.getElementById('sidebarOverlay')?.addEventListener('click',closeMobileSidebar);document.getElementById('form-tool1')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze1)});document.getElementById('form-tool2')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze2)});document.getElementById('form-tool3')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze3)});document.getElementById('form-tool4')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze4)});document.getElementById('form-tool5')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze5)});document.querySelectorAll('input[type=range]').forEach(sl=>{const v=document.getElementById('val-'+sl.id);const sync=()=>{if(v)v.textContent=sl.value};sl.addEventListener('input',sync);sync()});const sampleFns={tool1:sample1,tool2:sample2,tool3:sample3,tool4:sample4,tool5:sample5};for(const [tool,fn] of Object.entries(sampleFns)){const form=document.getElementById('form-'+tool);form?.querySelectorAll('button[type=button]').forEach(b=>{if(b.textContent.toLowerCase().includes('sample'))b.addEventListener('click',fn)})}document.getElementById('history-filter')?.addEventListener('change',renderUnifiedHistory);document.getElementById('clear-all-history')?.addEventListener('click',()=>{if(!confirm('Clear all saved Teen Connection history?'))return;history=[];persistHistory();renderUnifiedHistory();renderToolHistories();showToast('History cleared')});document.getElementById('clear-all-data')?.addEventListener('click',clearAll);document.getElementById('copy-plan')?.addEventListener('click',()=>{const p=buildPlan();copyText(Object.entries(p).map(([k,v])=>k+': '+v).join('\n\n'))});document.getElementById('print-plan')?.addEventListener('click',()=>{switchView('plan');setTimeout(()=>window.print(),50)});document.querySelectorAll('.js-start-over').forEach(b=>b.addEventListener('click',()=>resetTool(b.dataset.tool)));document.querySelectorAll('.js-clear-history').forEach(b=>b.addEventListener('click',()=>clearToolHistory(b.dataset.tool)));document.querySelectorAll('.dash-card[role=button]').forEach(c=>{c.tabIndex=0;c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.click()}})});document.querySelectorAll('.history-header').forEach(h=>h.addEventListener('click',()=>{const list=h.nextElementSibling;if(!list)return;list.classList.toggle('open');h.setAttribute('aria-expanded',list.classList.contains('open'))}));}
+loadState();loadHistory();bind();renderAll();
+})();
+</script>
+</body>
+</html>

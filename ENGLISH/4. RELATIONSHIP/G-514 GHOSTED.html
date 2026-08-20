@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOSTED™ — Recovery & Self-Protection Toolkit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --slate: #4A5B6E;
+            --slate-dark: #2D3B4A;
+            --slate-light: #D8DFE6;
+            --rose: #D4737A;
+            --rose-light: #F0D6D8;
+            --stone: #B8A99A;
+            --stone-light: #E8DDD4;
+            --bg-start: #F8F7F5;
+            --bg-end: #F0EEEA;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3B4A;
+            --text-muted: #6B7A7A;
+            --border-color: #E8E3DE;
+            --success: #7B9C8C;
+            --warning: #D4A373;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-main); display: flex; min-height: 100vh; line-height: 1.6; }
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; top:0; bottom:0; left:0; z-index:1000; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:transform 0.3s ease; }
+        .sidebar-header { padding:1.5rem; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--rose); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--slate-dark); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+        .nav-item:hover { background-color:rgba(74,91,110,0.08); color:var(--slate-dark); }
+        .nav-item.active { background-color:var(--slate); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:60px; background-color:var(--card-bg); border-bottom:1px solid var(--border-color); padding:0 1.25rem; align-items:center; justify-content:space-between; z-index:900; box-shadow:var(--shadow-sm); }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--slate-dark); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--slate); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.3); z-index:950; }
+        .main-content { margin-left:var(--sidebar-width); flex-grow:1; padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; width:calc(100% - var(--sidebar-width)); }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid var(--border-color); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--slate-dark); margin-bottom:0.25rem; line-height:1.2; }
+        .hero-subtitle { font-size:1.1rem; font-weight:500; color:var(--slate); margin-bottom:0.5rem; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--rose); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(212,115,122,0.12); color:var(--rose); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(74,91,110,0.1); color:var(--slate); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--slate-dark); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--slate-dark); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--slate); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:80px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--slate); }
+        .slider-value { font-weight:700; color:var(--slate); min-width:2.5rem; text-align:center; background:rgba(74,91,110,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--slate); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--slate-dark); }
+        .btn-secondary { background-color:rgba(212,115,122,0.12); color:var(--rose); }
+        .btn-secondary:hover { background-color:rgba(212,115,122,0.22); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:#c0392b; color:#fff; }
+        .btn-danger:hover { background-color:#a93226; }
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(74,91,110,0.1); color:var(--slate-dark); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--slate); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--rose); }
+        .result-block.success { border-left-color:var(--success); }
+        .result-block.accent { border-left-color:var(--warning); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--slate-dark); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--slate); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--slate-dark); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid var(--border-color); }
+        .problem-frame { background-color:rgba(212,115,122,0.08); border-left:3px solid var(--rose); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--slate-dark); margin-bottom:1.5rem; font-weight:500; }
+        .checkbox-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .checkbox-grid label { font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; }
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .checkbox-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-regular fa-ghost" style="color:var(--rose);"></i><span>Ghosted</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-regular fa-ghost"></i><h1>Ghosted</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-anchor"></i><span>Reality Anchor</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-envelope"></i><span>Closure Script</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-shield-halved"></i><span>Self-Protection</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-magnifying-glass"></i><span>Pattern Decoder</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-road"></i><span>Recovery Roadmap</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>My History</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privacy</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <h2 class="hero-title">Ghosted</h2>
+                    <p class="hero-tagline">Recover your clarity, protect your peace, and move forward.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        A practical toolkit for navigating the aftermath of being ghosted. Separate facts from projections, decide whether to send that message, break the checking habit, recognize patterns, and rebuild self-trust.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-anchor"></i></div><h3>Reality Anchor</h3><p>Stop guessing. Separate what you know from what your brain is filling in.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-envelope"></i></div><h3>Closure Script</h3><p>Decide whether another message protects your dignity or feeds the loop.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-shield-halved"></i></div><h3>Self-Protection</h3><p>Break the checking habit and remove digital triggers.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-magnifying-glass"></i></div><h3>Pattern Decoder</h3><p>See the dating pattern that may have made this connection especially destabilizing.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-road"></i></div><h3>Recovery Roadmap</h3><p>Rebuild self-trust, daily stability, support, and readiness for future connection.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: REALITY ANCHOR -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Reality Anchor</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "I keep going over it in my head—what happened, what I did wrong, what they're thinking."</div>
+                    <form id="form-tool1">
+                        <div class="form-group"><label class="form-label">What was the last contact or situation?</label><textarea id="t1_last" placeholder="Describe the last interaction, conversation, or date..."></textarea></div>
+                        <div class="form-group"><label class="form-label">How long were you seeing or talking?</label><select id="t1_duration"><option value="One date">One date</option><option value="A few dates">A few dates</option><option value="A few weeks">A few weeks</option><option value="A few months">A few months</option><option value="More than 6 months">More than 6 months</option></select></div>
+                        <div class="form-group"><label class="form-label">Were there any red flags before the silence?</label><textarea id="t1_flags" placeholder="e.g., Delayed replies, canceled plans, vague availability..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What excuses or explanations have you been making for them?</label><textarea id="t1_excuses" placeholder="e.g., They're busy, they're dealing with something, maybe they didn't get my message..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Have you seen evidence of them being active?</label><select id="t1_evidence"><option value="Yes, active on social media">Yes, active on social media</option><option value="Yes, saw them with someone">Yes, saw them with someone</option><option value="Not sure">Not sure</option><option value="No evidence">No evidence</option></select></div>
+                        <div class="form-group"><label class="form-label">The thought you keep having:</label><select id="t1_thought"><option value="I did something wrong">I did something wrong</option><option value="They never liked me">They never liked me</option><option value="They met someone else">They met someone else</option><option value="I should have done more">I should have done more</option><option value="Maybe I misread everything">Maybe I misread everything</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-anchor"></i> Anchor Reality</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Reality Anchor</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-check"></i> Known Facts</div><p id="t1-out-facts">What you can actually observe...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-brain"></i> Fiction / Projection</div><p id="t1-out-fiction">The story you're filling into the silence...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-question"></i> Possible Explanations</div><p id="t1-out-explanations">What might be true—none certain...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> The Closure Statement</div><div class="script-box"><span id="t1-out-closure">Closure reframe...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t1-out-closure')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-shield"></i> Immediate Protocol</div><p id="t1-out-protocol">What to do right now...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> Pattern Note</div><p id="t1-out-pattern">If you saw red flags before...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Previous Reality Anchors</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Clear History</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: CLOSURE SCRIPT -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Closure Script</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "Should I send one more message? What should I say?"</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">What do you want to say?</label><textarea id="t2_message" placeholder="Write what you would want to send..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Primary goal of sending:</label><select id="t2_goal"><option value="Get an answer">Get an answer / Closure</option><option value="Say my piece">Say my piece / Be heard</option><option value="Guilt them">Guilt them / Make them feel bad</option><option value="Win them back">Win them back</option><option value="Just checking in">Just checking in</option></select></div>
+                        <div class="form-group"><label class="form-label">How long since the last response?</label><select id="t2_time"><option value="A few days">A few days</option><option value="A week">About a week</option><option value="2-3 weeks">2-3 weeks</option><option value="A month or more">A month or more</option></select></div>
+                        <div class="form-group"><label class="form-label">Previous follow-up attempts:</label><select id="t2_attempts"><option value="0">0</option><option value="1">1</option><option value="2-3">2-3</option><option value="4+">4+</option></select></div>
+                        <div class="form-group"><label class="form-label">Likely response:</label><select id="t2_response"><option value="No response">No response</option><option value="Vague reply">Vague reply</option><option value="Defensive">Defensive</option><option value="Angry">Angry</option><option value="Maybe a response">Maybe a response</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-envelope"></i> Get Closure Script</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Closure Script</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gavel"></i> Verdict</div><p id="t2-out-verdict">Clear recommendation...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-quote-left"></i> Dignified Message</div><div class="script-box"><span id="t2-out-script">Message content...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t2-out-script')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-pen"></i> Unsent Letter</div><p id="t2-out-unsent">A private writing exercise...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-clock"></i> Timing & Boundary Guidance</div><p id="t2-out-timing">When and how to approach...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-circle-pause"></i> No-Reply Plan</div><p id="t2-out-noreply">What to do if silence continues...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-rotate-left"></i> Return-of-the-Ghost Warning</div><p id="t2-out-return">How to evaluate a future reappearance...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Previous Closure Scripts</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Clear History</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: SELF-PROTECTION -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Self-Protection</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "I can't stop checking their social media—it's making everything worse."</div>
+                    <form id="form-tool3">
+                        <div class="form-group"><label class="form-label">How often do you check their profile/socials?</label><select id="t3_frequency"><option value="Multiple times a day">Multiple times a day</option><option value="Once a day">Once a day</option><option value="A few times a week">A few times a week</option><option value="Less than once a week">Less than once a week</option><option value="I don't check">I don't check</option></select></div>
+                        <div class="form-group"><label class="form-label">What are you looking for?</label><select id="t3_looking"><option value="New posts">New posts</option><option value="Who they're with">Who they're with</option><option value="Story views">Story views</option><option value="Relationship status">Relationship status</option><option value="Location">Location</option><option value="Just habit">Just habit</option></select></div>
+                        <div class="form-group"><label class="form-label">How do you feel after checking?</label><select id="t3_aftermath"><option value="Worse every time">Worse every time</option><option value="Sometimes worse">Sometimes worse</option><option value="Numb">Numb</option><option value="False hope">False hope</option><option value="Angry">Angry</option></select></div>
+                        <div class="form-group"><label class="form-label">Current block/mute status:</label><select id="t3_status"><option value="Blocked">Blocked</option><option value="Muted">Muted</option><option value="Nothing">Nothing</option><option value="Unblocked to check">Unblocked to check</option></select></div>
+                        <div class="form-group"><label class="form-label">What are you afraid of missing?</label><textarea id="t3_fear" placeholder="e.g., Them reaching out, seeing them with someone new, missing a sign..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-shield-halved"></i> Build Protection</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Self-Protection</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrows-rotate"></i> The Checking Loop</div><p id="t3-out-loop">Behavior → Anticipation → Emotional consequence...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-shield"></i> The Block / Mute Guide</div><p id="t3-out-guide">Options based on your status...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> Replacement Habits</div><p id="t3-out-habits">What to do instead...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-calendar"></i> 7-Day No-Check Challenge</div><p id="t3-out-challenge">Staged environmental changes...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-face-frown"></i> The Fear Check</div><p id="t3-out-fear">What you think you'll lose by not checking...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-broom"></i> Digital Cleanse Protocol</div><p id="t3-out-cleanse">Optional steps for a reset...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Previous Self-Protection Plans</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Clear History</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: PATTERN DECODER -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Pattern Decoder</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "This keeps happening—why do I keep ending up here?"</div>
+                    <form id="form-tool4">
+                        <div class="form-group"><label class="form-label">Has this happened before?</label><select id="t4_repeat"><option value="Yes, multiple times">Yes, multiple times</option><option value="Yes, once before">Yes, once before</option><option value="No, first time">No, first time</option><option value="Not sure">Not sure</option></select></div>
+                        <div class="form-group"><label class="form-label">How quickly did things become intense?</label><select id="t4_speed"><option value="Very quickly">Very quickly — felt like we'd known each other forever</option><option value="Moderate">Moderate pace</option><option value="Slowly">Slowly and steadily</option></select></div>
+                        <div class="form-group"><label class="form-label">Early warning signs you noticed:</label><textarea id="t4_signs" placeholder="e.g., Hot and cold, vague about plans, not introducing me to friends..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What were you hoping to feel or fix?</label><textarea id="t4_hope" placeholder="e.g., Connection, validation, being chosen, proving something..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Your 'picker' pattern:</label><select id="t4_picker"><option value="Unavailable people">I'm drawn to unavailable people</option><option value="Move too fast">I tend to move too fast</option><option value="Ignore red flags">I notice red flags but ignore them</option><option value="Don't know">I don't know</option><option value="Choose carefully">I choose carefully</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-magnifying-glass"></i> Decode Pattern</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Pattern Decoder</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> The Pattern</div><p id="t4-out-pattern">Reflective pattern label...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> The Vulnerability Factor</div><p id="t4-out-vulnerability">What may make this dynamic compelling...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Early Warning Signs for Next Time</div><p id="t4-out-signs">Observable behaviors to watch...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-clock"></i> The Slow-Down Protocol</div><p id="t4-out-slow">Practical pacing and vetting guidance...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-list-check"></i> Your Non-Negotiable Standards</div><p id="t4-out-standards">Communication, planning, mutual effort...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-hand-holding-heart"></i> The Worth Reminder</div><p id="t4-out-worth">Compatibility does not require self-erasure...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Previous Pattern Decoders</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Clear History</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: RECOVERY ROADMAP -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Recovery Roadmap</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "I feel completely knocked off course—how do I rebuild myself?"</div>
+                    <form id="form-tool5">
+                        <div class="form-group"><label class="form-label">Self-esteem impact (1-10):</label><div class="slider-container"><input type="range" id="t5_esteem" min="1" max="10" value="5" oninput="document.getElementById('esteem_val').innerText=this.value"><span class="slider-value" id="esteem_val">5</span></div></div>
+                        <div class="form-group"><label class="form-label">Support level:</label><select id="t5_support"><option value="Strong">I have strong support from friends/family</option><option value="Moderate">I have some support</option><option value="Limited">I have limited support</option><option value="None">I don't have support</option></select></div>
+                        <div class="form-group"><label class="form-label">Rumination frequency:</label><select id="t5_rumination"><option value="Constantly">Constantly — I can't stop thinking about it</option><option value="Often">Often — it interrupts my day</option><option value="Sometimes">Sometimes — I can redirect</option><option value="Rarely">Rarely — I'm moving forward</option></select></div>
+                        <div class="form-group"><label class="form-label">Physical self-care:</label><select id="t5_selfcare"><option value="Good">Good — I'm taking care of myself</option><option value="Neglected">Neglected — I'm letting things slip</option><option value="Nonexistent">Nonexistent — I'm not taking care of myself</option></select></div>
+                        <div class="form-group"><label class="form-label">Readiness to date/connect again:</label><select id="t5_readiness"><option value="Eager">Eager to meet someone new</option><option value="Cautious">Cautious but open</option><option value="Not ready">Not ready yet</option><option value="Never again">Never again</option><option value="Only if approached">Only if someone approaches me</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-road"></i> Build Roadmap</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Recovery Roadmap</h3>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-heart-crack"></i> The Wound</div><p id="t5-out-wound">What the event may have shaken...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-clock"></i> 3 Daily Practices to Rebuild</div><p id="t5-out-practices">Small repeatable behaviors...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-users"></i> Social Re-Entry Strategy</div><p id="t5-out-social">One trusted support action...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-compass"></i> Dating Readiness Check</div><p id="t5-out-readiness">Readiness is a choice, not a score...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrows-rotate"></i> The Story Reframe</div><p id="t5-out-reframe">Separate behavior received from self-worth...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-filter"></i> The Future Filter</div><p id="t5-out-filter">Consistency, clarity, calm, reciprocity...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Previous Recovery Roadmaps</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Clear History</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">My History</h2><p class="hero-tagline">All your saved Ghosted analyses and plans.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Clear All History</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privacy</h2>
+                    <p style="margin-bottom:1rem;">Your data stays on your device. Nothing is sent to any server.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>All inputs and results are stored only in your browser's local storage.</li>
+                        <li>No account, no login, no tracking, no analytics.</li>
+                        <li>You can clear history at any time using the tools above.</li>
+                        <li>This application is for reflection and planning—not therapy or clinical advice.</li>
+                        <li>If you are in distress, please reach out to a qualified professional or local support service.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Clear All Stored Data</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">For reflection and support purposes only. Not therapy or clinical advice. If you are in distress or crisis, please reach out to a qualified professional or local support service.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:var(--success);"></i><span id="toast-message">Copied!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => fallbackCopy(text));
+        } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Copied!'); } catch(e) { showToast('Could not copy'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('mobile-open'); });
+    overlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE ---
+    function getHistory(toolId) {
+        const key = `ghosted_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `ghosted_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Delete all history for this tool?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('History cleared');
+    }
+    function clearAllHistory() {
+        if (!confirm('Delete ALL Ghosted history?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('All history cleared');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">No saved history.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">No saved history.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Clear current inputs and results for this tool?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset complete');
+    }
+
+    // ========================================
+    // TOOL 1: REALITY ANCHOR
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_last').value = 'We had a great date—she said she had a wonderful time. I texted the next day to say I\'d like to see her again. No reply since.';
+        document.getElementById('t1_duration').value = 'A few weeks';
+        document.getElementById('t1_flags').value = 'She had canceled once before with a vague excuse, but rescheduled. Replies sometimes took a day or two.';
+        document.getElementById('t1_excuses').value = 'Maybe she\'s busy with work, maybe she\'s dealing with something personal, maybe she didn\'t see my text.';
+        document.getElementById('t1_evidence').value = 'Yes, active on social media';
+        document.getElementById('t1_thought').value = 'I did something wrong';
+        showToast('Sample loaded: Positive date followed by silence');
+    }
+
+    function analyzeTool1() {
+        const last = document.getElementById('t1_last').value || 'The last contact described';
+        const duration = document.getElementById('t1_duration').value;
+        const flags = document.getElementById('t1_flags').value || 'No flags mentioned';
+        const excuses = document.getElementById('t1_excuses').value || 'No excuses specified';
+        const evidence = document.getElementById('t1_evidence').value;
+        const thought = document.getElementById('t1_thought').value;
+
+        const facts = `You were seeing each other for ${duration.toLowerCase()}. The last contact: ${escapeHTML(last)}. Evidence of activity: ${evidence}.`;
+        const fiction = `You're filling the silence with: ${escapeHTML(thought)}. You're explaining it away with: ${escapeHTML(excuses)}.`;
+        const explanations = `Possible reasons: They lost interest. They got scared. They met someone else. They don't know how to end things. They are going through something. None of these are certain.`;
+        const closure = `I don't need a final text to understand what happened. Their silence is information—and it tells me what I need to know about their capacity for communication.`;
+        const protocol = `1. Stop checking for a response. 2. Mute or archive the conversation. 3. Do not send another message. 4. Turn your attention back to yourself.`;
+        const pattern = flags !== 'No flags mentioned' ? `You noticed red flags before: ${escapeHTML(flags)}. This silence may be a continuation of earlier patterns rather than a sudden change.` : 'No red flags were noted—the silence may be unrelated to anything you did.';
+
+        document.getElementById('t1-out-facts').innerHTML = facts;
+        document.getElementById('t1-out-fiction').innerHTML = fiction;
+        document.getElementById('t1-out-explanations').innerHTML = explanations;
+        document.getElementById('t1-out-closure').innerText = closure;
+        document.getElementById('t1-out-protocol').innerHTML = protocol;
+        document.getElementById('t1-out-pattern').innerHTML = pattern;
+        document.getElementById('output-tool1').classList.add('active');
+        saveToHistory('tool1', 'Reality Anchor', `<p>${facts}</p><br><code>${closure}</code>`);
+    }
+
+    // ========================================
+    // TOOL 2: CLOSURE SCRIPT
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_message').value = 'Hey, I hope you're okay. I really thought we had a connection. I would appreciate some honesty—do you want to continue seeing each other?';
+        document.getElementById('t2_goal').value = 'Get an answer';
+        document.getElementById('t2_time').value = '2-3 weeks';
+        document.getElementById('t2_attempts').value = '1';
+        document.getElementById('t2_response').value = 'No response';
+        showToast('Sample loaded: One previous attempt, no reply');
+    }
+
+    function analyzeTool2() {
+        const message = document.getElementById('t2_message').value || 'Your message here';
+        const goal = document.getElementById('t2_goal').value;
+        const time = document.getElementById('t2_time').value;
+        const attempts = document.getElementById('t2_attempts').value;
+        const response = document.getElementById('t2_response').value;
+
+        let verdict = '';
+        let script = '';
+        let unsent = '';
+        let timing = '';
+        let noreply = '';
+        let returnWarning = '';
+
+        if (attempts === '4+' || attempts === '2-3') {
+            verdict = 'DO NOT SEND. You have already reached out multiple times. Additional contact is unlikely to create reliable closure—it will likely keep you stuck.';
+            script = 'No message is recommended at this point. The pattern of silence is already clear.';
+            unsent = `Write what you would say in a letter that you never send. This is for you, not them.`;
+        } else if (goal === 'Guilt them' || goal === 'Win them back') {
+            verdict = 'DO NOT SEND. Messages sent with the goal of guilt-tripping or winning someone back rarely produce the outcome you hope for. They often create more shame and keep you attached.';
+            script = 'Consider an unsent letter instead. Write what you feel without sending it.';
+            unsent = `Write the message you would want to send, then keep it for yourself. You can even burn it or delete it afterward.`;
+        } else if (attempts === '1' && (goal === 'Say my piece' || goal === 'Get an answer')) {
+            verdict = 'SEND ONCE — IF IT PROTECTS YOUR PEACE. One final, non-demanding message can help you feel like you closed the door yourself. But do not expect a reply.';
+            script = `"Hi. I've been thinking about our connection, and since I haven't heard back, I'll take this as a sign that you're not interested in continuing. I wish you well."`;
+            unsent = `If you want to say more, write it here—but don't send it. This is for your own processing.`;
+        } else {
+            verdict = 'OPTIONAL — BUT ONLY IF IT SERVES YOU. Ask yourself: "Does sending this message help me move forward, or does it keep me waiting?"';
+            script = `"I've appreciated getting to know you. Since I haven't heard back, I'm moving on. Take care."`;
+            unsent = `Write whatever you want to say, then decide if it's truly for you or for them.`;
+        }
+
+        timing = `Choose a time when you are calm, not emotional. Send it once, then do not check for a reply.`;
+        noreply = `If they don't reply: You have your answer. Silence is a response. Do not send again. Block or mute if needed.`;
+        returnWarning = `If they reach out later: Evaluate consistency, accountability, clarity, and follow-through before reopening the connection. A single message is not proof of changed intentions.`;
+
+        document.getElementById('t2-out-verdict').innerHTML = verdict;
+        document.getElementById('t2-out-script').innerText = script;
+        document.getElementById('t2-out-unsent').innerHTML = unsent;
+        document.getElementById('t2-out-timing').innerHTML = timing;
+        document.getElementById('t2-out-noreply').innerHTML = noreply;
+        document.getElementById('t2-out-return').innerHTML = returnWarning;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', 'Closure Script', `<p><strong>Verdict:</strong> ${verdict}</p><br><code>${script}</code>`);
+    }
+
+    // ========================================
+    // TOOL 3: SELF-PROTECTION
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_frequency').value = 'Multiple times a day';
+        document.getElementById('t3_looking').value = 'Relationship status';
+        document.getElementById('t3_aftermath').value = 'Worse every time';
+        document.getElementById('t3_status').value = 'Nothing';
+        document.getElementById('t3_fear').value = 'I'm scared they'll post something with someone new. I don't want to miss it.';
+        showToast('Sample loaded: Daily checking with fear of seeing them with someone');
+    }
+
+    function analyzeTool3() {
+        const frequency = document.getElementById('t3_frequency').value;
+        const looking = document.getElementById('t3_looking').value;
+        const aftermath = document.getElementById('t3_aftermath').value;
+        const status = document.getElementById('t3_status').value;
+        const fear = document.getElementById('t3_fear').value || 'Fear of missing something';
+
+        const loop = `You're checking ${frequency.toLowerCase()}, looking for ${looking.toLowerCase()}. After checking, you feel ${aftermath.toLowerCase()}.`;
+        let guide = '';
+        if (status === 'Blocked') guide = 'You're already blocked—this is a clear boundary. Keep it in place. Do not unblock to check.';
+        else if (status === 'Muted') guide = 'Muting is a good middle ground. You won\'t see their activity, but you haven\'t escalated to blocking.';
+        else if (status === 'Unblocked to check') guide = 'You unblocked them to check—this is keeping you stuck. Consider re-blocking or at least muting again.';
+        else guide = 'You haven\'t muted or blocked. Consider doing one of these to reduce the temptation to check.';
+
+        const habits = `Replace the checking urge with: 1. Pick up a book or magazine. 2. Call a friend. 3. Go for a walk. 4. Do a 2-minute breathing exercise. 5. Write down what you're feeling.`;
+        const challenge = `7-Day No-Check Challenge: <br>Day 1-2: Move the app off your home screen. <br>Day 3-4: Mute or block. <br>Day 5-7: Commit to not checking for the full 7 days. If you slip, restart the count.`;
+        const fearCheck = `What you think you'll lose by not checking: ${escapeHTML(fear)}. What you'll actually gain: peace, space, and the ability to focus on yourself.`;
+        const cleanse = `Digital Cleanse Protocol: <br>1. Archive the conversation. <br>2. Mute notifications. <br>3. Remove their contact from favorites. <br>4. Hide or delete photos (move to a locked folder if you're not ready to delete). <br>5. Unfollow or block on social platforms.`;
+
+        document.getElementById('t3-out-loop').innerHTML = loop;
+        document.getElementById('t3-out-guide').innerHTML = guide;
+        document.getElementById('t3-out-habits').innerHTML = habits;
+        document.getElementById('t3-out-challenge').innerHTML = challenge;
+        document.getElementById('t3-out-fear').innerHTML = fearCheck;
+        document.getElementById('t3-out-cleanse').innerHTML = cleanse;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', 'Self-Protection', `<p>${loop}</p><br>${challenge}`);
+    }
+
+    // ========================================
+    // TOOL 4: PATTERN DECODER
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_repeat').value = 'Yes, multiple times';
+        document.getElementById('t4_speed').value = 'Very quickly';
+        document.getElementById('t4_signs').value = 'Hot and cold communication, vague about plans, didn't introduce me to friends.';
+        document.getElementById('t4_hope').value = 'I was hoping to finally feel chosen and validated.';
+        document.getElementById('t4_picker').value = 'Ignore red flags';
+        showToast('Sample loaded: Repeated pattern of fast intensity');
+    }
+
+    function analyzeTool4() {
+        const repeat = document.getElementById('t4_repeat').value;
+        const speed = document.getElementById('t4_speed').value;
+        const signs = document.getElementById('t4_signs').value || 'No signs noted';
+        const hope = document.getElementById('t4_hope').value || 'Hopeful for connection';
+        const picker = document.getElementById('t4_picker').value;
+
+        let pattern = '';
+        if (picker === 'Unavailable people') pattern = 'The Emotional Chase Pattern — drawn to people who are not fully available can create a cycle of seeking validation.';
+        else if (speed === 'Very quickly' || picker === 'Ignore red flags') pattern = 'The Fast-Track & Ignore Loop — quick intensity combined with overlooking warning signs can lead to destabilizing endings.';
+        else pattern = 'Reflective Pattern — You have a pattern worth noticing, and you\'re beginning to see it.';
+
+        const vulnerability = `What may make this dynamic compelling: ${escapeHTML(hope)}. This is a powerful driver. The desire for connection is not the problem—the willingness to overlook red flags for it may be.`;
+        const signsOutput = `Watch for: inconsistent communication, vague commitments, avoidance of meeting friends/family, rapid intensity followed by withdrawal.`;
+        const slow = `Slow-Down Protocol: <br>1. Wait at least 3-4 dates before getting emotionally invested. <br>2. Notice how they handle small requests—are they consistent? <br>3. Don't ignore early inconsistencies. <br>4. Check in with a trusted friend about the pacing.`;
+        const standards = `Non-negotiables: Clear communication. Consistent effort. Mutual planning. Respect for your time. Emotional availability.`;
+        const worth = `You are not too much. You are not asking for too much. You are looking for someone who can show up consistently—and that is a reasonable standard.`;
+
+        document.getElementById('t4-out-pattern').innerHTML = pattern;
+        document.getElementById('t4-out-vulnerability').innerHTML = vulnerability;
+        document.getElementById('t4-out-signs').innerHTML = signsOutput;
+        document.getElementById('t4-out-slow').innerHTML = slow;
+        document.getElementById('t4-out-standards').innerHTML = standards;
+        document.getElementById('t4-out-worth').innerHTML = worth;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', 'Pattern Decoder', `<p><strong>Pattern:</strong> ${pattern}</p><br>${slow}`);
+    }
+
+    // ========================================
+    // TOOL 5: RECOVERY ROADMAP
+    // ========================================
+    function loadSampleTool5() {
+        document.getElementById('t5_esteem').value = '8'; document.getElementById('esteem_val').innerText = '8';
+        document.getElementById('t5_support').value = 'Moderate';
+        document.getElementById('t5_rumination').value = 'Constantly';
+        document.getElementById('t5_selfcare').value = 'Neglected';
+        document.getElementById('t5_readiness').value = 'Not ready';
+        showToast('Sample loaded: High impact with limited self-care');
+    }
+
+    function analyzeTool5() {
+        const esteem = parseInt(document.getElementById('t5_esteem').value) || 5;
+        const support = document.getElementById('t5_support').value;
+        const rumination = document.getElementById('t5_rumination').value;
+        const selfcare = document.getElementById('t5_selfcare').value;
+        const readiness = document.getElementById('t5_readiness').value;
+
+        const wound = `Your self-esteem has been impacted at ${esteem}/10. Ghosting can shake your trust in your own perception—not just your trust in others.`;
+        const practices = `3 Daily Practices: <br>1. Physical grounding: 5 minutes of deep breathing or a short walk. <br>2. Thought interruption: When you start spiraling, say "Stop" and redirect to a neutral topic. <br>3. Mastery action: Do one small thing that you're good at—cook, write, exercise, create.`;
+        let social = '';
+        if (support === 'Strong') social = 'Reach out to one trusted person this week. Tell them you need to talk or just need company.';
+        else if (support === 'Moderate') social = 'Connect with someone who makes you feel seen. Even a short call can help.';
+        else if (support === 'Limited') social = 'Consider a support group or online community. You don\'t have to go through this alone.';
+        else social = 'Consider reaching out to a therapist or counselor. Professional support can be invaluable.';
+
+        let readinessMsg = '';
+        if (readiness === 'Eager') readinessMsg = 'You feel eager to meet someone new. Make sure you're not seeking validation to fill the void. Proceed with open eyes.';
+        else if (readiness === 'Cautious') readinessMsg = 'You're cautiously open—this is a good place to be. Take your time.';
+        else if (readiness === 'Not ready') readinessMsg = 'You're not ready yet. That's completely okay. Focus on yourself first.';
+        else if (readiness === 'Never again') readinessMsg = 'You're feeling done with dating right now. Honor that. You may feel different later, or you may not—both are okay.';
+        else readinessMsg = 'You're open to connection but not initiating. This is a valid place to be.';
+
+        const reframe = `Being ghosted says more about the other person's communication style than about your worth. It's not a reflection of your value.`;
+        const filter = `Future Filter: <br>• Consistency: Do their words and actions match? <br>• Clarity: Are they clear about their intentions? <br>• Calm: Do you feel at ease with them? <br>• Reciprocity: Is effort mutual?`;
+
+        document.getElementById('t5-out-wound').innerHTML = wound;
+        document.getElementById('t5-out-practices').innerHTML = practices;
+        document.getElementById('t5-out-social').innerHTML = social;
+        document.getElementById('t5-out-readiness').innerHTML = readinessMsg;
+        document.getElementById('t5-out-reframe').innerHTML = reframe;
+        document.getElementById('t5-out-filter').innerHTML = filter;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', 'Recovery Roadmap', `<p>${wound}</p><br>${practices}`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

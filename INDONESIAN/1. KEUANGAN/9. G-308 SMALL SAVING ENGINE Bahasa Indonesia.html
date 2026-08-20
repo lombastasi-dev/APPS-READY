@@ -1,0 +1,1753 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small-Savings Engine™ — Financial Independence OS</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables & Commercial Theme Setup */
+        :root {
+            --purple-primary: #7C3AED;
+            --purple-hover: #6D28D9;
+            --purple-light: #F5F3FF;
+            --rose-primary: #F43F5E;
+            --rose-light: #FFF1F2;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gradient: linear-gradient(135deg, #F5F3FF 0%, #FFF1F2 100%);
+            --card-bg: #FFFFFF;
+            --sidebar-width: 260px;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: var(--purple-primary);
+        }
+
+        .sidebar-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            line-height: 1.2;
+        }
+
+        .sidebar-header span {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button:hover {
+            background: var(--purple-light);
+            color: var(--purple-primary);
+        }
+
+        .nav-item.active button {
+            background: var(--purple-primary);
+            color: #FFFFFF;
+        }
+
+        .nav-item.active button i {
+            color: #FFFFFF;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            height: 60px;
+            background: #FFFFFF;
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--purple-primary);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* Main Workspace */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-area {
+            max-width: 840px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 20px;
+            flex: 1;
+        }
+
+        .view-pane {
+            display: none;
+        }
+
+        .view-pane.active {
+            display: block;
+        }
+
+        /* Global UI Controls & Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--purple-primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: var(--purple-hover);
+        }
+
+        .btn-secondary {
+            background: var(--purple-light);
+            color: var(--purple-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #EDE9FE;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--purple-primary);
+            color: var(--purple-primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--purple-light);
+        }
+
+        .btn-danger {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .btn-danger:hover {
+            background: #FCA5A5;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--purple-primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Unified Results Architecture */
+        .output-box {
+            display: none;
+            background: #FFFFFF;
+            border-left: 4px solid var(--purple-primary);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .output-box.active {
+            display: block;
+        }
+
+        .output-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #F3F4F6;
+            padding-bottom: 10px;
+        }
+
+        /* Tool Dashboard Components */
+        .dashboard-hero {
+            background: linear-gradient(135deg, var(--purple-primary) 0%, #4C1D95 100%);
+            color: #FFFFFF;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-hero h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-hero p {
+            color: #E9D5FF;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .tool-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .tool-card i {
+            font-size: 24px;
+            color: var(--purple-primary);
+            margin-bottom: 12px;
+        }
+
+        .tool-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .tool-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Unified History & Accordions */
+        .history-section {
+            margin-top: 24px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: #F9FAFB;
+            border: 1px solid #F3F4F6;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item-content {
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        /* Gamified Elements & Interactive Grids */
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .tracker-cell {
+            aspect-ratio: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            background: #FFFFFF;
+            transition: all 0.2s ease;
+        }
+
+        .tracker-cell:focus {
+            outline: 2px solid var(--purple-primary);
+            outline-offset: 1px;
+        }
+
+        .tracker-cell.checked {
+            background: var(--purple-primary);
+            color: #FFFFFF;
+            border-color: var(--purple-primary);
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--rose-light);
+            color: var(--rose-primary);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.unearned {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+
+        .script-card {
+            background: #F9FAFB;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .script-card p {
+            font-size: 13.5px;
+            line-height: 1.5;
+            padding-right: 70px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .custom-table th, .custom-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table th {
+            background: var(--purple-light);
+            color: var(--purple-primary);
+            font-weight: 600;
+        }
+
+        .rec-box {
+            background: var(--purple-light);
+            border: 1px solid #DDD6FE;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .rec-box h4 {
+            color: var(--purple-primary);
+            font-size: 14px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Global Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background: #111827;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .app-footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.5);
+            margin-top: auto;
+        }
+
+        /* Printable Plan CSS */
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .app-footer, .btn, .history-section, .no-print {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .content-area {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card, .output-box {
+                box-shadow: none !important;
+                border: 1px solid #DDD !important;
+            }
+            .view-pane {
+                display: block !important;
+            }
+            .view-pane:not(#plan) {
+                display: none !important;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.open {
+                display: block;
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .content-area {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-vault" style="color: var(--purple-primary); font-size:20px;"></i>
+            <span style="font-weight:700; color: var(--purple-primary);">Small-Savings Engine™</span>
+        </div>
+        <button class="menu-btn" id="mobileMenuBtn" aria-label="Buka menu navigasi">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-vault"></i>
+                <div>
+                    <h2>Savings Engine™</h2>
+                    <span>Micro-Savings OS V2</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item active" data-view="dashboard">
+                    <button><i class="fa-solid fa-chart-pie"></i> Beranda / Dasbor</button>
+                </li>
+                <li class="nav-item" data-view="tool1">
+                    <button><i class="fa-solid fa-filter-circle-dollar"></i> Auditor Kebocoran</button>
+                </li>
+                <li class="nav-item" data-view="tool2">
+                    <button><i class="fa-solid fa-gamepad"></i> Game Simpanan $5</button>
+                </li>
+                <li class="nav-item" data-view="tool3">
+                    <button><i class="fa-solid fa-shield-halved"></i> Pertahanan Sosial</button>
+                </li>
+                <li class="nav-item" data-view="tool4">
+                    <button><i class="fa-solid fa-magnifying-glass-dollar"></i> Reklamasi Dana</button>
+                </li>
+                <li class="nav-item" data-view="tool5">
+                    <button><i class="fa-solid fa-layer-group"></i> Penumpuk Kebiasaan</button>
+
+                </li>
+                <li class="nav-item" data-view="reset7">
+                    <button><i class="fa-solid fa-calendar-check"></i> Panduan Reset 7-Hari</button>
+                </li>
+                <li class="nav-item" data-view="plan">
+                    <button><i class="fa-solid fa-file-invoice-dollar"></i> Rencana Tabungan Saya</button>
+                </li>
+                <li class="nav-item" data-view="history">
+                    <button><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya</button>
+                </li>
+                <li class="nav-item" data-view="privacy">
+                    <button><i class="fa-solid fa-user-lock"></i> Privasi & Data</button>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <main class="content-area">
+                
+                <!-- VIEW: DASHBOARD -->
+                <div id="dashboard" class="view-pane active">
+                    <div class="dashboard-hero">
+                        <h1>Small-Savings Engine™</h1>
+                        <p>Ubah dana sisa kecil menjadi kemandirian finansial nyata sebagai pencari nafkah tunggal. Temukan pengeluaran tersembunyi, jadikan mikro-deposit sebagai permainan, dan bangun kebiasaan menabung yang konsisten.</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h2 style="font-size:16px;">Lencana Pencapaian Target</h2>
+                            <span style="font-size:12px; color:var(--text-muted);" id="badgeCountText">0 / 4 Diraih</span>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin:6px 0 12px;">Dapatkan lencana pencapaian secara otomatis saat Anda menyelesaikan analisis dan menyimpan mikro-kebiasaan.</p>
+                        <div class="badge-list" id="dashboardBadges">
+                            <span class="badge unearned"><i class="fa-solid fa-seedling"></i> Mesin Dimulai</span>
+                            <span class="badge unearned"><i class="fa-solid fa-fire"></i> Penabung Mikro</span>
+                            <span class="badge unearned"><i class="fa-solid fa-shield"></i> Pelindung Anggaran</span>
+                            <span class="badge unearned"><i class="fa-solid fa-gem"></i> Pembangun Modal</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card tool-card" onclick="switchView('tool1')">
+                            <i class="fa-solid fa-filter-circle-dollar"></i>
+                            <h3>Auditor Kebocoran Hidup Mandiri</h3>
+                            <p>Identifikasi tekanan biaya hidup mandiri dan temukan estimasi peluang penghematan rutin.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool2')">
+                            <i class="fa-solid fa-gamepad"></i>
+                            <h3>Pembangun Game $5</h3>
+                            <p>Ubah setoran kecil menjadi peta target visual untuk mencapai dana darurat tanpa stres.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool3')">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h3>Pertahanan Tekanan Sosial</h3>
+                            <p>Skrip taktis dan alternatif hemat untuk tetap bersosialisasi tanpa boros.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool4')">
+                            <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                            <h3>Reklamasi Dana Tersembunyi</h3>
+                            <p>Temukan barang tak terpakai, langganan, dan evaluasi tagihan yang tersembunyi di rutinitas Anda.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool5')">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <h3>Perencana Penumpuk Kebiasaan</h3>
+                            <p>Hubungkan pemicu menabung mikro secara mulus ke kebiasaan harian dengan papan pantau 30 hari.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('reset7')">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <h3>Reset Menabung Mikro 7-Hari</h3>
+                            <p>Ikuti panduan langkah demi langkah yang terstruktur untuk membangun rencana menabung mikro lengkap.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 1 -->
+                <div id="tool1" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Auditor Kebocoran Hidup Mandiri</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool1()">Muat Contoh</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool1()">Mulai Ulang</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Evaluasi biaya dasar hidup mandiri dan temukan peluang penghematan rutin yang realistis.</p>
+
+                        <form id="formTool1">
+                            <div class="form-group">
+                                <label for="t1Income">Pendapatan Bersih Bulanan ($)</label>
+                                <input type="number" id="t1Income" class="form-control" placeholder="2100" min="1" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Rent">Biaya Sewa / Tempat Tinggal Bulanan ($)</label>
+                                <input type="number" id="t1Rent" class="form-control" placeholder="1100" min="0" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Grocery">Pengeluaran Bahan Makanan per Minggu ($)</label>
+                                <input type="number" id="t1Grocery" class="form-control" placeholder="85" min="0" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Convenience">Premi Makanan Siap Saji / Porsi Tunggal</label>
+                                <select id="t1Convenience" class="form-control">
+                                    <option value="Low">Rendah (Hampir selalu memasak bahan mentah)</option>
+                                    <option value="Moderate" selected>Sedang (Kombinasi makanan olahan/beku)</option>
+                                    <option value="High">Tinggi (Sering pesan antar/makanan siap makan)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Utility">Tagihan Listrik, Air & Wi-Fi Bulanan ($)</label>
+                                <input type="number" id="t1Utility" class="form-control" placeholder="150" min="0" step="any" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Jalankan Analisis Audit</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool1" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-chart-bar"></i> Analisis Biaya Hidup Mandiri</div>
+                        <div id="t1Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Riwayat Audit</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool1')">Hapus Riwayat</button>
+                        </div>
+                        <div id="historyTool1" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 2 -->
+                <div id="tool2" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Pembangun Game $5</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool2()">Muat Contoh</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool2()">Mulai Ulang</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Ubah setoran rutin bernilai kecil menjadi peta pencapaian dana darurat yang jelas.</p>
+
+                        <form id="formTool2">
+                            <div class="form-group">
+                                <label for="t2Freq">Frekuensi Menabung</label>
+                                <select id="t2Freq" class="form-control">
+                                    <option value="Daily">Harian</option>
+                                    <option value="Weekly" selected>Mingguan</option>
+                                    <option value="Payday">Setiap Hari Gajian (Dwi-mingguan)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2Amount">Jumlah Tantangan Dasar ($)</label>
+                                <select id="t2Amount" class="form-control">
+                                    <option value="1">Uang kertas $1 / transfer mikro</option>
+                                    <option value="2">Tabungan mikro $2</option>
+                                    <option value="3">Estimasi pembulatan $3</option>
+                                    <option value="5" selected>Uang kertas $5 / setoran mingguan</option>
+                                    <option value="10">$10 per interval</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2Target">Target Pencapaian ($)</label>
+                                <select id="t2Target" class="form-control">
+                                    <option value="50">Dana Darurat $50</option>
+                                    <option value="100" selected>Dana Kenyamanan $100</option>
+                                    <option value="250">Bantalan Kebebasan $250</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Buat Peta Game Saya</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool2" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-trophy"></i> Peta Target Pencapaian</div>
+                        <div id="t2Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Riwayat Game Tersimpan</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool2')">Hapus Riwayat</button>
+                        </div>
+                        <div id="historyTool2" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 3 -->
+                <div id="tool3" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Skrip Pertahanan Tekanan Sosial</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool3()">Muat Contoh</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool3()">Mulai Ulang</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Lindungi anggaran Anda sambil tetap menjaga hubungan sosial tetap erat.</p>
+
+                        <form id="formTool3">
+                            <div class="form-group">
+                                <label for="t3Scenario">Skenario Pengeluaran Sosial</label>
+                                <select id="t3Scenario" class="form-control">
+                                    <option value="Weekend drinks / Bar nights">Minum akhir pekan / Nongkrong di bar</option>
+                                    <option value="Group vacation / Weekend trips">Liburan kelompok / Perjalanan akhir pekan</option>
+                                    <option value="Gift exchanges / Birthdays">Tukar kado / Ulang tahun</option>
+                                    <option value="Dining at expensive spots" selected>Makan di tempat mahal</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3Budget">Alokasi Anggaran Hiburan Minggu Ini ($)</label>
+                                <input type="number" id="t3Budget" class="form-control" placeholder="15" min="0" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3Dynamic">Dinamika Kelompok Teman</label>
+                                <select id="t3Dynamic" class="form-control">
+                                    <option value="High pressure">Tekanan Tinggi (Suka memaksa belanja)</option>
+                                    <option value="Understanding">Pengertian (Pendengar yang baik)</option>
+                                    <option value="Mixed" selected>Kelompok Campuran</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Buat Skrip Pertahanan</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool3" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-shield-halved"></i> Skrip Sosial & Batasan Anggaran</div>
+                        <div id="t3Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Riwayat Skrip</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool3')">Hapus Riwayat</button>
+                        </div>
+                        <div id="historyTool3" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 4 -->
+                <div id="tool4" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Reklamasi Dana Tersembunyi</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool4()">Muat Contoh</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool4()">Mulai Ulang</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Temukan nilai tersembunyi dari barang tak terpakai, tagihan yang belum direvisi, dan langganan yang terlupakan.</p>
+
+                        <form id="formTool4">
+                            <div class="form-group">
+                                <label>Memiliki Kartu Hadiah / Poin Loyalitas Tak Terpakai?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t4Gift" value="Yes" checked> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="t4Gift" value="No"> Tidak</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4Closet">Barang Tak Terpakai di Lemari / Penyimpanan</label>
+                                <select id="t4Closet" class="form-control">
+                                    <option value="1-5 items">1-5 barang (Sedikit menumpuk)</option>
+                                    <option value="5-10 items" selected>5-10 barang (Cukup menumpuk)</option>
+                                    <option value="Many items">Banyak barang (Sangat menumpuk)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4Subs">Langganan yang Tidak Dipakai dalam 30 Hari Terakhir</label>
+                                <input type="number" id="t4Subs" class="form-control" placeholder="2" min="0" step="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4Bills">Tagihan/Layanan yang Belum Dihitung Ulang dalam 12 Bulan</label>
+                                <input type="number" id="t4Bills" class="form-control" placeholder="1" min="0" step="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Hitung Nilai Tersembunyi</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool4" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-sack-dollar"></i> Hasil Audit Reklamasi</div>
+                        <div id="t4Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Riwayat Reklamasi</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool4')">Hapus Riwayat</button>
+                        </div>
+                        <div id="historyTool4" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 5 -->
+                <div id="tool5" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Perencana Penumpuk Kebiasaan Menabung</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool5()">Muat Contoh</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool5()">Mulai Ulang</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Kaitkan aksi menabung mikro ke kebiasaan harian agar berjalan secara otomatis.</p>
+
+                        <form id="formTool5">
+                            <div class="form-group">
+                                <label for="t5Habit">Jangkar Kebiasaan Harian yang Sudah Ada</label>
+                                <select id="t5Habit" class="form-control">
+                                    <option value="Seduh kopi / teh pagi" selected>Seduh kopi / teh pagi</option>
+                                    <option value="Mengecek ponsel tepat setelah kerja">Mengecek ponsel tepat setelah kerja</option>
+                                    <option value="Menerima notifikasi gaji">Menerima notifikasi gaji</option>
+                                    <option value="Rutinitas bersantai di malam hari">Rutinitas bersantai di malam hari</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5Amount">Jumlah Tabungan Mikro yang Terikat ($)</label>
+                                <select id="t5Amount" class="form-control">
+                                    <option value="1">$1</option>
+                                    <option value="2" selected>$2</option>
+                                    <option value="3">$3</option>
+                                    <option value="5">$5</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5Transfer">Mekanisme Transfer</label>
+                                <select id="t5Transfer" class="form-control">
+                                    <option value="Transfer manual lewat aplikasi bank" selected>Transfer manual lewat aplikasi bank</option>
+                                    <option value="Masukan uang tunai ke celengan fisik">Masukan uang tunai ke celengan fisik</option>
+                                    <option value="Aturan otomatis berulang di bank">Aturan otomatis berulang di bank</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Buat Rencana Kebiasaan</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool5" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-repeat"></i> Rencana & Pelacak Kebiasaan Mikro</div>
+                        <div id="t5Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Riwayat Penumpuk Kebiasaan</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool5')">Hapus Riwayat</button>
+                        </div>
+                        <div id="historyTool5" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: 7-DAY RESET GUIDE -->
+                <div id="reset7" class="view-pane">
+                    <div class="card">
+                        <h2 style="font-size:18px; margin-bottom:8px;">Reset Menabung Mikro 7-Hari</h2>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Panduan terstruktur untuk mengubah rutinitas menabung mikro Anda dalam tujuh hari.</p>
+                        
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 1: Temukan Tekanan Pengeluaran</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Jalankan <a href="#" onclick="switchView('tool1'); return false;">Auditor Kebocoran</a> untuk menetapkan biaya dasar hidup mandiri Anda.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 2: Buat Target Pencapaian</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Tentukan target tabungan Anda dengan <a href="#" onclick="switchView('tool2'); return false;">Game Simpanan $5</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 3: Lindungi Anggaran Secara Sosial</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Buat skrip yang disesuaikan menggunakan <a href="#" onclick="switchView('tool3'); return false;">Pertahanan Sosial</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 4: Klaim Kembali Uang Langsung</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Audit aset rumah tangga tersembunyi dengan <a href="#" onclick="switchView('tool4'); return false;">Reklamasi Dana</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 5: Buat Menabung Terasa Otomatis</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Hubungkan setoran mikro ke rutinitas harian dengan <a href="#" onclick="switchView('tool5'); return false;">Penumpuk Kebiasaan</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 6: Tinjau Ringkasan Sistem</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Periksa sintesis dan rekomendasi antar-alat di <a href="#" onclick="switchView('dashboard'); return false;">Dasbor</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Hari 7: Kunci Rencana Operasional Anda</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Cetak ringkasan <a href="#" onclick="switchView('plan'); return false;">Rencana Tabungan Saya</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: MY SAVINGS PLAN -->
+                <div id="plan" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Rencana Operasional Menabung Saya</h2>
+                            <button class="btn btn-primary btn-sm no-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana</button>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Ringkasan terpadu dari alat aktif, target, dan aturan kebiasaan Anda.</p>
+
+                        <div id="planContent">
+                            <!-- Populated dynamically via renderPlan() -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: HISTORY -->
+                <div id="history" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Log Riwayat Terpadu</h2>
+                            <button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat</button>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Tinjau hasil kalkulasi dan analisis yang tersimpan di seluruh modul.</p>
+
+                        <div id="unifiedHistoryList" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: PRIVACY -->
+                <div id="privacy" class="view-pane">
+                    <div class="card">
+                        <h2 style="font-size:18px; margin-bottom:12px;">Privasi & Kontrol Data Lokal</h2>
+                        <p style="font-size:13.5px; color:var(--text-main); line-height:1.6; margin-bottom:16px;">
+                            Small-Savings Engine™ beroperasi sepenuhnya di dalam peramban (browser) Anda. Tidak ada informasi keuangan, entri pribadi, atau hasil kalkulasi yang dikirim ke server luar atau basis data eksternal.
+                        </p>
+                        <div style="background:var(--purple-light); padding:16px; border-radius:10px; margin-bottom:16px; font-size:13px;">
+                            <strong style="color:var(--purple-primary);"><i class="fa-solid fa-shield-halved"></i> Kebijakan Penyimpanan Data</strong>
+                            <ul style="padding-left:18px; margin-top:8px; line-height:1.5;">
+                                <li>Semua riwayat disimpan di fitur standar peramban Anda (<code style="background:#E0E7FF; padding:2px 4px; border-radius:4px;">localStorage</code>).</li>
+                                <li>Tidak memerlukan akun atau pendaftaran untuk menggunakan aplikasi ini.</li>
+                                <li>Anda dapat menghapus data lokal kapan saja menggunakan tombol hapus yang tersedia di setiap modul atau panel riwayat.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Global Footer -->
+            <footer class="app-footer">
+                Small-Savings Engine™ — Sistem operasi penganggaran mikro praktis. Alat edukasi, bukan nasihat investasi keuangan terdaftar.
+            </footer>
+        </div>
+    </div>
+
+    <!-- Global Toast Element -->
+    <div id="toast" class="toast" role="status" aria-live="polite">Skrip berhasil disalin!</div>
+
+    <script>
+        /* CENTRAL STATE MODEL */
+        const PRODUCT_MODE = "complete"; // Modes: leak, game, social, cash, habit, reset7, complete
+
+        let smallSavingsState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        /* SECURITY & INPUT ESCAPING */
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        /* NAVIGATION & SIDEBAR LOGIC */
+        function switchView(viewId) {
+            document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add('active');
+
+            const targetNav = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+            if (targetNav) targetNav.classList.add('active');
+
+            // Close mobile overlay
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+            
+            if(viewId === 'plan') renderPlan();
+            if(viewId === 'history') renderUnifiedHistory();
+
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                switchView(item.getAttribute('data-view'));
+            });
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('open');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('open');
+            });
+        }
+
+        /* GLOBAL UTILITIES & TOAST */
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Teks berhasil disalin!");
+                }).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Teks berhasil disalin!");
+            } catch (err) {
+                showToast("Gagal menyalin teks");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* LOCAL STORAGE & STATE MANAGEMENT */
+        function saveState() {
+            try {
+                localStorage.setItem('smallsavings_v2_state', JSON.stringify(smallSavingsState));
+            } catch(e) {
+                console.error('Gagal menyimpan status:', e);
+            }
+        }
+
+        function loadState() {
+            try {
+                const stored = localStorage.getItem('smallsavings_v2_state');
+                if (stored) {
+                    smallSavingsState = JSON.parse(stored);
+                }
+            } catch(e) {
+                console.error('Gagal memuat status:', e);
+            }
+        }
+
+        function saveHistory(toolId, summary, rawData = {}) {
+            const key = `smallsavings_history_${toolId}`;
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+
+            const timestamp = new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+            history.unshift({ timestamp, summary, rawData });
+            if (history.length > 30) history.pop();
+
+            try {
+                localStorage.setItem(key, JSON.stringify(history));
+            } catch(e) {}
+
+            if (!smallSavingsState.completedTools.includes(toolId)) {
+                smallSavingsState.completedTools.push(toolId);
+            }
+            smallSavingsState.toolResults[toolId] = { summary, rawData, timestamp };
+            smallSavingsState.lastUpdated = new Date().toISOString();
+            saveState();
+
+            renderHistory(toolId);
+            updateMilestoneBadges();
+        }
+
+        function renderHistory(toolId) {
+            const key = `smallsavings_history_${toolId}`;
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+            
+            const container = document.getElementById(`history${toolId.charAt(0).toUpperCase() + toolId.slice(1)}`);
+            if (!container) return;
+
+            if (history.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">Belum ada riwayat tersimpan untuk modul ini.</div>`;
+                return;
+            }
+
+            container.innerHTML = history.map((item, idx) => `
+                <div class="history-item">
+                    <div class="history-item-content">
+                        <strong style="color:var(--purple-primary);">${escapeHTML(item.timestamp)}:</strong> ${escapeHTML(item.summary)}
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="deleteHistoryItem('${toolId}', ${idx})" title="Hapus entri"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function deleteHistoryItem(toolId, idx) {
+            const key = `smallsavings_history_${toolId}`;
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+            if (idx >= 0 && idx < history.length) {
+                history.splice(idx, 1);
+                try { localStorage.setItem(key, JSON.stringify(history)); } catch(e){}
+                renderHistory(toolId);
+                updateMilestoneBadges();
+            }
+        }
+
+        function clearToolHistory(toolId) {
+            if (confirm("Apakah Anda yakin ingin menghapus riwayat untuk alat ini?")) {
+                localStorage.removeItem(`smallsavings_history_${toolId}`);
+                renderHistory(toolId);
+                updateMilestoneBadges();
+                showToast("Riwayat alat dibersihkan.");
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Apakah Anda yakin ingin menghapus riwayat di seluruh modul?")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => localStorage.removeItem(`smallsavings_history_${t}`));
+                smallSavingsState.completedTools = [];
+                smallSavingsState.toolResults = {};
+                saveState();
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => renderHistory(t));
+                renderUnifiedHistory();
+                updateMilestoneBadges();
+                showToast("Semua riwayat dibersihkan.");
+            }
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryList');
+            if (!container) return;
+
+            let allEntries = [];
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+                let history = [];
+                try { history = JSON.parse(localStorage.getItem(`smallsavings_history_${toolId}`) || '[]'); } catch(e){}
+                history.forEach(item => {
+                    allEntries.push({ ...item, toolId });
+                });
+            });
+
+            if (allEntries.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">Tidak ada catatan riwayat. Jalankan analisis di modul Anda untuk mengisinya.</div>`;
+                return;
+            }
+
+            container.innerHTML = allEntries.map(item => `
+                <div class="history-item">
+                    <div class="history-item-content">
+                        <span style="font-weight:700; color:var(--purple-primary); text-transform:uppercase; font-size:11px;">[${escapeHTML(item.toolId)}]</span>
+                        <span style="color:var(--text-muted); font-size:12px;">${escapeHTML(item.timestamp)}:</span>
+                        <span>${escapeHTML(item.summary)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateMilestoneBadges() {
+            const badgeContainer = document.getElementById('dashboardBadges');
+            const badgeCountText = document.getElementById('badgeCountText');
+            let totalEntries = 0;
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                let items = [];
+                try { items = JSON.parse(localStorage.getItem(`smallsavings_history_${t}`) || '[]'); } catch(e){}
+                totalEntries += items.length;
+            });
+
+            const badgeDefs = [
+                { id: 1, name: 'Mesin Dimulai', icon: 'fa-seedling', req: 0 },
+                { id: 2, name: 'Penabung Mikro', icon: 'fa-fire', req: 1 },
+                { id: 3, name: 'Pelindung Anggaran', icon: 'fa-shield', req: 3 },
+                { id: 4, name: 'Pembangun Modal', icon: 'fa-gem', req: 7 }
+            ];
+
+            let earnedCount = 0;
+            let badgesHTML = badgeDefs.map(b => {
+                const earned = totalEntries >= b.req;
+                if (earned) earnedCount++;
+                return `<span class="badge ${earned ? '' : 'unearned'}"><i class="fa-solid ${b.icon}"></i> ${b.name}</span>`;
+            }).join('');
+
+            if (badgeContainer) badgeContainer.innerHTML = badgesHTML;
+            if (badgeCountText) badgeCountText.textContent = `${earnedCount} / 4 Diraih`;
+        }
+
+        /* CROSS-TOOL RECOMMENDATIONS ENGINE */
+        function getRecommendation(currentToolId, data = {}) {
+            let rec = { title: "", text: "", targetView: "" };
+
+            if (currentToolId === 'tool1') {
+                rec = {
+                    title: "Langkah Selanjutnya yang Disarankan: Reklamasi Dana",
+                    text: "Karena biaya tetap hidup mandiri memakan porsi pendapatan yang cukup besar, segera klaim kembali dana tunai atau batalkan langganan menggunakan Reklamasi Dana Tersembunyi.",
+                    targetView: "tool4"
+                };
+            } else if (currentToolId === 'tool2') {
+                rec = {
+                    title: "Langkah Selanjutnya yang Disarankan: Penumpuk Kebiasaan",
+                    text: "Anda telah menentukan target tabungan! Hubungkan setoran berkala Anda secara langsung ke rutinitas harian menggunakan Penumpuk Kebiasaan.",
+                    targetView: "tool5"
+                };
+            } else if (currentToolId === 'tool3') {
+                rec = {
+                    title: "Langkah Selanjutnya yang Disarankan: Game Simpanan $5",
+                    text: "Melindungi anggaran sosial membantu Anda menyisihkan uang. Alirkan tabungan mingguan Anda ke dalam tantangan game simpanan.",
+                    targetView: "tool2"
+                };
+            } else if (currentToolId === 'tool4') {
+                rec = {
+                    title: "Langkah Selanjutnya yang Disarankan: Game Simpanan $5",
+                    text: "Jangan biarkan dana hasil reklamasi habis untuk pengeluaran rutin! Alokasikan dana tersembunyi tersebut ke dalam game simpanan aktif Anda.",
+                    targetView: "tool2"
+                };
+            } else if (currentToolId === 'tool5') {
+                rec = {
+                    title: "Langkah Selanjutnya yang Disarankan: Rencana Tabungan Saya",
+                    text: "Jangkar kebiasaan menabung Anda telah diset. Gabungkan semua analisis aktif ke dalam Rencana Operasional Menabung Mikro Anda.",
+                    targetView: "plan"
+                };
+            }
+
+            return `
+                <div class="rec-box">
+                    <h4><i class="fa-solid fa-compass"></i> ${escapeHTML(rec.title)}</h4>
+                    <p>${escapeHTML(rec.text)}</p>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="switchView('${rec.targetView}')">Lanjut ke Alat Berikutnya <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            `;
+        }
+
+        /* TOOL 1: SINGLE-LIVING LEAK AUDITOR */
+        function loadSampleTool1() {
+            document.getElementById('t1Income').value = 2100;
+            document.getElementById('t1Rent').value = 1100;
+            document.getElementById('t1Grocery').value = 87.5;
+            document.getElementById('t1Convenience').value = 'Moderate';
+            document.getElementById('t1Utility').value = 150;
+        }
+
+        function resetTool1() {
+            document.getElementById('formTool1').reset();
+            document.getElementById('outTool1').classList.remove('active');
+        }
+
+        document.getElementById('formTool1').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const income = parseFloat(document.getElementById('t1Income').value) || 0;
+            const rent = parseFloat(document.getElementById('t1Rent').value) || 0;
+            const groceryWeekly = parseFloat(document.getElementById('t1Grocery').value) || 0;
+            const utility = parseFloat(document.getElementById('t1Utility').value) || 0;
+            const convenience = document.getElementById('t1Convenience').value;
+
+            if (income <= 0) {
+                alert("Harap masukkan pendapatan bulanan yang valid dan lebih besar dari 0.");
+                return;
+            }
+
+            const groceryMonthly = groceryWeekly * 4.33;
+            const totalFixed = rent + groceryMonthly + utility;
+            const singleTaxPct = Math.min(Math.round((totalFixed / income) * 100), 100);
+
+            let estSavings = 40;
+            if (convenience === 'High') estSavings += 30;
+            if (groceryMonthly > 400) estSavings += 20;
+
+            const resDiv = document.getElementById('t1Results');
+            resDiv.innerHTML = `
+                <div style="margin-bottom:16px;">
+                    <strong>Rasio Biaya Tetap:</strong> Sekitar <strong>${singleTaxPct}%</strong> dari pendapatan bulanan Anda dialokasikan untuk tempat tinggal, utilitas, dan bahan makanan dasar.
+                    <div style="background:#E5E7EB; border-radius:10px; height:12px; margin-top:8px; overflow:hidden;">
+                        <div style="background:${singleTaxPct > 70 ? 'var(--rose-primary)' : 'var(--purple-primary)'}; width:${singleTaxPct}%; height:100%;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <h4 style="font-size:14px; color:var(--purple-primary); margin-bottom:6px;">3 Ide Penghematan Rutin</h4>
+                    <ul style="padding-left:18px; font-size:13px; color:var(--text-main); line-height:1.5;">
+                        <li><strong>Memasak Porsi Sekaligus:</strong> Masak makanan untuk 3 porsi agar tidak ada sisa bahan makanan yang terbuang (est. ~$25/bln).</li>
+                        <li><strong>Audit Paket Internet:</strong> Evaluasi paket internet standar 100 Mbps untuk mengurangi biaya bulanan (est. ~$20/bln).</li>
+                        <li><strong>Rotasi Layanan Streaming:</strong> Aktifkan hanya satu layanan streaming per bulan secara bergantian (est. ~$15/bln).</li>
+                    </ul>
+                </div>
+                <div style="background:var(--purple-light); padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
+                    <strong style="color:var(--purple-primary);">Potensi Hemat Tersembunyi:</strong> Diperkirakan <strong>$${estSavings} - $${estSavings + 30}/bulan</strong> dalam optimasi rutinitas harian (estimasi perencanaan).
+                </div>
+                <div style="font-size:13px;">
+                    <strong>2 Langkah Utama Minggu Ini:</strong>
+                    <ol style="padding-left:18px; margin-top:4px;">
+                        <li>Audit paket internet/layanan rumah untuk mencari diskon pengguna tunggal.</li>
+                        <li>Bekukan setengah dari porsi roti/bahan segar yang baru dibeli agar tidak cepat basi.</li>
+                    </ol>
+                </div>
+                ${getRecommendation('tool1')}
+            `;
+            document.getElementById('outTool1').classList.add('active');
+            saveHistory('tool1', `Audit selesai: ${singleTaxPct}% pengeluaran tetap. Est. penghematan: $${estSavings}-$${estSavings+30}/bln.`, { singleTaxPct, estSavings });
+        });
+
+        /* TOOL 2: $5 GAME BUILDER */
+        function loadSampleTool2() {
+            document.getElementById('t2Freq').value = 'Weekly';
+            document.getElementById('t2Amount').value = '5';
+            document.getElementById('t2Target').value = '100';
+        }
+
+        function resetTool2() {
+            document.getElementById('formTool2').reset();
+            document.getElementById('outTool2').classList.remove('active');
+        }
+
+        document.getElementById('formTool2').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const freq = document.getElementById('t2Freq').value;
+            const amount = parseFloat(document.getElementById('t2Amount').value) || 5;
+            const target = parseFloat(document.getElementById('t2Target').value) || 100;
+
+            const stepsNeeded = Math.ceil(target / amount);
+            let daysFactor = 7;
+            if (freq === 'Daily') daysFactor = 1;
+            if (freq === 'Payday') daysFactor = 14;
+
+            const totalDays = stepsNeeded * daysFactor;
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + totalDays);
+
+            let cellsHTML = '';
+            for (let i = 1; i <= stepsNeeded; i++) {
+                cellsHTML += `<div class="tracker-cell" tabindex="0" role="checkbox" aria-checked="false" aria-label="Simpan ${i} dari $${amount}" onclick="toggleTrackerCell(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleTrackerCell(this);}">$${amount}</div>`;
+            }
+
+            const resDiv = document.getElementById('t2Results');
+            resDiv.innerHTML = `
+                <div style="margin-bottom:12px; font-size:13.5px;">
+                    <strong>Estimasi Target:</strong> Mencapai target <strong>$${target}</strong> dalam sekitar <strong>${stepsNeeded} kali setoran</strong> (Est. tanggal tercapai: <strong>${targetDate.toLocaleDateString('id-ID', {month:'short', day:'numeric', year:'numeric'})}</strong>).
+                </div>
+                <div>
+                    <strong style="font-size:13px;">Pelacak Tantangan Interaktif:</strong> (Klik atau gunakan spasi untuk menandai)
+                    <div class="tracker-grid">${cellsHTML}</div>
+                </div>
+                <div style="background:var(--rose-light); padding:12px; border-radius:8px; margin:12px 0; font-size:13px;">
+                    <strong style="color:var(--rose-primary);">Pola Pikir Konsistensi:</strong> Setoran mikro melatih otak Anda untuk menjadi pembangun keuangan yang aktif. Momentum perilaku membangun ketahanan finansial lebih cepat daripada menunggu uang dalam jumlah besar.
+                </div>
+                <div style="font-size:13px;">
+                    <strong>Pemicu Selebrasi Bebas Biaya:</strong> Saat mencapai target $${target}, berikan hadiah bebas biaya untuk diri sendiri: menonton film penuh di rumah, berjalan-jalan di taman, atau mandi air hangat tanpa gangguan ponsel.
+                </div>
+                ${getRecommendation('tool2')}
+            `;
+            document.getElementById('outTool2').classList.add('active');
+            saveHistory('tool2', `Game dibuat: $${amount} (${freq}) dengan target $${target} pada ${targetDate.toLocaleDateString('id-ID', {month:'short', day:'numeric'})}.`, { amount, freq, target, stepsNeeded });
+        });
+
+        function toggleTrackerCell(cell) {
+            cell.classList.toggle('checked');
+            const isChecked = cell.classList.contains('checked');
+            cell.setAttribute('aria-checked', isChecked ? "true" : "false");
+        }
+
+        /* TOOL 3: SOCIAL PRESSURE DEFENSE SCRIPT */
+        function loadSampleTool3() {
+            document.getElementById('t3Scenario').value = 'Dining at expensive spots';
+            document.getElementById('t3Budget').value = 15;
+            document.getElementById('t3Dynamic').value = 'Mixed';
+        }
+
+        function resetTool3() {
+            document.getElementById('formTool3').reset();
+            document.getElementById('outTool3').classList.remove('active');
+        }
+
+        document.getElementById('formTool3').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const scenario = document.getElementById('t3Scenario').value;
+            const budget = parseFloat(document.getElementById('t3Budget').value) || 0;
+            const dynamic = document.getElementById('t3Dynamic').value;
+
+            let script1 = `Hei! Saya sedang membatasi pengeluaran hiburan maksimal $${budget} minggu ini demi target pribadi. Saya akan ikut gabung pas acara minum/pencuci mulut setelahnya ya!`;
+            let script2 = `Saya sedang mengurangi pengeluaran untuk ${scenario.toLowerCase()} karena sedang menabung untuk target dana darurat. Kali ini saya pas dulu, tapi yuk ngobrol santai kapan-kapan!`;
+            let script3 = `Kedengarannya seru banget! Batas pengeluaran nongkrong saya cuma $${budget} saat ini, jadi saya pesan hidangan pembuka dan air putih saja ya. Nggak sabar ketemu!`;
+
+            if (dynamic === 'High pressure') {
+                script1 = `Saya punya batasan anggaran yang ketat sebesar $${budget} minggu ini untuk target pribadi. Saya tidak ikut makan malam penuh, tapi mau banget kalau ngopi/ngeteh setelahnya!`;
+            }
+
+            const hostScript1 = `Hei teman-teman! Daripada keluar ke tempat yang ramai, main ke rumahku saja akhir pekan ini! Aku siapkan teh manis dan pop corn—kalian boleh bawa camilan favorit masing-masing ya.`;
+            const hostScript2 = `Gimana kalau hari Sabtu ini kita santai di taman atau jalan-jalan santai sambil ngopi saja? Sangat hemat untuk kita semua!`;
+
+            const resDiv = document.getElementById('t3Results');
+            resDiv.innerHTML = `
+                <h4 style="font-size:14px; color:var(--purple-primary); margin-bottom:8px;">3 Skrip Pertahanan Taktis</h4>
+                <div class="script-card">
+                    <p>"${escapeHTML(script1)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(script1).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+                <div class="script-card">
+                    <p>"${escapeHTML(script2)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(script2).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+                <div class="script-card">
+                    <p>"${escapeHTML(script3)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(script3).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+
+                <h4 style="font-size:14px; color:var(--purple-primary); margin:16px 0 8px;">Skrip Alternatif Tuan Rumah Hemat</h4>
+                <div class="script-card">
+                    <p>"${escapeHTML(hostScript1)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(hostScript1).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+                <div class="script-card">
+                    <p>"${escapeHTML(hostScript2)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(hostScript2).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Salin</button>
+                </div>
+
+                <div style="background:var(--purple-light); padding:12px; border-radius:8px; margin-top:12px; font-size:13px;">
+                    <strong>Prinsip Batasan Sosial:</strong> Pertemanan sejati menghargai kebersamaan Anda, bukan daya beli Anda. Menetapkan batasan pengeluaran yang jelas menyaring hubungan yang sehat sekaligus melindungi target finansial Anda.
+                </div>
+                ${getRecommendation('tool3')}
+            `;
+            document.getElementById('outTool3').classList.add('active');
+            saveHistory('tool3', `Skrip dibuat untuk skenario ${scenario} dengan anggaran $${budget}.`, { scenario, budget, dynamic });
+        });
+
+        /* TOOL 4: FOUND CASH RECLAIMER */
+        function loadSampleTool4() {
+            document.querySelector('input[name="t4Gift"][value="Yes"]').checked = true;
+            document.getElementById('t4Closet').value = '5-10 items';
+            document.getElementById('t4Subs').value = 2;
+            document.getElementById('t4Bills').value = 1;
+        }
+
+        function resetTool4() {
+            document.getElementById('formTool4').reset();
+            document.getElementById('outTool4').classList.remove('active');
+        }
+
+        document.getElementById('formTool4').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const hasGifts = document.querySelector('input[name="t4Gift"]:checked').value === 'Yes';
+            const closet = document.getElementById('t4Closet').value;
+            const subs = parseInt(document.getElementById('t4Subs').value) || 0;
+            const bills = parseInt(document.getElementById('t4Bills').value) || 0;
+
+            let minCash = 0;
+            let maxCash = 0;
+
+            if (hasGifts) { minCash += 25; maxCash += 75; }
+            if (closet === '1-5 items') { minCash += 30; maxCash += 80; }
+            if (closet === '5-10 items') { minCash += 70; maxCash += 180; }
+            if (closet === 'Many items') { minCash += 150; maxCash += 350; }
+            
+            const recurringMin = (subs * 10) + (bills * 15);
+            const recurringMax = (subs * 25) + (bills * 40);
+
+            const totalMin = minCash + recurringMin;
+            const totalMax = maxCash + recurringMax;
+
+            const resDiv = document.getElementById('t4Results');
+            resDiv.innerHTML = `
+                <div style="font-size:15px; margin-bottom:12px;">
+                    Estimasi Uang Kembali: <strong style="color:var(--purple-primary); font-size:18px;">$${totalMin} - $${totalMax}</strong>
+                </div>
+
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Sumber Aset</th>
+                            <th>Tindakan Utama</th>
+                            <th>Est. Potensi Nilai</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${hasGifts ? `<tr><td>Kartu Hadiah / Poin</td><td>Gunakan untuk kebutuhan pokok atau tukarkan</td><td>$25 - $75 (Sekali)</td></tr>` : ''}
+                        <tr><td>Barang Lemari Tak Terpakai</td><td>Jual 3 barang teratas di marketplace lokal</td><td>$30 - $180 (Sekali)</td></tr>
+                        ${subs > 0 ? `<tr><td>Langganan Tak Terpakai (${subs})</td><td>Batalkan segera via aplikasi atau portal</td><td>$${subs*10} - $${subs*25}/bln (Rutin)</td></tr>` : ''}
+                        ${bills > 0 ? `<tr><td>Tagihan Belum Diaudit (${bills})</td><td>Hubungi penyedia atau turunkan ke paket standar</td><td>$${bills*15} - $${bills*40}/bln (Rutin)</td></tr>` : ''}
+                    </tbody>
+                </table>
+
+                <div style="background:var(--rose-light); padding:12px; border-radius:8px; margin-top:12px; font-size:13px;">
+                    <strong style="color:var(--rose-primary);">Strategi Dialokasikan Langsung:</strong> Begitu dana hasil reklamasi terkumpul atau penghematan langganan didapatkan, langsung masukkan 100% dana tersebut ke dalam game simpanan aktif Anda dalam kurun waktu 24 jam.
+                </div>
+                ${getRecommendation('tool4')}
+            `;
+            document.getElementById('outTool4').classList.add('active');
+            saveHistory('tool4', `Audit selesai: Ditemukan $${totalMin}-$${totalMax} potensi penghematan/uang kembali.`, { totalMin, totalMax, subs, bills });
+        });
+
+        /* TOOL 5: HABIT STACKING SAVINGS PLANNER */
+        function loadSampleTool5() {
+            document.getElementById('t5Habit').value = 'Seduh kopi / teh pagi';
+            document.getElementById('t5Amount').value = '2';
+            document.getElementById('t5Transfer').value = 'Transfer manual lewat aplikasi bank';
+        }
+
+        function resetTool5() {
+            document.getElementById('formTool5').reset();
+            document.getElementById('outTool5').classList.remove('active');
+        }
+
+        document.getElementById('formTool5').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const habit = document.getElementById('t5Habit').value;
+            const amount = document.getElementById('t5Amount').value;
+            const transfer = document.getElementById('t5Transfer').value;
+
+            let trackerCells = '';
+            for (let i = 1; i <= 30; i++) {
+                trackerCells += `<div class="tracker-cell" tabindex="0" role="checkbox" aria-checked="false" aria-label="Hari ${i}" onclick="toggleTrackerCell(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleTrackerCell(this);}">H${i}</div>`;
+            }
+
+            const formulaText = `Setelah saya ${habit.toLowerCase()}, saya akan langsung menabung $${amount} via ${transfer.toLowerCase()}.`;
+
+            const resDiv = document.getElementById('t5Results');
+            resDiv.innerHTML = `
+                <div style="background:var(--purple-light); padding:16px; border-radius:10px; border:1px dashed var(--purple-primary); margin-bottom:16px; text-align:center;">
+                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Pernyataan Penumpuk Kebiasaan</div>
+                    <div style="font-size:15px; font-weight:700; color:var(--purple-primary);">
+                        "${escapeHTML(formulaText)}"
+                    </div>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="copyToClipboard('${escapeHTML(formulaText).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Salin Rumus</button>
+                </div>
+
+                <div>
+                    <strong style="font-size:13px;">Papan Pelacak 30-Hari:</strong>
+                    <div class="tracker-grid">${trackerCells}</div>
+                </div>
+
+                <div style="margin-top:12px; font-size:13px;">
+                    <strong>Tips Mengurangi Hambatan:</strong> Pindahkan ikon aplikasi bank Anda persis di sebelah aplikasi kebiasaan utama (misalnya media sosial atau jam alarm) agar proses transfer dapat selesai dalam waktu kurang dari 10 detik.
+                </div>
+                ${getRecommendation('tool5')}
+            `;
+            document.getElementById('outTool5').classList.add('active');
+            saveHistory('tool5', `Kebiasaan Terikat: $${amount} dihubungkan ke ${habit}.`, { habit, amount, transfer, formulaText });
+        });
+
+        /* RENDER MY SAVINGS PLAN */
+        function renderPlan() {
+            const container = document.getElementById('planContent');
+            if (!container) return;
+
+            const t1 = smallSavingsState.toolResults['tool1']?.rawData || {};
+            const t2 = smallSavingsState.toolResults['tool2']?.rawData || {};
+            const t3 = smallSavingsState.toolResults['tool3']?.rawData || {};
+            const t4 = smallSavingsState.toolResults['tool4']?.rawData || {};
+            const t5 = smallSavingsState.toolResults['tool5']?.rawData || {};
+
+            container.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">1. Biaya Dasar Hidup Mandiri</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t1.singleTaxPct ? `Rasio biaya tetap: <strong>${t1.singleTaxPct}%</strong> dari pendapatan bersih. Potensi hemat: <strong>$${t1.estSavings}-$${t1.estSavings+30}/bln</strong>.` : 'Belum diisi. Jalankan Auditor Kebocoran.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">2. Game Target Aktif</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t2.target ? `Target: <strong>$${t2.target}</strong> via setoran <strong>$${t2.amount} (${t2.freq})</strong> (Total ${t2.stepsNeeded} kali setoran).` : 'Belum diisi. Jalankan Game Simpanan $5.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">3. Batasan Pengeluaran Sosial</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t3.budget !== undefined ? `Batas hiburan mingguan: <strong>$${t3.budget}</strong> untuk <em>${escapeHTML(t3.scenario)}</em>.` : 'Belum diisi. Jalankan Pertahanan Sosial.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">4. Hasil Reklamasi Dana Tersembunyi</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t4.totalMin ? `Est. nilai teridentifikasi: <strong>$${t4.totalMin} - $${t4.totalMax}</strong> dari langganan dan barang.` : 'Belum diisi. Jalankan Reklamasi Dana.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">5. Komitmen Kebiasaan Menabung</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t5.formulaText ? `Rumus: <em>"${escapeHTML(t5.formulaText)}"</em>` : 'Belum diisi. Jalankan Penumpuk Kebiasaan.'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => renderHistory(t));
+            updateMilestoneBadges();
+        });
+    </script>
+</body>
+</html>

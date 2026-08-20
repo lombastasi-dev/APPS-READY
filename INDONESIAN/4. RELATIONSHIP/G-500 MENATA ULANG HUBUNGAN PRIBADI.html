@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RECONNECT™ — Perlengkapan Alat Penataan Ulang Hubungan Pribadi</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --rosewood: #6B2D5C;
+            --rosewood-light: #853A73;
+            --rosewood-soft: #F4EBF2;
+            --gold: #C9A227;
+            --gold-light: #F9F3E3;
+            --bg-start: #FAF7F5;
+            --bg-end: #F5EEEB;
+            --text-main: #2D262B;
+            --text-muted: #6E656B;
+            --border-color: #E6DDD8;
+            --white: #FFFFFF;
+            --shadow-sm: 0 2px 8px rgba(107, 45, 92, 0.06);
+            --shadow-md: 0 4px 16px rgba(107, 45, 92, 0.1);
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: var(--white);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .brand {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--rosewood);
+        }
+
+        .brand i {
+            font-size: 1.5rem;
+            color: var(--gold);
+        }
+
+        .brand h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--rosewood);
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 1rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.925rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item:hover {
+            background: var(--rosewood-soft);
+            color: var(--rosewood);
+        }
+
+        .nav-item.active {
+            background: var(--rosewood);
+            color: var(--white);
+        }
+
+        .nav-item.active i {
+            color: var(--gold);
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: sticky;
+            top: 0;
+            background: var(--white);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 1.25rem;
+            z-index: 90;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .mobile-title {
+            font-weight: 700;
+            color: var(--rosewood);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--rosewood);
+            cursor: pointer;
+            padding: 0.25rem;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(45, 38, 43, 0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2.5rem 1.5rem;
+            max-width: 850px;
+            width: 100%;
+            margin-right: auto;
+            margin-left: calc(260px + max(0px, (100% - 260px - 850px) / 2));
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* Component Styles */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid rgba(230, 221, 216, 0.6);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            color: var(--rosewood);
+            font-weight: 700;
+            margin-bottom: 0.35rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .card-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: var(--white);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--rosewood);
+            box-shadow: 0 0 0 3px rgba(107, 45, 92, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        /* Options Grids & Inputs */
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .option-btn {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--white);
+            font-size: 0.95rem;
+        }
+
+        .option-btn:hover {
+            border-color: var(--rosewood);
+            background: var(--rosewood-soft);
+        }
+
+        .option-btn input {
+            margin-right: 0.75rem;
+            accent-color: var(--rosewood);
+        }
+
+        /* Grid Tasks (Tool 2) */
+        .task-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .task-card {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            background: #FCFAFA;
+        }
+
+        .task-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--rosewood);
+            margin-bottom: 0.5rem;
+        }
+
+        .task-options {
+            display: flex;
+            gap: 0.25rem;
+            background: #EFEBE9;
+            padding: 0.25rem;
+            border-radius: 0.375rem;
+        }
+
+        .task-opt {
+            flex: 1;
+            text-align: center;
+            padding: 0.35rem 0.2rem;
+            font-size: 0.75rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            user-select: none;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.15s ease;
+        }
+
+        .task-opt.selected {
+            background: var(--rosewood);
+            color: var(--white);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: var(--rosewood);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--rosewood-light);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--gold-light);
+            color: #8C6F12;
+            border: 1px solid rgba(201, 162, 39, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #F4EAD2;
+            color: #735B0E;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            background: #F0ECE9;
+            color: var(--text-main);
+        }
+
+        /* Results / Output Sections */
+        .results-section {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px dashed var(--border-color);
+            animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-badge-container {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            background: var(--rosewood-soft);
+            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-lg);
+            margin-bottom: 1.5rem;
+        }
+
+        .score-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--rosewood);
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 700;
+            flex-shrink: 0;
+            box-shadow: 0 0 0 4px rgba(107, 45, 92, 0.15);
+        }
+
+        .score-meta h4 {
+            color: var(--rosewood);
+            font-size: 1.1rem;
+            margin-bottom: 0.15rem;
+        }
+
+        .score-meta p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .result-box {
+            background: #FAF8F6;
+            border-left: 4px solid var(--rosewood);
+            padding: 1.25rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-bottom: 1.25rem;
+        }
+
+        .result-box.gold {
+            border-left-color: var(--gold);
+            background: #FCFAEF;
+        }
+
+        .result-title {
+            font-weight: 700;
+            color: var(--rosewood);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .result-title.gold {
+            color: #8C6F12;
+        }
+
+        .result-content ul {
+            padding-left: 1.25rem;
+            margin-top: 0.5rem;
+        }
+
+        .result-content li {
+            margin-bottom: 0.35rem;
+        }
+
+        /* Script Box & Copy */
+        .script-box {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            position: relative;
+            font-style: italic;
+            color: #4A4046;
+            margin-top: 0.5rem;
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.35rem 0.65rem;
+            font-size: 0.75rem;
+            background: var(--rosewood-soft);
+            color: var(--rosewood);
+            border: none;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .btn-copy:hover {
+            background: var(--rosewood);
+            color: var(--white);
+        }
+
+        /* Percentage Bar */
+        .progress-split {
+            height: 24px;
+            width: 100%;
+            background: #EFEBE9;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            margin: 1rem 0;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .split-segment {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: width 0.5s ease;
+        }
+
+        .segment-you { background: var(--rosewood); }
+        .segment-partner { background: var(--gold); }
+        .segment-shared { background: #8E7C93; }
+
+        .split-legend {
+            display: flex;
+            gap: 1.25rem;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        /* History Section */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .history-list {
+            display: none;
+            margin-top: 0.75rem;
+            gap: 0.75rem;
+            flex-direction: column;
+        }
+
+        .history-list.open {
+            display: flex;
+        }
+
+        .history-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-meta {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .dash-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            border: 1px solid rgba(230, 221, 216, 0.8);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--rosewood);
+        }
+
+        .dash-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: var(--rosewood-soft);
+            color: var(--rosewood);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .dash-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--rosewood);
+        }
+
+        .dash-desc {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Footer Disclaimer */
+        .app-footer {
+            margin-top: auto;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--rosewood);
+            color: var(--white);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 7-Day Journey UI Styles */
+        .day-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .day-card {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        .day-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: #FCFAFA;
+            user-select: none;
+        }
+
+        .day-header:hover {
+            background: var(--rosewood-soft);
+        }
+
+        .day-title-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .day-badge {
+            background: var(--rosewood);
+            color: var(--white);
+            font-weight: 700;
+            font-size: 0.8rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+        }
+
+        .day-body {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border-color);
+            display: none;
+            background: var(--white);
+        }
+
+        .day-card.open .day-body {
+            display: block;
+        }
+
+        .day-status {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .day-status.completed {
+            color: #2E7D32;
+        }
+
+        /* Next Step & Upsell Callouts */
+        .next-step-box {
+            background: linear-gradient(135deg, var(--rosewood-soft) 0%, #E8D5E3 100%);
+            border: 1px solid var(--rosewood-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin-top: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .next-step-title {
+            font-weight: 700;
+            color: var(--rosewood);
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 900px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .main-content {
+                margin-left: 0;
+                margin-right: 0;
+                padding: 1.25rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Seluler -->
+    <header class="mobile-header">
+        <div class="mobile-title">
+            <i class="fa-solid fa-compass"></i> RECONNECT™
+        </div>
+        <button class="menu-toggle" id="menuToggle" aria-label="Buka/tutup navigasi">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Navigasi Bilah Samping -->
+        <aside class="sidebar" id="sidebar">
+            <div class="brand">
+                <i class="fa-solid fa-compass"></i>
+                <h1>RECONNECT™</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a class="nav-item active" data-tool="dashboard"><i class="fa-solid fa-house"></i> Beranda</a></li>
+                <li><a class="nav-item" data-tool="startHere"><i class="fa-solid fa-shield-halved"></i> Mulai Di Sini / Keamanan</a></li>
+                <li><a class="nav-item" data-tool="tool1"><i class="fa-solid fa-couch"></i> Penataan Ulang Teman Sekamar</a></li>
+                <li><a class="nav-item" data-tool="tool2"><i class="fa-solid fa-scale-balanced"></i> Penataan Ulang Beban Mental</a></li>
+                <li><a class="nav-item" data-tool="tool3"><i class="fa-solid fa-fire"></i> Penataan Ulang Intimasi</a></li>
+                <li><a class="nav-item" data-tool="tool4"><i class="fa-solid fa-hand-holding-heart"></i> Penataan Ulang Apresiasi</a></li>
+                <li><a class="nav-item" data-tool="tool5"><i class="fa-solid fa-code-fork"></i> Persimpangan Jalan</a></li>
+                <li><a class="nav-item" data-tool="journey"><i class="fa-solid fa-calendar-week"></i> Penataan Ulang 7 Hari</a></li>
+                <li><a class="nav-item" data-tool="plan"><i class="fa-solid fa-clipboard-check"></i> Rencana Reconnect Saya</a></li>
+                <li><a class="nav-item" data-tool="history"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya</a></li>
+            </ul>
+        </aside>
+
+        <!-- Area Konten Utama -->
+        <main class="main-content" id="mainContent">
+            
+            <!-- TAMPILAN BERANDA / DASHBOARD -->
+            <section id="dashboardView" class="view-panel">
+                <div class="card" style="background: linear-gradient(135deg, var(--rosewood) 0%, #4A1E40 100%); color: white;">
+                    <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem; color: #FFF;">Anda Mungkin Masih Saling Mencintai.</h2>
+                    <p style="font-size: 1.1rem; opacity: 0.95; font-weight: 400; margin-bottom: 0.75rem;">Mungkin Anda Hanya Kurang Terbiasa untuk Merasa Dekat.</p>
+                    <p style="font-size: 0.925rem; opacity: 0.85; font-weight: 300; line-height: 1.5;">Reconnect adalah panduan refleksi pribadi untuk pasangan yang ingin memahami apa yang menciptakan jarak—dan mengambil satu langkah realistis untuk mengubahnya.</p>
+                </div>
+
+                <div style="margin-top: 1rem; margin-bottom: 0.5rem;">
+                    <h3 style="font-size: 1.15rem; color: var(--rosewood); font-weight: 700;">APA YANG SEDANG TERJADI SAAT INI?</h3>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTool('tool1')">
+                        <div class="dash-icon"><i class="fa-solid fa-couch"></i></div>
+                        <div class="dash-title">❤️ Kami merasa seperti teman sekamar.</div>
+                        <div class="dash-desc">Evaluasi jarak, kebiasaan yang memudar, dan periksa apakah percikan romantis masih ada.</div>
+                        <div style="margin-top:auto; font-weight:600; font-size:0.85rem; color:var(--rosewood);">Mulai Reset Teman Sekamar &rarr;</div>
+                    </div>
+                    <div class="dash-card" onclick="switchTool('tool2')">
+                        <div class="dash-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <div class="dash-title">⚖️ Kami saling jengkel soal pembagian tugas.</div>
+                        <div class="dash-desc">Petakan pekerjaan rumah, ungkap beban tak terlihat, dan hentikan saling menghitung tugas.</div>
+                        <div style="margin-top:auto; font-weight:600; font-size:0.85rem; color:var(--rosewood);">Mulai Reset Beban Mental &rarr;</div>
+                    </div>
+                    <div class="dash-card" onclick="switchTool('tool3')">
+                        <div class="dash-icon"><i class="fa-solid fa-fire"></i></div>
+                        <div class="dash-title">🔥 Kami kehilangan kedekatan fisik.</div>
+                        <div class="dash-desc">Pahami jarak fisik dan bangun jalan kembali yang aman dan bebas tekanan.</div>
+                        <div style="margin-top:auto; font-weight:600; font-size:0.85rem; color:var(--rosewood);">Mulai Reset Intimasi &rarr;</div>
+                    </div>
+                    <div class="dash-card" onclick="switchTool('tool4')">
+                        <div class="dash-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        <div class="dash-title">💛 Kami menganggap satu sama lain biasa saja.</div>
+                        <div class="dash-desc">Hentikan perasaan tidak dihargai dan bangun kembali rasa terima kasih yang tulus.</div>
+                        <div style="margin-top:auto; font-weight:600; font-size:0.85rem; color:var(--rosewood);">Mulai Reset Apresiasi &rarr;</div>
+                    </div>
+                    <div class="dash-card" onclick="switchTool('tool5')">
+                        <div class="dash-icon"><i class="fa-solid fa-code-fork"></i></div>
+                        <div class="dash-title">🛤️ Saya tidak tahu apa yang harus dilakukan selanjutnya.</div>
+                        <div class="dash-desc">Perjelas apakah ingin berkomitmen memperbaiki atau memilih berpisah secara baik-baik.</div>
+                        <div style="margin-top:auto; font-weight:600; font-size:0.85rem; color:var(--rosewood);">Mulai Persimpangan Jalan &rarr;</div>
+                    </div>
+                    <div class="dash-card" style="background: var(--gold-light); border-color: rgba(201, 162, 39, 0.4);" onclick="switchTool('journey')">
+                        <div class="dash-icon" style="background: var(--gold); color: white;"><i class="fa-solid fa-calendar-week"></i></div>
+                        <div class="dash-title" style="color: #735B0E;">Bingung Harus Mulai dari Mana?</div>
+                        <div class="dash-desc" style="color: #5C480B;">Panduan langkah demi langkah 7 hari untuk terhubung kembali melalui lima modul utama.</div>
+                        <div style="margin-top:auto; font-weight:700; font-size:0.85rem; color:#735B0E;">Mulai Penataan Ulang 7 Hari &rarr;</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAMPILAN MULAI DI SINI / PRIVASI & KEAMANAN -->
+            <section id="startHereView" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-shield-halved"></i> Mulai Di Sini / Privasi & Keamanan</div>
+                        <div class="card-subtitle">Konteks penting sebelum memulai perjalanan refleksi hubungan Anda.</div>
+                    </div>
+
+                    <div class="result-box gold">
+                        <div class="result-title gold"><i class="fa-solid fa-lock"></i> Dirancang Privat</div>
+                        <div class="result-content">
+                            Hasil refleksi Anda dirancang untuk tetap berada di perangkat Anda. Reconnect adalah alat refleksi mandiri, bukan layanan klinis. Semua entri, perhitungan, dan riwayat disimpan sepenuhnya di dalam penyimpanan lokal browser Anda dan tidak pernah dikirimkan ke server eksternal.
+                        </div>
+                    </div>
+
+                    <div class="result-box">
+                        <div class="result-title"><i class="fa-solid fa-heart-pulse"></i> Alat Refleksi Non-Klinis</div>
+                        <div class="result-content">
+                            <strong>Penting:</strong> Reconnect adalah alat refleksi dan komunikasi mandiri. Ini bukan terapi, diagnosis, intervensi krisis, atau pengganti penanganan profesional medis/psikologis.
+                        </div>
+                    </div>
+
+                    <div class="result-box" style="border-left-color: #B00020; background: #FFF5F5;">
+                        <div class="result-title" style="color: #B00020;"><i class="fa-solid fa-triangle-exclamation"></i> Pemberitahuan Keamanan</div>
+                        <div class="result-content">
+                            Jika hubungan Anda melibatkan kekerasan, ancaman, kontrol paksa, kecanduan berat, bahaya langsung, atau situasi lain di mana konfrontasi langsung dapat membahayakan seseorang, jangan jadikan latihan ini sebagai sumber bantuan utama. Utamakan keselamatan dan segera cari bantuan profesional atau layanan darurat lokal.
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-primary" onclick="switchTool('dashboard')"><i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODUL 1: TEMAN SEKAMAR -->
+            <section id="tool1View" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-couch"></i> PENATAAN ULANG TEMAN SEKAMAR</div>
+                        <div class="card-subtitle">Ketika hubungan masih berjalan—tetapi ikatan batin tidak lagi terasa sama.</div>
+                    </div>
+
+                    <form id="formTool1">
+                        <div class="form-group">
+                            <label class="form-label">Kapan terakhir kali Anda mendiskusikan hal mendalam (bukan soal urusan rumah, tagihan, atau jadwal)?</label>
+                            <select class="form-select" id="t1_conv">
+                                <option value="today">Hari ini</option>
+                                <option value="week">Minggu ini</option>
+                                <option value="2-4weeks">2-4 minggu lalu</option>
+                                <option value="1-3months">1-3 bulan lalu</option>
+                                <option value="cant_remember">Saya tidak ingat</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Bagaimana Anda menghabiskan sebagian besar malam?</label>
+                            <select class="form-select" id="t1_evenings">
+                                <option value="together_active">Bersama melakukan kegiatan bermakna</option>
+                                <option value="together_phones">Bersama tapi sibuk dengan ponsel/layar masing-masing</option>
+                                <option value="rarely_same_room">Jarang berada di ruangan yang sama</option>
+                                <option value="opposite_schedules">Jadwal kami bertolak belakang</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Kapan terakhir kali Anda tertawa bersama?</label>
+                            <select class="form-select" id="t1_laugh">
+                                <option value="recently">Baru-baru ini (beberapa hari terakhir)</option>
+                                <option value="weeks">Beberapa minggu lalu</option>
+                                <option value="months">Beberapa bulan lalu</option>
+                                <option value="cant_remember">Saya tidak ingat</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Sentuhan non-seksual (pelukan, bergandengan tangan, duduk berdekatan):</label>
+                            <select class="form-select" id="t1_touch">
+                                <option value="daily">Setiap hari</option>
+                                <option value="weekly">Seminggu sekali</option>
+                                <option value="rarely">Jarang</option>
+                                <option value="never">Tidak pernah</option>
+                                <option value="forced">Terasa canggung atau dipaksakan</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apakah Anda masih merasa tertarik kepadanya?</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t1_attract" value="yes" checked> Ya</label>
+                                <label class="option-btn"><input type="radio" name="t1_attract" value="sometimes"> Kadang-kadang</label>
+                                <label class="option-btn"><input type="radio" name="t1_attract" value="rarely"> Jarang</label>
+                                <label class="option-btn"><input type="radio" name="t1_attract" value="no"> Tidak</label>
+                                <label class="option-btn"><input type="radio" name="t1_attract" value="not_sure"> Saya tidak yakin</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Saat membayangkan hidup Anda 5 tahun ke depan bersamanya, Anda merasa:</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t1_future" value="hopeful" checked> Berharapan</label>
+                                <label class="option-btn"><input type="radio" name="t1_future" value="tired"> Lelah</label>
+                                <label class="option-btn"><input type="radio" name="t1_future" value="anxious"> Cemas</label>
+                                <label class="option-btn"><input type="radio" name="t1_future" value="empty"> Hampa</label>
+                                <label class="option-btn"><input type="radio" name="t1_future" value="cant_picture"> Tidak bisa membayangkannya</label>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-solid fa-chart-line"></i> Buat Ringkasan Koneksi</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                        </div>
+                    </form>
+
+                    <div id="t1_results" class="results-section" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 2: BEBAN MENTAL -->
+            <section id="tool2View" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-scale-balanced"></i> PENATAAN ULANG BEBAN MENTAL</div>
+                        <div class="card-subtitle">Berhenti berdebat soal tugas rumah. Mulai pahami pembagian tanggung jawab.</div>
+                    </div>
+
+                    <form id="formTool2">
+                        <label class="form-label">Pilih siapa yang menangani setiap tanggung jawab rumah tangga:</label>
+                        <div class="task-grid" id="t2_tasks">
+                            <!-- Tugas dimuat melalui JavaScript -->
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Kekesalan terbesar mengenai pekerjaan rumah tangga:</label>
+                            <textarea class="form-control" id="t2_resentment" placeholder="contoh: Saya merasa seperti pengatur utama seluruh urusan rumah tangga kami sendirian..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apakah Anda pernah membicarakannya secara langsung?</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t2_discussed" value="resolved" checked> Ya, dan masalah terselesaikan</label>
+                                <label class="option-btn"><input type="radio" name="t2_discussed" value="unresolved"> Ya, tetapi berujung pertengkaran / belum selesai</label>
+                                <label class="option-btn"><input type="radio" name="t2_discussed" value="hint"> Tidak, saya hanya memberi kode/sindiran halus</label>
+                                <label class="option-btn"><input type="radio" name="t2_discussed" value="just_do"> Tidak, saya memendamnya dan mengerjakannya sendiri</label>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-solid fa-chart-pie"></i> Petakan Beban Rumah Tangga</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                        </div>
+                    </form>
+
+                    <div id="t2_results" class="results-section" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 3: INTIMASI -->
+            <section id="tool3View" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-fire"></i> PENATAAN ULANG INTIMASI</div>
+                        <div class="card-subtitle">Saat Anda merindukan kedekatan—tetapi bingung bagaimana memulainya kembali.</div>
+                    </div>
+
+                    <form id="formTool3">
+                        <div class="form-group">
+                            <label class="form-label">Momen intim terakhir (kedekatan fisik atau ikatan emosional yang mendalam):</label>
+                            <select class="form-select" id="t3_last">
+                                <option value="<1week">&lt; 1 minggu lalu</option>
+                                <option value="1-4weeks">1-4 minggu lalu</option>
+                                <option value="1-3months">1-3 bulan lalu</option>
+                                <option value="3-6months">3-6 bulan lalu</option>
+                                <option value="6-12months">6-12 bulan lalu</option>
+                                <option value="1yr+">1+ tahun lalu</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apa yang menghalangi atau menjadi penghambat? (Pilih semua yang sesuai):</label>
+                            <div class="checkbox-group">
+                                <label class="option-btn"><input type="checkbox" value="Stres" class="t3_reasons"> Stres berkepanjangan / Tekanan pekerjaan</label>
+                                <label class="option-btn"><input type="checkbox" value="Kelelahan" class="t3_reasons"> Kelelahan fisik / Mengurus anak</label>
+                                <label class="option-btn"><input type="radio" value="Kekesalan" class="t3_reasons"> Kekesalan yang terpendam / Dendam</label>
+                                <label class="option-btn"><input type="checkbox" value="Kurang gairah" class="t3_reasons"> Keinginan fisik rendah atau tidak sejalan</label>
+                                <label class="option-btn"><input type="checkbox" value="Merasa jauh" class="t3_reasons"> Merasa jauh secara emosional</label>
+                                <label class="option-btn"><input type="checkbox" value="Kecanggungan tubuh" class="t3_reasons"> Rasa tidak percaya diri dengan bentuk tubuh</label>
+                                <label class="option-btn"><input type="checkbox" value="Kesehatan" class="t3_reasons"> Masalah kesehatan fisik / medis</label>
+                                <label class="option-btn"><input type="checkbox" value="Terasa canggung" class="t3_reasons"> Kami pernah mencoba baru-baru ini dan terasa canggung/dipaksakan</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apakah Anda ingin terhubung kembali secara fisik?</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t3_want" value="yes_deeply" checked> Ya, sangat ingin</label>
+                                <label class="option-btn"><input type="radio" name="t3_want" value="yes_scared"> Ya, tapi saya ragu / takut</label>
+                                <label class="option-btn"><input type="radio" name="t3_want" value="not_now"> Belum untuk saat ini</label>
+                                <label class="option-btn"><input type="radio" name="t3_want" value="not_sure"> Saya tidak yakin</label>
+                                <label class="option-btn"><input type="radio" name="t3_want" value="no"> Tidak</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apa yang Anda takuti jika Anda mencoba memulainya duluan?</label>
+                            <textarea class="form-control" id="t3_afraid" placeholder="contoh: Saya takut ditolak atau membuat pasangan merasa tertekan..."></textarea>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-solid fa-heart-circle-bolt"></i> Bangun Jembatan Intimasi</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                        </div>
+                    </form>
+
+                    <div id="t3_results" class="results-section" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 4: APRESIASI -->
+            <section id="tool4View" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-hand-holding-heart"></i> PENATAAN ULANG APRESIASI</div>
+                        <div class="card-subtitle">Karena hal-hal yang menjaga hubungan tetap berjalan bisa menjadi tak terlihat.</div>
+                    </div>
+
+                    <form id="formTool4">
+                        <div class="form-group">
+                            <label class="form-label">Kapan terakhir kali Anda merasa benar-benar dihargai olehnya?</label>
+                            <textarea class="form-control" id="t4_felt" placeholder="Kapan itu terjadi, dan apa yang dikatakan atau dilakukannya?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Kapan terakhir kali Anda menunjukkan apresiasi tulus kepadanya?</label>
+                            <textarea class="form-control" id="t4_expressed" placeholder="Kapan itu terjadi, dan bagaimana Anda menunjukkannya?"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apa yang ia lakukan untuk rumah tangga yang jarang Anda akui/puji?</label>
+                            <textarea class="form-control" id="t4_rarely_ack" placeholder="contoh: Mengelola keuangan, merawat kendaraan, memastikan rumah rapi..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apa usaha Anda yang Anda harapkan mereka sadari?</label>
+                            <textarea class="form-control" id="t4_wish_noticed" placeholder="contoh: Berapa banyak energi mental untuk merencanakan menu makanan dan menjaga suasana tetap tenang..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Jika ia tidak ada lagi besok, apa yang paling Anda rindukan?</label>
+                            <textarea class="form-control" id="t4_miss" placeholder="contoh: Selera humornya, rasa aman saat berada di dekatnya..."></textarea>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-solid fa-sparkles"></i> Buat Rencana Apresiasi</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                        </div>
+                    </form>
+
+                    <div id="t4_results" class="results-section" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 5: PERSIMPANGAN JALAN -->
+            <section id="tool5View" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-code-fork"></i> PERSIMPANGAN JALAN</div>
+                        <div class="card-subtitle">Sebelum menentukan masa depan hubungan, perjelas dahulu apa yang sebenarnya perlu diubah.</div>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1.25rem; font-style:italic;">
+                        Catatan: Alat ini tidak mengambil keputusan untuk Anda. Ini membantu memperjelas posisi, kebutuhan, batasan, serta usaha perbaikan yang diperlukan.
+                    </p>
+
+                    <form id="formTool5">
+                        <div class="form-group">
+                            <label class="form-label">Berapa lama Anda merasa renggang/tidak terhubung?</label>
+                            <select class="form-select" id="t5_duration">
+                                <option value="<6mo">&lt; 6 bulan</option>
+                                <option value="6mo-1yr">6 bulan - 1 tahun</option>
+                                <option value="1-2yr">1 - 2 tahun</option>
+                                <option value="2-5yr">2 - 5 tahun</option>
+                                <option value="5yr+">5+ tahun</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apa saja yang sudah Anda upayakan untuk memperbaikinya?</label>
+                            <textarea class="form-control" id="t5_tried" placeholder="contoh: Konseling pernikahan selama 3 bulan, mencoba kencan tapi gagal, diam dan bersabar..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apa yang harus berubah agar Anda ingin bertahan?</label>
+                            <textarea class="form-control" id="t5_needed" placeholder="contoh: Keterlibatan emosional aktif, usaha tulus pada intimasi, tanggung jawab yang seimbang..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apakah ada ancaman keselamatan atau masalah berat? (kekerasan, kecanduan aktif, kebohongan kronis, dll.)</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t5_dealbreaker" value="yes"> Ya</label>
+                                <label class="option-btn"><input type="radio" name="t5_dealbreaker" value="no" checked> Tidak</label>
+                                <label class="option-btn"><input type="radio" name="t5_dealbreaker" value="not_sure"> Saya tidak yakin</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Apakah Anda masih mencintainya?</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t5_love" value="deeply" checked> Sangat mencintai</label>
+                                <label class="option-btn"><input type="radio" name="t5_love" value="friend"> Sebagai teman / pendamping hidup</label>
+                                <label class="option-btn"><input type="radio" name="t5_love" value="sometimes"> Kadang-kadang</label>
+                                <label class="option-btn"><input type="radio" name="t5_love" value="rarely"> Jarang</label>
+                                <label class="option-btn"><input type="radio" name="t5_love" value="no"> Tidak</label>
+                                <label class="option-btn"><input type="radio" name="t5_love" value="dont_know"> Saya tidak tahu</label>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Mana yang lebih menakutkan bagi Anda: bertahan dalam kondisi saat ini, atau berpisah?</label>
+                            <div class="radio-group">
+                                <label class="option-btn"><input type="radio" name="t5_scared" value="staying" checked> Bertahan seperti ini selamanya</label>
+                                <label class="option-btn"><input type="radio" name="t5_scared" value="leaving"> Pergi dan memulai dari awal</label>
+                                <label class="option-btn"><input type="radio" name="t5_scared" value="both"> Kedua pilihan sama-sama menakutkan</label>
+                            </div>
+                        </div>
+
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-solid fa-compass"></i> Petakan Kejelasan Keputusan</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                        </div>
+                    </form>
+
+                    <div id="t5_results" class="results-section" style="display:none;"></div>
+                </div>
+            </section>
+
+            <!-- TAMPILAN PERJALANAN 7 HARI -->
+            <section id="journeyView" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-calendar-week"></i> Penataan Ulang 7 Hari</div>
+                        <div class="card-subtitle">Panduan terstruktur selama 7 hari dari pemahaman masalah hingga tindakan nyata.</div>
+                    </div>
+
+                    <p style="font-size:0.95rem; color:var(--text-main);">
+                        Selesaikan modul refleksi setiap hari secara berurutan. Setelah selesai, Rencana Reconnect pribadi Anda akan dibuat secara otomatis.
+                    </p>
+
+                    <div class="day-accordion">
+                        <div class="day-card" id="day1Card">
+                            <div class="day-header" onclick="toggleDay('day1Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge">Hari 1</span>
+                                    <strong>Di Mana Posisi Kita Saat Ini?</strong>
+                                </div>
+                                <span class="day-status" id="day1Status"><i class="fa-regular fa-circle"></i> Reset Teman Sekamar</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Evaluasi jarak, kebiasaan yang memudar, dan frekuensi emosional.</p>
+                                <button class="btn btn-primary" onclick="switchTool('tool1')">Selesaikan Hari 1: Reset Teman Sekamar &rarr;</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card" id="day2Card">
+                            <div class="day-header" onclick="toggleDay('day2Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge">Hari 2</span>
+                                    <strong>Apa yang Memicu Kekesalan?</strong>
+                                </div>
+                                <span class="day-status" id="day2Status"><i class="fa-regular fa-circle"></i> Reset Beban Mental</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Periksa pekerjaan rumah tangga, beban tak terlihat, dan pembagian tanggung jawab.</p>
+                                <button class="btn btn-primary" onclick="switchTool('tool2')">Selesaikan Hari 2: Reset Beban Mental &rarr;</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card" id="day3Card">
+                            <div class="day-header" onclick="toggleDay('day3Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge">Hari 3</span>
+                                    <strong>Apa yang Luput dari Perhatian Kita?</strong>
+                                </div>
+                                <span class="day-status" id="day3Status"><i class="fa-regular fa-circle"></i> Reset Apresiasi</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Ungkap kontribusi tersembunyi, hal yang sering terabaikan, dan tunjukkan rasa terima kasih.</p>
+                                <button class="btn btn-primary" onclick="switchTool('tool4')">Selesaikan Hari 3: Reset Apresiasi &rarr;</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card" id="day4Card">
+                            <div class="day-header" onclick="toggleDay('day4Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge">Hari 4</span>
+                                    <strong>Bisakah Kita Merasa Dekat Tanpa Tekanan?</strong>
+                                </div>
+                                <span class="day-status" id="day4Status"><i class="fa-regular fa-circle"></i> Reset Intimasi</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Atasi jarak fisik, hilangkan tekanan ekspektasi, dan bangun rasa aman.</p>
+                                <button class="btn btn-primary" onclick="switchTool('tool3')">Selesaikan Hari 4: Reset Intimasi &rarr;</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card" id="day5Card">
+                            <div class="day-header" onclick="toggleDay('day5Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge">Hari 5</span>
+                                    <strong>Apa yang Perlu Diubah?</strong>
+                                </div>
+                                <span class="day-status" id="day5Status"><i class="fa-regular fa-circle"></i> Persimpangan Jalan</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Perjelas kebutuhan perbaikan, tetapkan batasan, dan tentukan hal yang tidak bisa ditawar.</p>
+                                <button class="btn btn-primary" onclick="switchTool('tool5')">Selesaikan Hari 5: Persimpangan Jalan &rarr;</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card" id="day6Card">
+                            <div class="day-header" onclick="toggleDay('day6Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge" style="background:var(--gold); color:#2D262B;">Hari 6</span>
+                                    <strong>Percakapan Reoneksi</strong>
+                                </div>
+                                <span class="day-status" id="day6Status"><i class="fa-regular fa-comments"></i> Pembuat Naskah</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Rangkum hasil refleksi sebelumnya menjadi naskah percakapan yang jelas dan terbuka.</p>
+                                <button class="btn btn-secondary" onclick="generateDay6Script()"><i class="fa-solid fa-wand-magic-sparkles"></i> Buat Naskah Percakapan</button>
+                                <div id="day6Output" style="margin-top:1rem;"></div>
+                            </div>
+                        </div>
+
+                        <div class="day-card" id="day7Card">
+                            <div class="day-header" onclick="toggleDay('day7Card')">
+                                <div class="day-title-group">
+                                    <span class="day-badge" style="background:var(--gold); color:#2D262B;">Hari 7</span>
+                                    <strong>30 HARI KE DEPAN KITA</strong>
+                                </div>
+                                <span class="day-status" id="day7Status"><i class="fa-solid fa-flag-checkered"></i> Rencana 30 Hari</span>
+                            </div>
+                            <div class="day-body">
+                                <p style="font-size:0.9rem; margin-bottom:1rem;">Tetapkan kebiasaan koneksi utama yang akan dijalankan selama sebulan ke depan.</p>
+                                <button class="btn btn-primary" onclick="switchTool('plan')"><i class="fa-solid fa-clipboard-check"></i> Lihat Rencana Lengkap</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAMPILAN RENCANA RECONNECT SAYA -->
+            <section id="planView" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> RENCANA RECONNECT SAYA</div>
+                        <div class="card-subtitle">Rangkuman pemahaman dan panduan praktis berdasarkan refleksi Anda.</div>
+                    </div>
+
+                    <div id="planContainer">
+                        <!-- Dimuat melalui JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAMPILAN RIWAYAT SAYA -->
+            <section id="historyView" class="view-panel" style="display: none;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Refleksi Saya</div>
+                        <div class="card-subtitle">Semua hasil refleksi tersimpan secara privat di perangkat Anda.</div>
+                    </div>
+
+                    <div id="historyMasterContainer">
+                        <!-- Dimuat melalui JavaScript -->
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Notifikasi Toast -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-check-circle"></i> <span id="toastText">Berhasil disalin ke papan klip!</span>
+    </div>
+
+    <!-- Footer Penafian Universal -->
+    <footer class="app-footer">
+        <div style="max-width: 800px; margin: 0 auto;">
+            <strong>Penting:</strong> Reconnect adalah alat refleksi dan komunikasi mandiri. Ini bukan terapi, diagnosis, intervensi krisis, atau pengganti penanganan profesional medis/psikologis.
+            <br>
+            Jika hubungan Anda melibatkan kekerasan, ancaman, kontrol paksa, kecanduan berat, bahaya langsung, atau situasi lain di mana konfrontasi langsung dapat membahayakan seseorang, jangan jadikan latihan ini sebagai sumber bantuan utama. Utamakan keselamatan dan segera cari bantuan profesional yang tepat.
+        </div>
+    </footer>
+
+    <script>
+        /* --- DAFTAR TUGAS RUMAH TANGGA UNTUK MODUL 2 --- */
+        const CHORE_TASKS = [
+            "Memasak & Menyiapkan Makanan",
+            "Menyapu, Mempel & Membersihkan Rumah",
+            "Mencuci & Melipat Pakaian",
+            "Belanja Kebutuhan Pokok",
+            "Membayar Tagihan & Keuangan",
+            "Mengatur Jadwal Janji Temu",
+            "Perbaikan & Perawatan Rumah",
+            "Rencana Sosial & Kencan",
+            "Perawatan Kendaraan",
+            "Saling Bertanya Kabar Pasangan",
+            "Membeli Hadiah / Kencan",
+            "Mengurus Anak (jika ada)"
+        ];
+
+        /* --- INISIALISASI DOM --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            renderChoreGrid();
+            refreshAllUI();
+        });
+
+        function refreshAllUI() {
+            updateJourneyStatusUI();
+            renderMasterHistory();
+            renderReconnectPlan();
+        }
+
+        /* --- LOGIKA NAVIGASI & BILAH SAMPING --- */
+        function setupNavigation() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const navItems = document.querySelectorAll('.nav-item');
+
+            function toggleSidebar() {
+                sidebar.classList.toggle('active');
+                overlay.classList.toggle('active');
+            }
+
+            menuToggle.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', toggleSidebar);
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const toolId = item.getAttribute('data-tool');
+                    switchTool(toolId);
+                    if (window.innerWidth <= 900) {
+                        toggleSidebar();
+                    }
+                });
+            });
+        }
+
+        function switchTool(toolId) {
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('data-tool') === toolId);
+            });
+
+            document.querySelectorAll('.view-panel').forEach(panel => {
+                panel.style.display = 'none';
+            });
+
+            if (toolId === 'dashboard') {
+                document.getElementById('dashboardView').style.display = 'block';
+            } else {
+                const target = document.getElementById(toolId + 'View');
+                if (target) target.style.display = 'block';
+            }
+
+            refreshAllUI();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* --- TAMPILKAN GRID TUGAS (MODUL 2) --- */
+        function renderChoreGrid() {
+            const container = document.getElementById('t2_tasks');
+            if(!container) return;
+            container.innerHTML = '';
+            
+            CHORE_TASKS.forEach((task, index) => {
+                const card = document.createElement('div');
+                card.className = 'task-card';
+                card.innerHTML = `
+                    <div class="task-title">${task}</div>
+                    <div class="task-options" data-task-idx="${index}">
+                        <div class="task-opt selected" onclick="selectChoreOpt(this, 'Saya')">Saya</div>
+                        <div class="task-opt" onclick="selectChoreOpt(this, 'Pasangan')">Pasangan</div>
+                        <div class="task-opt" onclick="selectChoreOpt(this, 'Bersama')">Bersama</div>
+                        <div class="task-opt" onclick="selectChoreOpt(this, 'Tidak Ada')">Tidak Ada</div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function selectChoreOpt(element, value) {
+            const parent = element.parentElement;
+            parent.querySelectorAll('.task-opt').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+
+        /* --- FUNGSI SALIN TEKS KE PAPAN KLIP --- */
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Naskah berhasil disalin ke papan klip!");
+            }).catch(err => {
+                showToast("Gagal menyalin teks.");
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastText').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        /* --- PENGELOLA RIWAYAT LOCAL STORAGE --- */
+        function saveToHistory(toolId, dataSummary, fullData) {
+            const key = `reconnect_history_${toolId}`;
+            let history = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            const entry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric' }),
+                summary: dataSummary,
+                data: fullData
+            };
+
+            history.unshift(entry);
+            if (history.length > 30) history = history.slice(0, 30);
+
+            localStorage.setItem(key, JSON.stringify(history));
+            refreshAllUI();
+        }
+
+        function getLatestHistory(toolId) {
+            const key = `reconnect_history_${toolId}`;
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+            return history.length > 0 ? history[0] : null;
+        }
+
+        function renderMasterHistory() {
+            const container = document.getElementById('historyMasterContainer');
+            if(!container) return;
+
+            const tools = [
+                { id: 'tool1', title: 'Reset Teman Sekamar', icon: 'fa-couch' },
+                { id: 'tool2', title: 'Reset Beban Mental', icon: 'fa-scale-balanced' },
+                { id: 'tool3', title: 'Reset Intimasi', icon: 'fa-fire' },
+                { id: 'tool4', title: 'Reset Apresiasi', icon: 'fa-hand-holding-heart' },
+                { id: 'tool5', title: 'Persimpangan Jalan', icon: 'fa-code-fork' }
+            ];
+
+            let html = '';
+            let totalSaved = 0;
+
+            tools.forEach(t => {
+                const history = JSON.parse(localStorage.getItem(`reconnect_history_${t.id}`) || '[]');
+                if(history.length > 0) {
+                    totalSaved += history.length;
+                    html += `
+                        <div style="margin-bottom: 1.5rem;">
+                            <h4 style="color:var(--rosewood); margin-bottom:0.5rem; display:flex; align-items:center; gap:0.5rem;">
+                                <i class="fa-solid ${t.icon}"></i> ${t.title} (${history.length})
+                            </h4>
+                            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                                ${history.map(item => `
+                                    <div class="history-item">
+                                        <div>
+                                            <strong>${item.summary}</strong>
+                                            <div class="history-meta">${item.date}</div>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            if(totalSaved === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:2rem; color:var(--text-muted);">Belum ada riwayat refleksi. Selesaikan modul apa saja untuk mulai menyimpan riwayat pribadi Anda.</div>`;
+            } else {
+                container.innerHTML = html;
+            }
+        }
+
+        /* --- LOGIKA PERJALANAN 7 HARI --- */
+        function toggleDay(cardId) {
+            const card = document.getElementById(cardId);
+            if (card) card.classList.toggle('open');
+        }
+
+        function updateJourneyStatusUI() {
+            const mappings = [
+                { day: 1, tool: 'tool1', label: 'Reset Teman Sekamar' },
+                { day: 2, tool: 'tool2', label: 'Reset Beban Mental' },
+                { day: 3, tool: 'tool4', label: 'Reset Apresiasi' },
+                { day: 4, tool: 'tool3', label: 'Reset Intimasi' },
+                { day: 5, tool: 'tool5', label: 'Persimpangan Jalan' }
+            ];
+
+            mappings.forEach(m => {
+                const statusEl = document.getElementById(`day${m.day}Status`);
+                const latest = getLatestHistory(m.tool);
+                if (statusEl) {
+                    if (latest) {
+                        statusEl.className = "day-status completed";
+                        statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Selesai (${latest.date})`;
+                    } else {
+                        statusEl.className = "day-status";
+                        statusEl.innerHTML = `<i class="fa-regular fa-circle"></i> ${m.label}`;
+                    }
+                }
+            });
+        }
+
+        function generateDay6Script() {
+            const t1 = getLatestHistory('tool1');
+            const t2 = getLatestHistory('tool2');
+            const t4 = getLatestHistory('tool4');
+
+            let scriptText = `"Aku sempat melakukan refleksi diri tentang hubungan kita, karena aku sayang kamu dan peduli dengan kita. Aku merasa kita terjebak dalam rutinitas dan berubah seperti teman sekamar yang cuma mengurus logistik rumah tangga. Aku sadar aku belum selalu menghargai semua hal yang kamu lakukan untuk rumah kita, dan aku ingin mengubah itu. Boleh kita duduk sebentar akhir pekan ini tanpa HP selama 20 menit untuk mengobrol santai tentang pembagian tugas dan menikmati waktu bersama lagi?"`;
+
+            const html = `
+                <div class="script-box" style="margin-top:1rem;">
+                    ${scriptText}
+                    <button class="btn-copy" onclick="copyText(${JSON.stringify(scriptText)})"><i class="fa-regular fa-copy"></i> Salin Naskah</button>
+                </div>
+            `;
+
+            document.getElementById('day6Output').innerHTML = html;
+            const statusEl = document.getElementById('day6Status');
+            if (statusEl) {
+                statusEl.className = "day-status completed";
+                statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Naskah Berhasil Dibuat`;
+            }
+        }
+
+        /* --- PEMBUAT RENCANA RECONNECT SAYA --- */
+        function renderReconnectPlan() {
+            const container = document.getElementById('planContainer');
+            if(!container) return;
+
+            const t1 = getLatestHistory('tool1');
+            const t2 = getLatestHistory('tool2');
+            const t3 = getLatestHistory('tool3');
+            const t4 = getLatestHistory('tool4');
+            const t5 = getLatestHistory('tool5');
+
+            if (!t1 && !t2 && !t3 && !t4 && !t5) {
+                container.innerHTML = `
+                    <div style="text-align:center; padding:2rem; color:var(--text-muted);">
+                        <i class="fa-solid fa-clipboard-list" style="font-size:2.5rem; margin-bottom:1rem; color:var(--rosewood-soft);"></i>
+                        <p>Rencana Reconnect Anda akan otomatis terisi seiring Anda menyelesaikan modul refleksi.</p>
+                        <button class="btn btn-primary" style="margin-top:1rem;" onclick="switchTool('tool1')">Mulai Modul Pertama (Reset Teman Sekamar)</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let fadedList = t1 ? t1.data.faded : ["Rutinitas komunikasi hanya berfokus pada urusan logistik rumah tangga."];
+            let stillThereList = t1 ? t1.data.stillThere : ["Kenangan bersama, stabilitas rumah tangga, dan kasih sayang mendasar."];
+            
+            let loadInfo = t2 ? `Anda menangani ${t2.data.mePct}% tugas, Pasangan menangani ${t2.data.partnerPct}%.` : "Pemetaan tugas rumah tangga belum diselesaikan.";
+            let intimacyInfo = t3 ? `Koneksi fisik/emosional terakhir: ${t3.data.last}.` : "Evaluasi intimasi belum diselesaikan.";
+
+            const html = `
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-battery-quarter"></i> HAL YANG MEMUDAR</div>
+                    <div class="result-content">
+                        <ul>${fadedList.map(i => `<li>${i}</li>`).join('')}</ul>
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-gem"></i> HAL YANG MASIH ADA</div>
+                    <div class="result-content">
+                        <ul>${stillThereList.map(i => `<li>${i}</li>`).join('')}</ul>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-arrows-spin"></i> POLA TERBESAR ANDA</div>
+                    <div class="result-content">
+                        Efisiensi menggantikan kehangatan. Logistik rumah tangga dan pengelolaan beban mental (${loadInfo}) menggeser momen santai yang spontan dan hangat.
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-comments"></i> PERCAKAPAN TERPENTING ANDA</div>
+                    <div class="result-content">
+                        Ubah cara dari sekadar "meminta bantuan" menjadi <strong>Pemelimpahan Tanggung Jawab Penuh</strong> dalam pengelolaan rumah tangga, serta menetapkan batasan yang jelas untuk menghilangkan ekspektasi performa fisik/seksual.
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-bullseye"></i> LANGKAH PERTAMA ANDA</div>
+                    <div class="result-content">
+                        <strong>Malam Ini:</strong> Duduk bersama selama 10 menit di sofa tanpa ponsel atau pembicaraan soal jadwal. Tunjukkan satu apresiasi yang tulus dan spontan.
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-calendar-week"></i> RENCANA 7 HARI ANDA</div>
+                    <div class="result-content">
+                        <ul>
+                            <li><strong>Hari 1-2:</strong> Latih pengucapan terima kasih secara spesifik setiap hari.</li>
+                            <li><strong>Hari 3-4:</strong> Lakukan sentuhan fisik non-seksual selama 15 detik (pelukan, duduk menempel).</li>
+                            <li><strong>Hari 5-7:</strong> Lakukan Percakapan Rekoneksi selama 20 menit menggunakan naskah yang telah dibuat.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-calendar-days"></i> RENCANA 30 HARI ANDA</div>
+                    <div class="result-content">
+                        <ul>
+                            <li><strong>Satu Tindakan Harian:</strong> Sampaikan satu pujian tulus dan berbeda setiap hari.</li>
+                            <li><strong>Satu Percakapan Mingguan:</strong> Evaluasi pembagian tugas selama 20 menit setiap hari Minggu.</li>
+                            <li><strong>Satu Ritual Koneksi:</strong> Alokasikan 1 jam waktu berkualitas setiap minggu tanpa layar/HP.</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        /* ==========================================================================
+           MODUL 1: RESET TEMAN SEKAMAR (LOGIKA & CONTOH)
+           ========================================================================== */
+        function loadSampleTool1() {
+            document.getElementById('t1_conv').value = '1-3months';
+            document.getElementById('t1_evenings').value = 'together_phones';
+            document.getElementById('t1_laugh').value = 'months';
+            document.getElementById('t1_touch').value = 'rarely';
+            document.querySelector('input[name="t1_attract"][value="sometimes"]').checked = true;
+            document.querySelector('input[name="t1_future"][value="tired"]').checked = true;
+            showToast("Contoh skenario 'Kerenggangan Jangka Panjang' berhasil dimuat.");
+        }
+
+        function analyzeTool1() {
+            const conv = document.getElementById('t1_conv').value;
+            const evenings = document.getElementById('t1_evenings').value;
+            const laugh = document.getElementById('t1_laugh').value;
+            const touch = document.getElementById('t1_touch').value;
+            const attract = document.querySelector('input[name="t1_attract"]:checked').value;
+            const future = document.querySelector('input[name="t1_future"]:checked').value;
+
+            // Hitung Skor (1-10)
+            let score = 10;
+            if (conv === '2-4weeks') score -= 1;
+            if (conv === '1-3months') score -= 2;
+            if (conv === 'cant_remember') score -= 3;
+
+            if (evenings === 'together_phones') score -= 1.5;
+            if (evenings === 'rarely_same_room') score -= 2;
+            if (evenings === 'opposite_schedules') score -= 1.5;
+
+            if (laugh === 'weeks') score -= 1;
+            if (laugh === 'months') score -= 2;
+            if (laugh === 'cant_remember') score -= 2.5;
+
+            if (touch === 'rarely') score -= 1.5;
+            if (touch === 'never') score -= 2.5;
+            if (touch === 'forced') score -= 2;
+
+            if (attract === 'sometimes') score -= 1;
+            if (attract === 'rarely') score -= 2;
+            if (attract === 'no') score -= 3;
+
+            if (future === 'tired') score -= 1.5;
+            if (future === 'anxious') score -= 2;
+            if (future === 'empty') score -= 2.5;
+            if (future === 'cant_picture') score -= 3;
+
+            score = Math.max(1, Math.min(10, Math.round(score)));
+
+            let badgeLabel = "Berjalan rutin, namun makin menjauh";
+            if (score <= 3) { badgeLabel = "Jarak cukup jauh & terisolasi"; }
+            else if (score <= 6) { badgeLabel = "Berjalan rutin, namun makin menjauh"; }
+            else { badgeLabel = "Koneksi fungsional yang stabil"; }
+
+            // Logika Teks Dinamis
+            let faded = [];
+            if (conv === '1-3months' || conv === 'cant_remember') faded.push("Rasa ingin tahu emosional & intelektual — percakapan bergeser sepenuhnya hanya ke urusan rumah.");
+            if (touch === 'rarely' || touch === 'never' || touch === 'forced') faded.push("Kehangatan fisik — sentuhan makin jarang atau terasa hanya sebatas ekspektasi hubungan biologis.");
+            if (evenings === 'together_phones' || evenings === 'rarely_same_room') faded.push("Fokus bersama — waktu malam dihabiskan masing-masing alih-alih saling menemani.");
+            if (faded.length < 2) faded.push("Canda tawa dan suasana santai yang spontan dalam keseharian.");
+
+            let stillThere = [];
+            if (attract === 'yes' || attract === 'sometimes') stillThere.push("Daya tarik fisik mendasar masih ada di bawah permukaan.");
+            if (future === 'hopeful') stillThere.push("Harapan tulus agar hubungan bisa membaik kembali.");
+            if (stillThere.length === 0) stillThere.push("Kenangan dan stabilitas bersama — Anda masih mengelola rumah tangga dengan baik bersama-sama.");
+
+            const html = `
+                <div class="score-badge-container">
+                    <div class="score-circle">${score}/10</div>
+                    <div class="score-meta">
+                        <h4>RINGKASAN KONEKSI ANDA</h4>
+                        <p>${score}/10 — ${badgeLabel}</p>
+                    </div>
+                </div>
+
+                <div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem; font-style:italic;">
+                    Ringkasan ini merupakan alat bantu refleksi diri, bukan diagnosis psikologis resmi.
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-battery-quarter"></i> HAL YANG MUNGKIN MEMUDAR</div>
+                    <div class="result-content">
+                        <ul>${faded.map(i => `<li>${i}</li>`).join('')}</ul>
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-gem"></i> HAL YANG MASIH ADA</div>
+                    <div class="result-content">
+                        <ul>${stillThere.map(i => `<li>${i}</li>`).join('')}</ul>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-arrows-spin"></i> POLA HUBUNGAN</div>
+                    <div class="result-content">
+                        Kerenggangan jangka panjang jarang terjadi karena pasangan berhenti saling mencintai; itu terjadi karena efisiensi menggantikan kehangatan. Ketika kesibukan melanda, urusan rumah tangga menyita energi dan menggeser rasa ingin tahu yang santai.
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-lightbulb"></i> LANGKAH KECIL SELANJUTNYA</div>
+                    <div class="result-content">
+                        <strong>Malam ini:</strong> 10 menit, tanpa HP, tanpa bahas urusan rumah. Duduk berdampingan di sofa dan tanyakan satu hal sederhana yang ingin Anda ketahui: <em>"Apa hal yang paling menarik atau bikin kamu mikir hari ini?"</em>
+                    </div>
+                </div>
+
+                <div class="next-step-box">
+                    <div class="next-step-title"><i class="fa-solid fa-flag"></i> ANDA TIDAK HARUS MENYELESAIKAN SEMUANYA MALAM INI.</div>
+                    <p style="font-size:0.9rem; color:var(--text-main);">Satu percakapan jujur jauh lebih berharga daripada membiarkan masalah berlarut-larut sebulan lagi.</p>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-primary" onclick="switchTool('tool2')">Langkah Selanjutnya: Reset Beban Mental &rarr;</button>
+                        <button class="btn btn-secondary" onclick="switchTool('journey')">Mulai Penataan Ulang 7 Hari</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t1_results').innerHTML = html;
+            document.getElementById('t1_results').style.display = 'block';
+
+            saveToHistory('tool1', `Ringkasan: ${score}/10 (${badgeLabel})`, { score, faded, stillThere });
+        }
+
+        /* ==========================================================================
+           MODUL 2: RESET BEBAN MENTAL (LOGIKA & CONTOH)
+           ========================================================================== */
+        function loadSampleTool2() {
+            renderChoreGrid();
+            const opts = document.querySelectorAll('#t2_tasks .task-options');
+            
+            const sampleDistribution = ['Saya', 'Saya', 'Saya', 'Saya', 'Bersama', 'Saya', 'Pasangan', 'Saya', 'Pasangan', 'Saya', 'Saya', 'Saya'];
+            opts.forEach((group, idx) => {
+                const targetVal = sampleDistribution[idx];
+                group.querySelectorAll('.task-opt').forEach(opt => {
+                    if (opt.innerText === targetVal) {
+                        selectChoreOpt(opt, targetVal);
+                    }
+                });
+            });
+
+            document.getElementById('t2_resentment').value = "Saya lelah karena harus mengatur dan memikirkan segala hal sendirian. Jika tidak saya jadwalkan atau atur, tidak ada yang berjalan.";
+            document.querySelector('input[name="t2_discussed"][value="unresolved"]').checked = true;
+            showToast("Contoh 'Ketidakseimbangan Beban Tak Terlihat' berhasil dimuat.");
+        }
+
+        function analyzeTool2() {
+            const taskElements = document.querySelectorAll('#t2_tasks .task-options');
+            let counts = { Saya: 0, Pasangan: 0, Bersama: 0, 'Tidak Ada': 0 };
+            
+            taskElements.forEach(group => {
+                const selected = group.querySelector('.task-opt.selected');
+                if (selected) {
+                    const txt = selected.innerText;
+                    if(counts[txt] !== undefined) counts[txt]++;
+                }
+            });
+
+            const total = CHORE_TASKS.length;
+            const mePct = Math.round((counts.Saya / total) * 100);
+            const partnerPct = Math.round((counts.Pasangan / total) * 100);
+            const sharedPct = Math.round(((counts.Bersama + counts['Tidak Ada']) / total) * 100);
+
+            const resentment = document.getElementById('t2_resentment').value.trim();
+
+            const scriptText = `"Aku merasa rutinitas pekerjaan rumah kita berjalan secara otomatis dan sejujurnya aku mulai merasa kelelahan. Aku tidak ingin kita saling menghitung tugas. Boleh kita duduk sebentar hari Minggu ini selama 20 menit sambil minum teh untuk melihat bagaimana kita bisa membagi tugas secara utuh agar tidak ada yang merasa terbeban sendirian?"`;
+
+            const html = `
+                <div class="result-title"><i class="fa-solid fa-chart-bar"></i> PEMETAAN BEBAN RUMAH TANGGA ANDA</div>
+                <div class="progress-split">
+                    <div class="split-segment segment-you" style="width: ${mePct}%">${mePct}%</div>
+                    <div class="split-segment segment-partner" style="width: ${partnerPct}%">${partnerPct}%</div>
+                    <div class="split-segment segment-shared" style="width: ${sharedPct}%">${sharedPct}%</div>
+                </div>
+                <div class="split-legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--rosewood)"></div> Saya (${mePct}%)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:var(--gold)"></div> Pasangan (${partnerPct}%)</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#8E7C93"></div> Bersama/Belum Dibagi (${sharedPct}%)</div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-eye"></i> BEBAN TAK TERLIHAT</div>
+                    <div class="result-content">
+                        Pahami perbedaan antara <em>menjalankan</em> tugas (seperti membuang sampah) dan <em>mengelola</em> tugas (mengetahui kapan tong sampah penuh, membeli plastik, mengatur rutinitas). Ketika proses merencanakan dan mengingat hanya dibebankan pada satu orang, rasa lelah luar biasa akan muncul.
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-fire-flame-curled"></i> PEMICU KEKESALAN</div>
+                    <div class="result-content">
+                        ${resentment ? `Dari ungkapan Anda: <em>"${resentment}"</em><br><br>` : ''}
+                        Saling menghitung tugas terjadi ketika usaha terasa kurang dihargai atau ketika menegur/mengingatkan menjadi satu-satunya cara untuk menyelesaikan hal di rumah.
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-handshake"></i> PRINSIP PERBAIKAN</div>
+                    <div class="result-content">
+                        <strong>Berhenti sekadar "meminta bantuan."</strong> Alokasikan tanggung jawab penuh, bukan hanya bantuan instan. Kata 'membantu' mengesankan bahwa rumah tangga hanya milik satu orang. Beralihlah ke <strong>Pemelimpahan Tanggung Jawab Penuh</strong> (contoh: Pasangan bertanggung jawab penuh 100% atas menu makan malam mulai dari rencana, belanja, hingga masak pada hari Selasa & Kamis).
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-comment-dots"></i> NASKAH PERCAKAPAN PERTAMA</div>
+                    <div class="script-box">
+                        ${scriptText}
+                        <button class="btn-copy" onclick="copyText(${JSON.stringify(scriptText)})"><i class="fa-regular fa-copy"></i> Salin</button>
+                    </div>
+                </div>
+
+                <div class="next-step-box">
+                    <div class="next-step-title"><i class="fa-solid fa-flag"></i> ANDA TIDAK HARUS MENYELESAIKAN SEMUANYA MALAM INI.</div>
+                    <p style="font-size:0.9rem; color:var(--text-main);">Satu percakapan jujur jauh lebih berharga daripada membiarkan masalah berlarut-larut sebulan lagi.</p>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-primary" onclick="switchTool('tool4')">Langkah Selanjutnya: Reset Apresiasi &rarr;</button>
+                        <button class="btn btn-secondary" onclick="switchTool('journey')">Mulai Penataan Ulang 7 Hari</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t2_results').innerHTML = html;
+            document.getElementById('t2_results').style.display = 'block';
+
+            saveToHistory('tool2', `Beban Rumah Tangga: Saya ${mePct}% | Pasangan ${partnerPct}%`, { mePct, partnerPct, sharedPct });
+        }
+
+        /* ==========================================================================
+           MODUL 3: RESET INTIMASI (LOGIKA & CONTOH)
+           ========================================================================== */
+        function loadSampleTool3() {
+            document.getElementById('t3_last').value = '3-6months';
+            
+            document.querySelectorAll('.t3_reasons').forEach(cb => {
+                cb.checked = (cb.value === 'Stres' || cb.value === 'Kekesalan' || cb.value === 'Terasa canggung');
+            });
+
+            document.querySelector('input[name="t3_want"][value="yes_scared"]').checked = true;
+            document.getElementById('t3_afraid').value = "Saya khawatir jika menyentuhnya, pasangan menyangka saya menuntut hubungan intim lalu menjauh, atau suasana menjadi canggung.";
+            showToast("Contoh skenario 'Jeda Intimasi' berhasil dimuat.");
+        }
+
+        function analyzeTool3() {
+            const last = document.getElementById('t3_last').value;
+            const checkedReasons = Array.from(document.querySelectorAll('.t3_reasons:checked')).map(c => c.value);
+
+            const scriptText = `"Aku kangen merasa dekat sama kamu, tapi aku tahu akhir-akhir ini suasana agak canggung dan terasa ada beban. Bagaimana kalau kita tidak usah memikirkan hubungan biologis dulu selama dua minggu, dan hanya latihan dekat secara fisik tanpa ada ekspektasi apa pun? Menurut kamu bagaimana?"`;
+
+            const html = `
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-bridge-lock"></i> HAL YANG MUNGKIN MENJADI PENGHAMBAT</div>
+                    <div class="result-content">
+                        Jarak di antara Anda berdua bukan karena hilangnya rasa cinta, melainkan karena penumpukan <strong>${checkedReasons.length > 0 ? checkedReasons.join(', ') : 'hal-hal yang tidak diungkapkan'}</strong>. Saat intimasi terhenti lama, memulai kembali bisa terasa sangat berat.
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-shield-heart"></i> HAL YANG PERLU TERASA AMAN TERLEBIH DAHULU</div>
+                    <div class="result-content">
+                        Sepakati bersama untuk menyisihkan ekspektasi seksual secara sementara. Mulai kembali dari sentuhan ringan (pelukan 6 detik, berpegangan tangan di mobil) tanpa harus berlanjut lebih jauh.
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-list-check"></i> TAHAPAN 3 MINGGU</div>
+                    <div class="result-content">
+                        <p><strong>Minggu 1 — Rasa Aman:</strong> Fokus pada komunikasi yang jujur dan sentuhan non-seksual selama 15 detik setiap hari (pijatan bahu ringan, bergandengan tangan).</p>
+                        <p style="margin-top:0.5rem;"><strong>Minggu 2 — Kehadiran:</strong> 10 menit bersantai bersama (bersandar sambil mendengarkan musik) tanpa ada tekanan tuntutan fisik.</p>
+                        <p style="margin-top:0.5rem;"><strong>Minggu 3 — Eksplorasi:</strong> Diskusi terbuka mengenai keinginan dan batasan kenyamanan bersama.</p>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-comment"></i> PEMBUKA PERCAKAPAN</div>
+                    <div class="script-box">
+                        ${scriptText}
+                        <button class="btn-copy" onclick="copyText(${JSON.stringify(scriptText)})"><i class="fa-regular fa-copy"></i> Salin</button>
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-heart-crack"></i> JIKA PASANGAN BELUM SIAP</div>
+                    <div class="result-content">
+                        Sampaikan dengan tenang: <em>"Aku sangat paham. Aku tidak ingin terburu-buru. Aku hanya ingin kamu tahu kalau hatiku terbuka kapan pun kamu siap mengobrol."</em>
+                    </div>
+                </div>
+
+                <div class="next-step-box">
+                    <div class="next-step-title"><i class="fa-solid fa-flag"></i> ANDA TIDAK HARUS MENYELESAIKAN SEMUANYA MALAM INI.</div>
+                    <p style="font-size:0.9rem; color:var(--text-main);">Satu percakapan jujur jauh lebih berharga daripada membiarkan masalah berlarut-larut sebulan lagi.</p>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-primary" onclick="switchTool('tool5')">Langkah Selanjutnya: Persimpangan Jalan &rarr;</button>
+                        <button class="btn btn-secondary" onclick="switchTool('journey')">Mulai Penataan Ulang 7 Hari</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t3_results').innerHTML = html;
+            document.getElementById('t3_results').style.display = 'block';
+
+            saveToHistory('tool3', `Koneksi Intimasi: Terakhir ${last}`, { last, checkedReasons });
+        }
+
+        /* ==========================================================================
+           MODUL 4: RESET APRESIASI (LOGIKA & CONTOH)
+           ========================================================================== */
+        function loadSampleTool4() {
+            document.getElementById('t4_felt').value = "Saya sejujurnya tidak ingat kapan terakhir kali ia mengucapkan terima kasih secara spesifik.";
+            document.getElementById('t4_expressed').value = "Saya kadang mengucap 'terima kasih' saat makan malam, tapi terasa sekadar formalitas.";
+            document.getElementById('t4_rarely_ack').value = "Dia mengurus tagihan, tempat tinggal, dan servis kendaraan tanpa pernah mengeluh.";
+            document.getElementById('t4_wish_noticed').value = "Betapa besarnya energi mental yang saya keluarkan untuk mengurus jadwal keluarga dan menjaga suasana tetap adem.";
+            document.getElementById('t4_miss').value = "Kehadirannya, sifatnya yang bisa diandalkan, dan rasa nyaman saat dia berada di rumah.";
+            showToast("Contoh 'Saling Menganggap Biasa' berhasil dimuat.");
+        }
+
+        function analyzeTool4() {
+            const rarelyAck = document.getElementById('t4_rarely_ack').value.trim();
+            const wishNoticed = document.getElementById('t4_wish_noticed').value.trim();
+
+            const scriptText = `"Hari ini aku sempat merenung dan sadar kalau aku sering menganggap biasa hal-hal yang kamu lakukan—terutama ${rarelyAck || 'usaha kamu setiap hari untuk rumah kita'}. Aku cuma mau bilang terima kasih ya, aku benar-benar menghargai kamu."`;
+
+            const html = `
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-eye-slash"></i> HAL YANG SERING TERLEWAT</div>
+                    <div class="result-content">
+                        Saat hidup bersama bertahun-tahun, hal-hal rutin menjadi tidak terlihat. Kita cenderung lupa mengapresiasi hal-hal kecil yang membuat kehidupan sehari-hari berjalan lancar.
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-gift"></i> USAHA YANG MUNGKIN MEREKA LAKUKAN</div>
+                    <div class="result-content">
+                        ${rarelyAck ? `Usaha yang Anda sebutkan: <em>"${rarelyAck}"</em><br><br>` : ''}
+                        Mengakui tindakan nyata di balik layar ini mengubah suasana hubungan dari sekadar 'berjalan biasa' menjadi saling menghargai.
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-arrows-to-dot"></i> 3 CARA MENUNJUKKAN APRESIASI</div>
+                    <div class="result-content">
+                        <ul>
+                            <li><strong>Terima Kasih Spesifik:</strong> Ubah "makasih ya" menjadi "Terima kasih ya sudah bantu X, itu sangat meringankan beban Y buat aku."</li>
+                            <li><strong>Pujian di Depan Orang Lain:</strong> Berikan apresiasi saat berada di depan teman atau keluarga.</li>
+                            <li><strong>Pesan Singkat Spontan:</strong> Kirim satu pesan singkat di tengah hari untuk memuji kebaikannya.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-message"></i> NASKAH UNTUK MENYAMPAIKAN UNGKAPAN</div>
+                    <div class="script-box">
+                        ${scriptText}
+                        <button class="btn-copy" onclick="copyText(${JSON.stringify(scriptText)})"><i class="fa-regular fa-copy"></i> Salin</button>
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-calendar-check"></i> TANTANGAN APRESIASI 7 HARI</div>
+                    <div class="result-content">
+                        Selama 7 hari berturut-turut, sampaikan satu ucapan terima kasih tulus yang berbeda setiap harinya. Lakukan tanpa menuntut balasan—anggap sebagai hadiah tulus.
+                    </div>
+                </div>
+
+                <div class="next-step-box">
+                    <div class="next-step-title"><i class="fa-solid fa-flag"></i> ANDA TIDAK HARUS MENYELESAIKAN SEMUANYA MALAM INI.</div>
+                    <p style="font-size:0.9rem; color:var(--text-main);">Satu percakapan jujur jauh lebih berharga daripada membiarkan masalah berlarut-larut sebulan lagi.</p>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-primary" onclick="switchTool('tool3')">Langkah Selanjutnya: Reset Intimasi &rarr;</button>
+                        <button class="btn btn-secondary" onclick="switchTool('journey')">Mulai Penataan Ulang 7 Hari</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t4_results').innerHTML = html;
+            document.getElementById('t4_results').style.display = 'block';
+
+            saveToHistory('tool4', `Evaluasi Apresiasi Selesai`, { rarelyAck, wishNoticed });
+        }
+
+        /* ==========================================================================
+           MODUL 5: PERSIMPANGAN JALAN (LOGIKA & CONTOH)
+           ========================================================================== */
+        function loadSampleTool5() {
+            document.getElementById('t5_duration').value = '2-5yr';
+            document.getElementById('t5_tried').value = "Kami sempat konseling pernikahan selama 2 bulan tahun lalu, sering diskusi sampai malam, tapi selalu kembali ke pola lama.";
+            document.getElementById('t5_needed').value = "Keterbukaan emosional, kemauan bersama memperbaiki intimasi, dan kerja sama tim yang nyata dalam rumah tangga.";
+            document.querySelector('input[name="t5_dealbreaker"][value="no"]').checked = true;
+            document.querySelector('input[name="t5_love"][value="friend"]').checked = true;
+            document.querySelector('input[name="t5_scared"][value="both"]').checked = true;
+            showToast("Contoh 'Persimpangan Jalan' berhasil dimuat.");
+        }
+
+        function analyzeTool5() {
+            const duration = document.getElementById('t5_duration').value;
+            const dealbreaker = document.querySelector('input[name="t5_dealbreaker"]:checked').value;
+            const love = document.querySelector('input[name="t5_love"]:checked').value;
+
+            const scriptText = `"Aku sayang kamu dan menghargai semua perjalanan kita, tapi aku merasa kita ada di persimpangan jalan. Aku tidak bisa terus hidup dalam jarak seperti ini. Aku ingin kita berkomitmen secara tulus untuk memperbaiki hubungan ini bersama, atau membicarakannya dengan baik jika memang harus berpisah secara bijak."`;
+
+            const html = `
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-compass"></i> POSISI ANDA SAAT INI</div>
+                    <div class="result-content">
+                        Anda merasakan kerenggangan ini selama <strong>${duration}</strong>. Perasaan cinta saat ini terasa seperti <strong>${love}</strong>. Anda mencari kejelasan apakah perbaikan masih realistis dan langkah apa saja yang dibutuhkan.
+                    </div>
+                </div>
+
+                ${dealbreaker === 'yes' ? `
+                <div class="result-box" style="border-left-color: #B00020; background: #FFF5F5;">
+                    <div class="result-title" style="color: #B00020;"><i class="fa-solid fa-triangle-exclamation"></i> CATATAN KEAMANAN PENTING</div>
+                    <div class="result-content">
+                        Anda mengindikasikan adanya kekhawatiran berat atau keselamatan (kekerasan, kecanduan, kebohongan kronis). Latihan refleksi hubungan biasa mungkin tidak tepat. Utamakan keselamatan dan cari bantuan profesional.
+                    </div>
+                </div>
+                ` : ''}
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-wrench"></i> HAL YANG BISA DIPERBAIKI</div>
+                    <div class="result-content">
+                        <ul>
+                            <li>Pola komunikasi, kesepakatan rumah tangga, dan kebiasaan intimasi bisa dibangun ulang <em>asalkan kedua belah pihak sama-sama mau berusaha</em>.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-ban"></i> HAL YANG TIDAK BISA DIPERBAIKI SENDIRIAN</div>
+                    <div class="result-content">
+                        <ul>
+                            <li><strong>Anda tidak bisa memperbaiki hubungan hanya seorang diri.</strong> Usaha sepihak hanya akan menimbulkan kekecewaan mendalam.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="result-box gold">
+                    <div class="result-title gold"><i class="fa-solid fa-road"></i> JIKA INGIN MENCOBA MEMPERBAIKI</div>
+                    <div class="result-content">
+                        1. Tetapkan batas waktu komitmen yang jelas (misalnya 3 hingga 6 bulan).<br>
+                        2. Gunakan bantuan konselor atau terapis pernikahan profesional.<br>
+                        3. Lakukan tindakan nyata harian untuk terhubung kembali.
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-door-open"></i> JIKA MEMPERTIMBANGKAN PERPISAHAN</div>
+                    <div class="result-content">
+                        1. Pahami bahwa mengakhiri hubungan yang tidak lagi sehat bisa menjadi keputusan berani, bukan suatu kegagalan.<br>
+                        2. Konsultasikan hal-hal hukum/keuangan dengan tenang sebelum membicarakannya.<br>
+                        3. Utamakan kedewasaan, rasa hormat, dan kejelasan sepanjang proses.
+                    </div>
+                </div>
+
+                <div class="result-box">
+                    <div class="result-title"><i class="fa-solid fa-comments"></i> NASKAH PERCAKAPAN</div>
+                    <div class="script-box">
+                        ${scriptText}
+                        <button class="btn-copy" onclick="copyText(${JSON.stringify(scriptText)})"><i class="fa-regular fa-copy"></i> Salin</button>
+                    </div>
+                </div>
+
+                <div class="next-step-box">
+                    <div class="next-step-title"><i class="fa-solid fa-flag"></i> ANDA TIDAK HARUS MENYELESAIKAN SEMUANYA MALAM INI.</div>
+                    <p style="font-size:0.9rem; color:var(--text-main);">Satu percakapan jujur jauh lebih berharga daripada membiarkan masalah berlarut-larut sebulan lagi.</p>
+                    <div class="btn-group" style="margin-top:0.5rem;">
+                        <button class="btn btn-primary" onclick="switchTool('plan')">Lihat Rangkuman: Rencana Reconnect Saya &rarr;</button>
+                        <button class="btn btn-secondary" onclick="switchTool('journey')">Mulai Penataan Ulang 7 Hari</button>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t5_results').innerHTML = html;
+            document.getElementById('t5_results').style.display = 'block';
+
+            saveToHistory('tool5', `Refleksi Persimpangan Jalan (${duration})`, { duration, love });
+        }
+    </script>
+</body>
+</html>

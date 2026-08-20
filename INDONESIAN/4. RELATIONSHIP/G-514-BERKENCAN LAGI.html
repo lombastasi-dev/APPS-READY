@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BERKENCAN LAGI™ — Perangkat Pemulihan Kencan & Kepercayaan Diri</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --slate: #4A5B6E;
+            --slate-dark: #2D3B4A;
+            --slate-light: #D8DFE6;
+            --rose: #D4737A;
+            --rose-light: #F0D6D8;
+            --stone: #B8A99A;
+            --stone-light: #E8DDD4;
+            --bg-start: #F8F7F5;
+            --bg-end: #F0EEEA;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3B4A;
+            --text-muted: #6B7A7A;
+            --border-color: #E8E3DE;
+            --success: #7B9C8C;
+            --warning: #D4A373;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-main); display: flex; min-height: 100vh; line-height: 1.6; }
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; top:0; bottom:0; left:0; z-index:1000; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:transform 0.3s ease; }
+        .sidebar-header { padding:1.5rem; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--rose); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--slate-dark); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+        .nav-item:hover { background-color:rgba(74,91,110,0.08); color:var(--slate-dark); }
+        .nav-item.active { background-color:var(--slate); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:60px; background-color:var(--card-bg); border-bottom:1px solid var(--border-color); padding:0 1.25rem; align-items:center; justify-content:space-between; z-index:900; box-shadow:var(--shadow-sm); }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--slate-dark); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--slate); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.3); z-index:950; }
+        .main-content { margin-left:var(--sidebar-width); flex-grow:1; padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; width:calc(100% - var(--sidebar-width)); }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid var(--border-color); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--slate-dark); margin-bottom:0.25rem; line-height:1.2; }
+        .hero-subtitle { font-size:1.1rem; font-weight:500; color:var(--slate); margin-bottom:0.5rem; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--rose); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(212,115,122,0.12); color:var(--rose); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(74,91,110,0.1); color:var(--slate); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--slate-dark); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--slate-dark); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--slate); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:80px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--slate); }
+        .slider-value { font-weight:700; color:var(--slate); min-width:2.5rem; text-align:center; background:rgba(74,91,110,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--slate); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--slate-dark); }
+        .btn-secondary { background-color:rgba(212,115,122,0.12); color:var(--rose); }
+        .btn-secondary:hover { background-color:rgba(212,115,122,0.22); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:#c0392b; color:#fff; }
+        .btn-danger:hover { background-color:#a93226; }
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(74,91,110,0.1); color:var(--slate-dark); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--slate); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--rose); }
+        .result-block.success { border-left-color:var(--success); }
+        .result-block.accent { border-left-color:var(--warning); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--slate-dark); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--slate); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--slate-dark); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid var(--border-color); }
+        .problem-frame { background-color:rgba(212,115,122,0.08); border-left:3px solid var(--rose); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--slate-dark); margin-bottom:1.5rem; font-weight:500; }
+        .progress-bar-bg { background:#E8E3DE; border-radius:0.25rem; height:8px; margin-top:0.3rem; width:100%; overflow:hidden; }
+        .progress-bar-fill { height:100%; border-radius:0.25rem; background:var(--slate); transition:width 0.3s ease; }
+        .dimension-row { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.5rem; }
+        .dimension-label { min-width:160px; font-size:0.9rem; }
+        .dimension-bar { flex:1; }
+        .dimension-value { min-width:2.5rem; text-align:center; font-weight:600; color:var(--slate-dark); }
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .dimension-row { flex-wrap:wrap; }
+            .dimension-label { min-width:120px; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+            .dimension-label { min-width:100px; font-size:0.8rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-regular fa-calendar-plus" style="color:var(--rose);"></i><span>Berkencan Lagi</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-regular fa-calendar-plus"></i><h1>Berkencan Lagi</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dasbor</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-flag"></i><span>Ungkap Pola</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-scale-balanced"></i><span>Kalibrasi Kepercayaan</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-circle-half-stroke"></i><span>Bendera Merah / Hijau</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-hand-holding-heart"></i><span>Rencana Kerentanan</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-compass"></i><span>Cek Diri</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat Saya</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privasi</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <h2 class="hero-title">Berkencan Lagi</h2>
+                    <p class="hero-tagline">Percayai naluri Anda tanpa membiarkan ketakutan mengendalikan.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        Perangkat praktis untuk pemulihan kencan dan kepercayaan diri. Pahami pola lama, kalibrasi kewaspadaan, evaluasi sinyal perilaku, atur kecepatan kerentanan, dan periksa kesiapan Anda—semua dalam satu tempat.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-flag"></i></div><h3>Ungkap Pola</h3><p>Dekode dinamika hubungan sebelumnya untuk mengidentifikasi risiko berulang dan membangun sistem peringatan.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-scale-balanced"></i></div><h3>Kalibrasi Kepercayaan</h3><p>Bedakan ketakutan protektif dari kewaspadaan saat ini yang berguna.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-circle-half-stroke"></i></div><h3>Bendera Merah / Hijau</h3><p>Timbang perilaku yang mengkhawatirkan terhadap perilaku yang aman dan konsisten.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-hand-holding-heart"></i></div><h3>Rencana Kerentanan</h3><p>Bagikan diri Anda secara bertahap tanpa berbagi berlebihan atau menutup diri.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-compass"></i></div><h3>Cek Diri</h3><p>Evaluasi apakah Anda berkencan dari posisi yang membumi daripada urgensi atau luka.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: PATTERN REVEAL -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Ungkap Pola</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Mengapa saya selalu berakhir dalam jenis hubungan yang sama?"</div>
+                    <form id="form-tool1">
+                        <div class="form-group"><label class="form-label">Apa yang buruk dari hubungan itu?</label><textarea id="t1_bad" placeholder="Misalnya, Cemburu, kontrol, kurang hormat, jarak emosional..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Peran apa yang Anda mainkan?</label><select id="t1_role"><option value="Saya mencoba memperbaiki mereka">Saya mencoba memperbaiki mereka</option><option value="Saya kehilangan diri sendiri">Saya kehilangan diri sendiri</option><option value="Saya bertahan terlalu lama">Saya bertahan terlalu lama</option><option value="Saya diperlakukan dengan buruk">Saya diperlakukan dengan buruk</option><option value="Saya tidak menyadarinya sebagai hal buruk">Saya tidak menyadarinya sebagai hal buruk</option><option value="Saya terlalu cepat percaya">Saya terlalu cepat percaya</option></select></div>
+                        <div class="form-group"><label class="form-label">Tanda bahaya awal yang Anda perhatikan:</label><textarea id="t1_flags" placeholder="Misalnya, Terlalu cepat, menguji batas, reaksi tidak proporsional..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang membuat Anda bertahan?</label><select id="t1_stay"><option value="Berharap mereka berubah">Berharap mereka berubah</option><option value="Takut sendirian">Takut sendirian</option><option value="Pikir saya bisa memperbaikinya">Pikir saya bisa memperbaikinya</option><option value="Tidak percaya pada naluri saya">Tidak percaya pada naluri saya</option><option value="Terus berharap pada momen-momen baik">Terus berharap pada momen-momen baik</option></select></div>
+                        <div class="form-group"><label class="form-label">Bagaimana akhirnya?</label><select id="t1_end"><option value="Saya pergi">Saya pergi</option><option value="Mereka pergi">Mereka pergi</option><option value="Saling">Saling</option><option value="Ditinggalkan tanpa kabar">Ditinggalkan tanpa kabar</option><option value="Saya berhenti mencoba">Saya berhenti mencoba</option></select></div>
+                        <div class="form-group"><label class="form-label">Sudah berapa lama berakhir?</label><select id="t1_time"><option value="Kurang dari 3 bulan">Kurang dari 3 bulan</option><option value="3-6 bulan">3-6 bulan</option><option value="6-12 bulan">6-12 bulan</option><option value="1-2 tahun">1-2 tahun</option><option value="2+ tahun">2+ tahun</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-flag"></i> Ungkap Pola</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Ungkap Pola</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> Pola</div><p id="t1-out-pattern">Pola reflektif Anda...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Sistem Peringatan Dini</div><p id="t1-out-warning">Apa yang harus diperhatikan...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-magnet"></i> Faktor Daya Tarik</div><p id="t1-out-attraction">Apa yang mungkin menarik Anda...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-hand"></i> Pemicu Bertahan</div><p id="t1-out-stay">Apa yang membuat Anda bertahan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-door-open"></i> Latihan Keluar</div><p id="t1-out-exit">Batasan untuk dipraktikkan...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-up"></i> Bangun Kembali Kepercayaan Diri</div><p id="t1-out-trust">Membingkai ulang keberangkatan Anda...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Ungkap Pola Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Hapus Riwayat</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: TRUST CALIBRATION -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Kalibrasi Kepercayaan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Apakah saya sedang berhati-hati atau hanya takut? Apakah saya melindungi diri atau bereaksi berlebihan?"</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">Apa yang Anda lakukan saat ini dalam berkencan?</label><select id="t2_doing"><option value="Pergi kencan dengan tembok tinggi">Pergi kencan dengan tembok tinggi</option><option value="Bergerak perlahan">Bergerak perlahan</option><option value="Merasa berharap tapi hati-hati">Merasa berharap tapi hati-hati</option><option value="Sudah terlalu cepat terikat">Sudah terlalu cepat terikat</option><option value="Menghindari kencan sama sekali">Menghindari kencan sama sekali</option></select></div>
+                        <div class="form-group"><label class="form-label">Perilaku apa yang membuat Anda gugup?</label><textarea id="t2_behavior" placeholder="Misalnya, Mereka terlambat tanpa pesan, mereka membuat lelucon yang terasa aneh..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang Anda lakukan?</label><select id="t2_reaction"><option value="Mengabaikannya">Mengabaikannya</option><option value="Bertanya pada teman">Bertanya pada teman</option><option value="Menghadapi mereka">Menghadapi mereka</option><option value="Mengakhirinya">Mengakhirinya</option><option value="Memberi mereka kesempatan lain">Memberi mereka kesempatan lain</option></select></div>
+                        <div class="form-group"><label class="form-label">Apa kata naluri Anda?</label><select id="t2_gut"><option value="Ada yang tidak beres">Ada yang tidak beres</option><option value="Saya bereaksi berlebihan">Saya bereaksi berlebihan</option><option value="Saya tidak percaya penilaian saya">Saya tidak percaya penilaian saya</option><option value="Saya butuh lebih banyak waktu">Saya butuh lebih banyak waktu</option><option value="Ini terasa familier">Ini terasa familier</option></select></div>
+                        <div class="form-group"><label class="form-label">Apa yang Anda takutkan?</label><textarea id="t2_fear" placeholder="Misalnya, Mengulang masa lalu, terluka, menolak orang baik, sendirian..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-scale-balanced"></i> Kalibrasi Kepercayaan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Kalibrasi Kepercayaan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gauge"></i> Kalibrasi Anda</div><p id="t2-out-calibration">Di mana Anda saat ini...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-brain"></i> Respons Perlindungan</div><p id="t2-out-protection">Apa yang mungkin mempengaruhi kewaspadaan Anda...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-clipboard-list"></i> Pengumpul Data</div><p id="t2-out-data">Bukti yang dapat diamati untuk dikumpulkan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-calendar"></i> Aturan 3 Kencan</div><p id="t2-out-rule">Heuristik kecepatan...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-user-check"></i> Filter Teman</div><p id="t2-out-friend">Satu perspektif luar yang membumi...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-hand-holding-heart"></i> Pembukaan Perlahan</div><p id="t2-out-slow">Kerentanan bertahap...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Kalibrasi Kepercayaan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Hapus Riwayat</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: RED / GREEN FLAG -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Bendera Merah / Hijau</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Saya tidak tahu apakah saya terlalu berpikir atau benar-benar melihat pola."</div>
+                    <form id="form-tool3">
+                        <div class="form-group"><label class="form-label">Apa yang membuat Anda khawatir tentang orang ini?</label><textarea id="t3_worry" placeholder="Misalnya, Mereka tampak hangat-dingin, mereka tidak menindaklanjuti..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang membuat Anda nyaman tentang orang ini?</label><textarea id="t3_comfort" placeholder="Misalnya, Mereka konsisten, mereka mengingat detail..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Bagaimana mereka berbicara tentang mantan mereka?</label><select id="t3_exes"><option value="Dengan hormat">Dengan hormat — mengakui peran mereka sendiri</option><option value="Menyalahkan semua">Menyalahkan semua</option><option value="Menjelek-jelekkan">Menjelek-jelekkan mereka</option><option value="Menghindari topik">Menghindari topik</option><option value="Tampak sudah pulih">Tampak sudah pulih dan reflektif</option></select></div>
+                        <div class="form-group"><label class="form-label">Bagaimana mereka menangani konflik?</label><select id="t3_conflict"><option value="Diskusi konstruktif">Diskusi konstruktif</option><option value="Meningkat cepat">Meningkat cepat</option><option value="Menutup diri">Menutup diri / menarik diri</option><option value="Mendengarkan">Mendengarkan dan merenung</option><option value="Menghindari">Menghindari konflik sama sekali</option></select></div>
+                        <div class="form-group"><label class="form-label">Bagaimana mereka menangani batasan?</label><select id="t3_boundaries"><option value="Menghormati">Menghormati</option><option value="Menguji dengan lembut">Menguji dengan lembut</option><option value="Mengabaikan">Mengabaikan</option><option value="Menjadi defensif">Menjadi defensif</option><option value="Belum diuji">Belum diuji</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-circle-half-stroke"></i> Nilai Sinyal</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Bendera Merah / Hijau</h3>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-circle-exclamation"></i> Tingkat Keparahan Bendera Merah</div><p id="t3-out-red">Skor dan konteks...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-circle-check"></i> Kekuatan Bendera Hijau</div><p id="t3-out-green">Skor dan konteks...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-amber"></i> Zona Kuning</div><p id="t3-out-amber">Apa yang harus diamati selanjutnya...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-compass"></i> Rencana Melanjutkan</div><p id="t3-out-plan">Rekomendasi berdasarkan sinyal...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Pertanyaan Kunci untuk Percakapan</div><div class="script-box"><span id="t3-out-prompt">Pertanyaan percakapan...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t3-out-prompt')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Penilaian Bendera Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Hapus Riwayat</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: VULNERABILITY PLAN -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Rencana Kerentanan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Saya entah berbagi berlebihan atau menutup diri—saya tidak bisa menemukan jalan tengah."</div>
+                    <form id="form-tool4">
+                        <div class="form-group"><label class="form-label">Apa yang cenderung Anda bagikan secara berlebihan?</label><textarea id="t4_overshare" placeholder="Misalnya, Trauma hubungan masa lalu, ketakutan, riwayat pribadi yang dalam..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang cenderung Anda sembunyikan?</label><textarea id="t4_hide" placeholder="Misalnya, Preferensi kecil, kebutuhan, batasan, apa yang sebenarnya Anda inginkan..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Kecenderungan keterikatan (untuk refleksi):</label><select id="t4_attachment"><option value="Aman">Saya cenderung aman — saya bisa membuka dan memegang batasan</option><option value="Cemas">Saya cenderung cemas — saya khawatir ditinggalkan</option><option value="Menghindar">Saya cenderung menghindar — saya menjauh saat semakin dekat</option><option value="Takut">Saya cenderung takut — saya menginginkan kedekatan tetapi takut akan hal itu</option></select></div>
+                        <div class="form-group"><label class="form-label">Bagaimana kerentanan terasa bagi Anda?</label><select id="t4_feel"><option value="Seperti ujian">Seperti ujian — saya mengamati respons mereka</option><option value="Membebaskan">Membebaskan — saya merasa lebih dekat saat berbagi</option><option value="Menakutkan">Menakutkan — saya merasa terbuka</option><option value="Netral">Netral — saya berbagi saat terasa alami</option></select></div>
+                        <div class="form-group"><label class="form-label">Tingkat kerentanan mereka:</label><select id="t4_their"><option value="Terbuka dan konsisten">Terbuka dan konsisten</option><option value="Berjaga tapi berusaha">Berjaga tapi berusaha</option><option value="Sekretif">Sekretif</option><option value="Berbagi terlalu cepat">Berbagi terlalu cepat</option><option value="Tidak jelas">Tidak jelas</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-hand-holding-heart"></i> Bangun Rencana</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Rencana Kerentanan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-road"></i> Peta Jalan Kecepatan</div><p id="t4-out-pacing">Pendekatan fleksibel...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-scale-balanced"></i> Cek Berbagi Berlebihan & Berjaga</div><p id="t4-out-check">Di mana Anda mungkin tidak seimbang...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-arrows-rotate"></i> Uji Timbal Balik</div><p id="t4-out-reciprocity">Samakan investasi mereka...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-list"></i> Menu Topik Aman</div><p id="t4-out-topics">Topik koneksi berisiko rendah...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-shield"></i> Frasa Perlindungan Batasan</div><div class="script-box"><span id="t4-out-phrase">Frasa perlindungan...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-phrase')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Rencana Kerentanan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Hapus Riwayat</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: SELF-CHECK -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Cek Diri</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Bagaimana saya tahu jika saya benar-benar siap berkencan lagi?"</div>
+                    <form id="form-tool5">
+                        <div style="margin-bottom:1.5rem;">
+                            <p style="font-weight:600; color:var(--slate-dark); margin-bottom:0.75rem;">Nilai setiap pernyataan dari 1 (sangat tidak setuju) hingga 10 (sangat setuju)</p>
+                            <div class="dimension-row">
+                                <div class="dimension-label">Saya merasa utuh sendiri.</div>
+                                <div class="dimension-bar"><input type="range" id="t5_q1" min="1" max="10" value="5" oninput="document.getElementById('q1_val').innerText=this.value" style="width:100%;"></div>
+                                <div class="dimension-value" id="q1_val">5</div>
+                            </div>
+                            <div class="dimension-row">
+                                <div class="dimension-label">Saya percaya kemampuan saya melihat bahaya.</div>
+                                <div class="dimension-bar"><input type="range" id="t5_q2" min="1" max="10" value="5" oninput="document.getElementById('q2_val').innerText=this.value" style="width:100%;"></div>
+                                <div class="dimension-value" id="q2_val">5</div>
+                            </div>
+                            <div class="dimension-row">
+                                <div class="dimension-label">Saya percaya kemampuan saya melihat kebaikan.</div>
+                                <div class="dimension-bar"><input type="range" id="t5_q3" min="1" max="10" value="5" oninput="document.getElementById('q3_val').innerText=this.value" style="width:100%;"></div>
+                                <div class="dimension-value" id="q3_val">5</div>
+                            </div>
+                            <div class="dimension-row">
+                                <div class="dimension-label">Saya berkencan untuk menambah hidup saya, bukan memperbaikinya.</div>
+                                <div class="dimension-bar"><input type="range" id="t5_q4" min="1" max="10" value="5" oninput="document.getElementById('q4_val').innerText=this.value" style="width:100%;"></div>
+                                <div class="dimension-value" id="q4_val">5</div>
+                            </div>
+                            <div class="dimension-row">
+                                <div class="dimension-label">Saya bisa pergi jika tidak tepat.</div>
+                                <div class="dimension-bar"><input type="range" id="t5_q5" min="1" max="10" value="5" oninput="document.getElementById('q5_val').innerText=this.value" style="width:100%;"></div>
+                                <div class="dimension-value" id="q5_val">5</div>
+                            </div>
+                            <div class="dimension-row">
+                                <div class="dimension-label">Saya berharap tentang koneksi yang sehat.</div>
+                                <div class="dimension-bar"><input type="range" id="t5_q6" min="1" max="10" value="5" oninput="document.getElementById('q6_val').innerText=this.value" style="width:100%;"></div>
+                                <div class="dimension-value" id="q6_val">5</div>
+                            </div>
+                        </div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-compass"></i> Periksa Kesiapan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Cek Diri</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gauge-high"></i> Dasbor Kesiapan</div><div id="t5-out-dashboard"></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> Gambaran Kesiapan</div><p id="t5-out-verdict">Kategori refleksi...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Fokus Pemulihan Utama</div><p id="t5-out-focus">Ke mana harus mengarahkan perhatian...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-clock"></i> Kecepatan yang Direkomendasikan</div><p id="t5-out-pacing">Saran, bukan aturan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-hand-holding-heart"></i> Afirmasi Inti</div><p id="t5-out-affirmation">Anda tidak rusak. Anda berpengalaman.</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Cek Diri Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Hapus Riwayat</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">Riwayat Saya</h2><p class="hero-tagline">Semua analisis dan rencana Berkencan Lagi Anda yang tersimpan.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Riwayat</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privasi</h2>
+                    <p style="margin-bottom:1rem;">Refleksi kencan Anda tetap berada di perangkat Anda. Tidak ada yang dikirim ke server mana pun.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>Semua masukan dan hasil disimpan hanya di penyimpanan lokal browser Anda.</li>
+                        <li>Tanpa akun, tanpa login, tanpa pelacakan, tanpa analitik.</li>
+                        <li>Anda dapat menghapus riwayat kapan saja menggunakan alat di atas.</li>
+                        <li>Aplikasi ini untuk refleksi dan perencanaan—bukan terapi atau nasihat klinis.</li>
+                        <li>Jika Anda dalam tekanan atau mengalami kekerasan, hubungi profesional yang berkualifikasi atau layanan dukungan lokal.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Data Tersimpan</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">Hanya untuk refleksi dan dukungan. Bukan terapi atau nasihat klinis. Jika Anda dalam tekanan atau mengalami kekerasan, hubungi profesional yang berkualifikasi atau layanan dukungan lokal.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:var(--success);"></i><span id="toast-message">Disalin!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Disalin!')).catch(() => fallbackCopy(text));
+        } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Disalin!'); } catch(e) { showToast('Gagal menyalin'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('mobile-open'); });
+    overlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE ---
+    function getHistory(toolId) {
+        const key = `dateagain_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `dateagain_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Hapus semua riwayat untuk alat ini?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('Riwayat dihapus');
+    }
+    function clearAllHistory() {
+        if (!confirm('Hapus SEMUA riwayat Berkencan Lagi?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('Semua riwayat dihapus');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Hapus masukan dan hasil saat ini untuk alat ini?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset selesai');
+    }
+
+    // ========================================
+    // TOOL 1: PATTERN REVEAL
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_bad').value = 'Cemburu, tuduhan tentang teman-teman saya, tuntutan update terus-menerus, melacak waktu saya.';
+        document.getElementById('t1_role').value = 'Saya bertahan terlalu lama';
+        document.getElementById('t1_flags').value = 'Di awal, mereka kesal jika saya tidak membalas dalam satu jam. Mereka menjelek-jelekkan mantan mereka.';
+        document.getElementById('t1_stay').value = 'Berharap mereka berubah';
+        document.getElementById('t1_end').value = 'Saya pergi';
+        document.getElementById('t1_time').value = '6-12 bulan';
+        showToast('Contoh dimuat: Pola cemburu dan kontrol');
+    }
+
+    function analyzeTool1() {
+        const bad = document.getElementById('t1_bad').value || 'Masalah hubungan dijelaskan';
+        const role = document.getElementById('t1_role').value;
+        const flags = document.getElementById('t1_flags').value || 'Tidak ada tanda dijelaskan';
+        const stay = document.getElementById('t1_stay').value;
+        const end = document.getElementById('t1_end').value;
+        const time = document.getElementById('t1_time').value;
+
+        let pattern = '';
+        if (role === 'Saya mencoba memperbaiki mereka' || stay === 'Berharap mereka berubah') {
+            pattern = 'Dinamika Sang Perbaiki / Proyek — Anda mungkin melihat potensi dan mencoba membantu mereka menjadi itu. Ini dapat membuat Anda bertahan dalam hubungan yang tidak berfungsi.';
+        } else if (role === 'Saya kehilangan diri sendiri' || role === 'Saya bertahan terlalu lama') {
+            pattern = 'Pola Sang Minimalkan / Over-Adaptasi — Anda mungkin meminimalkan kebutuhan sendiri untuk menjaga koneksi. Ini dapat membuat sulit mengetahui apa yang sebenarnya Anda inginkan.';
+        } else if (stay === 'Saya tidak menyadarinya sebagai hal buruk' || role === 'Saya diperlakukan dengan buruk') {
+            pattern = 'Jebakan Erosi Perlahan — Masalah mungkin meningkat secara bertahap, membuat sulit melihat seberapa buruk keadaannya.';
+        } else {
+            pattern = 'Jebakan Kesetiaan — Anda mungkin bertahan karena Anda percaya pada kesetiaan, bahkan ketika hubungan tidak melayani Anda.';
+        }
+
+        const warning = 'Perhatikan: intensitas prematur, dorongan batas halus, dan reaksi emosional tidak proporsional terhadap keterlambatan kecil atau otonomi.';
+        const attraction = `Apa yang mungkin menarik Anda: ${escapeHTML(bad)} mungkin ditutupi oleh intensitas awal atau pesona.`;
+        const stayTrigger = `Apa yang membuat Anda bertahan: ${stay}. Ini adalah pola yang perlu diperhatikan.`;
+        const exit = `Latihan: tetapkan batasan kecil di awal dan amati responsnya. Bagaimana seseorang menangani "tidak" memberi tahu Anda banyak.`;
+        const trust = `Anda pergi. Itu adalah bukti bahwa naluri protektif Anda dapat berkembang. Anda bisa percaya pada diri sendiri.`;
+
+        document.getElementById('t1-out-pattern').innerHTML = pattern;
+        document.getElementById('t1-out-warning').innerHTML = warning;
+        document.getElementById('t1-out-attraction').innerHTML = attraction;
+        document.getElementById('t1-out-stay').innerHTML = stayTrigger;
+        document.getElementById('t1-out-exit').innerHTML = exit;
+        document.getElementById('t1-out-trust').innerHTML = trust;
+        document.getElementById('output-tool1').classList.add('active');
+        saveToHistory('tool1', 'Ungkap Pola', `<p><strong>Pola:</strong> ${pattern}</p><br><strong>Peringatan:</strong> ${warning}`);
+    }
+
+    // ========================================
+    // TOOL 2: TRUST CALIBRATION
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_doing').value = 'Pergi kencan dengan tembok tinggi';
+        document.getElementById('t2_behavior').value = 'Mereka terlambat 20 menit untuk kencan kedua kami tanpa mengirim pesan.';
+        document.getElementById('t2_reaction').value = 'Mengakhirinya';
+        document.getElementById('t2_gut').value = 'Ada yang tidak beres';
+        document.getElementById('t2_fear').value = 'Bahwa saya menolak orang baik karena saya terlalu takut.';
+        showToast('Contoh dimuat: Respons hiper-waspada');
+    }
+
+    function analyzeTool2() {
+        const doing = document.getElementById('t2_doing').value;
+        const behavior = document.getElementById('t2_behavior').value || 'Perilaku dijelaskan';
+        const reaction = document.getElementById('t2_reaction').value;
+        const gut = document.getElementById('t2_gut').value;
+        const fear = document.getElementById('t2_fear').value || 'Ketakutan dijelaskan';
+
+        let calibration = '';
+        if (reaction === 'Mengabaikannya' || doing === 'Sudah terlalu cepat terikat') {
+            calibration = 'Kurang Terlindungi / Meminimalkan — Anda mungkin terlalu mengakomodasi. Pertimbangkan untuk memperlambat.';
+        } else if (reaction === 'Bertanya pada teman' || reaction === 'Menghadapi mereka') {
+            calibration = 'Cukup Hati-hati & Memproses — Anda memeriksa naluri dengan masukan.';
+        } else {
+            calibration = 'Mode Perlindungan Hiper-Waspada — Respons protektif mungkin membuat ini terasa lebih mendesak daripada yang didukung oleh bukti yang tersedia.';
+        }
+
+        const protection = `Naluri Anda mengatakan: ${gut}. Ketakutan Anda adalah: ${escapeHTML(fear)}. Respons protektif mungkin mempengaruhi reaksi Anda.`;
+        const data = 'Kumpulkan dua titik data lagi. Amati: Apakah mereka mengakui dampaknya? Apakah mereka menyesuaikan perilaku tanpa defensif?';
+        const rule = '2-3 kencan pertama adalah observasi, bukan evaluasi. Cari konsistensi, bukan kesempurnaan.';
+        const friend = 'Pilih satu teman yang membumi untuk menjadi pemeriksa kewarasan Anda. Jalankan pengamatan Anda oleh mereka.';
+        const slow = 'Bagikan cerita pribadi non-kritis terlebih dahulu. Amati apakah mereka memberi ruang sebelum melangkah lebih dalam.';
+
+        document.getElementById('t2-out-calibration').innerHTML = calibration;
+        document.getElementById('t2-out-protection').innerHTML = protection;
+        document.getElementById('t2-out-data').innerHTML = data;
+        document.getElementById('t2-out-rule').innerHTML = rule;
+        document.getElementById('t2-out-friend').innerHTML = friend;
+        document.getElementById('t2-out-slow').innerHTML = slow;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', 'Kalibrasi Kepercayaan', `<p><strong>Kalibrasi:</strong> ${calibration}</p><br><strong>Data:</strong> ${data}`);
+    }
+
+    // ========================================
+    // TOOL 3: RED / GREEN FLAG
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_worry').value = 'Mereka menyalahkan semua mantan mereka dan tampaknya memiliki drama dengan semua orang.';
+        document.getElementById('t3_comfort').value = 'Mereka mengirim pesan secara konsisten dan mengingat detail yang saya sebutkan.';
+        document.getElementById('t3_exes').value = 'Menyalahkan semua';
+        document.getElementById('t3_conflict').value = 'Menghindari';
+        document.getElementById('t3_boundaries').value = 'Belum diuji';
+        showToast('Contoh dimuat: Sinyal campuran');
+    }
+
+    function analyzeTool3() {
+        const worry = document.getElementById('t3_worry').value || 'Kekhawatiran dijelaskan';
+        const comfort = document.getElementById('t3_comfort').value || 'Kenyamanan dijelaskan';
+        const exes = document.getElementById('t3_exes').value;
+        const conflict = document.getElementById('t3_conflict').value;
+        const boundaries = document.getElementById('t3_boundaries').value;
+
+        let redScore = 0;
+        let greenScore = 0;
+
+        if (exes === 'Menyalahkan semua' || exes === 'Menjelek-jelekkan') redScore += 3;
+        else if (exes === 'Dengan hormat' || exes === 'Tampak sudah pulih') greenScore += 3;
+
+        if (conflict === 'Meningkat cepat' || conflict === 'Menutup diri') redScore += 3;
+        else if (conflict === 'Diskusi konstruktif' || conflict === 'Mendengarkan') greenScore += 3;
+
+        if (boundaries === 'Mengabaikan' || boundaries === 'Menguji dengan lembut') redScore += 4;
+        else if (boundaries === 'Menghormati') greenScore += 4;
+
+        const redText = `Tingkat Keparahan Bendera Merah: ${redScore}/7. ${redScore >= 4 ? 'Ini memerlukan perhatian hati-hati.' : 'Sinyal merah terbatas sejauh ini.'}`;
+        const greenText = `Kekuatan Bendera Hijau: ${greenScore}/7. ${greenScore >= 4 ? 'Indikator positif untuk diamati.' : 'Sinyal hijau terbatas sejauh ini.'}`;
+        const amber = `Respon konflik: "${conflict}". Amati: Apakah mereka mengambil tanggung jawab? Apakah mereka memperbaiki? Apakah mereka belajar?`;
+        let plan = '';
+        if (redScore >= 6) plan = 'BERHENTI ATAU AKHIRI — Risiko tinggi pola berulang. Percayai akumulasi sinyal.';
+        else if (greenScore >= 6 && redScore <= 2) plan = 'LANJUTKAN DENGAN AMAN — Indikator positif. Lanjutkan mengamati konsistensi.';
+        else plan = 'LANJUTKAN DENGAN HATI-HATI — Lanjutkan mengumpulkan data. Satu sinyal bukanlah vonis.';
+        const prompt = `"Bolehkah saya bertanya bagaimana hubungan terakhir Anda berakhir dan apa yang Anda harapkan Anda lakukan berbeda?" (Dengarkan penyalahan vs. refleksi)`;
+
+        document.getElementById('t3-out-red').innerHTML = redText;
+        document.getElementById('t3-out-green').innerHTML = greenText;
+        document.getElementById('t3-out-amber').innerHTML = amber;
+        document.getElementById('t3-out-plan').innerHTML = plan;
+        document.getElementById('t3-out-prompt').innerText = prompt;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', 'Bendera Merah / Hijau', `<p>${redText}</p><br><p>${greenText}</p><br><code>${prompt}</code>`);
+    }
+
+    // ========================================
+    // TOOL 4: VULNERABILITY PLAN
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_overshare').value = 'Saya cenderung membagikan trauma hubungan dan ketakutan terdalam saya di awal.';
+        document.getElementById('t4_hide').value = 'Saya menyembunyikan preferensi kecil saya—di mana makan, apa yang ingin saya lakukan. Saya tidak ingin terlihat sulit.';
+        document.getElementById('t4_attachment').value = 'Cemas';
+        document.getElementById('t4_feel').value = 'Seperti ujian';
+        document.getElementById('t4_their').value = 'Berjaga tapi berusaha';
+        showToast('Contoh dimuat: Berbagi berlebihan sambil menyembunyikan kebutuhan');
+    }
+
+    function analyzeTool4() {
+        const overshare = document.getElementById('t4_overshare').value || 'Berbagi berlebihan dijelaskan';
+        const hide = document.getElementById('t4_hide').value || 'Sembunyikan dijelaskan';
+        const attachment = document.getElementById('t4_attachment').value;
+        const feel = document.getElementById('t4_feel').value;
+        const their = document.getElementById('t4_their').value;
+
+        const pacing = `Pendekatan fleksibel: Kencan awal: cerita kehidupan umum, hobi, karier. Kencan selanjutnya (setelah beberapa konsistensi): nilai, ekspektasi hubungan, pelajaran masa lalu. Riwayat pribadi yang lebih dalam hanya jika diperoleh melalui timbal balik.`;
+        const check = `Anda berbagi berlebihan: ${escapeHTML(overshare)}. Anda menyembunyikan: ${escapeHTML(hide)}. Pertimbangkan untuk melatih berbagi preferensi kecil saat ini terlebih dahulu.`;
+        const reciprocity = `Jangan investasikan kerentanan yang lebih dalam daripada yang ditandingi oleh orang lain. Perhatikan: Apakah mereka mengajukan pertanyaan? Apakah mereka mengingat apa yang Anda katakan? Apakah mereka membagikan sesuatu tentang diri mereka?`;
+        const topics = `Topik aman: ambisi karier, kenangan perjalanan, batasan komunikasi, preferensi musik, buku/film yang Anda sukai.`;
+        const phrase = `"Saya belum siap membicarakan itu, tetapi saya akan memberi tahu Anda saat saya siap."`;
+
+        document.getElementById('t4-out-pacing').innerHTML = pacing;
+        document.getElementById('t4-out-check').innerHTML = check;
+        document.getElementById('t4-out-reciprocity').innerHTML = reciprocity;
+        document.getElementById('t4-out-topics').innerHTML = topics;
+        document.getElementById('t4-out-phrase').innerText = phrase;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', 'Rencana Kerentanan', `<p>${pacing}</p><br><code>${phrase}</code>`);
+    }
+
+    // ========================================
+    // TOOL 5: SELF-CHECK
+    // ========================================
+    function loadSampleTool5() {
+        const values = [6, 9, 3, 7, 8, 3];
+        const ids = ['t5_q1','t5_q2','t5_q3','t5_q4','t5_q5','t5_q6'];
+        const valIds = ['q1_val','q2_val','q3_val','q4_val','q5_val','q6_val'];
+        ids.forEach((id, i) => {
+            document.getElementById(id).value = values[i];
+            document.getElementById(valIds[i]).innerText = values[i];
+        });
+        showToast('Contoh dimuat: Siap hati-hati dengan kemampuan melihat kebaikan rendah');
+    }
+
+    function analyzeTool5() {
+        const scores = [
+            parseInt(document.getElementById('t5_q1').value) || 5,
+            parseInt(document.getElementById('t5_q2').value) || 5,
+            parseInt(document.getElementById('t5_q3').value) || 5,
+            parseInt(document.getElementById('t5_q4').value) || 5,
+            parseInt(document.getElementById('t5_q5').value) || 5,
+            parseInt(document.getElementById('t5_q6').value) || 5
+        ];
+        const labels = [
+            'Saya merasa utuh sendiri.',
+            'Saya percaya kemampuan saya melihat bahaya.',
+            'Saya percaya kemampuan saya melihat kebaikan.',
+            'Saya berkencan untuk menambah hidup saya, bukan memperbaikinya.',
+            'Saya bisa pergi jika tidak tepat.',
+            'Saya berharap tentang koneksi yang sehat.'
+        ];
+        const avg = scores.reduce((a,b) => a + b, 0) / 6;
+
+        // Dashboard
+        let dashboardHTML = '';
+        scores.forEach((s, i) => {
+            const pct = (s / 10) * 100;
+            dashboardHTML += `
+                <div style="margin-bottom:0.5rem;">
+                    <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                        <span>${labels[i]}</span>
+                        <span><strong>${s}/10</strong></span>
+                    </div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" style="width:${pct}%;"></div></div>
+                </div>
+            `;
+        });
+        document.getElementById('t5-out-dashboard').innerHTML = dashboardHTML;
+
+        let verdict = '';
+        if (avg >= 7.5) verdict = 'Siap untuk Koneksi Sehat — Anda berada di tempat yang membumi.';
+        else if (avg >= 5) verdict = 'Siap dengan Hati-hati — Anda memiliki pekerjaan yang harus dilakukan, tetapi Anda berada di jalur yang benar.';
+        else verdict = 'Fokus pada Pemulihan Diri Terlebih Dahulu — Berkencan mungkin lebih cenderung bersifat kompensatif saat ini.';
+
+        let focus = '';
+        if (scores[2] < 5) {
+            focus = 'Fokus pada mengenali perilaku yang aman dan tenang tanpa menganggapnya sebagai kebosanan. Latih memperhatikan konsistensi.';
+        } else {
+            focus = 'Teruslah berlatih menjauh dari batasan yang tidak dapat dinegosiasikan. Anda dapat melihat bahaya—sekarang latih untuk menghormatinya.';
+        }
+
+        const pacing = 'Saran: Pertimbangkan untuk mengatur kecepatan diri sendiri—maksimal satu kencan per minggu dapat membantu Anda tetap membumi. Ini adalah heuristik, bukan aturan.';
+        const affirmation = 'Anda tidak rusak. Anda berpengalaman. Kewaspadaan Anda bukanlah kerusakan—itu adalah pembelajaran.';
+
+        document.getElementById('t5-out-verdict').innerHTML = verdict;
+        document.getElementById('t5-out-focus').innerHTML = focus;
+        document.getElementById('t5-out-pacing').innerHTML = pacing;
+        document.getElementById('t5-out-affirmation').innerHTML = affirmation;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', 'Cek Diri', `<p><strong>Putusan:</strong> ${verdict}</p><br><p><strong>Fokus:</strong> ${focus}</p>`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

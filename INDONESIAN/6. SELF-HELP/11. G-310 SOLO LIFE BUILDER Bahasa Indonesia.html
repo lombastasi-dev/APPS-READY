@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solo Life Builder™ - Arsitektur Hidup Mandiri & Koneksi Sosial</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  
+  <style>
+    :root {
+      --primary: #C2410C;
+      --primary-hover: #9A3412;
+      --primary-light: #FFEDD5;
+      --primary-border: #FDBA74;
+      --bg-cream-start: #FFFBEB;
+      --bg-cream-end: #FEF3C7;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --card-bg: #FFFFFF;
+      --card-border: #F3F4F6;
+      --sidebar-width: 250px;
+      --radius-xl: 1rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, var(--bg-cream-start), var(--bg-cream-end));
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Layout Structure */
+    #app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Sidebar */
+    aside#sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      box-shadow: var(--shadow-sm);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 40;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.25rem 1rem;
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      color: var(--primary);
+    }
+
+    .sidebar-header i {
+      font-size: 1.5rem;
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.125rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.025em;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0.75rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background-color: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .nav-item.active {
+      background-color: var(--primary);
+      color: #FFFFFF;
+      font-weight: 600;
+    }
+
+    .nav-item.active i {
+      color: #FFFFFF;
+    }
+
+    .nav-item i {
+      font-size: 1rem;
+      width: 1.25rem;
+      text-align: center;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background-color: var(--card-border);
+      margin: 0.5rem 0;
+    }
+
+    /* Mobile Header & Overlay */
+    .mobile-header {
+      display: none;
+      background-color: #FFFFFF;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--card-border);
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-title {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.4);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    /* Main Content */
+    main#main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 2rem 1.5rem 4rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 840px;
+    }
+
+    /* Views */
+    .view {
+      display: none;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .view.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Common Card Styles */
+    .card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(243, 244, 246, 0.8);
+    }
+
+    /* Typography & Headers */
+    .hero-header {
+      margin-bottom: 1.75rem;
+      text-align: left;
+    }
+
+    .hero-header h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      margin-bottom: 0.4rem;
+    }
+
+    .hero-header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .problem-banner {
+      background-color: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-bottom: 1.5rem;
+      color: var(--primary-hover);
+      font-weight: 500;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1px solid #D1D5DB;
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background-color: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.15);
+    }
+
+    .range-slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .range-slider-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--primary);
+    }
+
+    .slider-value {
+      font-weight: 700;
+      color: var(--primary);
+      min-width: 2.5rem;
+      text-align: center;
+      background: var(--primary-light);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .radio-label input[type="radio"] {
+      accent-color: var(--primary);
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.5rem;
+    }
+
+    .btn {
+      padding: 0.65rem 1.15rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.875rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      border: none;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-secondary {
+      background-color: #FFFFFF;
+      color: var(--primary);
+      border: 1px solid var(--primary-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: var(--primary-light);
+    }
+
+    .btn-outline {
+      background-color: #FFFFFF;
+      color: var(--text-main);
+      border: 1px solid #D1D5DB;
+    }
+
+    .btn-outline:hover {
+      background-color: #F3F4F6;
+    }
+
+    .btn-copy {
+      padding: 0.35rem 0.75rem;
+      font-size: 0.8rem;
+      background-color: #F3F4F6;
+      color: #374151;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover {
+      background-color: #E5E7EB;
+      color: #111827;
+    }
+
+    /* Outputs & Results */
+    .output-section {
+      margin-top: 2rem;
+      display: none;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .output-section.active {
+      display: block;
+    }
+
+    .output-header {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 0.5rem;
+    }
+
+    .output-box {
+      background-color: #FAF9F6;
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid #E5E7EB;
+    }
+
+    .output-box h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: #111827;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .output-box ul {
+      list-style-type: none;
+    }
+
+    .output-box li {
+      position: relative;
+      padding-left: 1.5rem;
+      margin-bottom: 0.6rem;
+      font-size: 0.9rem;
+      color: #374151;
+    }
+
+    .output-box li::before {
+      content: "•";
+      position: absolute;
+      left: 0.5rem;
+      color: var(--primary);
+      font-weight: bold;
+    }
+
+    .script-item {
+      background-color: #FFFFFF;
+      border: 1px dashed #D1D5DB;
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.875rem;
+      color: #1F2937;
+      position: relative;
+    }
+
+    .script-text {
+      font-style: italic;
+      color: #4B5563;
+      margin-bottom: 0.5rem;
+    }
+
+    /* Dashboard Grid */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 2rem;
+    }
+
+    .dash-card {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.25rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(243, 244, 246, 0.8);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-border);
+    }
+
+    .dash-card-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      background-color: var(--primary-light);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .dash-card h3 {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .dash-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      flex: 1;
+    }
+
+    /* Daily Connection Pulse */
+    .daily-check-container {
+      background-color: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+      border: 1px solid var(--primary-light);
+    }
+
+    .daily-check-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .daily-check-header i {
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+
+    .rating-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .rate-btn {
+      flex: 1;
+      min-width: 90px;
+      padding: 0.6rem 0.5rem;
+      border: 1px solid #E5E7EB;
+      background: #FAFAFA;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .rate-btn:hover, .rate-btn.selected {
+      background-color: var(--primary-light);
+      border-color: var(--primary-border);
+      color: var(--primary-hover);
+      font-weight: 600;
+    }
+
+    .assessment-feedback {
+      margin-top: 1rem;
+      padding: 0.85rem;
+      background-color: #FFFBEB;
+      border-radius: var(--radius-md);
+      border-left: 3px solid var(--primary);
+      font-size: 0.875rem;
+      color: #9A3412;
+      display: none;
+    }
+
+    /* Qualitative Snapshot Grid */
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .snapshot-card {
+      background: #FFFFFF;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 1rem;
+    }
+
+    .snapshot-card-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 0.25rem;
+    }
+
+    .snapshot-card-status {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* History Accordion */
+    .history-section {
+      margin-top: 2rem;
+      border-top: 1px solid #E5E7EB;
+      padding-top: 1rem;
+    }
+
+    .history-toggle {
+      background: none;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0;
+      width: 100%;
+      text-align: left;
+    }
+
+    .history-toggle:hover {
+      color: var(--primary);
+    }
+
+    .history-content {
+      display: none;
+      padding-top: 1rem;
+    }
+
+    .history-content.active {
+      display: block;
+    }
+
+    .history-item {
+      background-color: #FAFAFA;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--radius-md);
+      padding: 0.85rem;
+      margin-bottom: 0.75rem;
+      font-size: 0.85rem;
+      position: relative;
+    }
+
+    .history-timestamp {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-bottom: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .clear-history-btn {
+      font-size: 0.75rem;
+      color: #DC2626;
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      text-decoration: underline;
+    }
+
+    /* Toast Notification */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background-color: #1F2937;
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.875rem;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      z-index: 100;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Footer */
+    footer.app-footer {
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(229, 231, 235, 0.6);
+      background-color: rgba(255, 255, 255, 0.5);
+      margin-top: auto;
+    }
+
+    /* Print Styles */
+    @media print {
+      aside#sidebar, .mobile-header, .btn-group, .history-section, .problem-banner, footer, #toast, .rate-btn {
+        display: none !important;
+      }
+      main#main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 0 !important;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .output-section {
+        display: block !important;
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      aside#sidebar {
+        transform: translateX(-100%);
+      }
+
+      aside#sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      main#main-content {
+        margin-left: 0;
+        padding: 1.25rem 1rem 3rem 1rem;
+      }
+
+      .hero-header h2 {
+        font-size: 1.5rem;
+      }
+
+      #toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        text-align: center;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Seluler -->
+  <div class="mobile-header">
+    <div class="mobile-title">
+      <i class="fa-solid fa-house-user"></i>
+      <span>Solo Life Builder™</span>
+    </div>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Buka menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+
+  <!-- Overlay Sidebar -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div id="app-container">
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-house-user"></i>
+        <h1>Solo Life Builder™</h1>
+      </div>
+      <ul class="nav-list">
+        <li>
+          <a class="nav-item active" data-view="dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dasbor Utama</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="reset7">
+            <i class="fa-solid fa-compass"></i>
+            <span>Reset Solo 7 Hari</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li>
+          <a class="nav-item" data-view="tool1">
+            <i class="fa-solid fa-comments"></i>
+            <span>Perancang Koneksi</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool2">
+            <i class="fa-solid fa-list-check"></i>
+            <span>Mesin Bebas Beban Rumah</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool3">
+            <i class="fa-solid fa-store"></i>
+            <span>Pencari Tempat Ketiga</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool4">
+            <i class="fa-solid fa-moon"></i>
+            <span>Pemutus Isolasi Mandiri</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="tool5">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Auditor Jaringan Bantuan</span>
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li>
+          <a class="nav-item" data-view="plan">
+            <i class="fa-solid fa-file-contract"></i>
+            <span>Rencana Hidup Solo Saya</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="history">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+            <span>Riwayat Terpadu</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-view="privacy">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Privasi & Kontrol</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Konten Utama -->
+    <main id="main-content">
+      <div class="content-wrapper">
+
+        <!-- TAMPILAN DASBOR -->
+        <section id="view-dashboard" class="view active">
+          <div class="hero-header">
+            <h2>Solo Life Builder™</h2>
+            <p>Ubah kehidupan mandiri Anda menjadi fondasi yang kokoh untuk kemandirian, perawatan diri, dan hubungan yang bermakna.</p>
+          </div>
+
+          <!-- Kartu Penilaian Denyut Koneksi Harian -->
+          <div class="daily-check-container">
+            <div class="daily-check-header">
+              <i class="fa-solid fa-calendar-check"></i>
+              <div>
+                <h3 style="font-size: 1rem; font-weight: 600;">Denyut Koneksi Harian</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted);">Pemeriksaan mandiri 1 menit untuk mengukur interaksi sosial Anda hari ini (bukan penilaian klinis).</p>
+              </div>
+            </div>
+            <p style="font-size: 0.9rem; font-weight: 500;">Seberapa terhubung perasaan Anda hari ini?</p>
+            <div class="rating-buttons" id="daily-rating-buttons">
+              <button class="rate-btn" data-rate="1">1 - Terisolasi</button>
+              <button class="rate-btn" data-rate="2">2 - Rendah</button>
+              <button class="rate-btn" data-rate="3">3 - Cukup</button>
+              <button class="rate-btn" data-rate="4">4 - Terhubung</button>
+              <button class="rate-btn" data-rate="5">5 - Sangat Baik</button>
+            </div>
+            <div class="assessment-feedback" id="assessment-feedback"></div>
+          </div>
+
+          <!-- Gambaran Kualitatif -->
+          <div class="card" style="padding: 1.25rem;">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-main);">Ringkasan Infrastruktur Hidup Solo Anda</h3>
+            <div class="snapshot-grid" id="dashboard-snapshot-grid">
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Kontak Manusia</div>
+                <div class="snapshot-card-status" id="snap-contact">Belum Dinilai</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Beban Rumah Tangga</div>
+                <div class="snapshot-card-status" id="snap-load">Belum Dinilai</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Kefasihan Lokal</div>
+                <div class="snapshot-card-status" id="snap-places">Belum Dinilai</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Jam-jam Sulit</div>
+                <div class="snapshot-card-status" id="snap-hours">Belum Dinilai</div>
+              </div>
+              <div class="snapshot-card">
+                <div class="snapshot-card-title">Jaringan Bantuan</div>
+                <div class="snapshot-card-status" id="snap-support">Belum Dinilai</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Kisi Kartu Alat -->
+          <div class="dash-grid">
+            <div class="dash-card" data-target="tool1">
+              <div class="dash-card-icon"><i class="fa-solid fa-comments"></i></div>
+              <h3>Perancang Koneksi Berkala</h3>
+              <p>Rancang titik temu harian dan mingguan yang ringan sesuai dengan tingkat energi Anda.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool2">
+              <div class="dash-card-icon"><i class="fa-solid fa-list-check"></i></div>
+              <h3>Mesin Beban Rumah Solo</h3>
+              <p>Sederhanakan pekerjaan rumah, kelelahan mengambil keputusan, dan porsi memasak sendiri tanpa repot.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool3">
+              <div class="dash-card-icon"><i class="fa-solid fa-store"></i></div>
+              <h3>Perencana "Tempat Ketiga"</h3>
+              <p>Temukan kategori tempat komunitas untuk membangun keakraban lokal tanpa tekanan.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool4">
+              <div class="dash-card-icon"><i class="fa-solid fa-moon"></i></div>
+              <h3>Pemutus Rantai Isolasi</h3>
+              <p>Atasi malam hari atau akhir pekan yang terasa sepi dengan rutinitas jangkar yang menenangkan.</p>
+            </div>
+
+            <div class="dash-card" data-target="tool5">
+              <div class="dash-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3>Auditor Jaringan Bantuan</h3>
+              <p>Evaluasi jaring pengaman praktis/emosional dan siapkan skrip percakapan santai dengan tetangga.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN RESET SOLO 7 HARI -->
+        <section id="view-reset7" class="view">
+          <div class="hero-header">
+            <h2>Reset Hidup Solo 7 Hari</h2>
+            <p>Urutan terstruktur dari hari ke hari untuk membangun fondasi infrastruktur hidup mandiri yang esensial.</p>
+          </div>
+          <div class="card">
+            <div style="display: flex; flex-direction: column; gap: 1rem;">
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 1: Identifikasi Prioritas & Stabilkan</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Selesaikan penilaian Denyut Koneksi Harian dan pilih satu hambatan terbesar yang paling mengganggu pikiran Anda saat ini.</p>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 2: Rancang Cetak Biru Koneksi</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Gunakan Perancang Koneksi untuk menentukan 1–2 aktivitas sosial ringan yang konsisten.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool1')">Buka Perancang Koneksi</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 3: Sederhanakan Beban Rumah Tangga</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Atur Mesin Beban Rumah Tangga untuk membuat Rutinitas Minimum dan rencana memasak yang praktis.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool2')">Buka Mesin Beban Rumah</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 4: Uji Coba Kategori "Tempat Ketiga"</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Pilih satu lokasi yang nyaman dan rencanakan kunjungan santai selama 30 menit untuk mengamati suasana.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool3')">Buka Perencana Tempat Ketiga</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 5: Rencanakan Jam-Jam Sulit</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Buat protokol Khusus Malam Hari atau Akhir Pekan menggunakan Pemutus Rantai Isolasi.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool4')">Buka Pemutus Rantai Isolasi</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 6: Audit Bantuan & Akses Darurat</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Audit kontak darurat praktis Anda dan siapkan Kartu Darurat Digital.</p>
+                <button class="btn btn-secondary" style="margin-top: 0.5rem;" onclick="switchView('tool5')">Buka Auditor Bantuan</button>
+              </div>
+              <div class="output-box" style="margin: 0;">
+                <h4 style="color: var(--primary);">Hari 7: Konsolidasikan Rencana Induk Anda</h4>
+                <p style="font-size: 0.9rem; color: #374151;">Tinjau Rencana Hidup Solo terpadu Anda, cetak atau salin salinannya, dan pilih langkah eksperimen selanjutnya.</p>
+                <button class="btn btn-primary" style="margin-top: 0.5rem;" onclick="switchView('plan')">Lihat Rencana Induk</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALAT 1: PERANCANG KONEKSI BERKALA -->
+        <section id="view-tool1" class="view">
+          <div class="hero-header">
+            <h2>Perancang Koneksi Berkala</h2>
+            <p>Atur titik temu sosial yang ringan secara alami ke dalam rutinitas mingguan Anda.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Tinggal sendirian terkadang membuat seseorang melewatkan beberapa hari berturut-turut tanpa interaksi sosial yang bermakna."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool1">
+              <div class="form-group">
+                <label for="t1-touchpoints">Frekuensi interaksi sosial mingguan saat ini:</label>
+                <select id="t1-touchpoints" class="form-control">
+                  <option value="0-1">0-1 kali per minggu</option>
+                  <option value="2-3">2-3 kali per minggu</option>
+                  <option value="4+">4+ kali per minggu</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-style">Gaya koneksi yang disukai:</label>
+                <select id="t1-style" class="form-control">
+                  <option value="low">Energi Rendah (Pesan singkat, interaksi kasual di kedai kopi)</option>
+                  <option value="structured">Terstruktur (Klub hobi, kelas malam, klub buku)</option>
+                  <option value="active">Aktif (Jalan santai, olahraga, kegiatan luar ruangan)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-time">Waktu luang yang tersedia:</label>
+                <select id="t1-time" class="form-control">
+                  <option value="evenings">Malam hari pada hari kerja</option>
+                  <option value="mornings">Pagi hari di akhir pekan</option>
+                  <option value="lunch">Jam istirahat siang & jeda harian</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Buat Cetak Biru
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t1">
+                  <i class="fa-solid fa-flask"></i> Muat Contoh Skenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool1', 'output-t1')">Atur Ulang</button>
+              </div>
+            </form>
+
+            <!-- Wadah Output -->
+            <div id="output-t1" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-calendar-week"></i>
+                <span>Arsitektur Koneksi Anda</span>
+              </div>
+
+              <div class="output-box">
+                <h4>RINGKASAN KONEKSI ANDA</h4>
+                <p id="t1-snapshot-text" style="font-size:0.9rem; color:#374151;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>CETAK BIRU KONEKSI MINGGUAN</h4>
+                <ul id="t1-blueprint-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>PILIHAN KONEKSI MIKRO (Pilih 1-2 Setiap Hari)</h4>
+                <ul id="t1-micro-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>TEMPLATE PESAN / SAPAAN</h4>
+                <div id="t1-templates-list"></div>
+              </div>
+            </div>
+
+            <!-- Akordeon Riwayat -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t1" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Rencana Tersimpan Sebelumnya
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t1" class="history-content">
+                <div id="hist-list-tool1"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool1')">Hapus Riwayat Alat Ini</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALAT 2: MESIN BEBAN RUMAH TANGGA & RUTINITAS SOLO -->
+        <section id="view-tool2" class="view">
+          <div class="hero-header">
+            <h2>Mesin Bebas Beban Rumah Solo</h2>
+            <p>Sederhanakan pengelolaan rumah, porsi memasak sendiri, dan pengambilan keputusan untuk mencegah kelelahan mental.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Mengurus semua pekerjaan rumah, makanan, dan keputusan sendirian bisa memicu kelelahan kognitif."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool2">
+              <div class="form-group">
+                <label for="t2-burden">Beban harian terbesar saat tinggal sendiri:</label>
+                <select id="t2-burden" class="form-control">
+                  <option value="cooking">Memasak & merencanakan makanan untuk satu porsi</option>
+                  <option value="chores">Pekerjaan rumah & perawatan harian</option>
+                  <option value="boredom">Rasa sepi & kebingungan di akhir pekan</option>
+                  <option value="fatigue">Kelelahan mengambil keputusan & beban pikiran</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t2-structure">Struktur rutinitas saat ini:</label>
+                <select id="t2-structure" class="form-control">
+                  <option value="chaotic">Berantakan / Tidak Terstruktur</option>
+                  <option value="rigid">Mengekang / Sangat Melelahkan</option>
+                  <option value="medium">Cukup Seimbang</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-gears"></i> Optimalkan Rutinitas
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t2">
+                  <i class="fa-solid fa-flask"></i> Muat Contoh Skenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool2', 'output-t2')">Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="output-t2" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-sliders"></i>
+                <span>Strategi Rutinitas Rumah Tangga</span>
+              </div>
+
+              <div class="output-box">
+                <h4>STRATEGI RUMAH TANGGA MINIMUM</h4>
+                <p id="t2-strategy-text" style="font-size:0.9rem; color:#374151;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>PETA RUTINITAS PRAKTIS SOLO</h4>
+                <ul id="t2-routine-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>PANDUAN "MASAK SEKALI, MAKAN DUA KALI"</h4>
+                <ul id="t2-meal-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>MATRIKS JANGKAR AKHIR PEKAN</h4>
+                <ul id="t2-weekend-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>SATU HAL YANG HARUS BERHENTI DIOPTIMALKAN</h4>
+                <p id="t2-stop-optimizing" style="font-size:0.9rem; color:#C2410C; font-weight:600;"></p>
+              </div>
+            </div>
+
+            <!-- Akordeon Riwayat -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t2" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Rutinitas Tersimpan Sebelumnya
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t2" class="history-content">
+                <div id="hist-list-tool2"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool2')">Hapus Riwayat Alat Ini</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALAT 3: PENCARI TEMPAT KETIGA & PERENCANA KETERLIBATAN -->
+        <section id="view-tool3" class="view">
+          <div class="hero-header">
+            <h2>Perencana "Tempat Ketiga"</h2>
+            <p>Temukan kategori tempat yang nyaman di luar rumah dan tempat kerja untuk membangun rasa keakraban dengan lingkungan sekitar.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Hanya berpindah tempat antara rumah dan lokasi kerja dapat mengurangi rasa memiliki terhadap lingkungan sosial sekitar."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool3">
+              <div class="form-group">
+                <label for="t3-interest">Minat Utama / Suasana yang Disukai:</label>
+                <select id="t3-interest" class="form-control">
+                  <option value="reading">Membaca / Kafe Tenang / Menulis</option>
+                  <option value="fitness">Olahraga / Luar Ruangan / Panjat Tebing</option>
+                  <option value="creative">Kreatif / Seni / Kerajinan Tangan</option>
+                  <option value="tech">Permainan Papan (Board Games) / Teknologi / Komunitas Game</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t3-comfort">Tingkat kenyamanan sosial di ruang publik (1 = Sangat Canggung, 10 = Sangat Nyaman):</label>
+                <div class="range-slider-container">
+                  <input type="range" id="t3-comfort" min="1" max="10" value="4" class="form-control" oninput="document.getElementById('comfort-val').innerText = this.value">
+                  <span id="comfort-val" class="slider-value">4</span>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-location-dot"></i> Cari & Rencanakan Tempat Ketiga
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t3">
+                  <i class="fa-solid fa-flask"></i> Muat Contoh Skenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool3', 'output-t3')">Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="output-t3" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-map-location-dot"></i>
+                <span>Cetak Biru Komunitas Anda</span>
+              </div>
+
+              <div class="output-box">
+                <h4>RINGKASAN TINGKAT KENYAMANAN ANDA</h4>
+                <p id="t3-snapshot-text" style="font-size:0.9rem; color:#374151;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>3 KATEGORI TEMPAT REKOMENDASI TERATAS</h4>
+                <ul id="t3-places-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>EKSPERIMEN KEAKRABAN 4 MINGGU</h4>
+                <ul id="t3-playbook-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>OPSI SKRIP PERCAKAPAN RINGAN</h4>
+                <div id="t3-scripts-list"></div>
+              </div>
+            </div>
+
+            <!-- Akordeon Riwayat -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t3" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Tempat Tersimpan Sebelumnya
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t3" class="history-content">
+                <div id="hist-list-tool3"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool3')">Hapus Riwayat Alat Ini</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALAT 4: PEMUTUS RANTAI ISOLASI MALAM HARI & AKHIR PEKAN -->
+        <section id="view-tool4" class="view">
+          <div class="hero-header">
+            <h2>Pemutus Rantai Isolasi Mandiri</h2>
+            <p>Hentikan pola rasa sepi atau kesepian yang tidak nyaman selama jam-jam rawan di malam hari atau akhir pekan.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Waktu luang di malam hari atau akhir pekan yang tidak terstruktur terkadang memicu rasa terisolasi atau kecemasan."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool4">
+              <div class="form-group">
+                <label for="t4-timing">Kapan jam-jam sulit terasa paling berat?</label>
+                <select id="t4-timing" class="form-control">
+                  <option value="friday">Jumat malam menjelang akhir pekan</option>
+                  <option value="sunday">Minggu sore / kecemasan menghadapi Senin</option>
+                  <option value="late">Larut malam sebelum tidur</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t4-emotion">Pola emosi utama saat jam-jam tersebut:</label>
+                <select id="t4-emotion" class="form-control">
+                  <option value="restlessness">Gelisah / Tidak Bisa Diam</option>
+                  <option value="sadness">Sedih / Hampa</option>
+                  <option value="dread">Cemas / Khawatir Berlebihan</option>
+                  <option value="boredom">Bosan / Kehilangan Arah</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-bolt"></i> Putus Pola Kesepian
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t4">
+                  <i class="fa-solid fa-flask"></i> Muat Contoh Skenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool4', 'output-t4')">Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="output-t4" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <span>Protokol Pemutus Rantai Isolasi</span>
+              </div>
+
+              <div class="output-box">
+                <h4>RESET 10 MENIT PERTAMA</h4>
+                <p id="t4-reset-text" style="font-size:0.9rem; color:#374151; font-weight:600;"></p>
+              </div>
+
+              <div class="output-box">
+                <h4>PROTOKOL JANGKAR MALAM HARI</h4>
+                <ul id="t4-protocol-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>STRATEGI BATASAN DIGITAL</h4>
+                <ul id="t4-boundary-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>MENU KENYAMANAN DIRI (5 Alternatif Positif)</h4>
+                <ul id="t4-menu-list"></ul>
+              </div>
+            </div>
+
+            <!-- Akordeon Riwayat -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t4" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Protokol Tersimpan Sebelumnya
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t4" class="history-content">
+                <div id="hist-list-tool4"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool4')">Hapus Riwayat Alat Ini</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ALAT 5: AUDITOR JARINGAN BANTUAN DARURAT -->
+        <section id="view-tool5" class="view">
+          <div class="hero-header">
+            <h2>Auditor Jaringan Bantuan Darurat</h2>
+            <p>Pastikan keselamatan praktis, bantuan fisik, dan dukungan emosional selalu siap saat Anda membutuhkannya.</p>
+          </div>
+
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i>
+            <span>"Saat tinggal sendiri, memiliki rencana cadangan untuk kebutuhan fisik dan emosional adalah hal yang sangat berharga."</span>
+          </div>
+
+          <div class="card">
+            <form id="form-tool5">
+              <div class="form-group">
+                <label for="t5-physical">Siapa yang bisa membantu Anda dalam keadaan darurat fisik? (misal: mengantar ke rumah sakit, menitip kunci)</label>
+                <input type="text" id="t5-physical" class="form-control" placeholder="Nama atau 'Belum Ada'">
+              </div>
+
+              <div class="form-group">
+                <label for="t5-emotional">Siapa yang bisa Anda hubungi jika merasa tertekan secara emosional di larut malam?</label>
+                <input type="text" id="t5-emotional" class="form-control" placeholder="Nama atau 'Ragu/Belum Yakin'">
+              </div>
+
+              <div class="form-group">
+                <label>Apakah kontak utama Anda memiliki kunci cadangan atau akses darurat ke tempat tinggal Anda?</label>
+                <div class="radio-group" style="margin-top: 0.5rem;">
+                  <label class="radio-label">
+                    <input type="radio" name="t5-key" value="ya"> Ya
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="t5-key" value="tidak" checked> Tidak
+                  </label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-clipboard-check"></i> Audit Jaringan Bantuan
+                </button>
+                <button type="button" class="btn btn-secondary" id="btn-sample-t5">
+                  <i class="fa-solid fa-flask"></i> Muat Contoh Skenario
+                </button>
+                <button type="button" class="btn btn-outline" onclick="resetToolForm('form-tool5', 'output-t5')">Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="output-t5" class="output-section">
+              <div class="output-header">
+                <i class="fa-solid fa-shield-heart"></i>
+                <span>Hasil Audit Jaringan & Rencana Aksi</span>
+              </div>
+
+              <div class="output-box">
+                <h4>LAPORAN AUDIT JARINGAN PREPARASI</h4>
+                <ul id="t5-audit-list"></ul>
+              </div>
+
+              <div class="output-box">
+                <h4>PROTOKOL HUBUNGI TETANGGA</h4>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Template ramah dan santai untuk bertukar kontak dengan tetangga:</p>
+                <div id="t5-neighbor-template"></div>
+              </div>
+
+              <div class="output-box">
+                <h4>KARTU DARURAT DIGITAL</h4>
+                <div id="t5-card-preview" style="background:#FFFFFF; border:1px solid #D1D5DB; padding:1rem; border-radius:var(--radius-md); font-size:0.875rem;"></div>
+                <div style="margin-top: 0.75rem;">
+                  <button class="btn btn-copy" onclick="copyEmergencyCard()"><i class="fa-regular fa-copy"></i> Salin Kartu Darurat</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Akordeon Riwayat -->
+            <div class="history-section">
+              <button class="history-toggle" data-accordion="hist-t5" aria-expanded="false">
+                <i class="fa-solid fa-clock-rotate-left"></i> Audit Tersimpan Sebelumnya
+                <i class="fa-solid fa-chevron-down" style="margin-left:auto;"></i>
+              </button>
+              <div id="hist-t5" class="history-content">
+                <div id="hist-list-tool5"></div>
+                <button class="clear-history-btn" onclick="clearToolHistory('tool5')">Hapus Riwayat Alat Ini</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- RENCANA HIDUP SOLO SAYA (TAMPILAN SINTESIS) -->
+        <section id="view-plan" class="view">
+          <div class="hero-header">
+            <h2>Rencana Hidup Solo Saya</h2>
+            <p>Arsitektur terpadu untuk kehidupan mandiri, rutinitas harian, dan hubungan sosial Anda.</p>
+          </div>
+
+          <div class="card">
+            <div class="btn-group" style="margin-top:0; margin-bottom: 1.5rem;">
+              <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana Induk</button>
+              <button class="btn btn-secondary" onclick="copyMasterPlan()"><i class="fa-regular fa-copy"></i> Salin Teks Rencana</button>
+            </div>
+
+            <div id="plan-content">
+              <div class="output-box">
+                <h4>STATUS DENYUT KONEKSI HARIAN</h4>
+                <p id="plan-pulse-status" style="font-size:0.9rem; color:#374151;">Belum ada denyut yang dicatat hari ini.</p>
+              </div>
+
+              <div class="output-box">
+                <h4>JANGKAR KONEKSI BERKALA</h4>
+                <div id="plan-connection-body" style="font-size:0.9rem; color:#374151;">Selesaikan Modul 1 untuk mengisi bagian ini.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>RUTINITAS MINIMUM RUMAH TANGGA</h4>
+                <div id="plan-household-body" style="font-size:0.9rem; color:#374151;">Selesaikan Modul 2 untuk mengisi bagian ini.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>EKSPERIMEN TEMPAT KETIGA LOKAL</h4>
+                <div id="plan-places-body" style="font-size:0.9rem; color:#374151;">Selesaikan Modul 3 untuk mengisi bagian ini.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>PROTOKOL JAM-JAM SULIT</h4>
+                <div id="plan-hours-body" style="font-size:0.9rem; color:#374151;">Selesaikan Modul 4 untuk mengisi bagian ini.</div>
+              </div>
+
+              <div class="output-box">
+                <h4>JARINGAN BANTUAN & KONTAK DARURAT</h4>
+                <div id="plan-support-body" style="font-size:0.9rem; color:#374151;">Selesaikan Modul 5 untuk mengisi bagian ini.</div>
+              </div>
+
+              <div class="output-box" style="border-left: 4px solid var(--primary);">
+                <h4>REKOMENDASI LINTAS MODUL</h4>
+                <ul id="plan-recommendations-list">
+                  <li>Selesaikan modul secara individu untuk menerima prioritas terintegrasi yang disesuaikan untuk Anda.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN RIWAYAT TERPADU -->
+        <section id="view-history" class="view">
+          <div class="hero-header">
+            <h2>Riwayat Aktivitas Terpadu</h2>
+            <p>Tinjau kembali seluruh sesi refleksi yang tersimpan di semua modul Solo Life Builder Anda.</p>
+          </div>
+
+          <div class="card">
+            <div id="unified-history-container">
+              <p style="color:var(--text-muted); font-size:0.9rem;">Belum ada riwayat tersimpan di modul mana pun.</p>
+            </div>
+            <div style="margin-top: 1.5rem;">
+              <button class="clear-history-btn" onclick="clearGlobalHistory()">Hapus Seluruh Riwayat Aplikasi</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN PRIVASI & KONTROL -->
+        <section id="view-privacy" class="view">
+          <div class="hero-header">
+            <h2>Privasi & Kontrol Data</h2>
+            <p>Data Anda sepenuhnya bersifat pribadi dan tersimpan di dalam peramban (browser) Anda secara lokal.</p>
+          </div>
+
+          <div class="card">
+            <div class="output-box">
+              <h4>100% PENYIMPANAN LOKAL</h4>
+              <p style="font-size:0.9rem; color:#374151; margin-bottom:0.5rem;">Solo Life Builder berjalan sepenuhnya di dalam peramban web Anda. Tidak ada refleksi, kontak darurat, atau jawaban yang pernah dikirimkan ke server atau basis data eksternal mana pun.</p>
+            </div>
+
+            <div class="output-box">
+              <h4>PERINGATAN PERANGKAT TERBAGI / PUBLIK</h4>
+              <p style="font-size:0.9rem; color:#374151;">Jika Anda menggunakan komputer publik atau digunakan bersama orang lain, pastikan untuk menghapus riwayat Anda menggunakan tombol di bawah ini sebelum menutup sesi untuk melindungi kontak darurat dan refleksi pribadi Anda.</p>
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-secondary" onclick="clearGlobalHistory()"><i class="fa-solid fa-trash"></i> Hapus Semua Data Penyimpanan Lokal</button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    Digunakan untuk membangun rutinitas pribadi dan perencanaan sosial. Bukan merupakan terapi klinis, diagnosis psikologis, atau layanan tanggap darurat medis.
+  </footer>
+
+  <!-- Notifikasi Toast -->
+  <div id="toast">
+    <i class="fa-solid fa-check-circle"></i>
+    <span id="toast-message">Berhasil disalin ke papan klip!</span>
+  </div>
+
+  <!-- Logika Aplikasi JavaScript -->
+  <script>
+    // --- Sanitasi HTML Aman ---
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // --- Arsitektur Status Global ---
+    const STORAGE_KEY = 'sololife_v2_state';
+    const HISTORY_KEY_PREFIX = 'sololife_v2_history_';
+
+    let appState = {
+      dailyPulse: { date: null, value: null },
+      completedTools: [],
+      toolResults: {},
+      currentInputs: {},
+      version: "2.0"
+    };
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          appState = Object.assign(appState, JSON.parse(raw));
+        }
+      } catch (e) {
+        console.warn('Gagal membaca status dari localStorage', e);
+      }
+    }
+
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+      } catch (e) {
+        console.warn('Gagal menyimpan status ke localStorage', e);
+      }
+      updateDashboardSnapshot();
+      updateMasterPlan();
+    }
+
+    // --- Manajemen Navigasi ---
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+
+      const navItems = document.querySelectorAll('.nav-item');
+      const views = document.querySelectorAll('.view');
+      const dashCards = document.querySelectorAll('.dash-card');
+      const sidebar = document.getElementById('sidebar');
+      const sidebarOverlay = document.getElementById('sidebar-overlay');
+      const hamburgerBtn = document.getElementById('hamburger-btn');
+
+      window.switchView = function(viewId) {
+        views.forEach(v => v.classList.remove('active'));
+        navItems.forEach(item => item.classList.remove('active'));
+
+        const targetView = document.getElementById(`view-${viewId}`);
+        if (targetView) {
+          targetView.classList.add('active');
+        }
+
+        const activeNavItem = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+        if (activeNavItem) {
+          activeNavItem.classList.add('active');
+        }
+
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+
+        if (viewId === 'plan') updateMasterPlan();
+        if (viewId === 'history') renderUnifiedHistory();
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const viewId = item.getAttribute('data-view');
+          switchView(viewId);
+        });
+      });
+
+      dashCards.forEach(card => {
+        card.addEventListener('click', () => {
+          const target = card.getAttribute('data-target');
+          switchView(target);
+        });
+      });
+
+      hamburgerBtn.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        sidebarOverlay.classList.toggle('open');
+      });
+
+      sidebarOverlay.addEventListener('click', () => {
+        sidebar.classList.remove('open');
+        sidebarOverlay.classList.remove('open');
+      });
+
+      // --- Notifikasi Toast ---
+      window.showToast = function(message = "Berhasil disalin!") {
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-message');
+        toastMsg.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2200);
+      };
+
+      window.copyText = function(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(text).then(() => showToast("Berhasil disalin ke papan klip!")).catch(() => fallbackCopy(text));
+        } else {
+          fallbackCopy(text);
+        }
+      };
+
+      function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try {
+          document.execCommand('copy');
+          showToast("Berhasil disalin ke papan klip!");
+        } catch (e) {
+          showToast("Gagal menyalin");
+        }
+        document.body.removeChild(ta);
+      }
+
+      // --- Logika Denyut Koneksi Harian ---
+      const rateBtns = document.querySelectorAll('.rate-btn');
+      const feedbackBox = document.getElementById('assessment-feedback');
+
+      const feedbackResponses = {
+        '1': "Hari ini mungkin akan terasa lebih baik dengan satu interaksi sosial ringan yang direncanakan untuk mencairkan suasana.",
+        '2': "Interaksi sosial cukup rendah hari ini. Pertimbangkan satu tindakan koneksi kecil seperti jalan santai atau pesan suara singkat.",
+        '3': "Irama yang seimbang hari ini! Kontak sosial Anda sudah terpenuhi. Jaga waktu istirahat solo Anda atau sapa teman dekat.",
+        '4': "Titik temu sosial yang sangat baik hari ini! Pertahankan ritme yang nyaman ini.",
+        '5': "Energi sosial yang luar biasa hari ini! Pastikan juga untuk mengisi ulang energi Anda dengan waktu santai yang tenang."
+      };
+
+      rateBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          rateBtns.forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          const val = btn.getAttribute('data-rate');
+          feedbackBox.style.display = 'block';
+          feedbackBox.innerHTML = `<strong>Panduan Denyut Koneksi:</strong> ${escapeHTML(feedbackResponses[val])}`;
+          
+          appState.dailyPulse = { date: new Date().toLocaleDateString('id-ID'), value: val };
+          saveState();
+        });
+      });
+
+      // Pulihkan denyut harian jika tersimpan hari ini
+      if (appState.dailyPulse && appState.dailyPulse.date === new Date().toLocaleDateString('id-ID') && appState.dailyPulse.value) {
+        const activeBtn = document.querySelector(`.rate-btn[data-rate="${appState.dailyPulse.value}"]`);
+        if (activeBtn) {
+          activeBtn.classList.add('selected');
+          feedbackBox.style.display = 'block';
+          feedbackBox.innerHTML = `<strong>Panduan Denyut Koneksi:</strong> ${escapeHTML(feedbackResponses[appState.dailyPulse.value])}`;
+        }
+      }
+
+      // --- Mesin Riwayat Penyimpanan Lokal ---
+      window.saveToHistory = function(toolId, summaryText, dataObj) {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        let history = [];
+        try {
+          history = JSON.parse(localStorage.getItem(key) || '[]');
+        } catch (e) { history = []; }
+
+        const entry = {
+          timestamp: new Date().toLocaleString('id-ID', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+          summary: summaryText,
+          data: dataObj
+        };
+
+        history.unshift(entry);
+        if (history.length > 30) history = history.slice(0, 30);
+        
+        try {
+          localStorage.setItem(key, JSON.stringify(history));
+        } catch (e) { console.warn('Gagal menyimpan riwayat alat', e); }
+
+        renderToolHistory(toolId);
+      };
+
+      function renderToolHistory(toolId) {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        let history = [];
+        try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { history = []; }
+        
+        const container = document.getElementById(`hist-list-${toolId}`);
+        if (!container) return;
+
+        if (history.length === 0) {
+          container.innerHTML = `<p style="color:var(--text-muted); font-size:0.8rem;">Belum ada riwayat tersimpan untuk alat ini.</p>`;
+          return;
+        }
+
+        container.innerHTML = history.map((item, idx) => `
+          <div class="history-item">
+            <div class="history-timestamp">
+              <span><i class="fa-regular fa-clock"></i> ${escapeHTML(item.timestamp)}</span>
+              <button style="background:none; border:none; color:#DC2626; cursor:pointer;" onclick="deleteHistoryItem('${toolId}', ${idx})">Hapus</button>
+            </div>
+            <div>${escapeHTML(item.summary)}</div>
+          </div>
+        `).join('');
+      }
+
+      window.deleteHistoryItem = function(toolId, index) {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        let history = JSON.parse(localStorage.getItem(key) || '[]');
+        history.splice(index, 1);
+        localStorage.setItem(key, JSON.stringify(history));
+        renderToolHistory(toolId);
+        showToast("Item dihapus");
+      };
+
+      window.clearToolHistory = function(toolId) {
+        if (confirm("Apakah Anda yakin ingin menghapus riwayat alat ini?")) {
+          localStorage.removeItem(`${HISTORY_KEY_PREFIX}${toolId}`);
+          renderToolHistory(toolId);
+          showToast("Riwayat alat berhasil dihapus");
+        }
+      };
+
+      window.clearGlobalHistory = function() {
+        if (confirm("Apakah Anda yakin ingin menghapus SELURUH data dan riwayat yang tersimpan?")) {
+          localStorage.clear();
+          appState = { dailyPulse: { date: null, value: null }, completedTools: [], toolResults: {}, currentInputs: {}, version: "2.0" };
+          location.reload();
+        }
+      };
+
+      // Toggle Akordeon
+      document.querySelectorAll('.history-toggle').forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const targetId = toggle.getAttribute('data-accordion');
+          const content = document.getElementById(targetId);
+          const expanded = toggle.getAttribute('aria-expanded') === 'true';
+          toggle.setAttribute('aria-expanded', !expanded);
+          if (content) {
+            content.classList.toggle('active');
+            const icon = toggle.querySelector('.fa-chevron-down, .fa-chevron-up');
+            if (icon) {
+              icon.classList.toggle('fa-chevron-down');
+              icon.classList.toggle('fa-chevron-up');
+            }
+          }
+        });
+      });
+
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderToolHistory);
+      updateDashboardSnapshot();
+
+      // ==========================================
+      // ALAT 1: PERANCANG KONEKSI BERKALA
+      // ==========================================
+      const formT1 = document.getElementById('form-tool1');
+      document.getElementById('btn-sample-t1').addEventListener('click', () => {
+        document.getElementById('t1-touchpoints').value = '0-1';
+        document.getElementById('t1-style').value = 'low';
+        document.getElementById('t1-time').value = 'evenings';
+        generateTool1(true);
+      });
+
+      formT1.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool1(false);
+      });
+
+      function generateTool1(isSample) {
+        const touchpoints = document.getElementById('t1-touchpoints').value;
+        const style = document.getElementById('t1-style').value;
+        const time = document.getElementById('t1-time').value;
+
+        let blueprint = [];
+        if (style === 'low') {
+          blueprint = [
+            "Senin & Rabu: Pesan kopi atau makan siang secara langsung; lakukan tegur sapa singkat 1-2 kalimat dengan staf.",
+            "Selasa Malam: Kirim pesan singkat, meme, atau tautan menarik ke teman tanpa beban harus mengobrol panjang.",
+            "Kamis Malam: Jalan santai di sekitar rumah selama 15 menit pada jam-jam ramai sore/malam.",
+            "Jumat Malam: Beli makanan secara langsung di kedai lokal favorit dibanding memesan pengiriman online.",
+            "Akhir Pekan: Luangkan waktu 30 menit untuk membaca di kafe lokal atau perpustakaan."
+          ];
+        } else if (style === 'structured') {
+          blueprint = [
+            "Senin: Berpartisipasi dalam komunitas online terstruktur atau forum hobi.",
+            "Rabu Malam: Hadiri lokakarya, kelas malam, atau pertemuan kelompok minat khusus lokal.",
+            "Kamis Siang: Jadwalkan minum kopi santai selama 20 menit dengan rekan kerja atau tetangga.",
+            "Sabtu Pagi: Ikut serta dalam jam membaca di perpustakaan atau kegiatan relawan.",
+            "Minggu Sore: Sesi bekerja atau membaca bersama di kafe lokal yang tenang."
+          ];
+        } else {
+          blueprint = [
+            "Selasa Malam: Ikuti kelas olahraga kelompok lokal, klub lari, atau aktivitas luar ruangan.",
+            "Kamis Malam: Bergabung dengan kelompok jalan santai lingkungan.",
+            "Sabtu Pagi: Ikuti kegiatan lari pagi, jalan alam, atau latihan bersama di taman.",
+            "Minggu Pagi: Kunjungi pasar kaget atau pasar tradisional di jam ramainya.",
+            "Pertengahan Minggu: Jalan-jalan luar ruangan selama 20 menit saat jam istirahat siang."
+          ];
+        }
+
+        const micro = [
+          "Sampaikan sapaan ramah atau ucapan 'Terima kasih' kepada 2 staf pelayanan hari ini.",
+          "Bukakan pintu atau tahan lift untuk tetangga dengan senyuman ramah.",
+          "Kirim pesan singkat 'Semoga harimu menyenangkan dan lancar ya'.",
+          "Tinggalkan komentar positif dan tulus pada unggahan media sosial teman.",
+          "Duduk di dekat orang lain di ruang publik selama 20 menit tanpa menggunakan earphone."
+        ];
+
+        const templates = [
+          { label: "Pesan Sapaan Santai", text: "Halo! Teringat kamu hari ini. Semoga minggumu lancar ya! Kalau ada waktu luang kapan-kapan, yuk ngopi santai." },
+          { label: "Sapaan untuk Tetangga / Kenalan", text: "Halo! Semoga harimu menyenangkan. Aku mau jalan santai sebentar keliling kompleks—kalau mau ikutan gabung, kabari saja ya!" },
+          { label: "Ajakan Ringan Tanpa Paksaan", text: "Halo! Akhir pekan ini aku rencana mau mampir ke bazar lokal sebentar. Santai saja kalau lagi sibuk, tapi kalau mau bareng, ajak saja ya!" }
+        ];
+
+        const snapText = `Tingkat Saat Ini: ${touchpoints} interaksi/minggu | Gaya: ${style.toUpperCase()} | Waktu Luang: ${time}`;
+        
+        document.getElementById('t1-snapshot-text').innerText = snapText;
+        document.getElementById('t1-blueprint-list').innerHTML = blueprint.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t1-micro-list').innerHTML = micro.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t1-templates-list').innerHTML = templates.map(t => `
+          <div class="script-item">
+            <strong>${escapeHTML(t.label)}</strong>
+            <p class="script-text">"${escapeHTML(t.text)}"</p>
+            <button class="btn-copy" onclick="copyText('${escapeHTML(t.text).replace(/'/g, "\\'")}')">Salin Template</button>
+          </div>
+        `).join('');
+
+        document.getElementById('output-t1').classList.add('active');
+
+        const resultObj = { touchpoints, style, time, blueprint, micro, templates };
+        appState.toolResults['tool1'] = resultObj;
+        if (!appState.completedTools.includes('tool1')) appState.completedTools.push('tool1');
+        saveState();
+
+        const summary = `${isSample ? '[Contoh] ' : ''}Gaya: ${style.toUpperCase()} | Waktu: ${time}`;
+        saveToHistory('tool1', summary, resultObj);
+      }
+
+      // ==========================================
+      // ALAT 2: MESIN BEBAN RUMAH TANGGA SOLO
+      // ==========================================
+      const formT2 = document.getElementById('form-tool2');
+      document.getElementById('btn-sample-t2').addEventListener('click', () => {
+        document.getElementById('t2-burden').value = 'cooking';
+        document.getElementById('t2-structure').value = 'chaotic';
+        generateTool2(true);
+      });
+
+      formT2.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool2(false);
+      });
+
+      function generateTool2(isSample) {
+        const burden = document.getElementById('t2-burden').value;
+        const structure = document.getElementById('t2-structure').value;
+
+        let routines = [];
+        let meals = [];
+        let stopOpt = "";
+
+        if (burden === 'cooking') {
+          routines = [
+            "Tetapkan rotasi menu standar 3 jenis makanan per minggu untuk menghilangkan beban memikirkan menu setiap hari.",
+            "Tentukan 'Jam Persiapan' tetap di hari Minggu untuk memotong bumbu dan menyiapkan bahan dasar."
+          ];
+          meals = [
+            "Memasak Porsi Ganda: Panggang protein & sayuran; olah porsi kedua menjadi mangkuk nasi/sereal hangat besoknya.",
+            "Bahan Dasar Sekaligus: Masak nasi atau karbohidrat sekaligus untuk bahan nasi goreng atau salad dingin.",
+            "Masakan Satu Wajan: Buat telur dadar sayur (frittata) atau tumisan simpel 15 menit untuk meminimalkan cuci piring."
+          ];
+          stopOpt = "Berhenti memaksa diri memasak resep rumit dengan banyak bahan setiap malam.";
+        } else if (burden === 'chores') {
+          routines = [
+            "Sesi Bersih 15 Menit: Pasang pengingat waktu (timer) setelah pulang kerja; berhenti saat alarm berbunyi.",
+            "Aturan Sekali Sentuh: Langsung letakkan sepatu, kunci, dan surat di tempatnya begitu tiba di rumah."
+          ];
+          meals = [
+            "Makanan Satu Panci: Minimalkan cucian piring dengan membuat sup, soto, atau hidangan panggang satu wadah."
+          ];
+          stopOpt = "Berhenti menuntut rumah harus sempurna setiap hari; tetapkan 'Standar Cukup' saja.";
+        } else {
+          routines = [
+            "Pekerjaan Terjadwal: Tetapkan pekerjaan rumah tertentu pada hari tertentu agar pikiran tidak terbebani.",
+            "Reset Hari Minggu: Luangkan waktu 30 menit untuk menyiapkan kalender dan daftar belanjaan minggu depan."
+          ];
+          meals = [
+            "Matriks Makan Siang Standar: Santai saja dengan mengonsumsi 2-3 pilihan menu makan siang yang sama selama hari kerja."
+          ];
+          stopOpt = "Berhenti mengevaluasi ulang rutinitas setiap pagi; ikuti saja jadwal otomatis yang sudah dibuat.";
+        }
+
+        const weekendList = [
+          "Jangkar Sabtu Pagi: Jadwal tetap pukul 09.00 pagi untuk mampir ke kafe atau toko roti lokal.",
+          "Waktu Kreasi Sabtu Sore: 2 jam khusus untuk hobi pribadi atau proyek kreatif.",
+          "Reset Minggu Malam: Siapkan teh hangat, periksa kalender minggu depan, dan nyalakan lampu temaram pukul 19.00."
+        ];
+
+        const stratText = `Beban Utama: ${burden.toUpperCase()} | Struktur Saat Ini: ${structure.toUpperCase()}`;
+
+        document.getElementById('t2-strategy-text').innerText = stratText;
+        document.getElementById('t2-routine-list').innerHTML = routines.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t2-meal-list').innerHTML = meals.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t2-weekend-list').innerHTML = weekendList.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t2-stop-optimizing').innerText = stopOpt;
+
+        document.getElementById('output-t2').classList.add('active');
+
+        const resultObj = { burden, structure, routines, meals, weekendList, stopOpt };
+        appState.toolResults['tool2'] = resultObj;
+        if (!appState.completedTools.includes('tool2')) appState.completedTools.push('tool2');
+        saveState();
+
+        const summary = `${isSample ? '[Contoh] ' : ''}Beban: ${burden.toUpperCase()} | Struktur: ${structure}`;
+        saveToHistory('tool2', summary, resultObj);
+      }
+
+      // ==========================================
+      // ALAT 3: PENCARI TEMPAT KETIGA
+      // ==========================================
+      const formT3 = document.getElementById('form-tool3');
+      document.getElementById('btn-sample-t3').addEventListener('click', () => {
+        document.getElementById('t3-interest').value = 'reading';
+        document.getElementById('t3-comfort').value = '3';
+        document.getElementById('comfort-val').innerText = '3';
+        generateTool3(true);
+      });
+
+      formT3.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool3(false);
+      });
+
+      function generateTool3(isSample) {
+        const interest = document.getElementById('t3-interest').value;
+        const comfort = parseInt(document.getElementById('t3-comfort').value);
+
+        let places = [];
+        if (interest === 'reading') {
+          places = [
+            "Kafe Lokal Lingkungan Komunal dengan meja bersama (Kategori)",
+            "Ruang Baca Perpustakaan Daerah atau taman dalam yang tenang (Kategori)",
+            "Toko Buku Independen Lokal yang menyediakan tempat duduk (Kategori)"
+          ];
+        } else if (interest === 'fitness') {
+          places = [
+            "Area bersantai di Arena Bouldering / Panjat Tebing (Kategori)",
+            "Jalur Olahraga Komunitas atau Rute Taman Kota (Kategori)",
+            "Studio Yoga Lokal atau Kelas Gerak (Kategori)"
+          ];
+        } else if (interest === 'creative') {
+          places = [
+            "Studio Seni Komunitas atau Ruang Kerajinan Keramik (Kategori)",
+            "Kelompok Merajut / Kerajinan Tangan di toko lokal (Kategori)",
+            "Area Bersantai Museum atau Galeri Seni (Kategori)"
+          ];
+        } else {
+          places = [
+            "Kafe Permainan Papan (Board Game Cafe) ruang bermain terbuka (Kategori)",
+            "Bengkel Komunitas Teknologi / Makerspace (Kategori)",
+            "Toko Hobi Lokal dengan meja bermain santai (Kategori)"
+          ];
+        }
+
+        let playbook = [];
+        if (comfort <= 3) {
+          playbook = [
+            "Minggu 1 (Observasi): Kunjungi lokasi selama 20 menit saat jam-jam sepi. Cari tempat duduk yang paling nyaman.",
+            "Minggu 2 (Pengulangan): Datang kembali pada hari dan jam yang sama. Pesan makanan/minuman yang sama.",
+            "Minggu 3 (Keakraban): Berikan anggukan ramah kepada staf tanpa perlu mengobrol panjang.",
+            "Minggu 4 (Evaluasi): Amati apakah tempat tersebut mulai terasa akrab dan tentukan apakah akan menjadikannya tempat langganan."
+          ];
+        } else {
+          playbook = [
+            "Minggu 1 (Eksplorasi): Kunjungi saat jam ramai dan amati suasananya.",
+            "Minggu 2 (Kunjungan Rutin): Datang kembali dan luangkan waktu 45 menit untuk menikmati aktivitas Anda.",
+            "Minggu 3 (Interaksi Mikro): Ajukan pertanyaan sederhana atau lontarkan pujian singkat kepada staf.",
+            "Minggu 4 (Status Langganan): Ikuti acara publik berkala atau lokakarya terbuka di tempat tersebut."
+          ];
+        }
+
+        const scripts = [
+          { label: "Komentar ke Staf", text: "Permisi, saya suka sekali suasana di sini—kalau boleh tahu, daftar lagunya (playlist) judulnya apa ya?" },
+          { label: "Sapaan Duduk Bersama", text: "Permisi, apakah kursi di sebelah sini kosong?" },
+          { label: "Topik Pembuka Santai", text: "Halo, maaf mengganggu sebentar, saya lihat buku yang dibaca menarik—bagaimana ceritanya sejauh ini?" }
+        ];
+
+        const snapText = `Suasana Minat: ${interest.toUpperCase()} | Kenyamanan Mandiri: ${comfort}/10`;
+
+        document.getElementById('t3-snapshot-text').innerText = snapText;
+        document.getElementById('t3-places-list').innerHTML = places.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t3-playbook-list').innerHTML = playbook.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t3-scripts-list').innerHTML = scripts.map(s => `
+          <div class="script-item">
+            <strong>${escapeHTML(s.label)}</strong>
+            <p class="script-text">"${escapeHTML(s.text)}"</p>
+            <button class="btn-copy" onclick="copyText('${escapeHTML(s.text).replace(/'/g, "\\'")}')">Salin Kalimat Pembuka</button>
+          </div>
+        `).join('');
+
+        document.getElementById('output-t3').classList.add('active');
+
+        const resultObj = { interest, comfort, places, playbook, scripts };
+        appState.toolResults['tool3'] = resultObj;
+        if (!appState.completedTools.includes('tool3')) appState.completedTools.push('tool3');
+        saveState();
+
+        const summary = `${isSample ? '[Contoh] ' : ''}Suasana: ${interest.toUpperCase()} | Kenyamanan: ${comfort}/10`;
+        saveToHistory('tool3', summary, resultObj);
+      }
+
+      // ==========================================
+      // ALAT 4: PEMUTUS RANTAI ISOLASI
+      // ==========================================
+      const formT4 = document.getElementById('form-tool4');
+      document.getElementById('btn-sample-t4').addEventListener('click', () => {
+        document.getElementById('t4-timing').value = 'sunday';
+        document.getElementById('t4-emotion').value = 'dread';
+        generateTool4(true);
+      });
+
+      formT4.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool4(false);
+      });
+
+      function generateTool4(isSample) {
+        const timing = document.getElementById('t4-timing').value;
+        const emotion = document.getElementById('t4-emotion').value;
+
+        const resetText = "Reset 10 Menit Pertama: Ubah suasana fisik Anda—minum segelas air/teh hangat, cuci muka, dan ganti pakaian dengan baju yang paling nyaman.";
+
+        const protocol = [
+          "Langkah 1 (Transisi): Redupkan lampu utama dan nyalakan lampu sudut yang hangat.",
+          "Langkah 2 (Suara Menenangkan): Putar podcast percakapan santai atau musik akustik lembut.",
+          "Langkah 3 (Aktivitas Fisik Ringan): Lakukan kegiatan tanpa layar hp (melipat pakaian, menyeduh teh/sup).",
+          "Langkah 4 (Penyegaran): Baca satu bab buku cerita atau lakukan peregangan ringan sebelum tidur."
+        ];
+
+        const boundaries = [
+          "Batasi penggunaan media sosial mulai pukul 18.00 untuk mencegah keinginan membandingkan diri.",
+          "Hindari membuka email pekerjaan setelah pukul 18.00 pada hari Minggu.",
+          "Ganti kebiasaan *scrolling* tanpa henti dengan mendengarkan buku suara (audiobook) atau menonton acara komedi favorit."
+        ];
+
+        const comfortMenu = [
+          "Seduh teh herbal hangat di cangkir favorit Anda.",
+          "Dengarkan 20 menit cerita menarik dari audiobook atau podcast.",
+          "Catat 3 hal kecil yang berjalan lancar dalam dua hari terakhir.",
+          "Tonton satu episode serial komedi favorit yang menghibur.",
+          "Gunakan handuk hangat di wajah atau wewangian aromaterapi untuk kenyamanan indra."
+        ];
+
+        document.getElementById('t4-reset-text').innerText = resetText;
+        document.getElementById('t4-protocol-list').innerHTML = protocol.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t4-boundary-list').innerHTML = boundaries.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t4-menu-list').innerHTML = comfortMenu.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+
+        document.getElementById('output-t4').classList.add('active');
+
+        const resultObj = { timing, emotion, resetText, protocol, boundaries, comfortMenu };
+        appState.toolResults['tool4'] = resultObj;
+        if (!appState.completedTools.includes('tool4')) appState.completedTools.push('tool4');
+        saveState();
+
+        const summary = `${isSample ? '[Contoh] ' : ''}Waktu: ${timing.toUpperCase()} | Pola: ${emotion}`;
+        saveToHistory('tool4', summary, resultObj);
+      }
+
+      // ==========================================
+      // ALAT 5: AUDITOR JARINGAN BANTUAN
+      // ==========================================
+      const formT5 = document.getElementById('form-tool5');
+      document.getElementById('btn-sample-t5').addEventListener('click', () => {
+        document.getElementById('t5-physical').value = 'Belum ada kontak terdekat';
+        document.getElementById('t5-emotional').value = 'Kakak (tinggal beda kota)';
+        document.querySelector('input[name="t5-key"][value="tidak"]').checked = true;
+        generateTool5(true);
+      });
+
+      formT5.addEventListener('submit', (e) => {
+        e.preventDefault();
+        generateTool5(false);
+      });
+
+      function generateTool5(isSample) {
+        const physical = document.getElementById('t5-physical').value.trim() || "Belum Ditentukan";
+        const emotional = document.getElementById('t5-emotional').value.trim() || "Belum Ditentukan";
+        const keyAccess = document.querySelector('input[name="t5-key"]:checked').value;
+
+        let auditReport = [];
+        if (physical.toLowerCase().includes('belum') || physical.toLowerCase().includes('ragu') || physical === "Belum Ditentukan") {
+          auditReport.push("Celah Utama: Belum ada kontak darurat fisik terdekat. Tindakan: Pertimbangkan untuk bertukar nomor telepon dengan tetangga.");
+        } else {
+          auditReport.push(`Kontak Bantuan Fisik: ${physical}`);
+        }
+
+        if (emotional.toLowerCase().includes('belum') || emotional.toLowerCase().includes('ragu') || emotional === "Belum Ditentukan") {
+          auditReport.push("Celah Emosional: Belum ada kontak khusus yang bisa dihubungi saat merasa tertekan di larut malam.");
+        } else {
+          auditReport.push(`Kontak Bantuan Emosional: ${emotional}`);
+        }
+
+        if (keyAccess === 'tidak') {
+          auditReport.push("Celah Akses Tempat Tinggal: Belum ada orang terdekat yang memegang kunci cadangan. Pertimbangkan menggunakan kotak kunci berkatasandi (lockbox).");
+        } else {
+          auditReport.push("Akses Aman: Minimal satu orang terpercaya memegang kunci cadangan tempat tinggal Anda.");
+        }
+
+        const neighborScript = "Halo! Saya [Nama Anda] dari rumah/unit [X]. Saya sedang merapikan kontak darurat dan terpikir betapa pentingnya saling kenal dengan tetangga terdekat, misalnya kalau ada paket atau kunci tertinggal! Ini nomor telepon saya ya, kalau butuh bantuan apa pun jangan ragu kabari.";
+
+        const cardHTML = `
+          <div style="border-left: 3px solid var(--primary); padding-left: 0.75rem;">
+            <p style="font-weight:700; color:var(--primary); margin-bottom:0.25rem;">KARTU KESIAPSIAGAAN DARURAT</p>
+            <p><strong>Bantuan Fisik:</strong> ${escapeHTML(physical)}</p>
+            <p><strong>Dukungan Emosional:</strong> ${escapeHTML(emotional)}</p>
+            <p><strong>Akses Kunci Cadangan:</strong> ${keyAccess === 'ya' ? 'Aman / Ada' : 'Perlu Lockbox / Bicarakan dengan Orang Terpercaya'}</p>
+          </div>
+        `;
+
+        document.getElementById('t5-audit-list').innerHTML = auditReport.map(i => `<li>${escapeHTML(i)}</li>`).join('');
+        document.getElementById('t5-neighbor-template').innerHTML = `
+          <div class="script-item">
+            <p class="script-text">"${escapeHTML(neighborScript)}"</p>
+            <button class="btn-copy" onclick="copyText('${escapeHTML(neighborScript).replace(/'/g, "\\'")}')">Salin Skrip Tetangga</button>
+          </div>
+        `;
+        document.getElementById('t5-card-preview').innerHTML = cardHTML;
+
+        document.getElementById('output-t5').classList.add('active');
+
+        const resultObj = { physical, emotional, keyAccess, auditReport, neighborScript };
+        appState.toolResults['tool5'] = resultObj;
+        if (!appState.completedTools.includes('tool5')) appState.completedTools.push('tool5');
+        saveState();
+
+        const summary = `${isSample ? '[Contoh] ' : ''}Fisik: ${physical} | Kunci Cadangan: ${keyAccess.toUpperCase()}`;
+        saveToHistory('tool5', summary, resultObj);
+      }
+
+      window.copyEmergencyCard = function() {
+        const res = appState.toolResults['tool5'];
+        if (!res) return;
+        const text = `SOLO LIFE BUILDER - KARTU KESIAPSIAGAAN DARURAT\nBantuan Fisik: ${res.physical}\nDukungan Emosional: ${res.emotional}\nAkses Kunci: ${res.keyAccess}`;
+        copyText(text);
+      };
+
+      window.resetToolForm = function(formId, outputId) {
+        document.getElementById(formId).reset();
+        document.getElementById(outputId).classList.remove('active');
+        showToast("Formulir diatur ulang");
+      };
+
+    });
+
+    // --- Ringkasan Kualitatif Dasbor ---
+    function updateDashboardSnapshot() {
+      const tr = appState.toolResults;
+      
+      document.getElementById('snap-contact').innerText = tr.tool1 ? `${tr.tool1.style.toUpperCase()} (${tr.tool1.touchpoints}/minggu)` : 'Belum Dinilai';
+      document.getElementById('snap-load').innerText = tr.tool2 ? `${tr.tool2.burden.toUpperCase()}` : 'Belum Dinilai';
+      document.getElementById('snap-places').innerText = tr.tool3 ? `${tr.tool3.interest.toUpperCase()} (${tr.tool3.comfort}/10)` : 'Belum Dinilai';
+      document.getElementById('snap-hours').innerText = tr.tool4 ? `${tr.tool4.timing.toUpperCase()}` : 'Belum Dinilai';
+      document.getElementById('snap-support').innerText = tr.tool5 ? (tr.tool5.physical.toLowerCase().includes('belum') ? 'Perlu Perhatian' : 'Berfungsi Baik') : 'Belum Dinilai';
+    }
+
+    // --- Mesin Sintesis Rencana Induk ---
+    function updateMasterPlan() {
+      const tr = appState.toolResults;
+
+      // Denyut Koneksi
+      if (appState.dailyPulse && appState.dailyPulse.value) {
+        document.getElementById('plan-pulse-status').innerText = `Denyut Hari Ini: ${appState.dailyPulse.value}/5 (Dicatat: ${appState.dailyPulse.date})`;
+      }
+
+      // Koneksi
+      if (tr.tool1) {
+        document.getElementById('plan-connection-body').innerHTML = `
+          <p><strong>Gaya:</strong> ${escapeHTML(tr.tool1.style.toUpperCase())} | <strong>Waktu Luang:</strong> ${escapeHTML(tr.tool1.time)}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool1.blueprint.slice(0, 3).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Rumah Tangga
+      if (tr.tool2) {
+        document.getElementById('plan-household-body').innerHTML = `
+          <p><strong>Fokus Beban:</strong> ${escapeHTML(tr.tool2.burden.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool2.routines.map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Tempat Ketiga
+      if (tr.tool3) {
+        document.getElementById('plan-places-body').innerHTML = `
+          <p><strong>Minat Suasana:</strong> ${escapeHTML(tr.tool3.interest.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool3.places.map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Jam Sulit
+      if (tr.tool4) {
+        document.getElementById('plan-hours-body').innerHTML = `
+          <p><strong>Waktu Fokus:</strong> ${escapeHTML(tr.tool4.timing.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool4.protocol.slice(0, 3).map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Jaringan Bantuan
+      if (tr.tool5) {
+        document.getElementById('plan-support-body').innerHTML = `
+          <p><strong>Bantuan Fisik:</strong> ${escapeHTML(tr.tool5.physical)} | <strong>Kunci Cadangan:</strong> ${escapeHTML(tr.tool5.keyAccess.toUpperCase())}</p>
+          <ul style="margin-top:0.5rem; padding-left:1.2rem;">${tr.tool5.auditReport.map(i => `<li>${escapeHTML(i)}</li>`).join('')}</ul>
+        `;
+      }
+
+      // Rekomendasi Terintegrasi
+      let recs = [];
+      if (appState.dailyPulse && parseInt(appState.dailyPulse.value) <= 2 && !tr.tool1) {
+        recs.push("Denyut koneksi harian Anda tergolong rendah—prioritaskan untuk menyelesaikan Modul 1 (Perancang Koneksi) untuk interaksi ringan.");
+      }
+      if (tr.tool1 && tr.tool1.touchpoints === '0-1' && !tr.tool3) {
+        recs.push("Tingkat koneksi Anda tergolong minim—cobalah menentukan 1 lokasi di Modul 3 (Tempat Ketiga) untuk membangun keakraban lingkungan sekitar.");
+      }
+      if (tr.tool5 && tr.tool5.physical.toLowerCase().includes('belum')) {
+        recs.push("Auditor Jaringan Bantuan mendeteksi belum adanya kontak darurat fisik terdekat—prioritaskan penggunaan template sapaan tetangga di Modul 5.");
+      }
+      if (recs.length === 0) {
+        recs.push("Infrastruktur kehidupan mandiri Anda sudah sangat seimbang! Tinjau hasil modul secara berkala untuk terus menyesuaikan rutinitas.");
+      }
+
+      document.getElementById('plan-recommendations-list').innerHTML = recs.map(r => `<li>${escapeHTML(r)}</li>`).join('');
+    }
+
+    window.copyMasterPlan = function() {
+      const el = document.getElementById('plan-content');
+      if (!el) return;
+      copyText(el.innerText);
+    };
+
+    // --- Penampil Riwayat Terpadu ---
+    function renderUnifiedHistory() {
+      const container = document.getElementById('unified-history-container');
+      if (!container) return;
+
+      let allHistory = [];
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+        const key = `${HISTORY_KEY_PREFIX}${toolId}`;
+        try {
+          const items = JSON.parse(localStorage.getItem(key) || '[]');
+          items.forEach(item => {
+            allHistory.push(Object.assign({ toolId }, item));
+          });
+        } catch (e) {}
+      });
+
+      if (allHistory.length === 0) {
+        container.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">Belum ada riwayat refleksi yang dicatat di modul mana pun.</p>`;
+        return;
+      }
+
+      container.innerHTML = allHistory.map(item => `
+        <div class="history-item" style="margin-bottom: 1rem;">
+          <div class="history-timestamp">
+            <strong style="color:var(--primary);">${escapeHTML(item.toolId.toUpperCase())}</strong>
+            <span>${escapeHTML(item.timestamp)}</span>
+          </div>
+          <p style="font-size:0.9rem; color:#374151;">${escapeHTML(item.summary)}</p>
+        </div>
+      `).join('');
+    }
+  </script>
+</body>
+</html>

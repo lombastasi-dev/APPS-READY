@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BERSAMA SETELAH KEHILANGAN™ — Perangkat Pemulihan Pasangan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --sage: #7B9C8C;
+            --sage-light: #D4E4D9;
+            --sage-dark: #5A7A6A;
+            --stone: #B8A99A;
+            --stone-light: #E8DDD4;
+            --warm-amber: #D4A373;
+            --warm-amber-light: #F5E6D3;
+            --bg-start: #F9F7F4;
+            --bg-end: #F0EEE9;
+            --card-bg: #FFFFFF;
+            --text-main: #2C3E3F;
+            --text-muted: #6B7A7A;
+            --border-color: #E8E3DE;
+            --success: #7B9C8C;
+            --warning: #D4A373;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-main); display: flex; min-height: 100vh; line-height: 1.6; }
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; top:0; bottom:0; left:0; z-index:1000; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:transform 0.3s ease; }
+        .sidebar-header { padding:1.5rem; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--sage); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--sage-dark); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+        .nav-item:hover { background-color:rgba(123,156,140,0.1); color:var(--sage-dark); }
+        .nav-item.active { background-color:var(--sage); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:60px; background-color:var(--card-bg); border-bottom:1px solid var(--border-color); padding:0 1.25rem; align-items:center; justify-content:space-between; z-index:900; box-shadow:var(--shadow-sm); }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--sage-dark); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--sage); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.3); z-index:950; }
+        .main-content { margin-left:var(--sidebar-width); flex-grow:1; padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; width:calc(100% - var(--sidebar-width)); }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid var(--border-color); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--sage-dark); margin-bottom:0.25rem; line-height:1.2; }
+        .hero-subtitle { font-size:1.1rem; font-weight:500; color:var(--sage); margin-bottom:0.5rem; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--sage); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(123,156,140,0.12); color:var(--sage); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(212,163,115,0.12); color:var(--warm-amber); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--sage-dark); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--sage-dark); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--sage); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:80px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--sage); }
+        .slider-value { font-weight:700; color:var(--sage); min-width:2.5rem; text-align:center; background:rgba(123,156,140,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--sage); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--sage-dark); }
+        .btn-secondary { background-color:rgba(212,163,115,0.15); color:var(--warm-amber); }
+        .btn-secondary:hover { background-color:rgba(212,163,115,0.25); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:#c0392b; color:#fff; }
+        .btn-danger:hover { background-color:#a93226; }
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(123,156,140,0.12); color:var(--sage-dark); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--sage); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--warm-amber); }
+        .result-block.success { border-left-color:var(--sage); }
+        .result-block.accent { border-left-color:var(--warm-amber); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--sage-dark); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--sage); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--sage-dark); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid var(--border-color); }
+        .problem-frame { background-color:rgba(212,163,115,0.08); border-left:3px solid var(--warm-amber); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--sage-dark); margin-bottom:1.5rem; font-weight:500; }
+        .partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+        .partner-box { background:#FAFAFA; padding:1rem; border-radius:0.5rem; border:1px solid var(--border-color); }
+        .partner-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--sage); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+        .checkbox-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .checkbox-grid label { font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; }
+        .connection-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:center; }
+        .connection-grid .dimension-label { font-weight:500; color:var(--text-main); }
+        .connection-grid .slider-container { width:100%; }
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .partner-grid { grid-template-columns:1fr; }
+            .checkbox-grid { grid-template-columns:1fr; }
+            .connection-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-solid fa-leaf" style="color:var(--sage);"></i><span>Bersama Setelah Kehilangan</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-leaf"></i><h1>Bersama Setelah Kehilangan</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dasbor</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-map"></i><span>Peta Duka</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-compass"></i><span>Langkah Selanjutnya</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-heart"></i><span>Perbaikan Keintiman</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-shield-halved"></i><span>Perisai Sosial</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-link"></i><span>Cek Koneksi</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat Saya</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privasi</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <p class="hero-subtitle">PERANGKAT PEMULIHAN PRAKTIS</p>
+                    <h2 class="hero-title">Bersama Setelah Kehilangan</h2>
+                    <p class="hero-tagline">Berduka bersama agar tidak berjauhan.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        Struktur praktis untuk menavigasi kehidupan, keputusan, dan keintiman setelah kehilangan kehamilan. Pahami gaya berduka yang berbeda, putuskan langkah selanjutnya, lindungi koneksi Anda, dan pilih satu langkah yang dapat dikelola dalam satu waktu.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-map"></i></div><h3>Peta Duka</h3><p>Pahami gaya berduka yang bertentangan, terjemahkan perasaan yang tak terucapkan, dan tetap terhubung tanpa mengubah cara berduka masing-masing pasangan.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-compass"></i></div><h3>Langkah Selanjutnya</h3><p>Putuskan apakah akan mencoba lagi, berhenti sejenak, atau berhenti tanpa panik atau ultimatum. Terjemahkan ketakutan menjadi perlindungan.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-heart"></i></div><h3>Perbaikan Keintiman</h3><p>Bangun kembali koneksi fisik non-klinis ketika seks terasa menakutkan, mekanis, atau memicu.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-shield-halved"></i></div><h3>Perisai Sosial</h3><p>Lindungi diri Anda dari komentar tidak sensitif dan kelebihan beban sosial dengan batasan lembut dan naskah.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-link"></i></div><h3>Cek Koneksi</h3><p>Nilai koneksi hubungan di seluruh domain duka utama dan identifikasi satu tindakan yang terarah.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: GRIEF MAP -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Peta Duka</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Kami berduka dengan cara yang sangat berbeda—saya merasa kami berbicara dalam bahasa yang berbeda."</div>
+                    <form id="form-tool1">
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan A</div>
+                                <div class="form-group"><label class="form-label">Gaya berduka</label><select id="t1_style_a"><option value="Emosional">Emosional — merasakan dalam-dalam, perlu bicara</option><option value="Praktis">Praktis — memproses melalui tindakan dan logistik</option><option value="Diam">Diam — berduka dengan tenang, perlu ruang</option><option value="Bersiklus cepat">Bersiklus cepat — gelombang duka yang intens</option></select></div>
+                                <div class="form-group"><label class="form-label">Bagaimana perasaan Anda saat ini?</label><textarea id="t1_feel_a" placeholder="Apa yang Anda rasakan?"></textarea></div>
+                            </div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan B</div>
+                                <div class="form-group"><label class="form-label">Gaya berduka</label><select id="t1_style_b"><option value="Emosional">Emosional — merasakan dalam-dalam, perlu bicara</option><option value="Praktis">Praktis — memproses melalui tindakan dan logistik</option><option value="Diam">Diam — berduka dengan tenang, perlu ruang</option><option value="Bersiklus cepat">Bersiklus cepat — gelombang duka yang intens</option></select></div>
+                                <div class="form-group"><label class="form-label">Bagaimana perasaan Anda saat ini?</label><textarea id="t1_feel_b" placeholder="Apa yang Anda rasakan?"></textarea></div>
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Seberapa sering Anda berbicara tentang kehilangan bersama?</label><select id="t1_talk"><option value="Sering">Sering — kami membicarakannya secara teratur</option><option value="Kadang-kadang">Kadang-kadang — kami cek in tetapi tidak selalu</option><option value="Jarang">Jarang — kami menghindari topik ini</option><option value="Tidak pernah">Tidak pernah — kami tidak membicarakannya</option></select></div>
+                        <div class="form-group"><label class="form-label">Apakah ada sesuatu yang tidak terucapkan yang ingin Anda katakan?</label><textarea id="t1_wish" placeholder="Sesuatu yang belum Anda bagikan..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-map"></i> Petakan Duka</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Peta Duka</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-map"></i> Gambaran Gaya Duka</div><p id="t1-out-styles">Gaya berduka Anda...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-arrows-left-right"></i> Di Mana Jarak Dapat Terbentuk</div><p id="t1-out-distance">Pola ketidakselarasan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-user"></i> Apa yang Mungkin Dibutuhkan Pasangan A</div><p id="t1-out-need_a">Kebutuhan Pasangan A...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-user"></i> Apa yang Mungkin Dibutuhkan Pasangan B</div><p id="t1-out-need_b">Kebutuhan Pasangan B...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-handshake"></i> Jembatan — Menyaksikan Tanpa Menyamakan</div><div class="script-box"><span id="t1-out-bridge">Pernyataan jembatan...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t1-out-bridge')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-candle"></i> Ritual Bersama</div><p id="t1-out-ritual">Praktik peringatan yang tenang...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Peta Duka Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Hapus Riwayat</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: THE NEXT STEP -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Langkah Selanjutnya</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Kami tidak tahu apakah harus mencoba lagi, berhenti sejenak, atau berhenti—dan kami takut membicarakannya."</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">Jumlah kehilangan</label><select id="t2_losses"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4+">4+</option></select></div>
+                        <div class="form-group"><label class="form-label">Panduan medis yang diterima</label><select id="t2_medical"><option value="Jalur jelas ke depan">Jalur jelas ke depan dari klinisi</option><option value="Tidak pasti">Tidak pasti / menunggu jawaban</option><option value="Tidak ada jawaban">Tidak ada jawaban jelas yang diterima</option><option value="Saran bertentangan">Saran bertentangan dari klinisi berbeda</option><option value="Belum mencari">Belum mencari saran spesialis</option></select></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan A</div><div class="form-group"><label class="form-label">Kecenderungan saat ini</label><select id="t2_lean_a"><option value="Coba lagi segera">Coba lagi segera</option><option value="Coba lagi nanti">Coba lagi nanti</option><option value="Berhenti sejenak tanpa batas">Berhenti sejenak tanpa batas</option><option value="Berhenti mencoba">Berhenti mencoba</option><option value="Tidak yakin">Tidak yakin</option></select></div></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan B</div><div class="form-group"><label class="form-label">Kecenderungan saat ini</label><select id="t2_lean_b"><option value="Coba lagi segera">Coba lagi segera</option><option value="Coba lagi nanti">Coba lagi nanti</option><option value="Berhenti sejenak tanpa batas">Berhenti sejenak tanpa batas</option><option value="Berhenti mencoba">Berhenti mencoba</option><option value="Tidak yakin">Tidak yakin</option></select></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Apa yang menakutkan dari mencoba lagi?</label><textarea id="t2_fear_yes" placeholder="Misalnya, Kehilangan lagi, trauma medis, beban emosional..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang menakutkan dari tidak mencoba?</label><textarea id="t2_fear_no" placeholder="Misalnya, Penyesalan, tidak pernah memiliki anak, kehilangan harapan..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-compass"></i> Navigasi Langkah Selanjutnya</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Langkah Selanjutnya</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrows-left-right"></i> Kesenjangan Kecenderungan</div><p id="t2-out-gap">Di mana Anda masing-masing berdiri...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-stethoscope"></i> Pemeriksaan Realitas Medis</div><p id="t2-out-medical">Konteks medis dan panduan klinisi...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-face-frown"></i> Terjemahan Ketakutan</div><p id="t2-out-fears">Apa yang mungkin dilindungi oleh ketakutan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-arrows-split-up-and-left"></i> Kerangka Berhenti / Lanjutkan / Hentikan</div><p id="t2-out-framework">Struktur percakapan non-ultimatum...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Percakapan Berikutnya</div><p id="t2-out-conversation">Apa yang perlu diperjelas sebelum keputusan akhir...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> Langkah Bersama Selanjutnya</div><p id="t2-out-next">Tindakan kecil yang dapat dibalik...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Analisis Langkah Selanjutnya Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Hapus Riwayat</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: INTIMACY REPAIR -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Perbaikan Keintiman</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Seks terasa menakutkan, mekanis, atau memicu—dan kami tidak tahu bagaimana kembali satu sama lain."</div>
+                    <form id="form-tool3">
+                        <div class="form-group"><label class="form-label">Seperti apa keintiman dulu antara Anda?</label><textarea id="t3_past" placeholder="Seperti apa koneksi Anda sebelum kehilangan?"></textarea></div>
+                        <div class="form-group"><label class="form-label">Seperti apa keintiman sekarang?</label><textarea id="t3_present" placeholder="Apa yang ada sekarang—jarak, ketakutan, tekanan, penghindaran?"></textarea></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan A</div><div class="form-group"><label class="form-label">Bagaimana perasaan Anda tentang keintiman saat ini?</label><textarea id="t3_feel_a" placeholder="Pengalaman Anda..."></textarea></div></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan B</div><div class="form-group"><label class="form-label">Bagaimana perasaan Anda tentang keintiman saat ini?</label><textarea id="t3_feel_b" placeholder="Pengalaman Anda..."></textarea></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Pertimbangan medis saat ini:</label><textarea id="t3_medical" placeholder="Misalnya, Waktu pemulihan, batasan medis, perawatan kesuburan, obat-obatan..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-heart"></i> Perbaiki Keintiman</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Perbaikan Keintiman</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gap"></i> Kesenjangan Keintiman</div><p id="t3-out-gap">Apa yang hilang dan mengapa...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-hand"></i> Pelepasan Tekanan</div><p id="t3-out-pressure">Menghapus seks yang bertujuan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-stairs"></i> Rencana Masuk Kembali yang Lembut</div><p id="t3-out-reentry">3 langkah sentuhan non-seksual...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-stethoscope"></i> Batasan Medis</div><p id="t3-out-medical">Persyaratan klinis vs. keintiman pribadi...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Naskah Koneksi</div><div class="script-box"><span id="t3-out-script">Naskah koneksi...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t3-out-script')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-lock"></i> Prinsip Tanpa Tekanan</div><p id="t3-out-nopressure">Keintiman berbasis persetujuan...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Perbaikan Keintiman Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Hapus Riwayat</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: SOCIAL SHIELD -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Perisai Sosial</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Orang-orang mengatakan hal-hal yang paling menyakitkan—dan saya tidak pernah tahu harus menjawab apa."</div>
+                    <form id="form-tool4">
+                        <div class="form-group"><label class="form-label">Komentar atau pertanyaan apa yang dikatakan?</label><textarea id="t4_comment" placeholder="Misalnya, 'Kamu bisa selalu mencoba lagi,' 'Semua terjadi untuk alasan tertentu,' 'Kapan mau punya anak?'"></textarea></div>
+                        <div class="form-group"><label class="form-label">Siapa yang mengatakannya?</label><textarea id="t4_who" placeholder="Misalnya, Anggota keluarga, teman, rekan kerja, kenalan"></textarea></div>
+                        <div class="form-group"><label class="form-label">Toleransi emosional/sosial Anda saat ini (1-10):</label><div class="slider-container"><input type="range" id="t4_tolerance" min="1" max="10" value="5" oninput="document.getElementById('tol_val').innerText=this.value"><span class="slider-value" id="tol_val">5</span></div></div>
+                        <div class="form-group"><label class="form-label">Apa yang Anda harapkan bisa Anda katakan:</label><textarea id="t4_wish" placeholder="Apa yang idealnya ingin Anda sampaikan..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang sebenarnya Anda katakan (jika ada):</label><textarea id="t4_actual" placeholder="Tanggapan Anda yang sebenarnya..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-shield-halved"></i> Bangun Perisai</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Perisai Sosial</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment-dots"></i> Dekoder Komentar</div><p id="t4-out-decoder">Memahami komentar...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-hand-holding-heart"></i> Opsi A — Lembut / Edukatif</div><div class="script-box"><span id="t4-out-gentle">Tanggapan lembut...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-gentle')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-shield"></i> Opsi B — Batasan Tegas</div><div class="script-box"><span id="t4-out-firm">Tanggapan tegas...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-firm')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> Opsi C — Pengalihan Cepat</div><div class="script-box"><span id="t4-out-deflect">Tanggapan pengalihan...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-deflect')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-user-check"></i> Daftar Orang Aman</div><p id="t4-out-safe">Orang yang bisa mendengarkan tanpa lapisan perak yang tidak diminta...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-door-open"></i> Jalan Keluar Perawatan Diri</div><p id="t4-out-exit">Sinyal untuk pergi tanpa penjelasan panjang...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Pembekalan Pasangan</div><p id="t4-out-debrief">Pertanyaan percakapan pasca-acara...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Perisai Sosial Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Hapus Riwayat</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: CONNECTION CHECK -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Cek Koneksi</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Masalah:</strong> "Kami perlu tahu di mana kami kuat dan di mana kami butuh perhatian lembut."</div>
+                    <form id="form-tool5">
+                        <div style="margin-bottom:1.5rem;">
+                            <p style="font-weight:600; color:var(--sage-dark); margin-bottom:0.75rem;">Nilai setiap pernyataan dari 1 (sangat tidak setuju) hingga 10 (sangat setuju)</p>
+                            <div class="connection-grid">
+                                <div class="dimension-label">1. Pasangan saya memahami duka saya.</div>
+                                <div class="slider-container"><input type="range" id="t5_q1" min="1" max="10" value="5" oninput="document.getElementById('q1_val').innerText=this.value"><span class="slider-value" id="q1_val">5</span></div>
+                                <div class="dimension-label">2. Saya merasa didukung oleh pasangan saya saat ini.</div>
+                                <div class="slider-container"><input type="range" id="t5_q2" min="1" max="10" value="5" oninput="document.getElementById('q2_val').innerText=this.value"><span class="slider-value" id="q2_val">5</span></div>
+                                <div class="dimension-label">3. Kami dapat berbicara tentang kehilangan kami tanpa menutup diri atau bertengkar.</div>
+                                <div class="slider-container"><input type="range" id="t5_q3" min="1" max="10" value="5" oninput="document.getElementById('q3_val').innerText=this.value"><span class="slider-value" id="q3_val">5</span></div>
+                                <div class="dimension-label">4. Kami memberi ruang untuk koneksi di luar duka/logistik medis.</div>
+                                <div class="slider-container"><input type="range" id="t5_q4" min="1" max="10" value="5" oninput="document.getElementById('q4_val').innerText=this.value"><span class="slider-value" id="q4_val">5</span></div>
+                                <div class="dimension-label">5. Saya merasa berharap tentang keluarga masa depan kami.</div>
+                                <div class="slider-container"><input type="range" id="t5_q5" min="1" max="10" value="5" oninput="document.getElementById('q5_val').innerText=this.value"><span class="slider-value" id="q5_val">5</span></div>
+                                <div class="dimension-label">6. Saya merawat diri saya sendiri secara individu.</div>
+                                <div class="slider-container"><input type="range" id="t5_q6" min="1" max="10" value="5" oninput="document.getElementById('q6_val').innerText=this.value"><span class="slider-value" id="q6_val">5</span></div>
+                            </div>
+                        </div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-link"></i> Cek Koneksi</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Cek Koneksi</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gauge-high"></i> Dasbor Koneksi</div><p id="t5-out-dashboard">Gambaran koneksi Anda...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-circle-check"></i> Zona Kesesuaian</div><p id="t5-out-strengths">Area kekuatan relatif...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Zona Perhatian Lembut</div><p id="t5-out-risks">Area yang membutuhkan perhatian...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Topik Percakapan Mingguan</div><p id="t5-out-topic">Fokus yang disarankan...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> Satu Tindakan Kecil</div><p id="t5-out-action">Langkah lembut berikutnya...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Pengingat Perawatan Diri</div><p id="t5-out-selfcare">Lindungi pemulihan individu...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Cek Koneksi Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Hapus Riwayat</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">Riwayat Saya</h2><p class="hero-tagline">Semua analisis Bersama Setelah Kehilangan Anda yang tersimpan.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Riwayat</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privasi</h2>
+                    <p style="margin-bottom:1rem;">Data duka dan hubungan Anda tetap berada di perangkat Anda. Tidak ada yang dikirim ke server mana pun.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>Semua masukan dan hasil disimpan hanya di penyimpanan lokal browser Anda.</li>
+                        <li>Tanpa akun, tanpa login, tanpa pelacakan, tanpa analitik.</li>
+                        <li>Anda dapat menghapus riwayat kapan saja menggunakan alat di atas.</li>
+                        <li>Aplikasi ini untuk refleksi dan perencanaan—bukan terapi, konseling duka, atau nasihat medis.</li>
+                        <li>Jika Anda dalam krisis, hubungi profesional yang berkualifikasi atau layanan dukungan lokal.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Data Tersimpan</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">Hanya untuk refleksi dan dukungan. Bukan terapi atau nasihat medis. Jika Anda dalam krisis atau mengalami tekanan parah, hubungi profesional yang berkualifikasi atau layanan dukungan lokal.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:var(--sage-light);"></i><span id="toast-message">Disalin!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Disalin!')).catch(() => fallbackCopy(text));
+        } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Disalin!'); } catch(e) { showToast('Gagal menyalin'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('mobile-open'); });
+    overlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE ---
+    function getHistory(toolId) {
+        const key = `afterloss_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `afterloss_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Hapus semua riwayat untuk alat ini?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('Riwayat dihapus');
+    }
+    function clearAllHistory() {
+        if (!confirm('Hapus SEMUA riwayat Bersama Setelah Kehilangan?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('Semua riwayat dihapus');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Hapus masukan dan hasil saat ini untuk alat ini?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset selesai');
+    }
+
+    // ========================================
+    // TOOL 1: GRIEF MAP
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_style_a').value = 'Emosional';
+        document.getElementById('t1_feel_a').value = 'Saya merasa perlu membicarakannya sepanjang waktu. Saya takut kami semakin menjauh.';
+        document.getElementById('t1_style_b').value = 'Diam';
+        document.getElementById('t1_feel_b').value = 'Saya butuh ruang untuk memproses. Berbicara membuat saya merasa lebih buruk. Saya masih mencintai mereka.';
+        document.getElementById('t1_talk').value = 'Kadang-kadang';
+        document.getElementById('t1_wish').value = 'Saya berharap bisa mengatakan bahwa saya tidak marah pada mereka—saya hanya tidak tahu harus berkata apa.';
+        showToast('Contoh dimuat: Gaya berduka yang berbeda');
+    }
+
+    function analyzeTool1() {
+        const styleA = document.getElementById('t1_style_a').value;
+        const styleB = document.getElementById('t1_style_b').value;
+        const feelA = document.getElementById('t1_feel_a').value || 'Perasaan Pasangan A dijelaskan';
+        const feelB = document.getElementById('t1_feel_b').value || 'Perasaan Pasangan B dijelaskan';
+        const talk = document.getElementById('t1_talk').value;
+        const wish = document.getElementById('t1_wish').value;
+
+        const styles = `Pasangan A: ${styleA}. Pasangan B: ${styleB}.`;
+        let distance = '';
+        if (styleA === styleB) {
+            distance = `Anda berbagi gaya berduka ${styleA}. Ini dapat menciptakan pemahaman yang dalam, tetapi berhati-hatilah—jika Anda berdua menarik diri, Anda dapat saling memperkuat keheningan. Jika Anda berdua menjadi emosional, Anda dapat saling membanjiri. Cek in yang lembut dapat membantu.`;
+        } else {
+            distance = `Anda memiliki gaya berduka yang berbeda (${styleA} vs ${styleB}). Ini bisa terasa seperti jarak, tetapi itu bukan tanda keterputusan—itu perbedaan dalam memproses. Pasangan A mungkin perlu bicara untuk memproses; Pasangan B mungkin butuh ruang. Tujuannya adalah menyaksikan tanpa menyamakan.`;
+        }
+
+        let needA = `Pasangan A mungkin perlu merasa bahwa duka mereka dilihat dan bahwa kebutuhan mereka untuk bicara bukanlah beban.`;
+        let needB = `Pasangan B mungkin perlu merasa bahwa kebutuhan mereka akan ruang dihormati dan bahwa keheningan tidak ditafsirkan sebagai kurangnya cinta.`;
+        if (styleA === 'Diam') { needA = `Pasangan A mungkin perlu merasa bahwa keheningan mereka dihormati dan mereka tidak ditekan untuk bicara.`; }
+        if (styleB === 'Emosional') { needB = `Pasangan B mungkin perlu merasa bahwa ekspresi emosional mereka diterima dan mereka tidak diminta untuk 'move on.'`; }
+
+        const bridge = `"Saya melihat Anda berduka dengan cara Anda sendiri. Saya tidak perlu Anda berduka seperti saya—saya hanya perlu tahu kami masih terhubung."`;
+        const ritual = `Pertimbangkan praktik peringatan 10 menit yang tenang bersama: nyalakan lilin, duduk bersama, atau sekadar hadir dalam diam. Tanpa kata-kata yang diperlukan.`;
+
+        document.getElementById('t1-out-styles').innerHTML = styles;
+        document.getElementById('t1-out-distance').innerHTML = distance;
+        document.getElementById('t1-out-need_a').innerHTML = needA;
+        document.getElementById('t1-out-need_b').innerHTML = needB;
+        document.getElementById('t1-out-bridge').innerText = bridge;
+        document.getElementById('t1-out-ritual').innerHTML = ritual;
+        document.getElementById('output-tool1').classList.add('active');
+        saveToHistory('tool1', 'Peta Duka', `<p>${styles}</p><br><code>${bridge}</code>`);
+    }
+
+    // ========================================
+    // TOOL 2: THE NEXT STEP
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_losses').value = '2';
+        document.getElementById('t2_medical').value = 'Saran bertentangan';
+        document.getElementById('t2_lean_a').value = 'Coba lagi segera';
+        document.getElementById('t2_lean_b').value = 'Berhenti sejenak tanpa batas';
+        document.getElementById('t2_fear_yes').value = 'Kehilangan lagi, trauma medis, beban emosional pada hubungan kami.';
+        document.getElementById('t2_fear_no').value = 'Penyesalan, tidak pernah memiliki anak, kehilangan harapan untuk keluarga masa depan kami.';
+        showToast('Contoh dimuat: Kecenderungan bertentangan setelah beberapa kehilangan');
+    }
+
+    function analyzeTool2() {
+        const losses = document.getElementById('t2_losses').value;
+        const medical = document.getElementById('t2_medical').value;
+        const leanA = document.getElementById('t2_lean_a').value;
+        const leanB = document.getElementById('t2_lean_b').value;
+        const fearYes = document.getElementById('t2_fear_yes').value || 'Ketakutan mencoba lagi dijelaskan';
+        const fearNo = document.getElementById('t2_fear_no').value || 'Ketakutan tidak mencoba dijelaskan';
+
+        const gap = `Pasangan A cenderung: ${leanA}. Pasangan B cenderung: ${leanB}. Ini adalah negosiasi, bukan keputusan pemenang/kalah.`;
+        const medicalText = `Panduan medis: ${medical}. Harap klarifikasi keputusan medis dengan klinisi yang berkualifikasi. Alat ini untuk refleksi, bukan nasihat medis.`;
+        const fears = `Ketakutan mencoba lagi mungkin melindungi: ${escapeHTML(fearYes)}. Ketakutan tidak mencoba mungkin melindungi: ${escapeHTML(fearNo)}. Kedua ketakutan itu valid.`;
+        const framework = `Gunakan kerangka non-ultimatum: <br>1. Apa yang masing-masing dari kita butuhkan untuk merasa aman? <br>2. Informasi apa yang masih kita butuhkan? <br>3. Bisakah kita menyetujui jeda terbatas waktu untuk mengumpulkan lebih banyak kejelasan?`;
+        const conversation = `Sebelum keputusan akhir, perjelas: apa yang akan membuat masing-masing dari Anda merasa lebih yakin? Dukungan apa yang Anda butuhkan untuk melakukan percakapan ini tanpa rasa takut disalahkan?`;
+        const next = `Tindakan kecil yang dapat dibalik: jadwalkan percakapan non-keputusan—hanya untuk berbagi perasaan, bukan untuk memutuskan. Atau, jika sesuai, cari pendapat medis kedua bersama.`;
+
+        document.getElementById('t2-out-gap').innerHTML = gap;
+        document.getElementById('t2-out-medical').innerHTML = medicalText;
+        document.getElementById('t2-out-fears').innerHTML = fears;
+        document.getElementById('t2-out-framework').innerHTML = framework;
+        document.getElementById('t2-out-conversation').innerHTML = conversation;
+        document.getElementById('t2-out-next').innerHTML = next;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', 'Langkah Selanjutnya', `<p>${gap}</p><br>${framework}`);
+    }
+
+    // ========================================
+    // TOOL 3: INTIMACY REPAIR
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_past').value = 'Kami bermain-main, spontan, dan terhubung. Seks adalah ekspresi cinta, bukan tujuan.';
+        document.getElementById('t3_present').value = 'Terasa mekanis, tertekan, dan terkait dengan mencoba hamil. Saya menghindarinya.';
+        document.getElementById('t3_feel_a').value = 'Saya merindukan kami. Saya merasa kehilangan tubuh saya.';
+        document.getElementById('t3_feel_b').value = 'Saya merasa ditolak, tetapi saya mengerti alasannya. Saya tidak tahu bagaimana terhubung kembali.';
+        document.getElementById('t3_medical').value = 'Masih dalam pemulihan, dan kami disarankan untuk menunggu sebelum mencoba lagi.';
+        showToast('Contoh dimuat: Tekanan keintiman setelah kehilangan');
+    }
+
+    function analyzeTool3() {
+        const past = document.getElementById('t3_past').value || 'Keintiman masa lalu dijelaskan';
+        const present = document.getElementById('t3_present').value || 'Keintiman saat ini dijelaskan';
+        const feelA = document.getElementById('t3_feel_a').value || 'Perasaan Pasangan A dijelaskan';
+        const feelB = document.getElementById('t3_feel_b').value || 'Perasaan Pasangan B dijelaskan';
+        const medical = document.getElementById('t3_medical').value || 'Pertimbangan medis dijelaskan';
+
+        const gap = `Seperti apa keintiman dulu: ${escapeHTML(past)}. Seperti apa sekarang: ${escapeHTML(present)}.`;
+        const pressure = `Pertimbangkan untuk sementara menghapus seks yang bertujuan dari gambaran. Ini bukan selamanya—ini menciptakan ruang untuk membangun kembali keamanan.`;
+        const reentry = `<strong>1. Sentuhan non-seksual:</strong> Pegang tangan, peluk, atau duduk dekat tanpa mengarah ke mana-mana.<br><strong>2. Kontak mata dan kehadiran:</strong> Habiskan 5 menit saling menatap tanpa berbicara.<br><strong>3. Koneksi verbal:</strong> Bagikan apa yang Anda hargai satu sama lain tanpa ekspektasi fisik apa pun.`;
+        const medicalText = `Pertimbangan medis: ${escapeHTML(medical)}. Batasan klinis harus dihormati. Jaga waktu medis dan keintiman pribadi tetap terpisah.`;
+        const script = `"Saya merindukanmu. Saya belum siap untuk berhubungan seks sekarang, tetapi saya ingin tetap dekat denganmu. Bisakah kita saling memeluk sebentar saja?"`;
+        const nopressure = `Tidak ada pasangan yang berutang kontak seksual karena duka, status hubungan, atau tujuan keluarga masa depan. Keintiman harus berbasis persetujuan, lembut, dan dapat dibalik.`;
+
+        document.getElementById('t3-out-gap').innerHTML = gap;
+        document.getElementById('t3-out-pressure').innerHTML = pressure;
+        document.getElementById('t3-out-reentry').innerHTML = reentry;
+        document.getElementById('t3-out-medical').innerHTML = medicalText;
+        document.getElementById('t3-out-script').innerText = script;
+        document.getElementById('t3-out-nopressure').innerHTML = nopressure;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', 'Perbaikan Keintiman', `<p>${gap}</p><br><code>${script}</code>`);
+    }
+
+    // ========================================
+    // TOOL 4: SOCIAL SHIELD
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_comment').value = '"Semua terjadi untuk alasan tertentu. Kamu bisa selalu mencoba lagi."';
+        document.getElementById('t4_who').value = 'Ibu mertua saya';
+        document.getElementById('t4_tolerance').value = '3'; document.getElementById('tol_val').innerText = '3';
+        document.getElementById('t4_wish').value = 'Saya berharap bisa mengatakan, "Itu tidak membantu. Tolong jangan katakan itu."';
+        document.getElementById('t4_actual').value = 'Saya hanya tersenyum dan mengubah topik.';
+        showToast('Contoh dimuat: Komentar keluarga yang tidak sensitif');
+    }
+
+    function analyzeTool4() {
+        const comment = document.getElementById('t4_comment').value || 'Komentar dijelaskan';
+        const who = document.getElementById('t4_who').value || 'Orang dijelaskan';
+        const tolerance = parseInt(document.getElementById('t4_tolerance').value) || 5;
+        const wish = document.getElementById('t4_wish').value || 'Keinginan dijelaskan';
+        const actual = document.getElementById('t4_actual').value || 'Tanggapan nyata dijelaskan';
+
+        const decoder = `Komentar: "${escapeHTML(comment)}" dari ${escapeHTML(who)}. Jenis komentar ini sering muncul dari ketidakberdayaan atau kecanggungan sosial—tetapi dampaknya tetap nyata.`;
+        const gentle = `"Saya tahu Anda bermaksud baik, tetapi komentar seperti itu sebenarnya sangat sulit bagi kami saat ini. Kami hanya menjalaninya hari demi hari."`;
+        const firm = `"Itu tidak membantu kami saat ini. Kami lebih memilih tidak membicarakannya."`;
+        const deflect = `"Kami hanya fokus pada pemulihan saat ini. Bagaimana kabarmu?"`;
+        const safe = `Sebutkan satu atau dua orang yang bisa mendengarkan tanpa menawarkan lapisan perak. Pertimbangkan untuk membatasi waktu dengan mereka yang tidak.`;
+        const exit = `Buat sinyal yang disepakati sebelumnya dengan pasangan Anda: kata, sentuhan, atau teks yang berarti "Saya harus pergi" tanpa penjelasan panjang.`;
+        const debrief = `Setelah acara sosial: "Apakah kamu ingin melampiaskan apa yang terjadi, atau kamu ingin mengalihkan dan melanjutkan?"`;
+
+        document.getElementById('t4-out-decoder').innerHTML = decoder;
+        document.getElementById('t4-out-gentle').innerText = gentle;
+        document.getElementById('t4-out-firm').innerText = firm;
+        document.getElementById('t4-out-deflect').innerText = deflect;
+        document.getElementById('t4-out-safe').innerHTML = safe;
+        document.getElementById('t4-out-exit').innerHTML = exit;
+        document.getElementById('t4-out-debrief').innerHTML = debrief;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', 'Perisai Sosial', `<p>${decoder}</p><br><code>${gentle}</code>`);
+    }
+
+    // ========================================
+    // TOOL 5: CONNECTION CHECK
+    // ========================================
+    function loadSampleTool5() {
+        const values = [6, 5, 4, 7, 3, 5];
+        const ids = ['t5_q1','t5_q2','t5_q3','t5_q4','t5_q5','t5_q6'];
+        const valIds = ['q1_val','q2_val','q3_val','q4_val','q5_val','q6_val'];
+        ids.forEach((id, i) => {
+            document.getElementById(id).value = values[i];
+            document.getElementById(valIds[i]).innerText = values[i];
+        });
+        showToast('Contoh dimuat: Skor koneksi campuran');
+    }
+
+    function analyzeTool5() {
+        const scores = [
+            parseInt(document.getElementById('t5_q1').value) || 5,
+            parseInt(document.getElementById('t5_q2').value) || 5,
+            parseInt(document.getElementById('t5_q3').value) || 5,
+            parseInt(document.getElementById('t5_q4').value) || 5,
+            parseInt(document.getElementById('t5_q5').value) || 5,
+            parseInt(document.getElementById('t5_q6').value) || 5
+        ];
+        const labels = [
+            'Memahami duka Anda',
+            'Merasa didukung',
+            'Berbicara tentang kehilangan tanpa konflik',
+            'Koneksi di luar logistik duka',
+            'Berharap tentang keluarga masa depan',
+            'Merawat diri sendiri'
+        ];
+        const avg = scores.reduce((a,b) => a + b, 0) / scores.length;
+        let label = '';
+        if (avg >= 7) label = 'Kesesuaian Kuat';
+        else if (avg >= 4) label = 'Kesesuaian Sedang';
+        else label = 'Membutuhkan Perhatian Lembut';
+
+        let dashboard = `Rata-rata Keseluruhan: ${avg.toFixed(1)}/10 — ${label}`;
+        let strengths = scores.filter(s => s >= 7).map((s,i) => `<li>${labels[i]}: ${s}/10</li>`).join('');
+        if (!strengths) strengths = '<p>Tidak ada skor di atas 7 saat ini. Tidak apa-apa—ini adalah masa yang sulit.</p>';
+        let risks = scores.filter(s => s <= 3).map((s,i) => `<li>${labels[i]}: ${s}/10</li>`).join('');
+        if (!risks) risks = '<p>Tidak ada skor di bawah 4. Tetap berkomunikasi dengan lembut.</p>';
+
+        const minVal = Math.min(...scores);
+        const minIdx = scores.indexOf(minVal);
+        const topic = `Pertimbangkan untuk membicarakan: <strong>${labels[minIdx]}</strong> (${minVal}/10). Mulailah dengan: "Saya telah memikirkan ini—bisakah kita cek in tentang itu?"`;
+
+        let action = '';
+        if (minIdx === 0) action = 'Tanyakan pada pasangan Anda: "Apa yang akan membantu Anda merasa lebih dipahami saat ini?"';
+        else if (minIdx === 1) action = 'Tanyakan pada pasangan Anda: "Apa yang akan membuat Anda merasa lebih didukung minggu ini?"';
+        else if (minIdx === 2) action = 'Sisihkan 15 menit minggu ini untuk berbicara tentang kehilangan—tanpa gangguan.';
+        else if (minIdx === 3) action = 'Rencanakan satu aktivitas non-duka, non-medis bersama minggu ini.';
+        else if (minIdx === 4) action = 'Lakukan percakapan tentang harapan—apa yang masing-masing dari Anda butuhkan untuk merasa lebih berharap?';
+        else if (minIdx === 5) action = 'Identifikasi satu hal kecil yang dapat Anda lakukan untuk diri sendiri minggu ini.';
+
+        const selfcare = `Pemulihan individu mendukung pemulihan pasangan. Merawat diri sendiri tidak egois—itu perlu.`;
+
+        document.getElementById('t5-out-dashboard').innerHTML = dashboard;
+        document.getElementById('t5-out-strengths').innerHTML = `<ul>${strengths}</ul>`;
+        document.getElementById('t5-out-risks').innerHTML = `<ul>${risks}</ul>`;
+        document.getElementById('t5-out-topic').innerHTML = topic;
+        document.getElementById('t5-out-action').innerHTML = action;
+        document.getElementById('t5-out-selfcare').innerHTML = selfcare;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', 'Cek Koneksi', `<p>${dashboard}</p><br><p>${topic}</p>`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,2227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Difficult Coworker Coach™</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ==========================================================================
+       1. VARS, RESET & BASE STYLES
+       ========================================================================== */
+    :root {
+      --moss-green: #606C38;
+      --moss-green-dark: #475129;
+      --dusty-rose: #BC6C25;
+      --dusty-rose-dark: #97531a;
+      --bg-gradient-start: #FEFAE0;
+      --bg-gradient-end: #FAEDCD;
+      --text-main: #2B2D42;
+      --text-muted: #6C757D;
+      --card-bg: #FFFFFF;
+      --border-color: #E9ECEF;
+      --sidebar-width: 270px;
+      --radius-md: 0.5rem;
+      --radius-xl: 1rem;
+      --shadow-sm: 0 4px 12px rgba(0,0,0,0.05);
+      --shadow-md: 0 8px 24px rgba(0,0,0,0.08);
+      --transition-fast: 0.2s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--text-main);
+      background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* ==========================================================================
+       2. LAYOUT & SIDEBAR NAVIGATION
+       ========================================================================== */
+    #app {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 40;
+      backdrop-filter: blur(2px);
+    }
+
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      border-right: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 1.25rem 1.25rem 1rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header i {
+      font-size: 1.6rem;
+      color: var(--moss-green);
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--moss-green);
+      line-height: 1.2;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+
+    .sidebar-nav {
+      padding: 0.75rem 0.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0.6rem 0.75rem 0.25rem 0.75rem;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius-md);
+      border: none;
+      background: transparent;
+      color: var(--text-main);
+      font-size: 0.88rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: all var(--transition-fast);
+      width: 100%;
+    }
+
+    .nav-btn i {
+      font-size: 1rem;
+      width: 1.25rem;
+      text-align: center;
+      color: var(--text-muted);
+    }
+
+    .nav-btn:hover {
+      background-color: rgba(96, 108, 56, 0.08);
+      color: var(--moss-green);
+    }
+
+    .nav-btn:hover i {
+      color: var(--moss-green);
+    }
+
+    .nav-btn.active {
+      background-color: var(--moss-green);
+      color: #FFFFFF;
+    }
+
+    .nav-btn.active i {
+      color: #FFFFFF;
+    }
+
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* Mobile Header */
+    .mobile-header {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      color: var(--moss-green);
+      font-size: 1rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--text-main);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .main-content {
+      flex: 1;
+      padding: 2rem 1.5rem;
+      max-width: 900px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ==========================================================================
+       3. FOOTER & DISCLAIMERS
+       ========================================================================== */
+    .app-footer {
+      text-align: center;
+      padding: 1.25rem 1.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      border-top: 1px solid rgba(0,0,0,0.05);
+      background: rgba(255, 255, 255, 0.5);
+      margin-top: auto;
+    }
+
+    /* ==========================================================================
+       4. CARDS & UI COMPONENTS
+       ========================================================================== */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid rgba(0,0,0,0.03);
+    }
+
+    .hero-card {
+      text-align: center;
+      padding: 2.25rem 1.5rem;
+      background: #FFFFFF;
+      border-top: 4px solid var(--moss-green);
+    }
+
+    .hero-card h2 {
+      font-size: 1.8rem;
+      color: var(--moss-green);
+      margin-bottom: 0.4rem;
+      font-weight: 700;
+    }
+
+    .hero-card p.subtitle {
+      color: var(--dusty-rose);
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .hero-card p.description {
+      color: var(--text-main);
+      font-size: 0.92rem;
+      max-width: 680px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .dash-card {
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      height: 100%;
+      border: 1px solid var(--border-color);
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--moss-green);
+    }
+
+    .dash-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 0.6rem;
+      background: rgba(96, 108, 56, 0.1);
+      color: var(--moss-green);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .dash-card h3 {
+      font-size: 1.05rem;
+      margin-bottom: 0.35rem;
+      color: var(--text-main);
+    }
+
+    .dash-card p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* Tool Headers & Forms */
+    .tool-header {
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .tool-title h2 {
+      font-size: 1.45rem;
+      color: var(--moss-green);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .tool-title p {
+      color: var(--dusty-rose-dark);
+      font-style: italic;
+      font-size: 0.95rem;
+      margin-top: 0.2rem;
+      font-weight: 500;
+    }
+
+    .orientation-box {
+      background: rgba(96, 108, 56, 0.06);
+      border-left: 3px solid var(--moss-green);
+      padding: 0.85rem 1rem;
+      border-radius: 0 0.5rem 0.5rem 0;
+      font-size: 0.85rem;
+      color: var(--text-main);
+      margin-bottom: 1.25rem;
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      font-size: 0.88rem;
+      margin-bottom: 0.4rem;
+      color: var(--text-main);
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 0.7rem 0.85rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      background-color: #FAFAFA;
+      transition: border-color var(--transition-fast), background-color var(--transition-fast);
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--moss-green);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(96, 108, 56, 0.15);
+    }
+
+    textarea.form-control {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.85rem;
+      margin-top: 0.35rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.88rem;
+      cursor: pointer;
+      font-weight: normal;
+      background: #FAFAFA;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      transition: background-color var(--transition-fast);
+    }
+
+    .radio-label:hover {
+      background: #F1F3F5;
+    }
+
+    .radio-label input[type="radio"] {
+      accent-color: var(--moss-green);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.15rem;
+      border-radius: var(--radius-md);
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all var(--transition-fast);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--moss-green);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--moss-green-dark);
+    }
+
+    .btn-secondary {
+      background-color: rgba(188, 108, 37, 0.12);
+      color: var(--dusty-rose-dark);
+    }
+
+    .btn-secondary:hover {
+      background-color: rgba(188, 108, 37, 0.22);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+    }
+
+    .btn-outline:hover {
+      background: #F8F9FA;
+      border-color: #CED4DA;
+    }
+
+    .btn-danger-outline {
+      background: transparent;
+      border: 1px solid #E63946;
+      color: #E63946;
+    }
+
+    .btn-danger-outline:hover {
+      background: #FFF5F5;
+    }
+
+    .btn-sm {
+      padding: 0.35rem 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .btn-block {
+      width: 100%;
+    }
+
+    .action-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+    }
+
+    /* Output Displays */
+    .output-card {
+      background: #FFFFFF;
+      border-left: 4px solid var(--dusty-rose);
+      display: none;
+    }
+
+    .output-card.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .sample-tag {
+      display: inline-block;
+      background: #FFF3BF;
+      color: #856404;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 0.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .output-section {
+      margin-bottom: 1.15rem;
+      padding-bottom: 1.15rem;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .output-section:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .output-header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.4rem;
+    }
+
+    .output-title {
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--dusty-rose-dark);
+    }
+
+    .output-body {
+      font-size: 0.92rem;
+      color: var(--text-main);
+      background: #FDFBF7;
+      padding: 0.75rem 0.9rem;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(188, 108, 37, 0.15);
+      white-space: pre-line;
+      line-height: 1.5;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--moss-green);
+      color: #FFFFFF;
+      margin-bottom: 0.75rem;
+    }
+
+    .recommendation-box {
+      margin-top: 1.25rem;
+      padding: 1rem;
+      background: rgba(96, 108, 56, 0.08);
+      border-radius: var(--radius-md);
+      border: 1px dashed var(--moss-green);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .recommendation-text {
+      font-size: 0.88rem;
+      font-weight: 500;
+    }
+
+    /* History & Tables */
+    .history-card {
+      margin-top: 1.5rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .history-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+    }
+
+    .history-body {
+      margin-top: 1rem;
+      display: none;
+    }
+
+    .history-body.active {
+      display: block;
+    }
+
+    .history-item {
+      padding: 0.75rem;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-md);
+      margin-bottom: 0.5rem;
+      background: #FAFAFA;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .history-item:hover {
+      background: #F1F3F5;
+    }
+
+    .history-item-info {
+      font-size: 0.85rem;
+      flex: 1;
+      cursor: pointer;
+    }
+
+    .history-item-date {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .history-actions {
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    /* Reset sequence cards */
+    .day-step-card {
+      border-left: 4px solid var(--moss-green);
+      margin-bottom: 1rem;
+      padding: 1rem 1.25rem;
+    }
+
+    .day-step-card h4 {
+      color: var(--moss-green);
+      font-size: 0.98rem;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--text-main);
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Printable CSS */
+    @media print {
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+      .sidebar, .mobile-header, .sidebar-overlay, .app-footer, .btn, .nav-btn, .action-row, .recommendation-box, .history-card, .toast {
+        display: none !important;
+      }
+      .main-wrapper {
+        margin-left: 0 !important;
+      }
+      .main-content {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #CCCCCC !important;
+        page-break-inside: avoid;
+      }
+    }
+
+    /* ==========================================================================
+       5. RESPONSIVE STYLES
+       ========================================================================== */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-wrapper {
+        margin-left: 0;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .main-content {
+        padding: 1.25rem 1rem;
+      }
+
+      .action-row {
+        flex-direction: column;
+      }
+
+      .btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="app">
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-hands-holding-circle"></i>
+        <h1>Difficult Coworker<br>Coach™</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-title">Core Operating Tools</div>
+        <button class="nav-btn active" data-tool="dashboard">
+          <i class="fa-solid fa-house"></i> Home / Dashboard
+        </button>
+        <button class="nav-btn" data-tool="tool1">
+          <i class="fa-solid fa-magnifying-glass-chart"></i> Conflict Decoder
+        </button>
+        <button class="nav-btn" data-tool="tool2">
+          <i class="fa-solid fa-comments"></i> Script Builder
+        </button>
+        <button class="nav-btn" data-tool="tool3">
+          <i class="fa-solid fa-shield-halved"></i> Boundary Setter
+        </button>
+        <button class="nav-btn" data-tool="tool4">
+          <i class="fa-solid fa-clipboard-list"></i> Documentation Log
+        </button>
+        <button class="nav-btn" data-tool="tool5">
+          <i class="fa-solid fa-compass"></i> Coexistence Plan
+        </button>
+
+        <div class="nav-section-title" style="margin-top:0.5rem;">Guided & Synthesis</div>
+        <button class="nav-btn" data-tool="reset">
+          <i class="fa-solid fa-calendar-check"></i> 7-Day Reset
+        </button>
+        <button class="nav-btn" data-tool="workplacePlan">
+          <i class="fa-solid fa-briefcase"></i> My Workplace Plan
+        </button>
+        <button class="nav-btn" data-tool="history">
+          <i class="fa-solid fa-clock-rotate-left"></i> My History
+        </button>
+
+        <div class="nav-section-title" style="margin-top:0.5rem;">System</div>
+        <button class="nav-btn" data-tool="privacy">
+          <i class="fa-solid fa-user-shield"></i> Privacy & Data Control
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <!-- Mobile Header -->
+      <header class="mobile-header">
+        <div class="mobile-brand">
+          <i class="fa-solid fa-hands-holding-circle"></i>
+          <span>Coworker Coach™</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle navigation">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+      </header>
+
+      <!-- Dynamic Screen Content -->
+      <main class="main-content" id="mainContent">
+        <!-- Content injected by JS -->
+      </main>
+
+      <!-- Sticky Disclaimer Footer -->
+      <footer class="app-footer">
+        Difficult Coworker Coach™ is for workplace communication strategy only. Not legal, therapeutic, or HR adjudication advice. Focus on observable behaviors and business impact. For harassment or safety concerns, contact HR or legal authorities.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Global Toast Notification -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check"></i>
+    <span id="toastMsg">Copied!</span>
+  </div>
+
+  <!-- ==========================================================================
+     6. JAVASCRIPT LOGIC
+     ========================================================================== -->
+  <script>
+    // Versioned LocalStorage Keys
+    const STORAGE_KEY_STATE = 'difficultcoworker_v2_state';
+    const STORAGE_KEY_HISTORY = 'difficultcoworker_v2_history';
+
+    // Global State Model
+    let difficultCoworkerState = {
+      activeTool: 'dashboard',
+      completedTools: [],
+      toolResults: {},
+      currentInputs: {},
+      lastUpdated: null
+    };
+
+    // DOM Elements
+    const mainContent = document.getElementById('mainContent');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+
+    // App Initialization
+    document.addEventListener('DOMContentLoaded', () => {
+      loadStateFromStorage();
+      initNavigation();
+      renderScreen(difficultCoworkerState.activeTool || 'dashboard');
+    });
+
+    // Navigation Wiring
+    function initNavigation() {
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const toolId = e.currentTarget.getAttribute('data-tool');
+          switchTool(toolId);
+          closeMobileSidebar();
+        });
+      });
+
+      hamburgerBtn.addEventListener('click', toggleMobileSidebar);
+      sidebarOverlay.addEventListener('click', closeMobileSidebar);
+    }
+
+    function switchTool(toolId) {
+      difficultCoworkerState.activeTool = toolId;
+      saveStateToStorage();
+      
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.getAttribute('data-tool') === toolId) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+      renderScreen(toolId);
+      window.scrollTo(0, 0);
+    }
+
+    function toggleMobileSidebar() {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
+    }
+
+    function closeMobileSidebar() {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+    }
+
+    // Security & Helper Functions
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    function showToast(message) {
+      toastMsg.innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2200);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+          showToast('Copied to clipboard!');
+        }).catch(() => {
+          fallbackCopyTextToClipboard(text);
+        });
+      } else {
+        fallbackCopyTextToClipboard(text);
+      }
+    }
+
+    function fallbackCopyTextToClipboard(text) {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-9999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        showToast('Copied to clipboard!');
+      } catch (err) {
+        showToast('Failed to copy');
+      }
+      document.body.removeChild(textArea);
+    }
+
+    // Local Storage Helpers
+    function loadStateFromStorage() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY_STATE);
+        if (saved) {
+          difficultCoworkerState = Object.assign(difficultCoworkerState, JSON.parse(saved));
+        }
+      } catch (e) {
+        console.error('Failed to load state', e);
+      }
+    }
+
+    function saveStateToStorage() {
+      try {
+        difficultCoworkerState.lastUpdated = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(difficultCoworkerState));
+      } catch (e) {
+        console.error('Failed to save state', e);
+      }
+    }
+
+    function getAllHistory() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY_HISTORY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveHistoryItem(toolId, item) {
+      let list = getAllHistory();
+      const historyEntry = {
+        id: Date.now(),
+        toolId: toolId,
+        timestamp: new Date().toLocaleString(),
+        data: item
+      };
+      list.unshift(historyEntry);
+      if (list.length > 50) list = list.slice(0, 50); // Max 50 items across tools
+      
+      try {
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(list));
+      } catch (e) {
+        console.error('Failed to save history', e);
+      }
+
+      // Update active state
+      if (!difficultCoworkerState.completedTools.includes(toolId)) {
+        difficultCoworkerState.completedTools.push(toolId);
+      }
+      difficultCoworkerState.toolResults[toolId] = item;
+      saveStateToStorage();
+    }
+
+    function deleteHistoryItem(id) {
+      let list = getAllHistory();
+      list = list.filter(item => item.id !== id);
+      localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(list));
+      showToast('Item removed');
+      renderScreen(difficultCoworkerState.activeTool);
+    }
+
+    function clearToolHistory(toolId) {
+      if (confirm(`Clear history for this tool?`)) {
+        let list = getAllHistory();
+        list = list.filter(item => item.toolId !== toolId);
+        localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(list));
+        showToast('Tool history cleared');
+        renderScreen(difficultCoworkerState.activeTool);
+      }
+    }
+
+    function clearAllHistoryData() {
+      if (confirm('Are you sure you want to clear ALL saved data and history? This cannot be undone.')) {
+        localStorage.removeItem(STORAGE_KEY_HISTORY);
+        localStorage.removeItem(STORAGE_KEY_STATE);
+        difficultCoworkerState = {
+          activeTool: 'dashboard',
+          completedTools: [],
+          toolResults: {},
+          currentInputs: {},
+          lastUpdated: null
+        };
+        showToast('All storage cleared');
+        renderScreen('dashboard');
+      }
+    }
+
+    // Helper for rendering tool history accordion
+    function renderHistoryAccordionHTML(toolId) {
+      const allHistory = getAllHistory();
+      const history = allHistory.filter(h => h.toolId === toolId);
+      if (history.length === 0) return '';
+
+      return `
+        <div class="card history-card">
+          <div class="history-header" onclick="toggleHistoryBody('${toolId}')">
+            <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Previous Analyses (${history.length})</span>
+            <i class="fa-solid fa-chevron-down" id="history-chevron-${toolId}"></i>
+          </div>
+          <div class="history-body" id="history-body-${toolId}">
+            <div style="text-align: right; margin-bottom: 0.5rem;">
+              <button class="btn btn-outline btn-sm" onclick="clearToolHistory('${toolId}')">Clear ${toolId} History</button>
+            </div>
+            ${history.map((h) => `
+              <div class="history-item">
+                <div class="history-item-info" onclick="loadHistoryItem('${h.id}')">
+                  <strong>${escapeHTML(h.data.summaryLabel || 'Saved Result')}</strong>
+                  <div class="history-item-date">${escapeHTML(h.timestamp)}</div>
+                </div>
+                <div class="history-actions">
+                  <button class="btn btn-outline btn-sm" onclick="deleteHistoryItem(${h.id})" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    function toggleHistoryBody(toolId) {
+      const body = document.getElementById(`history-body-${toolId}`);
+      const chevron = document.getElementById(`history-chevron-${toolId}`);
+      if (body.classList.contains('active')) {
+        body.classList.remove('active');
+        chevron.className = 'fa-solid fa-chevron-down';
+      } else {
+        body.classList.add('active');
+        chevron.className = 'fa-solid fa-chevron-up';
+      }
+    }
+
+    function loadHistoryItem(id) {
+      const allHistory = getAllHistory();
+      const item = allHistory.find(h => h.id === Number(id));
+      if (!item) return;
+
+      difficultCoworkerState.activeTool = item.toolId;
+      switchTool(item.toolId);
+
+      setTimeout(() => {
+        if (item.toolId === 'tool1') processTool1(null, item.data);
+        else if (item.toolId === 'tool2') processTool2(null, item.data);
+        else if (item.toolId === 'tool3') processTool3(null, item.data);
+        else if (item.toolId === 'tool4') processTool4(null, item.data);
+        else if (item.toolId === 'tool5') processTool5(null, item.data);
+      }, 50);
+    }
+
+    // Dynamic Cross-Module Recommendation Rule Engine
+    function generateCrossRecommendation(toolId, data) {
+      if (toolId === 'tool1') {
+        if (data.conflictType.includes('Operational Friction')) {
+          return { text: "Next Best Step: Build an operational script to realign deliverable handoffs.", nextTool: 'tool2', btnText: "Open Script Builder" };
+        } else if (data.conflictType.includes('Role Overlap')) {
+          return { text: "Next Best Step: Set clear boundaries around task scope and responsibilities.", nextTool: 'tool3', btnText: "Open Boundary Setter" };
+        }
+      } else if (toolId === 'tool2') {
+        return { text: "Next Best Step: If the behavior persists after your conversation, establish an explicit operational boundary.", nextTool: 'tool3', btnText: "Open Boundary Setter" };
+      } else if (toolId === 'tool3') {
+        return { text: "Next Best Step: If the boundary is crossed again, log objective facts in the Documentation Log.", nextTool: 'tool4', btnText: "Open Documentation Log" };
+      } else if (toolId === 'tool4') {
+        return { text: "Next Best Step: Build a sustainable coexistence plan while management or HR reviews your log.", nextTool: 'tool5', btnText: "Open Coexistence Plan" };
+      } else if (toolId === 'tool5') {
+        return { text: "Next Best Step: Synthesize all completed findings into your unified Workplace Plan.", nextTool: 'workplacePlan', btnText: "View Workplace Plan" };
+      }
+      return { text: "Next Best Step: Review your overall workplace action strategy.", nextTool: 'workplacePlan', btnText: "View Workplace Plan" };
+    }
+
+    // ==========================================================================
+    // 7. SCREEN RENDERERS
+    // ==========================================================================
+
+    function renderScreen(screenId) {
+      switch (screenId) {
+        case 'dashboard': renderDashboard(); break;
+        case 'tool1': renderTool1(); break;
+        case 'tool2': renderTool2(); break;
+        case 'tool3': renderTool3(); break;
+        case 'tool4': renderTool4(); break;
+        case 'tool5': renderTool5(); break;
+        case 'reset': renderResetSequence(); break;
+        case 'workplacePlan': renderWorkplacePlan(); break;
+        case 'history': renderUnifiedHistory(); break;
+        case 'privacy': renderPrivacy(); break;
+        default: renderDashboard();
+      }
+    }
+
+    /* --- DASHBOARD / HOME --- */
+    function renderDashboard() {
+      const completedCount = difficultCoworkerState.completedTools.length;
+
+      mainContent.innerHTML = `
+        <div class="card hero-card">
+          <h2>Difficult Coworker Coach™</h2>
+          <p class="subtitle">Turn tension into traction—or know when to stop trying.</p>
+          <p class="description">
+            Workplace friction is easier to resolve when you separate observable facts from emotional noise. 
+            Select a tool below to decode recurring conflict, draft explicit conversation lines, establish clear boundaries, build objective records, or structure a sustainable coexistence plan.
+          </p>
+        </div>
+
+        <div class="orientation-box">
+          <i class="fa-solid fa-compass" style="color:var(--moss-green); margin-right:0.4rem;"></i>
+          <strong>Start with the tool closest to your immediate friction.</strong> Focus on observable behavior, operational impact, and what you can control.
+          ${completedCount > 0 ? `<br><span style="color:var(--moss-green-dark); font-weight:600; font-size:0.8rem; margin-top:0.25rem; display:inline-block;">✓ You have completed ${completedCount} tool(s). Check "My Workplace Plan" to synthesize your findings.</span>` : ''}
+        </div>
+
+        <div class="dash-grid">
+          <div class="card dash-card" onclick="switchTool('tool1')">
+            <div class="dash-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+            <h3>Conflict Decoder</h3>
+            <p>Understand why the same friction keeps recurring and diagnose the underlying operational dynamic.</p>
+          </div>
+
+          <div class="card dash-card" onclick="switchTool('tool2')">
+            <div class="dash-icon"><i class="fa-solid fa-comments"></i></div>
+            <h3>Script Builder</h3>
+            <p>Know what to say without escalating. Generate clear openings, "I" statements, and de-escalation responses.</p>
+          </div>
+
+          <div class="card dash-card" onclick="switchTool('tool3')">
+            <div class="dash-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>Boundary Setter</h3>
+            <p>Turn a crossed line into a clear professional boundary and predictable operational consequence.</p>
+          </div>
+
+          <div class="card dash-card" onclick="switchTool('tool4')">
+            <div class="dash-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+            <h3>Documentation Log</h3>
+            <p>Turn emotional incidents into an objective, HR-ready timeline and evidence record.</p>
+          </div>
+
+          <div class="card dash-card" onclick="switchTool('tool5')">
+            <div class="dash-icon"><i class="fa-solid fa-compass"></i></div>
+            <h3>Coexistence Plan</h3>
+            <p>Relationship unlikely to improve? Build a realistic strategy to protect your work, sanity, and career.</p>
+          </div>
+
+          <div class="card dash-card" onclick="switchTool('reset')" style="background:#FDFBF7; border-color:rgba(188, 108, 37, 0.3);">
+            <div class="dash-icon" style="background:rgba(188, 108, 37, 0.15); color:var(--dusty-rose-dark);"><i class="fa-solid fa-calendar-check"></i></div>
+            <h3>7-Day Reset</h3>
+            <p>Follow a guided day-by-day sequence to systematically tackle an ongoing coworker friction pattern.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- TOOL 1: CONFLICT DECODER --- */
+    function renderTool1() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-magnifying-glass-chart"></i> Conflict Decoder</h2>
+            <p>"Every interaction with this person turns into conflict. Why?"</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadSampleTool1()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+          </button>
+        </div>
+
+        <div class="orientation-box">
+          Focus on observable behavior and workflow friction rather than attempting to diagnose personality traits.
+        </div>
+
+        <div class="card">
+          <form id="formTool1" onsubmit="processTool1(event)">
+            <div class="form-group">
+              <label for="t1_words">Describe the coworker in 3 words (your perception):</label>
+              <textarea id="t1_words" class="form-control" placeholder="e.g., Passive-aggressive, defensive, evasive..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="t1_trigger">What usually triggers the conflict?</label>
+              <select id="t1_trigger" class="form-control" required>
+                <option value="">-- Select Primary Trigger --</option>
+                <option value="Work quality">Work quality</option>
+                <option value="Deadlines">Deadlines</option>
+                <option value="Communication style">Communication style</option>
+                <option value="Credit / recognition">Credit / recognition</option>
+                <option value="Personal dislike">Personal dislike</option>
+                <option value="Unclear roles">Unclear roles</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Does this happen with others or just you?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t1_scope" value="Just me" checked> Just me</label>
+                <label class="radio-label"><input type="radio" name="t1_scope" value="A few people"> A few people</label>
+                <label class="radio-label"><input type="radio" name="t1_scope" value="Everyone"> Everyone</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t1_timing">When did this friction start?</label>
+              <select id="t1_timing" class="form-control" required>
+                <option value="">-- Select Timeline --</option>
+                <option value="Recently">Recently</option>
+                <option value="Since I joined">Since I joined</option>
+                <option value="Been ongoing">Been ongoing</option>
+                <option value="After a specific incident">After a specific incident</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="t1_needs">What do you need from them to do your job?</label>
+              <textarea id="t1_needs" class="form-control" placeholder="e.g., Timely handoffs, clear project updates, direct feedback..." required></textarea>
+            </div>
+
+            <div class="action-row">
+              <button type="submit" class="btn btn-primary btn-block">Analyze Conflict Dynamics</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="outputTool1" class="card output-card"></div>
+        ${renderHistoryAccordionHTML('tool1')}
+      `;
+    }
+
+    function loadSampleTool1() {
+      document.getElementById('t1_words').value = "Passive-aggressive, evasive, critical";
+      document.getElementById('t1_trigger').value = "Deadlines";
+      document.querySelector('input[name="t1_scope"][value="A few people"]').checked = true;
+      document.getElementById('t1_timing').value = "After a specific incident";
+      document.getElementById('t1_needs').value = "I need timely responses on project handoffs and constructive comments in team meetings rather than unexpected criticism.";
+      showToast('Sample scenario loaded');
+    }
+
+    function processTool1(e, savedData = null) {
+      if (e) e.preventDefault();
+
+      let data = savedData;
+      let isSample = false;
+
+      if (!data) {
+        const words = document.getElementById('t1_words').value;
+        const trigger = document.getElementById('t1_trigger').value;
+        const scope = document.querySelector('input[name="t1_scope"]:checked').value;
+        const timing = document.getElementById('t1_timing').value;
+        const needs = document.getElementById('t1_needs').value;
+
+        if (words.includes('Passive-aggressive') && trigger === 'Deadlines') isSample = true;
+
+        // Diagnostic Rule Logic
+        let conflictType = "Communication Mismatch";
+        if (trigger === "Unclear roles" || trigger === "Credit / recognition") {
+          conflictType = "Role Overlap & Power Struggle";
+        } else if (trigger === "Deadlines" || trigger === "Work quality") {
+          conflictType = "Operational Friction";
+        } else if (timing === "After a specific incident") {
+          conflictType = "Unresolved Incident & Defensive Trust";
+        } else if (scope === "Everyone") {
+          conflictType = "Behavioral Pattern / Communication Style";
+        }
+
+        let realIssue = "";
+        if (trigger === "Deadlines") {
+          realIssue = "Divergent pace and priorities coupled with protective anxiety over workload or control.";
+        } else if (trigger === "Credit / recognition") {
+          realIssue = "Insecurity regarding visibility, authority, and value contribution within the team.";
+        } else if (trigger === "Unclear roles") {
+          realIssue = "Ambiguous responsibility boundaries leading to territorial defensiveness.";
+        } else {
+          realIssue = "Misaligned communication channels resulting in misread intent and perceived hostility.";
+        }
+
+        let sharedGoal = `Delivering successful work deliverables without unnecessary delays or friction. Both of you benefit when dependencies move smoothly.`;
+        
+        let contribution = scope === "Just me" 
+          ? "You may be anticipating hostility and reacting defensively before giving them space to respond, reinforcing their guard."
+          : "You may be relying on assumptions about their underlying intent rather than holding them strictly to objective deliverables.";
+
+        let shift = "Shift from viewing their behavior automatically as a personal attack toward considering the possibility that it is a strategy they use to cope with their own stress or perceived pressure.";
+
+        let priority = "Establish clear, objective operational expectations around deliverable handoffs.";
+
+        data = {
+          words, trigger, scope, timing, needs,
+          conflictType, realIssue, sharedGoal, contribution, shift, priority,
+          summaryLabel: `${conflictType} (${trigger})`,
+          isSample
+        };
+
+        saveHistoryItem('tool1', data);
+      }
+
+      const rec = generateCrossRecommendation('tool1', data);
+      const container = document.getElementById('outputTool1');
+      
+      container.innerHTML = `
+        <span class="badge">Analysis Complete</span>
+        ${data.isSample ? '<div class="sample-tag"><i class="fa-solid fa-flask"></i> Sample Scenario Result</div>' : ''}
+        
+        <div class="output-section">
+          <div class="output-title">Conflict Type</div>
+          <div class="output-body"><strong>${escapeHTML(data.conflictType)}</strong></div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">The Real Issue Beneath</div>
+          <div class="output-body">${escapeHTML(data.realIssue)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Shared Goal (Mutual Interest)</div>
+          <div class="output-body">${escapeHTML(data.sharedGoal)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Your Contribution To The Cycle</div>
+          <div class="output-body">${escapeHTML(data.contribution)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">One Mindset Shift</div>
+          <div class="output-body">${escapeHTML(data.shift)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Your Priority Action</div>
+          <div class="output-body"><strong>${escapeHTML(data.priority)}</strong></div>
+        </div>
+
+        <div class="recommendation-box">
+          <span class="recommendation-text"><i class="fa-solid fa-arrow-right-long" style="color:var(--moss-green);"></i> ${escapeHTML(rec.text)}</span>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('${rec.nextTool}')">${escapeHTML(rec.btnText)}</button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* --- TOOL 2: CONVERSATION SCRIPT BUILDER --- */
+    function renderTool2() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-comments"></i> Script Builder</h2>
+            <p>"I need to talk to them but I don't know what to say."</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadSampleTool2()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+          </button>
+        </div>
+
+        <div class="orientation-box">
+          Build a structured conversation line focused on observable work impact. Avoid speculating on motives or personality.
+        </div>
+
+        <div class="card">
+          <form id="formTool2" onsubmit="processTool2(event)">
+            <div class="form-group">
+              <label for="t2_issue">What specific issue do you want to address?</label>
+              <textarea id="t2_issue" class="form-control" placeholder="e.g., Missed handoffs, interrupted meetings, tone in emails..." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Your primary goal for the conversation:</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t2_goal" value="Fix the problem" checked> Fix the problem</label>
+                <label class="radio-label"><input type="radio" name="t2_goal" value="Stop the behavior"> Stop the behavior</label>
+                <label class="radio-label"><input type="radio" name="t2_goal" value="Understand their side"> Understand their side</label>
+                <label class="radio-label"><input type="radio" name="t2_goal" value="Protect my work"> Protect my work</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Their anticipated reaction:</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t2_reaction" value="Defensive" checked> Defensive</label>
+                <label class="radio-label"><input type="radio" name="t2_reaction" value="Dismissive"> Dismissive</label>
+                <label class="radio-label"><input type="radio" name="t2_reaction" value="Open"> Open</label>
+                <label class="radio-label"><input type="radio" name="t2_reaction" value="Escalating"> Escalating</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t2_setting">Where will you talk?</label>
+              <select id="t2_setting" class="form-control" required>
+                <option value="Private meeting">Private meeting</option>
+                <option value="Coffee chat">Coffee chat</option>
+                <option value="Video call">Video call</option>
+                <option value="In the moment">In the moment</option>
+                <option value="Email as last resort">Email as last resort</option>
+              </select>
+            </div>
+
+            <div class="action-row">
+              <button type="submit" class="btn btn-primary btn-block">Generate Conversation Script</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="outputTool2" class="card output-card"></div>
+        ${renderHistoryAccordionHTML('tool2')}
+      `;
+    }
+
+    function loadSampleTool2() {
+      document.getElementById('t2_issue').value = "Missed handoffs on client deliverables causing me to stay late and risk missing deadlines.";
+      document.querySelector('input[name="t2_goal"][value="Fix the problem"]').checked = true;
+      document.querySelector('input[name="t2_reaction"][value="Defensive"]').checked = true;
+      document.getElementById('t2_setting').value = "Private meeting";
+      showToast('Sample scenario loaded');
+    }
+
+    function processTool2(e, savedData = null) {
+      if (e) e.preventDefault();
+
+      let data = savedData;
+      let isSample = false;
+
+      if (!data) {
+        const issue = document.getElementById('t2_issue').value;
+        const goal = document.querySelector('input[name="t2_goal"]:checked').value;
+        const reaction = document.querySelector('input[name="t2_reaction"]:checked').value;
+        const setting = document.getElementById('t2_setting').value;
+
+        if (issue.includes('Missed handoffs') && goal === 'Fix the problem') isSample = true;
+
+        // Script Assembly
+        let opening = `Thanks for making time to touch base. I wanted to sit down briefly so we can align on our workflow regarding ${issue.slice(0, 50)}. My goal today is to make sure we have a clear system that works for both of us.`;
+        
+        let iStatements = `1. "I've noticed that when updates or handoffs arrive later than scheduled, I struggle to complete my part of the project without working extra hours."\n2. "I feel anxious about our overall project timeline, and I want to figure out how we can streamline this step together."`;
+
+        let deescalation = reaction === "Defensive" 
+          ? '"I\'m not pointing fingers or placing blame here. I know how heavy your workload is, and I want to make sure we find a process that supports both of our schedules."'
+          : reaction === "Dismissive"
+          ? '"I understand this might seem minor, but it directly impacts my ability to deliver quality work on time, which is why I want to solve it now."'
+          : reaction === "Escalating"
+          ? '"I\'m bringing this up so we can succeed together, not to start an argument. Let\'s pause and discuss the process when we\'re both ready."'
+          : '"I appreciate you hearing me out on this. Let\'s keep focused on finding a routine that prevents bottlenecks."';
+
+        let followUp = '"Even if we view the situation slightly differently, the outcome is impacting my daily workflow. Can we agree on a specific cutoff time or check-in format for future tasks?"';
+
+        let close = 'Let\'s try this adjusted process for the next two weeks and reconnect briefly to see if it\'s working well for both of us.';
+
+        let protocol = `BEFORE: Choose a neutral setting. Bring 1-2 concrete examples.\nAVOID: Speculating on motives, using "always/never" statements, or raising past non-relevant issues.\nAFTER: Document the agreed-upon trial process in a brief follow-up email.`;
+
+        data = {
+          issue, goal, reaction, setting,
+          opening, iStatements, deescalation, followUp, close, protocol,
+          summaryLabel: `Script: ${goal} (${setting})`,
+          isSample
+        };
+
+        saveHistoryItem('tool2', data);
+      }
+
+      const rec = generateCrossRecommendation('tool2', data);
+      const container = document.getElementById('outputTool2');
+      
+      container.innerHTML = `
+        <span class="badge">Tailored Conversation Script</span>
+        ${data.isSample ? '<div class="sample-tag"><i class="fa-solid fa-flask"></i> Sample Scenario Result</div>' : ''}
+        
+        <div class="output-section">
+          <div class="output-header-row">
+            <div class="output-title">Opening Script (Alignment Focus)</div>
+            <button class="btn btn-outline btn-sm" onclick="copyToClipboard(\`${escapeHTML(data.opening)}\`)"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <div class="output-body">${escapeHTML(data.opening)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">The "I" Statements (Behavior & Impact)</div>
+          <div class="output-body">${escapeHTML(data.iStatements)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">If They Get Reactive / Defensive</div>
+          <div class="output-body">${escapeHTML(data.deescalation)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">If They Dismiss The Operational Concern</div>
+          <div class="output-body">${escapeHTML(data.followUp)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Conversation Close (Trial Period)</div>
+          <div class="output-body">${escapeHTML(data.close)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Conversation Protocol Checklist</div>
+          <div class="output-body">${escapeHTML(data.protocol)}</div>
+        </div>
+
+        <div class="recommendation-box">
+          <span class="recommendation-text"><i class="fa-solid fa-arrow-right-long" style="color:var(--moss-green);"></i> ${escapeHTML(rec.text)}</span>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('${rec.nextTool}')">${escapeHTML(rec.btnText)}</button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* --- TOOL 3: BOUNDARY SETTER --- */
+    function renderTool3() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-shield-halved"></i> Boundary Setter</h2>
+            <p>"They keep crossing lines and I need it to stop."</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadSampleTool3()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+          </button>
+        </div>
+
+        <div class="orientation-box">
+          Workplace boundaries define what you will do in response to a situation, not threats or personal punishment.
+        </div>
+
+        <div class="card">
+          <form id="formTool3" onsubmit="processTool3(event)">
+            <div class="form-group">
+              <label for="t3_boundary">What boundary is being crossed?</label>
+              <select id="t3_boundary" class="form-control" required>
+                <option value="Time (after-hours)">Time (after-hours communication)</option>
+                <option value="Work scope">Work scope (task dumping / scope creep)</option>
+                <option value="Personal space">Personal space / intrusive questions</option>
+                <option value="Communication tone">Communication tone (yelling, sarcasm)</option>
+                <option value="Credit / ideas">Credit / ideas (taking ownership)</option>
+                <option value="Availability">Availability (constant interruptions)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="t3_frequency">How often does this occur?</label>
+              <select id="t3_frequency" class="form-control" required>
+                <option value="Daily">Daily</option>
+                <option value="Weekly">Weekly</option>
+                <option value="Occasionally">Occasionally</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Have you addressed this directly with them?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t3_direct" value="Yes"> Yes</label>
+                <label class="radio-label"><input type="radio" name="t3_direct" value="Hinted" checked> Hinted</label>
+                <label class="radio-label"><input type="radio" name="t3_direct" value="No"> No</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t3_fear">What are you afraid will happen if you enforce it?</label>
+              <textarea id="t3_fear" class="form-control" placeholder="e.g., They will complain to management, act uncooperatively, or create drama..." required></textarea>
+            </div>
+
+            <div class="action-row">
+              <button type="submit" class="btn btn-primary btn-block">Draft Boundary Protocol</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="outputTool3" class="card output-card"></div>
+        ${renderHistoryAccordionHTML('tool3')}
+      `;
+    }
+
+    function loadSampleTool3() {
+      document.getElementById('t3_boundary').value = "Work scope";
+      document.getElementById('t3_frequency').value = "Daily";
+      document.querySelector('input[name="t3_direct"][value="Hinted"]').checked = true;
+      document.getElementById('t3_fear').value = "I'm afraid they will act like I am not a team player or complain to our boss that I'm uncooperative.";
+      showToast('Sample scenario loaded');
+    }
+
+    function processTool3(e, savedData = null) {
+      if (e) e.preventDefault();
+
+      let data = savedData;
+      let isSample = false;
+
+      if (!data) {
+        const boundary = document.getElementById('t3_boundary').value;
+        const frequency = document.getElementById('t3_frequency').value;
+        const direct = document.querySelector('input[name="t3_direct"]:checked').value;
+        const fear = document.getElementById('t3_fear').value;
+
+        if (boundary === 'Work scope' && fear.includes('team player')) isSample = true;
+
+        // Category-Specific Boundary Logic
+        let statement = "";
+        let method = "Deliver in a calm, neutral tone in person or via email immediately following an instance.";
+        let consequence = "";
+
+        if (boundary.includes("Time")) {
+          statement = '"Going forward, I log off at 5:00 PM and will review work emails or chats when I return at 8:30 AM the next business day."';
+          consequence = '"If messages arrive after hours, I will prioritize and address them first thing the next morning."';
+        } else if (boundary.includes("Work scope")) {
+          statement = '"I need to focus exclusively on my assigned project deliverables right now, so I won\'t be able to take on extra tasks without prior supervisor alignment."';
+          consequence = '"If tasks are delegated to me without prior alignment, I will loop in our manager to help us re-prioritize existing workloads."';
+        } else if (boundary.includes("Communication tone")) {
+          statement = '"I want us to work together productively, but I need our discussions to remain professional and respectful."';
+          consequence = '"If voices are raised or comments become personal, I will pause the meeting and resume our conversation over email or with a mediator."';
+        } else {
+          statement = '"I need dedicated blocks of uninterrupted focus time during the afternoon to complete my key deliverables."';
+          consequence = '"I will be setting my status to \'Do Not Disturb\' between 1 PM and 3 PM daily, and will respond to inquiries once that window ends."';
+        }
+
+        let rehearsal = `Take a deep breath. Speak slowly at a lower pitch. Keep your eye contact steady, state the boundary clearly without apologizing or over-explaining, and pause.`;
+        
+        let nextStep = `If they cross the boundary again, execute your stated operational consequence immediately without anger or hesitation. Keep it purely operational.`;
+
+        data = {
+          boundary, frequency, direct, fear,
+          statement, method, consequence, rehearsal, nextStep,
+          summaryLabel: `Boundary: ${boundary}`,
+          isSample
+        };
+
+        saveHistoryItem('tool3', data);
+      }
+
+      const rec = generateCrossRecommendation('tool3', data);
+      const container = document.getElementById('outputTool3');
+
+      container.innerHTML = `
+        <span class="badge">Boundary Blueprint</span>
+        ${data.isSample ? '<div class="sample-tag"><i class="fa-solid fa-flask"></i> Sample Scenario Result</div>' : ''}
+        
+        <div class="output-section">
+          <div class="output-header-row">
+            <div class="output-title">The Boundary Statement</div>
+            <button class="btn btn-outline btn-sm" onclick="copyToClipboard(\`${escapeHTML(data.statement)}\`)"><i class="fa-regular fa-copy"></i> Copy</button>
+          </div>
+          <div class="output-body">${escapeHTML(data.statement)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Delivery Method & Context</div>
+          <div class="output-body">${escapeHTML(data.method)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Operational Consequence / Response</div>
+          <div class="output-body">${escapeHTML(data.consequence)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Rehearsal & Delivery Guidance</div>
+          <div class="output-body">${escapeHTML(data.rehearsal)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">If The Boundary Is Crossed Again</div>
+          <div class="output-body">${escapeHTML(data.nextStep)}</div>
+        </div>
+
+        <div class="recommendation-box">
+          <span class="recommendation-text"><i class="fa-solid fa-arrow-right-long" style="color:var(--moss-green);"></i> ${escapeHTML(rec.text)}</span>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('${rec.nextTool}')">${escapeHTML(rec.btnText)}</button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* --- TOOL 4: DOCUMENTATION LOG --- */
+    function renderTool4() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-clipboard-list"></i> Documentation Log</h2>
+            <p>"If this escalates, I need an objective record."</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadSampleTool4()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+          </button>
+        </div>
+
+        <div class="orientation-box">
+          Document observable facts (Who, What, When, Impact) rather than speculating on motives or moral character.
+        </div>
+
+        <div class="card">
+          <form id="formTool4" onsubmit="processTool4(event)">
+            <div class="form-group">
+              <label for="t4_incidents">Describe specific incidents (Dates, observable events, channels):</label>
+              <textarea id="t4_incidents" class="form-control" placeholder="e.g., Oct 12: Received aggressive email regarding reports. Oct 14: Interrupted and mocked proposal during team sprint meeting." required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label>Were there witnesses present?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t4_witnesses" value="Yes" checked> Yes</label>
+                <label class="radio-label"><input type="radio" name="t4_witnesses" value="No"> No</label>
+                <label class="radio-label"><input type="radio" name="t4_witnesses" value="Sometimes"> Sometimes</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Have you involved a manager or supervisor?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t4_manager" value="Yes"> Yes</label>
+                <label class="radio-label"><input type="radio" name="t4_manager" value="No" checked> No</label>
+                <label class="radio-label"><input type="radio" name="t4_manager" value="Considering it"> Considering it</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Is this affecting your work deliverables or productivity?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t4_impact" value="Yes significantly" checked> Yes significantly</label>
+                <label class="radio-label"><input type="radio" name="t4_impact" value="Somewhat"> Somewhat</label>
+                <label class="radio-label"><input type="radio" name="t4_impact" value="Not yet"> Not yet</label>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button type="submit" class="btn btn-primary btn-block">Generate Documentation Package</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="outputTool4" class="card output-card"></div>
+        ${renderHistoryAccordionHTML('tool4')}
+      `;
+    }
+
+    function loadSampleTool4() {
+      document.getElementById('t4_incidents').value = "- Oct 10: Received aggressive email accusing me of hoarding project files.\n- Oct 15: In sprint planning, dismissed my project updates in front of 6 team members.\n- Oct 18: Refused to provide required client data before deadline.";
+      document.querySelector('input[name="t4_witnesses"][value="Yes"]').checked = true;
+      document.querySelector('input[name="t4_manager"][value="Considering it"]').checked = true;
+      document.querySelector('input[name="t4_impact"][value="Yes significantly"]').checked = true;
+      showToast('Sample scenario loaded');
+    }
+
+    function processTool4(e, savedData = null) {
+      if (e) e.preventDefault();
+
+      let data = savedData;
+      let isSample = false;
+
+      if (!data) {
+        const incidents = document.getElementById('t4_incidents').value;
+        const witnesses = document.querySelector('input[name="t4_witnesses"]:checked').value;
+        const manager = document.querySelector('input[name="t4_manager"]:checked').value;
+        const impact = document.querySelector('input[name="t4_impact"]:checked').value;
+
+        if (incidents.includes('Oct 10') && witnesses === 'Yes') isSample = true;
+
+        // Incident Log Assembly
+        let timeline = `WORKPLACE INCIDENT LOG\n--------------------\n`;
+        const lines = incidents.split('\n');
+        let count = 0;
+        lines.forEach((line) => {
+          if (line.trim()) {
+            count++;
+            timeline += `[INCIDENT #${count}]\n- Observable Event: ${line.trim()}\n- Operational Impact: Delays / Workflow friction\n- Recorded: ${new Date().toLocaleDateString()}\n\n`;
+          }
+        });
+
+        let checklist = `• Save exported PDFs/screenshots of relevant email and chat threads.\n• Record exact dates, times, and meeting titles.\n• Note names of present witnesses (${witnesses}).\n• Preserve objective proof of work impact (e.g., missed client deadlines, revised project schedules).`;
+
+        let criteria = `Escalation to HR or Management is recommended when:\n1. Direct business impact or financial/client risk occurs.\n2. Behavior crosses into hostile communication, harassment, or intimidation.\n3. Informal direct boundary attempts have been repeatedly ignored.`;
+
+        let managerScript = `"I wanted to discuss an operational challenge that is impacting our project deliverables. I have documented specific instances where workflow friction has created delays, and I'd like your guidance on how to ensure project milestones stay on track."`;
+
+        let rights = `Focus your documentation strictly on observable events and operational impact. Local workplace policies vary, so utilize appropriate HR, management, or organizational support channels.`;
+
+        data = {
+          incidents, witnesses, manager, impact,
+          timeline, checklist, criteria, managerScript, rights,
+          summaryLabel: `Log (${count} items documented)`,
+          isSample
+        };
+
+        saveHistoryItem('tool4', data);
+      }
+
+      const rec = generateCrossRecommendation('tool4', data);
+      const container = document.getElementById('outputTool4');
+
+      container.innerHTML = `
+        <span class="badge">Documentation Log Package</span>
+        ${data.isSample ? '<div class="sample-tag"><i class="fa-solid fa-flask"></i> Sample Scenario Result</div>' : ''}
+        
+        <div class="output-section">
+          <div class="output-header-row">
+            <div class="output-title">Formatted Incident Timeline Log</div>
+            <button class="btn btn-outline btn-sm" onclick="copyToClipboard(\`${escapeHTML(data.timeline)}\`)"><i class="fa-regular fa-copy"></i> Copy Log</button>
+          </div>
+          <div class="output-body" style="font-family: monospace; font-size: 0.85rem;">${escapeHTML(data.timeline)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Evidence Preservation Checklist</div>
+          <div class="output-body">${escapeHTML(data.checklist)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Escalation Criteria</div>
+          <div class="output-body">${escapeHTML(data.criteria)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Manager Conversation Line</div>
+          <div class="output-body">${escapeHTML(data.managerScript)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Workplace Support Principles</div>
+          <div class="output-body">${escapeHTML(data.rights)}</div>
+        </div>
+
+        <div class="recommendation-box">
+          <span class="recommendation-text"><i class="fa-solid fa-arrow-right-long" style="color:var(--moss-green);"></i> ${escapeHTML(rec.text)}</span>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('${rec.nextTool}')">${escapeHTML(rec.btnText)}</button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* --- TOOL 5: COEXISTENCE PLAN --- */
+    function renderTool5() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-compass"></i> Coexistence Plan</h2>
+            <p>"The relationship won't improve. How do I protect my work?"</p>
+          </div>
+          <button class="btn btn-secondary btn-sm" onclick="loadSampleTool5()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+          </button>
+        </div>
+
+        <div class="orientation-box">
+          Establish a transactional, professional strategy when interpersonal harmony is unlikely. Protect your career and emotional well-being.
+        </div>
+
+        <div class="card">
+          <form id="formTool5" onsubmit="processTool5(event)">
+            <div class="form-group">
+              <label>Have you attempted to resolve this directly?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t5_tried" value="Multiple times" checked> Multiple times</label>
+                <label class="radio-label"><input type="radio" name="t5_tried" value="Once"> Once</label>
+                <label class="radio-label"><input type="radio" name="t5_tried" value="Never"> Never</label>
+                <label class="radio-label"><input type="radio" name="t5_tried" value="They refuse"> Refuses to engage</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Do you depend on them to perform your daily job?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t5_depend" value="Heavily" checked> Heavily</label>
+                <label class="radio-label"><input type="radio" name="t5_depend" value="Somewhat"> Somewhat</label>
+                <label class="radio-label"><input type="radio" name="t5_depend" value="Not really"> Not really</label>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="t5_timeline">Expected remaining working timeline together:</label>
+              <select id="t5_timeline" class="form-control" required>
+                <option value="Indefinitely">Indefinitely</option>
+                <option value="Project ends soon">Project ends soon</option>
+                <option value="One of us is leaving">One of us is leaving</option>
+                <option value="Don't know">Don't know</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>What is your immediate priority?</label>
+              <div class="radio-group">
+                <label class="radio-label"><input type="radio" name="t5_priority" value="Protect my reputation"> Protect my reputation</label>
+                <label class="radio-label"><input type="radio" name="t5_priority" value="Minimize interaction" checked> Minimize interaction</label>
+                <label class="radio-label"><input type="radio" name="t5_priority" value="Just get the work done"> Just get work done</label>
+                <label class="radio-label"><input type="radio" name="t5_priority" value="Find an exit"> Find an exit</label>
+              </div>
+            </div>
+
+            <div class="action-row">
+              <button type="submit" class="btn btn-primary btn-block">Build Coexistence Blueprint</button>
+            </div>
+          </form>
+        </div>
+
+        <div id="outputTool5" class="card output-card"></div>
+        ${renderHistoryAccordionHTML('tool5')}
+      `;
+    }
+
+    function loadSampleTool5() {
+      document.querySelector('input[name="t5_tried"][value="Multiple times"]').checked = true;
+      document.querySelector('input[name="t5_depend"][value="Heavily"]').checked = true;
+      document.getElementById('t5_timeline').value = "Indefinitely";
+      document.querySelector('input[name="t5_priority"][value="Minimize interaction"]').checked = true;
+      showToast('Sample scenario loaded');
+    }
+
+    function processTool5(e, savedData = null) {
+      if (e) e.preventDefault();
+
+      let data = savedData;
+      let isSample = false;
+
+      if (!data) {
+        const tried = document.querySelector('input[name="t5_tried"]:checked').value;
+        const depend = document.querySelector('input[name="t5_depend"]:checked').value;
+        const timeline = document.getElementById('t5_timeline').value;
+        const priority = document.querySelector('input[name="t5_priority"]:checked').value;
+
+        if (tried === 'Multiple times' && priority === 'Minimize interaction') isSample = true;
+
+        // Coexistence Decision Hierarchy
+        let mode = "Transactional Formalism";
+        if (priority === "Find an exit") {
+          mode = "Parallel Tracks & Active Exit Plan";
+        } else if (depend === "Not really") {
+          mode = "Minimal Contact & Disengagement";
+        } else if (tried === "Multiple times" && depend === "Heavily") {
+          mode = "Transactional Formalism & Manager Alignment";
+        }
+
+        let rules = `1. All operational requests must be made in writing (email or project management tracking tool).\n2. Keep interactions strictly focused on work deliverables; avoid non-work personal discussions.\n3. Respond to inquiries with facts, zero emotional commentary, and standard professional courtesy.`;
+
+        let shield = `Treat difficult interactions like routine business transactions. Separate the coworker's behavior from your sense of personal professional worth.`;
+
+        let allyMap = `Identify key peer leads, project managers, or cross-functional partners who can validate project handoffs or act as objective buffers.`;
+
+        let exit = timeline === "Indefinitely" || priority === "Find an exit"
+          ? `If workplace stress persists without leadership intervention, begin updating your professional portfolio and quietly exploring internal transfers or external options.`
+          : `Maintain this transactional mode until project completion. No long-term career relocation is necessary.`;
+
+        data = {
+          tried, depend, timeline, priority,
+          mode, rules, shield, allyMap, exit,
+          summaryLabel: `Strategy: ${mode}`,
+          isSample
+        };
+
+        saveHistoryItem('tool5', data);
+      }
+
+      const rec = generateCrossRecommendation('tool5', data);
+      const container = document.getElementById('outputTool5');
+
+      container.innerHTML = `
+        <span class="badge">Coexistence Blueprint</span>
+        ${data.isSample ? '<div class="sample-tag"><i class="fa-solid fa-flask"></i> Sample Scenario Result</div>' : ''}
+        
+        <div class="output-section">
+          <div class="output-title">Recommended Strategy Mode</div>
+          <div class="output-body"><strong>${escapeHTML(data.mode)}</strong></div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Core Interaction Rules</div>
+          <div class="output-body">${escapeHTML(data.rules)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Emotional Shielding Technique</div>
+          <div class="output-body">${escapeHTML(data.shield)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Ally Mapping Strategy</div>
+          <div class="output-body">${escapeHTML(data.allyMap)}</div>
+        </div>
+
+        <div class="output-section">
+          <div class="output-title">Exit & Timeline Guidance</div>
+          <div class="output-body">${escapeHTML(data.exit)}</div>
+        </div>
+
+        <div class="recommendation-box">
+          <span class="recommendation-text"><i class="fa-solid fa-arrow-right-long" style="color:var(--moss-green);"></i> ${escapeHTML(rec.text)}</span>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('${rec.nextTool}')">${escapeHTML(rec.btnText)}</button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+    /* --- GUIDED SEQUENCE: 7-DAY RESET --- */
+    function renderResetSequence() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-calendar-check"></i> 7-Day Difficult Coworker Reset</h2>
+            <p>A structured step-by-step process to regain clarity and control.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="day-step-card">
+            <h4>Day 1: Decode the Conflict Dynamic <button class="btn btn-outline btn-sm" onclick="switchTool('tool1')">Start Day 1</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Use the Conflict Decoder to identify the underlying friction pattern (Operational, Role, or Communication).</p>
+          </div>
+
+          <div class="day-step-card">
+            <h4>Day 2: Script Your Conversation <button class="btn btn-outline btn-sm" onclick="switchTool('tool2')">Start Day 2</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Draft professional opening lines and "I" statements without emotional escalation.</p>
+          </div>
+
+          <div class="day-step-card">
+            <h4>Day 3: Establish Clear Boundaries <button class="btn btn-outline btn-sm" onclick="switchTool('tool3')">Start Day 3</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Define operational limits regarding time, scope, or communication tone.</p>
+          </div>
+
+          <div class="day-step-card">
+            <h4>Day 4: Build Objective Documentation <button class="btn btn-outline btn-sm" onclick="switchTool('tool4')">Start Day 4</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Format observable events and work impacts into an HR-ready timeline.</p>
+          </div>
+
+          <div class="day-step-card">
+            <h4>Day 5: Formulate Coexistence Strategy <button class="btn btn-outline btn-sm" onclick="switchTool('tool5')">Start Day 5</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Define interaction rules, emotional detachment techniques, and ally mapping.</p>
+          </div>
+
+          <div class="day-step-card">
+            <h4>Day 6: Synthesize Workplace Plan <button class="btn btn-outline btn-sm" onclick="switchTool('workplacePlan')">Start Day 6</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Review your consolidated snapshot and primary next steps.</p>
+          </div>
+
+          <div class="day-step-card">
+            <h4>Day 7: Execute & Evaluate <button class="btn btn-outline btn-sm" onclick="window.print()">Print Plan</button></h4>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Commit to testing one agreement or boundary for 14-30 days before reviewing.</p>
+          </div>
+        </div>
+      `;
+    }
+
+    /* --- SYNTHESIS: MY WORKPLACE PLAN --- */
+    function renderWorkplacePlan() {
+      const results = difficultCoworkerState.toolResults;
+      const completedCount = difficultCoworkerState.completedTools.length;
+
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-briefcase"></i> My Workplace Strategy Plan</h2>
+            <p>Consolidated summary of your completed tool analyses.</p>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Plan</button>
+        </div>
+
+        ${completedCount === 0 ? `
+          <div class="card" style="text-align:center; padding:2.5rem 1rem;">
+            <i class="fa-solid fa-folder-open" style="font-size:2.5rem; color:var(--text-muted); margin-bottom:1rem;"></i>
+            <h3>No Analysis Data Available</h3>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-top:0.4rem;">Complete at least one operating tool to generate your consolidated workplace plan.</p>
+            <div style="margin-top:1.25rem;">
+              <button class="btn btn-primary" onclick="switchTool('tool1')">Start Conflict Decoder</button>
+            </div>
+          </div>
+        ` : `
+          <div class="card">
+            <span class="badge">Consolidated Snapshot</span>
+            
+            ${results.tool1 ? `
+              <div class="output-section">
+                <div class="output-title">1. Conflict Dynamic</div>
+                <div class="output-body"><strong>Type:</strong> ${escapeHTML(results.tool1.conflictType)}<br><strong>Underlying Issue:</strong> ${escapeHTML(results.tool1.realIssue)}</div>
+              </div>
+            ` : ''}
+
+            ${results.tool2 ? `
+              <div class="output-section">
+                <div class="output-title">2. Primary Conversation Opening</div>
+                <div class="output-body">${escapeHTML(results.tool2.opening)}</div>
+              </div>
+            ` : ''}
+
+            ${results.tool3 ? `
+              <div class="output-section">
+                <div class="output-title">3. Active Boundary Statement</div>
+                <div class="output-body">${escapeHTML(results.tool3.statement)}</div>
+              </div>
+            ` : ''}
+
+            ${results.tool4 ? `
+              <div class="output-section">
+                <div class="output-title">4. Documentation & Escalation</div>
+                <div class="output-body">${escapeHTML(results.tool4.summaryLabel)}<br><strong>Manager Script:</strong> ${escapeHTML(results.tool4.managerScript)}</div>
+              </div>
+            ` : ''}
+
+            ${results.tool5 ? `
+              <div class="output-section">
+                <div class="output-title">5. Coexistence Strategy Mode</div>
+                <div class="output-body"><strong>Mode:</strong> ${escapeHTML(results.tool5.mode)}<br><strong>Interaction Rule:</strong> ${escapeHTML(results.tool5.rules)}</div>
+              </div>
+            ` : ''}
+
+            <div style="margin-top:1.25rem; text-align:center;">
+              <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Official Strategy Document</button>
+            </div>
+          </div>
+        `}
+      `;
+    }
+
+    /* --- UNIFIED HISTORY MANAGER --- */
+    function renderUnifiedHistory() {
+      const history = getAllHistory();
+
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-clock-rotate-left"></i> My Saved History</h2>
+            <p>Review or manage past analyses stored safely in your local browser.</p>
+          </div>
+          ${history.length > 0 ? `<button class="btn btn-danger-outline btn-sm" onclick="clearAllHistoryData()">Clear All Data</button>` : ''}
+        </div>
+
+        <div class="card">
+          ${history.length === 0 ? `
+            <p style="color:var(--text-muted); text-align:center; padding:1.5rem 0;">No saved analyses found in local browser storage.</p>
+          ` : `
+            <div>
+              ${history.map((h) => `
+                <div class="history-item">
+                  <div class="history-item-info" onclick="loadHistoryItem('${h.id}')">
+                    <span style="font-size:0.75rem; font-weight:700; color:var(--moss-green); text-transform:uppercase;">${escapeHTML(h.toolId)}</span>
+                    <div><strong>${escapeHTML(h.data.summaryLabel || 'Saved Item')}</strong></div>
+                    <div class="history-item-date">${escapeHTML(h.timestamp)}</div>
+                  </div>
+                  <div class="history-actions">
+                    <button class="btn btn-outline btn-sm" onclick="loadHistoryItem('${h.id}')">View</button>
+                    <button class="btn btn-outline btn-sm" onclick="deleteHistoryItem(${h.id})" title="Delete"><i class="fa-solid fa-trash-can"></i></button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          `}
+        </div>
+      `;
+    }
+
+    /* --- PRIVACY & DATA CONTROL --- */
+    function renderPrivacy() {
+      mainContent.innerHTML = `
+        <div class="tool-header">
+          <div class="tool-title">
+            <h2><i class="fa-solid fa-user-shield"></i> Privacy & Local Data Control</h2>
+            <p>Your workplace data remains strictly private on your device.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 style="color:var(--moss-green); margin-bottom:0.75rem;">100% Local Browser Storage</h3>
+          <p style="font-size:0.9rem; line-height:1.6; color:var(--text-main); margin-bottom:1rem;">
+            Difficult Coworker Coach™ operates completely within your web browser. No account is required, and no workplace notes, incident descriptions, or conversation scripts are ever transmitted to an external server or remote database.
+          </p>
+
+          <h4 style="font-size:0.95rem; margin-bottom:0.4rem;">Stored Keys in LocalStorage:</h4>
+          <ul style="font-size:0.85rem; margin-left:1.25rem; margin-bottom:1.25rem; color:var(--text-muted);">
+            <li><code>${STORAGE_KEY_STATE}</code>: Active tool progress and settings</li>
+            <li><code>${STORAGE_KEY_HISTORY}</code>: Saved analysis records</li>
+          </ul>
+
+          <div style="border-top:1px solid var(--border-color); padding-top:1.25rem;">
+            <button class="btn btn-danger-outline" onclick="clearAllHistoryData()">
+              <i class="fa-solid fa-trash-can"></i> Purge All Stored Data Now
+            </button>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>

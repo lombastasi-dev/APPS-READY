@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Crisis Couple™ - Household Crisis Operating System</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --burgundy: #7B2D3E;
+            --burgundy-hover: #632331;
+            --sand: #D4A373;
+            --sand-light: #FAEDCD;
+            --bg-gradient: linear-gradient(135deg, #FEF1F0 0%, #FDF6EC 100%);
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --white: #FFFFFF;
+            --border-color: #E9ECEF;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(123, 45, 62, 0.08);
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+            
+            --status-immediate: #C92A2A;
+            --status-immediate-bg: #FFE3E3;
+            --status-urgent: #E67700;
+            --status-urgent-bg: #FFF3BF;
+            --status-stressed: #1864AB;
+            --status-stressed-bg: #E7F5FF;
+            --status-stabilizing: #0CA678;
+            --status-stabilizing-bg: #E6FCF5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Layout Architecture */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: var(--white);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            color: var(--burgundy);
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            line-height: 1.2;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover {
+            background-color: #FDF6EC;
+            color: var(--burgundy);
+        }
+
+        .nav-item.active {
+            background-color: #FEF1F0;
+            color: var(--burgundy);
+            border-left-color: var(--burgundy);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-category {
+            padding: 0.75rem 1.25rem 0.25rem 1.25rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* Mobile Header & Hamburger */
+        .mobile-header {
+            display: none;
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--burgundy);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Main Content Workspace */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2.5rem 1.5rem 4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - 260px);
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        /* Tool Cards & Components */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(212, 163, 115, 0.2);
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-hero h2 {
+            font-size: 2.2rem;
+            color: var(--burgundy);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .dashboard-hero p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .dash-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--sand);
+        }
+
+        .dash-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            background: #FEF1F0;
+            color: var(--burgundy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .dash-card h3 {
+            font-size: 1.05rem;
+            color: var(--burgundy);
+            margin-bottom: 0.3rem;
+        }
+
+        .dash-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .dash-card .badge-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.7rem;
+        }
+
+        /* Orientation & Snapshot Banner */
+        .orientation-card {
+            background: #FFF;
+            border-left: 4px solid var(--burgundy);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .orientation-card h3 {
+            color: var(--burgundy);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .orientation-card p {
+            font-size: 0.875rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .snapshot-item {
+            background: #FAFAFA;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .snapshot-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .snapshot-val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 0.2rem;
+        }
+
+        /* Tool Headers & Forms */
+        .tool-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-header h2 {
+            font-size: 1.6rem;
+            color: var(--burgundy);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .problem-statement {
+            background-color: var(--sand-light);
+            border-left: 4px solid var(--sand);
+            padding: 0.85rem 1.25rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-style: italic;
+            color: #5A4328;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sample, .btn-reset {
+            background: transparent;
+            border: 1px dashed var(--sand);
+            color: var(--burgundy);
+            padding: 0.4rem 0.85rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-sample:hover, .btn-reset:hover {
+            background-color: var(--sand-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background-color: #FAFAFA;
+        }
+
+        .form-control:focus {
+            border-color: var(--burgundy);
+            background-color: var(--white);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .checkbox-grid, .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.4rem;
+        }
+
+        .checkbox-item, .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            background: #FAFAFA;
+            padding: 0.6rem 0.8rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-item input, .radio-item input {
+            accent-color: var(--burgundy);
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            padding: 0.9rem;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--burgundy-hover);
+        }
+
+        /* Results Output Styling */
+        .results-container {
+            margin-top: 2rem;
+            display: none;
+            border-top: 2px solid var(--border-color);
+            padding-top: 2rem;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            font-size: 1.3rem;
+            color: var(--burgundy);
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-box {
+            background: #FAFAFA;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .result-box-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--burgundy);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-box-content {
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: var(--text-main);
+        }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-immediate { background: var(--status-immediate-bg); color: var(--status-immediate); }
+        .badge-urgent { background: var(--status-urgent-bg); color: var(--status-urgent); }
+        .badge-stressed { background: var(--status-stressed-bg); color: var(--status-stressed); }
+        .badge-stabilizing { background: var(--status-stabilizing-bg); color: var(--status-stabilizing); }
+
+        .btn-copy {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            border-color: var(--burgundy);
+            color: var(--burgundy);
+            background: #FEF1F0;
+        }
+
+        .script-text {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            white-space: pre-wrap;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Next Tool Routing Box */
+        .next-tool-card {
+            background: var(--sand-light);
+            border: 1px solid var(--sand);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .next-tool-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .next-tool-info i {
+            font-size: 1.25rem;
+            color: var(--burgundy);
+        }
+
+        .btn-next-tool {
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-next-tool:hover {
+            background: var(--burgundy-hover);
+        }
+
+        /* History Accordion */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-clear-history {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .btn-clear-history:hover {
+            color: var(--burgundy);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 0.75rem 1rem;
+            background: #FAFAFA;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .history-header:hover {
+            background: #F0F0F0;
+        }
+
+        .history-body {
+            padding: 1rem;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            background: var(--white);
+        }
+
+        .history-item.open .history-body {
+            display: block;
+        }
+
+        /* Universal Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--burgundy);
+            color: var(--white);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Printable View Styles */
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .form-action-bar, .btn-submit, .btn-copy, .history-section, .app-footer, .next-tool-card {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .results-container {
+                display: block !important;
+                border: none !important;
+            }
+        }
+
+        /* Custom Table Styling for Budget/Plan */
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .budget-table th, .budget-table td {
+            padding: 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .budget-table th {
+            background: #FAFAFA;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-top: auto;
+            width: 100%;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Responsive Breakdown */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem 1rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+            }
+
+            .checkbox-grid, .radio-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="mobile-brand">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+            <span>Money Crisis Couple™</span>
+        </div>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Toggle Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Navigation Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+                <h1>Money Crisis<br>Couple™</h1>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="nav-item active" data-view="dashboard">
+                    <i class="fa-solid fa-table-cells-large"></i> Dashboard
+                </li>
+                
+                <div class="nav-category">Guided Reset</div>
+                <li class="nav-item" data-view="reset7day">
+                    <i class="fa-solid fa-calendar-week"></i> 7-Day Crisis Reset
+                </li>
+
+                <div class="nav-category">Crisis Modules</div>
+                <li class="nav-item" data-view="tool1">
+                    <i class="fa-solid fa-kit-medical"></i> Crisis Triage
+                </li>
+                <li class="nav-item" data-view="tool2">
+                    <i class="fa-solid fa-calculator"></i> Survival Budget
+                </li>
+                <li class="nav-item" data-view="tool3">
+                    <i class="fa-solid fa-phone-volume"></i> Creditor Script
+                </li>
+                <li class="nav-item" data-view="tool4">
+                    <i class="fa-solid fa-shield-halved"></i> Blame Stop
+                </li>
+                <li class="nav-item" data-view="tool5">
+                    <i class="fa-solid fa-flag"></i> Recovery Milestones
+                </li>
+
+                <div class="nav-category">Synthesis & Info</div>
+                <li class="nav-item" data-view="myplan">
+                    <i class="fa-solid fa-file-invoice"></i> My Household Plan
+                </li>
+                <li class="nav-item" data-view="historyView">
+                    <i class="fa-solid fa-clock-rotate-left"></i> My History
+                </li>
+                <li class="nav-item" data-view="privacyView">
+                    <i class="fa-solid fa-user-shield"></i> Privacy & Safety
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-wrapper">
+
+                <!-- DASHBOARD VIEW -->
+                <section id="dashboard" class="view-section active">
+                    <div class="dashboard-hero">
+                        <h2>Money Crisis Couple™</h2>
+                        <p>Stop the spiral. Rebuild together.</p>
+                    </div>
+
+                    <div class="orientation-card">
+                        <h3><i class="fa-solid fa-compass"></i> Stabilization Principle</h3>
+                        <p>In a financial shock, couples need two forms of stabilization at the same time: <strong>Financial Stabilization</strong> (protecting housing, food, and basic necessities) and <strong>Relational Coordination</strong> (stopping blame and operating as a team). This app helps you navigate both safely without panic or humiliation.</p>
+                    </div>
+
+                    <!-- Qualitative Household Snapshot -->
+                    <div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+                        <div class="result-box-title" style="margin-bottom: 0.75rem;">
+                            <span><i class="fa-solid fa-chart-pie"></i> Household Crisis Snapshot</span>
+                            <span id="dashSnapshotState" class="badge badge-stressed">Not Assessed</span>
+                        </div>
+                        <div class="snapshot-grid">
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Cash Flow Deficit</div>
+                                <div class="snapshot-val" id="snapGap">--</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Liquid Runway</div>
+                                <div class="snapshot-val" id="snapRunway">--</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Essential Baseline</div>
+                                <div class="snapshot-val" id="snapBudget">--</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Team Alignment</div>
+                                <div class="snapshot-val" id="snapCoord">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dash-card" data-target="tool1">
+                            <div class="dash-card-icon"><i class="fa-solid fa-kit-medical"></i></div>
+                            <h3>Crisis Triage</h3>
+                            <p>Assess immediate severity, calculate cash runway, and isolate overdue essential obligations.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool2">
+                            <div class="dash-card-icon"><i class="fa-solid fa-calculator"></i></div>
+                            <h3>Survival Budget</h3>
+                            <p>Build a bare-bones spending plan to keep food on the table and shelter intact.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool3">
+                            <div class="dash-card-icon"><i class="fa-solid fa-phone-volume"></i></div>
+                            <h3>Creditor Script</h3>
+                            <p>Prepare factual, proactive negotiation scripts and email templates for lenders.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool4">
+                            <div class="dash-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h3>Blame Stop</h3>
+                            <p>Shift from mutual accusation to an "Us vs. The Problem" unified action front.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool5">
+                            <div class="dash-card-icon"><i class="fa-solid fa-flag"></i></div>
+                            <h3>Recovery Milestones</h3>
+                            <p>Map out 30-60-90 day condition-based benchmarks to steady household progress.</p>
+                        </div>
+                        <div class="dash-card" data-target="reset7day" style="border-color: var(--sand); background: #FFFDF9;">
+                            <div class="dash-card-icon" style="background: var(--sand-light);"><i class="fa-solid fa-calendar-week"></i></div>
+                            <h3>7-Day Crisis Reset</h3>
+                            <p>Follow a structured step-by-step guided sequence through all tools to build a total reset plan.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- GUIDED 7-DAY RESET VIEW -->
+                <section id="reset7day" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-calendar-week"></i> 7-Day Money Crisis Reset</h2>
+                        </div>
+                        <p class="problem-statement">
+                            Follow this day-by-day structured sequence to move step-by-step from chaos to a fully stabilized household plan.
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Day 1: Face the Numbers</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Run Crisis Triage to define current liquid runway and urgent overdue obligations.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool1')">Start Day 1</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Day 2: Build the Survival Budget</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Separate essential shelter/food costs from pauseable spending to find your baseline.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool2')">Start Day 2</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Day 3: Prepare Creditor Calls</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Generate custom scripts to ask landlords, banks, or utilities for hardship options.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool3')">Start Day 3</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Day 4: Stop the Blame Spiral</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Align on accountability without humiliation and set a structured daily check-in.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool4')">Start Day 4</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Day 5: Set Recovery Milestones</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Build 30-60-90 day condition-based targets for income and savings buffers.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool5')">Start Day 5</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Day 6 & 7: Synthesize & Review</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Consolidate all outputs into your printable Household Crisis Plan.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('myplan')">View Full Plan</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: CRISIS TRIAGE -->
+                <section id="tool1" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-kit-medical"></i> Crisis Triage</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "We don't know how bad it is because we're too scared to look."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool1()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool1')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Form
+                            </button>
+                        </div>
+                        <form id="formTool1">
+                            <div class="form-group">
+                                <label for="t1_income_before">Monthly household income before crisis ($):</label>
+                                <input type="number" id="t1_income_before" class="form-control" placeholder="5000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_income_now">Reliable monthly household income now ($):</label>
+                                <input type="number" id="t1_income_now" class="form-control" placeholder="1200" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_savings">Total available liquid savings ($):</label>
+                                <input type="number" id="t1_savings" class="form-control" placeholder="400" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_essential_cost">Estimated essential monthly expenses (Housing, Food, Utilities) ($) [Optional]:</label>
+                                <input type="number" id="t1_essential_cost" class="form-control" placeholder="e.g. 2800" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_months_cover">Estimated months of essential expenses you could cover:</label>
+                                <select id="t1_months_cover" class="form-control" required>
+                                    <option value="0">0 months / Unable to pay this month</option>
+                                    <option value="less_1">&lt; 1 month</option>
+                                    <option value="1_2">1 - 2 months</option>
+                                    <option value="3_6">3 - 6 months</option>
+                                    <option value="6_plus">6+ months</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_crisis_type">Primary crisis driver:</label>
+                                <select id="t1_crisis_type" class="form-control" required>
+                                    <option value="job_loss_one">Job loss (one partner)</option>
+                                    <option value="job_loss_both">Job loss (both partners)</option>
+                                    <option value="business_failure">Business failure / revenue collapse</option>
+                                    <option value="medical_debt">Medical emergency / debt</option>
+                                    <option value="legal_issue">Legal issue / unforeseen liability</option>
+                                    <option value="sudden_expense">Sudden large essential expense</option>
+                                    <option value="income_cut">Income cut / pay reduction</option>
+                                    <option value="other">Other sudden financial shock</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority obligations already behind or at immediate risk:</label>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Rent/Mortgage"> Rent / Mortgage</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Utilities"> Essential Utilities</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Credit Cards"> Credit Cards / Unsecured Debt</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Car Payment"> Car Payment / Work Transport</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Student Loans"> Student Loans</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Medical Bills"> Medical Bills</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-chart-line"></i> Calculate Triage Assessment</button>
+                        </form>
+
+                        <div id="resultsTool1" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Crisis Triage Analysis</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Print Assessment</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">YOUR CURRENT CRISIS STATE <span id="t1_res_score_badge" class="badge">--</span></div>
+                                <div class="result-box-content" id="t1_res_score"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">YOUR LIQUID RUNWAY</div>
+                                <div class="result-box-content" id="t1_res_runway"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">MONTHLY INCOME GAP</div>
+                                <div class="result-box-content" id="t1_res_gap"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">PRIORITY OBLIGATIONS AT RISK</div>
+                                <div class="result-box-content" id="t1_res_bleeding"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">IMMEDIATE STOPS & DEFERRALS</div>
+                                <div class="result-box-content" id="t1_res_stops"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">FIRST 48 HOURS CHECKLIST</div>
+                                <div class="result-box-content" id="t1_res_48hours"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Recommended Next Step</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Establish your exact essential spending baseline.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool2')">Go to Survival Budget</button>
+                            </div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Previous Triage Assessments</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool1')">Clear History</button>
+                            </div>
+                            <div class="history-list" id="historyTool1"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: SURVIVAL BUDGET -->
+                <section id="tool2" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-calculator"></i> Survival Budget</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "We need a bare-bones budget that keeps us fed and housed."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool2()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool2')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Form
+                            </button>
+                        </div>
+                        <form id="formTool2">
+                            <div class="form-group">
+                                <label for="t2_rent">Housing (Rent / Mortgage) ($):</label>
+                                <input type="number" id="t2_rent" class="form-control" placeholder="1800" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_food">Essential Groceries & Household Food ($):</label>
+                                <input type="number" id="t2_food" class="form-control" placeholder="450" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_utilities">Must-Pay Utilities (Power, Water, Gas, Basic Phone) ($):</label>
+                                <input type="number" id="t2_utilities" class="form-control" placeholder="250" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_transport">Essential Transport (Work/Essential commuting, Fuel) ($):</label>
+                                <input type="number" id="t2_transport" class="form-control" placeholder="180" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_insurance">Critical Insurance (Health, Auto, Home) ($):</label>
+                                <input type="number" id="t2_insurance" class="form-control" placeholder="280" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_debt">Required Minimum Debt Payments ($):</label>
+                                <input type="number" id="t2_debt" class="form-control" placeholder="400" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_childcare">Essential Childcare / Medical / Education ($):</label>
+                                <input type="number" id="t2_childcare" class="form-control" placeholder="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_nonessential">Discretionary / Pauseable Monthly Spending ($):</label>
+                                <input type="number" id="t2_nonessential" class="form-control" placeholder="650" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_morale_cost">Selected Monthly Morale Keeper / Sanity Item ($) [Optional]:</label>
+                                <input type="number" id="t2_morale_cost" class="form-control" placeholder="15" min="0">
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-file-invoice-dollar"></i> Generate Survival Budget Plan</button>
+                        </form>
+
+                        <div id="resultsTool2" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Survival Budget Plan</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Print Budget</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">YOUR MINIMUM MONTHLY BASELINE</div>
+                                <div class="result-box-content" id="t2_res_budget"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">LARGEST DISCRETIONARY LEVERS</div>
+                                <div class="result-box-content" id="t2_res_cutlist"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">FOOD & ESSENTIALS PLAN</div>
+                                <div class="result-box-content" id="t2_res_foodplan"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">HOUSING COST OBSERVATION</div>
+                                <div class="result-box-content" id="t2_res_housing"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">SUSTAINABILITY & MORALE KEEPER</div>
+                                <div class="result-box-content" id="t2_res_luxury"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">WEEKLY SPENDING CONTROL METHOD</div>
+                                <div class="result-box-content" id="t2_res_cashsystem"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Recommended Next Step</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Prepare factual calls to lenders for accounts you cannot pay in full.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool3')">Go to Creditor Script</button>
+                            </div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Previous Budget Plans</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool2')">Clear History</button>
+                            </div>
+                            <div class="history-list" id="historyTool2"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: CREDITOR SCRIPT -->
+                <section id="tool3" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-phone-volume"></i> Creditor Communication Kit</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "We don't know what to say to landlords, banks, or credit card companies."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool3()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool3')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Form
+                            </button>
+                        </div>
+                        <form id="formTool3">
+                            <div class="form-group">
+                                <label>Provider / Lender you need to contact:</label>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Landlord / Property Manager"> Landlord / Property Mgr</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Mortgage Servicer"> Mortgage Servicer</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Credit Card Issuer"> Credit Card Issuer</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Utility Company"> Utility Company</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Auto Auto Lender"> Auto Lender</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Student Loan Servicer"> Student Loan Servicer</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Medical Provider"> Medical Provider</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_payment_ability">What you can pay right now:</label>
+                                <select id="t3_payment_ability" class="form-control" required>
+                                    <option value="Nothing at all right now">Nothing at all right now ($0)</option>
+                                    <option value="Partial token payment">Partial token payment ($XX amount)</option>
+                                    <option value="Full minimums, requesting rate relief">Full minimums, requesting rate/fee relief</option>
+                                    <option value="Some accounts but not all">Some essential accounts, but not this one</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Prior payment history on this account:</label>
+                                <div class="radio-group">
+                                    <label class="radio-item"><input type="radio" name="t3_history" value="First time facing hardship" checked> First time facing hardship</label>
+                                    <label class="radio-item"><input type="radio" name="t3_history" value="Previously missed payments"> Previously missed payments</label>
+                                    <label class="radio-item"><input type="radio" name="t3_history" value="Currently up to date"> Currently up to date</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Preferred contact method:</label>
+                                <div class="radio-group">
+                                    <label class="radio-item"><input type="radio" name="t3_method" value="Phone Call" checked> Phone Call</label>
+                                    <label class="radio-item"><input type="radio" name="t3_method" value="Email / Portal Message"> Email / Secure Portal</label>
+                                    <label class="radio-item"><input type="radio" name="t3_method" value="Formal Written Letter"> Formal Letter</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_fear">Your primary concern about initiating contact:</label>
+                                <textarea id="t3_fear" class="form-control" placeholder="e.g. I am worried they will reject partial payment and immediately add late fees or report negative marks."></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-comments"></i> Generate Negotiation Package</button>
+                        </form>
+
+                        <div id="resultsTool3" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Creditor Communication Kit</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Print Package</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">VERBAL CALL SCRIPT</div>
+                                <div class="result-box-content" id="t3_res_script"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">WRITTEN EMAIL / PORTAL TEMPLATE</div>
+                                <div class="result-box-content" id="t3_res_email"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">DOCUMENTATION CHECKLIST</div>
+                                <div class="result-box-content" id="t3_res_docs"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">WHAT TO ASK & VERIFY BEFORE AGREEING</div>
+                                <div class="result-box-content" id="t3_res_ask"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">WRITTEN FOLLOW-UP RECORD</div>
+                                <div class="result-box-content" id="t3_res_followup"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">IF THEY SAY NO / ESCALATION</div>
+                                <div class="result-box-content" id="t3_res_ifno"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Recommended Next Step</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">De-escalate financial tension and coordinate as a team.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool4')">Go to Blame Stop</button>
+                            </div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Previous Communication Scripts</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool3')">Clear History</button>
+                            </div>
+                            <div class="history-list" id="historyTool3"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: BLAME STOP -->
+                <section id="tool4" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-shield-halved"></i> Blame Stop</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "We're either blaming each other or blaming ourselves, and neither helps."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool4()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool4')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Form
+                            </button>
+                        </div>
+                        <form id="formTool4">
+                            <div class="form-group">
+                                <label for="t4_target_a">Partner A's primary focus of blame:</label>
+                                <select id="t4_target_a" class="form-control" required>
+                                    <option value="Myself">Myself (Internalized guilt)</option>
+                                    <option value="Partner">Partner (External accusation)</option>
+                                    <option value="Economy">Economy / External Market</option>
+                                    <option value="Bad luck">Circumstance / Bad Luck</option>
+                                    <option value="Past decisions">Past Decisions / Shared choices</option>
+                                    <option value="Future focus">No one (Focused purely on future)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_target_b">Partner B's primary focus of blame:</label>
+                                <select id="t4_target_b" class="form-control" required>
+                                    <option value="Myself">Myself (Internalized guilt)</option>
+                                    <option value="Partner">Partner (External accusation)</option>
+                                    <option value="Economy">Economy / External Market</option>
+                                    <option value="Bad luck">Circumstance / Bad Luck</option>
+                                    <option value="Past decisions">Past Decisions / Shared choices</option>
+                                    <option value="Future focus">No one (Focused purely on future)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_pattern">Current conflict pattern:</label>
+                                <select id="t4_pattern" class="form-control" required>
+                                    <option value="Silent resentment">Silent resentment / Cold distance</option>
+                                    <option value="Open blame">Open arguments and frequent fights</option>
+                                    <option value="Withdraw Attack">Withdraw / Attack dynamic</option>
+                                    <option value="Both depressed">Both overwhelmed and paralyzed</option>
+                                    <option value="United">United against the problem, but highly stressed</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_needs_a">What Partner A needs for reassurance/safety:</label>
+                                <textarea id="t4_needs_a" class="form-control" placeholder="e.g. Needs reassurance that we are solving this as a team and that past errors do not mean ongoing failure."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_needs_b">What Partner B needs for reassurance/safety:</label>
+                                <textarea id="t4_needs_b" class="form-control" placeholder="e.g. Needs clear factual updates without emotional escalation."></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-heart-circle-check"></i> Generate Alignment Strategy</button>
+                        </form>
+
+                        <div id="resultsTool4" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Relationship Realignment</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Print Strategy</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">BLAME MAP ANALYSIS</div>
+                                <div class="result-box-content" id="t4_res_blamemap"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">SHARED ENEMY REFRAME</div>
+                                <div class="result-box-content" id="t4_res_reframe"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">ACCOUNTABILITY WITHOUT HUMILIATION</div>
+                                <div class="result-box-content" id="t4_res_apology"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">ACCOUNTABILITY & REPAIR PATH</div>
+                                <div class="result-box-content" id="t4_res_forgiveness"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">STRUCTURED 5-MINUTE EVENING CHECK-IN</div>
+                                <div class="result-box-content" id="t4_res_checkin"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">OUTSIDE SUPPORT PROMPT</div>
+                                <div class="result-box-content" id="t4_res_therapy"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Recommended Next Step</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Set condition-based recovery goals to build measurable hope.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool5')">Go to Recovery Milestones</button>
+                            </div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Previous Relationship Alignments</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool4')">Clear History</button>
+                            </div>
+                            <div class="history-list" id="historyTool4"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: RECOVERY MILESTONES -->
+                <section id="tool5" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-flag"></i> Recovery Milestones</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "We need a roadmap out of this so we don't feel hopeless."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool5()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool5')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Form
+                            </button>
+                        </div>
+                        <form id="formTool5">
+                            <div class="form-group">
+                                <label for="t5_target_income">Target monthly household income to reach full recovery ($):</label>
+                                <input type="number" id="t5_target_income" class="form-control" placeholder="5000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_timeline">Planning horizon to work toward recovery target:</label>
+                                <select id="t5_timeline" class="form-control" required>
+                                    <option value="1_month">1 month</option>
+                                    <option value="3_months">3 months</option>
+                                    <option value="6_months">6 months</option>
+                                    <option value="1_year">1 year</option>
+                                    <option value="unclear">Unclear / Flexible horizon</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_plan_a">Partner A's income bridge plan:</label>
+                                <textarea id="t5_plan_a" class="form-control" placeholder="e.g. Submitting 10 applications weekly, contacting former network contacts." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_plan_b">Partner B's income bridge plan:</label>
+                                <textarea id="t5_plan_b" class="form-control" placeholder="e.g. Taking freelance projects and temporary weekend shifts." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_win">One financial win already achieved (optional):</label>
+                                <input type="text" id="t5_win" class="form-control" placeholder="e.g. Paused non-essential subscriptions, saving $120/mo.">
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-route"></i> Generate Recovery Roadmap</button>
+                        </form>
+
+                        <div id="resultsTool5" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Recovery Roadmap</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Print Roadmap</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">0–30 DAY MILESTONE: STOP DETERIORATION</div>
+                                <div class="result-box-content" id="t5_res_30day"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">31–60 DAY MILESTONE: STABILIZE</div>
+                                <div class="result-box-content" id="t5_res_60day"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">61–90 DAY MILESTONE: STRENGTHEN</div>
+                                <div class="result-box-content" id="t5_res_90day"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">THE INCOME BRIDGE PLAN</div>
+                                <div class="result-box-content" id="t5_res_bridge"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">CELEBRATING PROGRESS SAFELY</div>
+                                <div class="result-box-content" id="t5_res_celebration"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">RECOVERY HORIZON CONTEXT</div>
+                                <div class="result-box-content" id="t5_res_timeline"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>View Full Household Plan</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">See all your completed module insights synthesized in one view.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('myplan')">View Master Plan</button>
+                            </div>
+                        </div>
+
+                        <!-- History Section -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Previous Recovery Roadmaps</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool5')">Clear History</button>
+                            </div>
+                            <div class="history-list" id="historyTool5"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MY PLAN SYNTHESIS VIEW -->
+                <section id="myplan" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-file-invoice"></i> My Household Stabilization Plan</h2>
+                        </div>
+                        <p class="problem-statement">
+                            This single-page synthesis combines your latest assessments across all modules into one actionable household agreement.
+                        </p>
+
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="printPage()"><i class="fa-solid fa-print"></i> Print Full Plan</button>
+                        </div>
+
+                        <div id="planSynthesisContent">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- HISTORY CONSOLIDATED VIEW -->
+                <section id="historyView" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-clock-rotate-left"></i> Master Assessment History</h2>
+                        </div>
+                        <p class="problem-statement">Review, restore, or clear saved entries across all toolkit modules.</p>
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button class="btn-clear-history" onclick="clearAllHistory()"><i class="fa-solid fa-trash-can"></i> Clear All History</button>
+                        </div>
+                        <div id="masterHistoryList" class="history-list"></div>
+                    </div>
+                </section>
+
+                <!-- PRIVACY & SAFETY VIEW -->
+                <section id="privacyView" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-user-shield"></i> Privacy & Safety Notice</h2>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-box-title">LOCAL STORAGE & DATA PRIVACY</div>
+                            <div class="result-box-content">
+                                • All data entered into Money Crisis Couple™ is stored entirely within your own web browser's local storage (localStorage).<br>
+                                • No financial calculations, names, debts, or notes are transmitted to any external server or database.<br>
+                                • You can clear your saved entries at any time using the "Clear History" options in each tool or the Master History view.
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-box-title">RELATIONSHIP SAFETY & FINANCIAL COERCION</div>
+                            <div class="result-box-content">
+                                • Joint financial planning requires safety and mutual trust. If you are experiencing financial abuse, coercive control, or fear for your physical safety, joint planning may not be appropriate or safe.<br>
+                                • If you need support, consider reaching out safely to local community advocacy groups or professional legal/counseling services.
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-box-title">PROFESSIONAL DISCLAIMER</div>
+                            <div class="result-box-content">
+                                This application is a structured decision-support and communication toolkit for household planning purposes only. It does not constitute legal, tax, regulated debt adjustment, financial advice, or relationship therapy. For specific legal advice, consult a licensed attorney.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Universal Disclaimer Footer -->
+    <footer class="app-footer">
+        Money Crisis Couple™ — Practical decision support and planning tool. Not legal, financial, or therapeutic advice. All data stays strictly in your browser.
+    </footer>
+
+    <!-- Universal Toast Container -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Copied!</span>
+    </div>
+
+    <!-- Application Engine Script -->
+    <script>
+        /* -------------------------------------------------------------------
+           CENTRAL STATE ENGINE & CONSTANTS
+           ------------------------------------------------------------------- */
+        const APP_VERSION = "2.0";
+        const STORAGE_KEY_STATE = "moneycrisis_v2_state";
+        const STORAGE_KEY_HISTORY = "moneycrisis_v2_history";
+
+        // Global State Architecture
+        let moneyCrisisState = {
+            completedTools: [],
+            toolResults: {},
+            currentInputs: {},
+            crisisSnapshot: {
+                cashFlowDeficit: 0,
+                liquidRunway: "Not Assessed",
+                essentialBaseline: 0,
+                teamAlignment: "Not Assessed",
+                stateLabel: "Not Assessed"
+            },
+            schemaVersion: 2,
+            lastUpdated: null
+        };
+
+        // DOM Elements
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+        const dashCards = document.querySelectorAll('.dash-card');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+
+        // Initializer
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            setupMobileMenu();
+            setupFormListeners();
+            loadState();
+            loadAllHistories();
+            renderDashboardSnapshot();
+            renderMasterPlan();
+        });
+
+        // Security Utility: HTML Escaping
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            toastMsg.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        // Copy Helper
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Copied to clipboard!");
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied to clipboard!");
+            } catch (err) {
+                showToast("Unable to copy automatically.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function printPage() {
+            window.print();
+        }
+
+        // Navigation Handler
+        function setupNavigation() {
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetView = item.getAttribute('data-view');
+                    switchView(targetView);
+                    closeMobileMenu();
+                });
+            });
+
+            dashCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const targetView = card.getAttribute('data-target');
+                    switchView(targetView);
+                });
+            });
+        }
+
+        function switchView(viewId) {
+            navItems.forEach(item => {
+                if (item.getAttribute('data-view') === viewId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            viewSections.forEach(section => {
+                if (section.id === viewId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+
+            if (viewId === 'myplan') renderMasterPlan();
+            if (viewId === 'historyView') renderMasterHistory();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Mobile Menu Toggles
+        function setupMobileMenu() {
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('open');
+            });
+
+            sidebarOverlay.addEventListener('click', closeMobileMenu);
+        }
+
+        function closeMobileMenu() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+        }
+
+        function resetForm(formId) {
+            if (confirm("Reset this form's fields?")) {
+                document.getElementById(formId).reset();
+                showToast("Form reset");
+            }
+        }
+
+        /* -------------------------------------------------------------------
+           STATE & LOCAL STORAGE ENGINE
+           ------------------------------------------------------------------- */
+        function saveState() {
+            moneyCrisisState.lastUpdated = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(moneyCrisisState));
+            renderDashboardSnapshot();
+        }
+
+        function loadState() {
+            const raw = localStorage.getItem(STORAGE_KEY_STATE);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.schemaVersion === 2) {
+                        moneyCrisisState = parsed;
+                    }
+                } catch(e) {
+                    console.warn("Could not parse saved state:", e);
+                }
+            }
+        }
+
+        function saveToHistory(toolId, inputSummary, structuredData) {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            
+            const newEntry = {
+                id: Date.now(),
+                toolId: toolId,
+                timestamp: new Date().toLocaleString(),
+                summary: escapeHTML(inputSummary),
+                data: structuredData
+            };
+
+            history.unshift(newEntry);
+            if (history.length > 30) history = history.slice(0, 30);
+
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            renderHistory(toolId);
+        }
+
+        function loadAllHistories() {
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+        }
+
+        function renderHistory(toolId) {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            const toolHistory = history.filter(item => item.toolId === toolId);
+            const container = document.getElementById(`history${toolId.charAt(0).toUpperCase() + toolId.slice(1)}`);
+            
+            if (!container) return;
+
+            if (toolHistory.length === 0) {
+                container.innerHTML = '<div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No previous structured entries saved.</div>';
+                return;
+            }
+
+            container.innerHTML = toolHistory.map(item => `
+                <div class="history-item" id="hist_${item.id}">
+                    <div class="history-header" onclick="toggleHistoryItem('hist_${item.id}')">
+                        <span>${item.summary}</span>
+                        <span style="font-weight: 400; color: var(--text-muted);">${item.timestamp}</span>
+                    </div>
+                    <div class="history-body">
+                        ${renderStructuredHistoryContent(item.data)}
+                        <div style="margin-top: 0.75rem; text-align: right;">
+                            <button class="btn-clear-history" onclick="deleteHistoryItem(${item.id})">Delete Entry</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStructuredHistoryContent(data) {
+            if (typeof data === 'string') return data; // Fallback
+            let html = '<div style="display:flex; flex-direction:column; gap:0.5rem;">';
+            for (const [key, val] of Object.entries(data)) {
+                html += `<div><strong>${escapeHTML(key)}:</strong> ${escapeHTML(val)}</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function toggleHistoryItem(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('open');
+        }
+
+        function deleteHistoryItem(id) {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            history = history.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            loadAllHistories();
+            renderMasterHistory();
+            showToast("Entry deleted");
+        }
+
+        function clearToolHistory(toolId) {
+            if (confirm("Clear history entries for this module?")) {
+                let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+                history = history.filter(item => item.toolId !== toolId);
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+                renderHistory(toolId);
+                renderMasterHistory();
+                showToast("Module history cleared");
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Are you sure you want to clear ALL saved entries across all modules?")) {
+                localStorage.removeItem(STORAGE_KEY_HISTORY);
+                loadAllHistories();
+                renderMasterHistory();
+                showToast("All history cleared");
+            }
+        }
+
+        function renderMasterHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            const container = document.getElementById('masterHistoryList');
+            if (!container) return;
+
+            if (history.length === 0) {
+                container.innerHTML = '<div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">No saved assessment entries found.</div>';
+                return;
+            }
+
+            container.innerHTML = history.map(item => `
+                <div class="history-item" id="mhist_${item.id}">
+                    <div class="history-header" onclick="toggleHistoryItem('mhist_${item.id}')">
+                        <span><strong>[${item.toolId.toUpperCase()}]</strong> ${item.summary}</span>
+                        <span style="font-weight: 400; color: var(--text-muted);">${item.timestamp}</span>
+                    </div>
+                    <div class="history-body">
+                        ${renderStructuredHistoryContent(item.data)}
+                        <div style="margin-top: 0.75rem; text-align: right;">
+                            <button class="btn-clear-history" onclick="deleteHistoryItem(${item.id})">Delete Entry</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDashboardSnapshot() {
+            const snap = moneyCrisisState.crisisSnapshot;
+            const stateBadge = document.getElementById('dashSnapshotState');
+            
+            if (stateBadge) {
+                stateBadge.innerText = snap.stateLabel || "Not Assessed";
+                stateBadge.className = "badge " + getBadgeClass(snap.stateLabel);
+            }
+
+            document.getElementById('snapGap').innerText = snap.cashFlowDeficit ? `$${snap.cashFlowDeficit}/mo` : "--";
+            document.getElementById('snapRunway').innerText = snap.liquidRunway || "--";
+            document.getElementById('snapBudget').innerText = snap.essentialBaseline ? `$${snap.essentialBaseline}/mo` : "--";
+            document.getElementById('snapCoord').innerText = snap.teamAlignment || "--";
+        }
+
+        function getBadgeClass(stateLabel) {
+            switch(stateLabel) {
+                case "IMMEDIATE": return "badge-immediate";
+                case "URGENT": return "badge-urgent";
+                case "STRESSED": return "badge-stressed";
+                case "STABILIZING": return "badge-stabilizing";
+                default: return "badge-stressed";
+            }
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 1: CRISIS TRIAGE LOGIC
+           ------------------------------------------------------------------- */
+        function loadSampleTool1() {
+            document.getElementById('t1_income_before').value = 5500;
+            document.getElementById('t1_income_now').value = 1200;
+            document.getElementById('t1_savings').value = 400;
+            document.getElementById('t1_essential_cost').value = 2800;
+            document.getElementById('t1_months_cover').value = "0";
+            document.getElementById('t1_crisis_type').value = "job_loss_one";
+            
+            const checkboxes = document.querySelectorAll('input[name="t1_behind"]');
+            checkboxes.forEach(cb => {
+                cb.checked = (cb.value === 'Rent/Mortgage' || cb.value === 'Credit Cards');
+            });
+        }
+
+        function processTool1(e) {
+            e.preventDefault();
+            const incBefore = parseFloat(document.getElementById('t1_income_before').value) || 0;
+            const incNow = parseFloat(document.getElementById('t1_income_now').value) || 0;
+            const savings = parseFloat(document.getElementById('t1_savings').value) || 0;
+            const essentialCost = parseFloat(document.getElementById('t1_essential_cost').value) || 0;
+            const monthsCover = document.getElementById('t1_months_cover').value;
+            const crisisType = document.getElementById('t1_crisis_type').options[document.getElementById('t1_crisis_type').selectedIndex].text;
+            
+            const behindBills = [];
+            document.querySelectorAll('input[name="t1_behind"]:checked').forEach(cb => behindBills.push(cb.value));
+
+            // State Determination Matrix
+            let stateLabel = "STRESSED";
+            let stateDesc = "";
+
+            if (monthsCover === "0" || behindBills.includes("Rent/Mortgage") || (essentialCost > 0 && savings < (essentialCost * 0.25))) {
+                stateLabel = "IMMEDIATE";
+                stateDesc = "Immediate intervention required. Essential obligations (shelter/basic needs) are threatened within 30 days.";
+            } else if (monthsCover === "less_1" || behindBills.length >= 2) {
+                stateLabel = "URGENT";
+                stateDesc = "Severe income gap. Cash flow deficit will exhaust remaining reserves rapidly.";
+            } else if (monthsCover === "1_2") {
+                stateLabel = "STRESSED";
+                stateDesc = "Short-term buffer exists, but active cost reduction and income bridging are necessary before reserves deplete.";
+            } else {
+                stateLabel = "STABILIZING";
+                stateDesc = "Baseline buffer available. Focus turns to steady income replacement and structured debt communication.";
+            }
+
+            // Calculations
+            const gap = essentialCost > 0 ? (essentialCost - incNow) : (incBefore - incNow);
+            let runwayText = "";
+            if (essentialCost > 0) {
+                const days = Math.round((savings / essentialCost) * 30.44);
+                runwayText = `Approximately <strong>${days} days</strong> based on entered liquid savings ($${savings}) vs. essential expenses ($${essentialCost}/mo).`;
+            } else {
+                runwayText = savings < 500 ? "Estimated 7–14 days of immediate liquid reserves." : "Runway calculation requires exact essential costs (complete Survival Budget next).";
+            }
+
+            const bleedingText = behindBills.length > 0 
+                ? `Prioritize immediately: <strong>${escapeHTML(behindBills.join(', '))}</strong>. Primary focus must remain on shelter and essential utilities before unsecured debts.`
+                : "No critical essential obligations reported overdue. Maintain proactive communication with providers to avoid default.";
+
+            const stopsText = `
+                1. <strong>Pause Non-Essentials:</strong> Halt all digital streaming, memberships, discretionary orders, and dining out.<br>
+                2. <strong>Preserve Shelter & Food:</strong> Direct every available dollar toward raw groceries, housing, and essential work transport.<br>
+                3. <strong>Halt Unsecured Overpayments:</strong> Pay minimums or request temporary hardship deferrals on unsecured credit cards rather than draining food funds.
+            `;
+
+            const gapText = gap > 0 
+                ? `Current reliable monthly deficit is approximately <strong>$${gap.toLocaleString()} / month</strong>.` 
+                : `Current reliable income covers estimated core expenses, leaving a baseline margin.`;
+
+            const tasksText = `
+                • <strong>Today:</strong> Gather exact 30-day bank transactions to verify actual cash outflows. Contact housing provider if rent/mortgage is at risk.<br>
+                • <strong>Tomorrow:</strong> Contact essential utility providers to inquire about hardship protection programs or flexible due date arrangements.
+            `;
+
+            // UI Render
+            const badge = document.getElementById('t1_res_score_badge');
+            badge.className = `badge ${getBadgeClass(stateLabel)}`;
+            badge.innerText = stateLabel;
+
+            document.getElementById('t1_res_score').innerHTML = stateDesc;
+            document.getElementById('t1_res_runway').innerHTML = runwayText;
+            document.getElementById('t1_res_gap').innerHTML = gapText;
+            document.getElementById('t1_res_bleeding').innerHTML = bleedingText;
+            document.getElementById('t1_res_stops').innerHTML = stopsText;
+            document.getElementById('t1_res_48hours').innerHTML = tasksText;
+
+            document.getElementById('resultsTool1').classList.add('active');
+
+            // Update Global State & Snapshot
+            moneyCrisisState.crisisSnapshot.stateLabel = stateLabel;
+            moneyCrisisState.crisisSnapshot.cashFlowDeficit = gap > 0 ? gap : 0;
+            moneyCrisisState.crisisSnapshot.liquidRunway = essentialCost > 0 ? `${Math.round((savings/essentialCost)*30.44)} Days` : "Assessed";
+            if (!moneyCrisisState.completedTools.includes('tool1')) moneyCrisisState.completedTools.push('tool1');
+            saveState();
+
+            // Save to History
+            const structuredData = {
+                "Crisis State": stateLabel,
+                "Primary Driver": crisisType,
+                "Reliable Income": `$${incNow}/mo`,
+                "Liquid Savings": `$${savings}`,
+                "Overdue Obligations": behindBills.join(', ') || "None"
+            };
+            saveToHistory('tool1', `Triage: ${stateLabel} (${crisisType})`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 2: SURVIVAL BUDGET LOGIC
+           ------------------------------------------------------------------- */
+        function loadSampleTool2() {
+            document.getElementById('t2_rent').value = 1800;
+            document.getElementById('t2_food').value = 450;
+            document.getElementById('t2_utilities').value = 250;
+            document.getElementById('t2_transport').value = 180;
+            document.getElementById('t2_insurance').value = 280;
+            document.getElementById('t2_debt').value = 400;
+            document.getElementById('t2_childcare').value = 0;
+            document.getElementById('t2_nonessential').value = 650;
+            document.getElementById('t2_morale_cost').value = 15;
+        }
+
+        function processTool2(e) {
+            e.preventDefault();
+            const rent = parseFloat(document.getElementById('t2_rent').value) || 0;
+            const food = parseFloat(document.getElementById('t2_food').value) || 0;
+            const util = parseFloat(document.getElementById('t2_utilities').value) || 0;
+            const trans = parseFloat(document.getElementById('t2_transport').value) || 0;
+            const ins = parseFloat(document.getElementById('t2_insurance').value) || 0;
+            const debt = parseFloat(document.getElementById('t2_debt').value) || 0;
+            const child = parseFloat(document.getElementById('t2_childcare').value) || 0;
+            const nonEssential = parseFloat(document.getElementById('t2_nonessential').value) || 0;
+            const moraleCost = parseFloat(document.getElementById('t2_morale_cost').value) || 0;
+
+            const coreEssentials = rent + food + util + trans + ins + child;
+            const totalWithDebt = coreEssentials + debt;
+
+            const budgetHtml = `
+                <table class="budget-table">
+                    <tr><th>Expense Tier</th><th>Monthly Amount</th></tr>
+                    <tr><td><strong>Core Survival Essentials</strong> (Housing, Food, Power, Work Transport)</td><td><strong>$${coreEssentials.toLocaleString()}</strong></td></tr>
+                    <tr><td><strong>Essentials + Minimum Debt Payments</strong></td><td><strong>$${totalWithDebt.toLocaleString()}</strong></td></tr>
+                    <tr><td><strong>Pauseable / Discretionary Capacity</strong></td><td>$${nonEssential.toLocaleString()}</td></tr>
+                </table>
+                <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">Eliminating or reducing pauseable spending frees up to <strong>$${nonEssential.toLocaleString()}/mo</strong> instantly in cash flow buffer.</p>
+            `;
+
+            const cutlistHtml = `
+                • <strong>Discretionary Shopping & Subscriptions:</strong> Pause immediately (Potential recovery: ~$${Math.round(nonEssential * 0.5)}/mo)<br>
+                • <strong>Dining Out / Food Delivery:</strong> Replace fully with store-bought pantry staples (Potential recovery: ~$${Math.round(nonEssential * 0.3)}/mo)<br>
+                • <strong>Non-Essential Cable/Services:</strong> Lower service tier or request temporary deferral (Potential recovery: ~$${Math.round(nonEssential * 0.2)}/mo)
+            `;
+
+            const weeklyFood = Math.round(food / 4.33);
+            const foodplanHtml = `
+                Target Food Baseline: <strong>$${food.toLocaleString()} / month</strong> (~$${weeklyFood} / week).<br>
+                <strong>Focus Strategy:</strong> Prioritize store-bought basics (rice, oats, dry beans, eggs, frozen vegetables, bulk proteins). Avoid pre-cut convenience foods or food delivery apps.
+            `;
+
+            const housingRatio = Math.round((rent / coreEssentials) * 100);
+            let housingHtml = `Housing represents <strong>${housingRatio}%</strong> of your entered core essential costs ($${rent.toLocaleString()} of $${coreEssentials.toLocaleString()}).<br>`;
+            if (housingRatio > 50) {
+                housingHtml += `<em>Observation:</em> Housing absorbs over half of your essential budget. Contact landlord or mortgage provider early to inquire about temporary hardship modifications or forbearance options before defaulting.`;
+            } else {
+                housingHtml += `<em>Observation:</em> Housing ratio is within a manageable baseline relative to core expenses. Maintain housing payments as top priority.`;
+            }
+
+            const luxuryHtml = moraleCost > 0 
+                ? `You selected a morale keeper costing <strong>$${moraleCost}/month</strong>. Keeping one small, intentional sustainability item prevents burnout and supports long-term budget adherence.`
+                : `Consider selecting one tiny zero/low-cost morale keeper (e.g., home coffee ritual or weekly family park walk) to sustain emotional well-being.`;
+
+            const cashsystemHtml = `
+                Weekly Grocery Budget: <strong>$${weeklyFood}</strong>.<br>
+                <strong>Suggested Control Methods:</strong><br>
+                1. <i>Cash Envelope System:</i> Withdraw $${weeklyFood} in cash every Monday for food/essentials. When empty, rely on pantry inventory.<br>
+                2. <i>Dedicated Spending Sub-Account:</i> Transfer exactly $${weeklyFood} weekly to a secondary card account to avoid overdraft risk.
+            `;
+
+            document.getElementById('t2_res_budget').innerHTML = budgetHtml;
+            document.getElementById('t2_res_cutlist').innerHTML = cutlistHtml;
+            document.getElementById('t2_res_foodplan').innerHTML = foodplanHtml;
+            document.getElementById('t2_res_housing').innerHTML = housingHtml;
+            document.getElementById('t2_res_luxury').innerHTML = luxuryHtml;
+            document.getElementById('t2_res_cashsystem').innerHTML = cashsystemHtml;
+
+            document.getElementById('resultsTool2').classList.add('active');
+
+            // Update Global State
+            moneyCrisisState.crisisSnapshot.essentialBaseline = coreEssentials;
+            if (!moneyCrisisState.completedTools.includes('tool2')) moneyCrisisState.completedTools.push('tool2');
+            saveState();
+
+            const structuredData = {
+                "Core Essentials": `$${coreEssentials}/mo`,
+                "Essentials + Debt": `$${totalWithDebt}/mo`,
+                "Discretionary Savings": `$${nonEssential}/mo`,
+                "Weekly Food Baseline": `$${weeklyFood}/wk`
+            };
+            saveToHistory('tool2', `Budget: $${coreEssentials}/mo Core Baseline`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 3: CREDITOR SCRIPT LOGIC
+           ------------------------------------------------------------------- */
+        function loadSampleTool3() {
+            const creditors = document.querySelectorAll('input[name="t3_creditors"]');
+            creditors.forEach(cb => {
+                cb.checked = (cb.value === 'Credit Card Issuer' || cb.value === 'Landlord / Property Manager');
+            });
+            document.getElementById('t3_payment_ability').value = "Partial token payment";
+            document.querySelector('input[name="t3_history"][value="First time facing hardship"]').checked = true;
+            document.querySelector('input[name="t3_method"][value="Phone Call"]').checked = true;
+            document.getElementById('t3_fear').value = "I fear they will demand full balance immediately and impose extra penalties.";
+        }
+
+        function processTool3(e) {
+            e.preventDefault();
+            const selectedCreditors = [];
+            document.querySelectorAll('input[name="t3_creditors"]:checked').forEach(cb => selectedCreditors.push(cb.value));
+            const paymentAbility = document.getElementById('t3_payment_ability').value;
+            const history = document.querySelector('input[name="t3_history"]:checked').value;
+            const method = document.querySelector('input[name="t3_method"]:checked').value;
+            const fear = document.getElementById('t3_fear').value;
+
+            const providerLabel = selectedCreditors.length > 0 ? selectedCreditors.join(', ') : 'Lender/Provider';
+
+            const phoneScript = `\"Hello, my name is [Your Name], Account #[Account Number]. I am calling proactively because our household has experienced an unexpected income shock.
+
+We have maintained a commitment to our account (${history.toLowerCase()}), but right now our cash flow is constrained. Based on our emergency budget, I can offer [${paymentAbility}] today.
+
+I am requesting to learn what hardship, payment deferral, or interest-reduction options are available for customers experiencing temporary income loss. How can we work together to keep this account in good standing without penalty?\"`;
+
+            const emailScript = `Subject: Hardship Relief Inquiry - Account #[Account Number] - [Your Name]
+
+Dear Support Team / Hardship Department,
+
+I am writing proactively regarding my account (${escapeHTML(providerLabel)}). Due to an unexpected temporary reduction in household income, we are adjusting our budget to manage essential obligations.
+
+My record reflects our long-standing commitment to this account. To remain proactive, I am requesting information on available hardship assistance programs, fee waivers, or temporary payment modification options for the next 60 to 90 days.
+
+Currently, our household can offer: ${escapeHTML(paymentAbility)}.
+
+Please advise on available options, required documentation, and how any modification impacts loan terms or reporting. Thank you for your support.
+
+Sincerely,
+[Your Name]
+[Phone Number]`;
+
+            const scriptBox = `
+                <div class="script-text">${escapeHTML(phoneScript)}</div>
+                <div style="margin-top: 0.5rem;">
+                    <button class="btn-copy" id="btnCopyPhone"><i class="fa-solid fa-copy"></i> Copy Call Script</button>
+                </div>
+            `;
+
+            const emailBox = `
+                <div class="script-text">${escapeHTML(emailScript)}</div>
+                <div style="margin-top: 0.5rem;">
+                    <button class="btn-copy" id="btnCopyEmail"><i class="fa-solid fa-copy"></i> Copy Email Template</button>
+                </div>
+            `;
+
+            const docsBox = `
+                • Proof of income change (termination notice, reduced earnings statement, or medical record)<br>
+                • Summary of core essential monthly baseline budget<br>
+                • Account numbers and latest billing statement<br>
+                • Call Log Notebook (Record: Date, Time, Rep Name, Agent ID, Reference #, and Specific Terms)
+            `;
+
+            const askBox = `
+                • Ask: "What formal hardship or payment extension programs do you offer?"<br>
+                • Verify: "Will fees be waived during hardship?" and "How is account status reported during this agreement?"<br>
+                • Request: Written confirmation of any revised payment structure via email or mail before assuming terms are finalized.
+            `;
+
+            const followupBox = `
+                Send a confirming email or letter within 24 hours of any verbal agreement: <i>"Per my conversation with representative [Name] on [Date], I am confirming our agreement for [Terms] under reference #[Number]."</i> Keep a physical paper copy in your master folder.
+            `;
+
+            const ifnoBox = `
+                If the front-line representative declines: Request escalation to the dedicated 'Loss Mitigation' or 'Hardship Department'. If dealing with complex credit card debts, consider consulting a certified non-profit credit counseling organization in your area for structured debt management options.
+            `;
+
+            document.getElementById('t3_res_script').innerHTML = scriptBox;
+            document.getElementById('t3_res_email').innerHTML = emailBox;
+            document.getElementById('t3_res_docs').innerHTML = docsBox;
+            document.getElementById('t3_res_ask').innerHTML = askBox;
+            document.getElementById('t3_res_followup').innerHTML = followupBox;
+            document.getElementById('t3_res_ifno').innerHTML = ifnoBox;
+
+            // Attach event listeners safely without inline handlers
+            document.getElementById('btnCopyPhone').onclick = () => copyToClipboard(phoneScript);
+            document.getElementById('btnCopyEmail').onclick = () => copyToClipboard(emailScript);
+
+            document.getElementById('resultsTool3').classList.add('active');
+
+            if (!moneyCrisisState.completedTools.includes('tool3')) moneyCrisisState.completedTools.push('tool3');
+            saveState();
+
+            const structuredData = {
+                "Providers": providerLabel,
+                "Payment Capacity": paymentAbility,
+                "Contact Method": method,
+                "History": history
+            };
+            saveToHistory('tool3', `Script: ${providerLabel}`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 4: BLAME STOP LOGIC
+           ------------------------------------------------------------------- */
+        function loadSampleTool4() {
+            document.getElementById('t4_target_a').value = "Partner";
+            document.getElementById('t4_target_b').value = "Myself";
+            document.getElementById('t4_pattern').value = "Withdraw Attack";
+            document.getElementById('t4_needs_a').value = "I need to know you are fully committed to solving this with me, even though mistakes happened.";
+            document.getElementById('t4_needs_b').value = "I need to know I am still valued even though my income was impacted.";
+        }
+
+        function processTool4(e) {
+            e.preventDefault();
+            const targetA = document.getElementById('t4_target_a').value;
+            const targetB = document.getElementById('t4_target_b').value;
+            const pattern = document.getElementById('t4_pattern').value;
+            const needsA = document.getElementById('t4_needs_a').value || "Validation and clear communication.";
+            const needsB = document.getElementById('t4_needs_b').value || "Reassurance and constructive action.";
+
+            const blamemapHtml = `
+                Partner A Focus: <strong>${escapeHTML(targetA)}</strong>.<br>
+                Partner B Focus: <strong>${escapeHTML(targetB)}</strong>.<br>
+                Current Dynamic: <strong>${escapeHTML(pattern)}</strong>.<br>
+                <em>Insight:</em> Blame drains mental and emotional energy required to make clear financial decisions. Shifting focus from "Who caused this?" to "What is our next step?" restores bandwidth.
+            `;
+
+            const reframeHtml = `
+                <strong>The Shared Enemy Reframe:</strong> The financial deficit is the external obstacle. It is not "Partner A vs. Partner B"—it is <strong>Partner A + Partner B vs. The Crisis</strong>. Direct energy toward solving the deficit together.
+            `;
+
+            const apologyHtml = `
+                <strong>Accountability Framework:</strong> Acknowledge choices factually without defensive arguments or extreme self-punishment: <i>"A choice was made that created financial risk. I own my part in that decision completely, and I am fully committed to working beside you to stabilize our household."</i>
+            `;
+
+            const forgivenessHtml = `
+                <strong>Accountability & Repair:</strong> Financial repair does not require instant emotional perfection. Agree to freeze past retrospective blame for a set 30-day window so 100% of available energy goes to securing food, shelter, and income.
+            `;
+
+            const checkinHtml = `
+                <strong>Structured 5-Minute Evening Ritual:</strong><br>
+                1. <i>Emotional Check-In (1 min):</i> "How are you feeling right now on a scale of 1 to 10?"<br>
+                2. <i>Win Recognition (1 min):</i> "What is one productive action we took today as a team?"<br>
+                3. <i>Single Priority (2 min):</i> "What is our main financial task tomorrow?"<br>
+                4. <i>Boundary (1 min):</i> Set a firm cut-off time for money discussions each evening to protect sleep and rest.
+            `;
+
+            const therapyHtml = `
+                If discussions escalate into personal insults, threats of separation, or complete stonewalling, consider seeking qualified couples counseling or professional mediation once basic essential needs are stabilized.
+            `;
+
+            document.getElementById('t4_res_blamemap').innerHTML = blamemapHtml;
+            document.getElementById('t4_res_reframe').innerHTML = reframeHtml;
+            document.getElementById('t4_res_apology').innerHTML = apologyHtml;
+            document.getElementById('t4_res_forgiveness').innerHTML = forgivenessHtml;
+            document.getElementById('t4_res_checkin').innerHTML = checkinHtml;
+            document.getElementById('t4_res_therapy').innerHTML = therapyHtml;
+
+            document.getElementById('resultsTool4').classList.add('active');
+
+            moneyCrisisState.crisisSnapshot.teamAlignment = pattern === "United" ? "United" : "Needs Realignment";
+            if (!moneyCrisisState.completedTools.includes('tool4')) moneyCrisisState.completedTools.push('tool4');
+            saveState();
+
+            const structuredData = {
+                "Conflict Pattern": pattern,
+                "Partner A Focus": targetA,
+                "Partner B Focus": targetB,
+                "Alignment Status": moneyCrisisState.crisisSnapshot.teamAlignment
+            };
+            saveToHistory('tool4', `Alignment: ${pattern}`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 5: RECOVERY MILESTONES LOGIC
+           ------------------------------------------------------------------- */
+        function loadSampleTool5() {
+            document.getElementById('t5_target_income').value = 5500;
+            document.getElementById('t5_timeline').value = "6_months";
+            document.getElementById('t5_plan_a').value = "Submitting 10 applications weekly, networking with former colleagues.";
+            document.getElementById('t5_plan_b').value = "Taking freelance clients and driving weekend delivery for immediate cash flow.";
+            document.getElementById('t5_win').value = "Canceled non-essential apps and lowered internet tier saving $140/mo.";
+        }
+
+        function processTool5(e) {
+            e.preventDefault();
+            const targetIncome = parseFloat(document.getElementById('t5_target_income').value) || 0;
+            const timelineText = document.getElementById('t5_timeline').options[document.getElementById('t5_timeline').selectedIndex].text;
+            const planA = document.getElementById('t5_plan_a').value;
+            const planB = document.getElementById('t5_plan_b').value;
+            const win = document.getElementById('t5_win').value;
+
+            const d30Html = `
+                <strong>Financial Focus:</strong> Eliminate all cash leaks, finalize Survival Budget, establish creditor hardship agreements, and secure immediate temporary income bridge.<br>
+                <strong>Relational Focus:</strong> Maintain the structured 5-minute daily check-in without escalating blame.
+            `;
+
+            const d60Html = `
+                <strong>Progress Indicator:</strong> Income recovery actions reaching active interview stages, client engagements, or steady gig earnings.<br>
+                <strong>Adjustment Trigger:</strong> If income gap remains over 50%, expand search parameters or evaluate selling non-essential household items.
+            `;
+
+            const d90Html = `
+                <strong>Stability Benchmark:</strong> Core monthly essential baseline met consistently from reliable income without adding credit card debt.<br>
+                <strong>Buffer Focus:</strong> Begin building a starter $1,000 liquid emergency reserve.
+            `;
+
+            const bridgeHtml = `
+                <strong>Partner A Action:</strong> ${escapeHTML(planA)}<br>
+                <strong>Partner B Action:</strong> ${escapeHTML(planB)}<br>
+                <em>Bridge Options:</em> Temporary retail, delivery, consulting, selling unused items.
+            `;
+
+            const celebrationHtml = `
+                Acknowledge every milestone! <strong>Rule:</strong> Milestone celebrations must be zero-cost or extremely low-cost (e.g., home movie night, park picnic, baking together) to protect your recovery momentum.
+            `;
+
+            const timelineHtml = `
+                Target Horizon: <strong>${escapeHTML(timelineText)}</strong>.<br>
+                <em>Context:</em> Financial stabilization is a step-by-step process. Consistency, clear communication, and mutual alignment matter far more than speed.
+            `;
+
+            document.getElementById('t5_res_30day').innerHTML = d30Html;
+            document.getElementById('t5_res_60day').innerHTML = d60Html;
+            document.getElementById('t5_res_90day').innerHTML = d90Html;
+            document.getElementById('t5_res_bridge').innerHTML = bridgeHtml;
+            document.getElementById('t5_res_celebration').innerHTML = celebrationHtml;
+            document.getElementById('t5_res_timeline').innerHTML = timelineHtml;
+
+            document.getElementById('resultsTool5').classList.add('active');
+
+            if (!moneyCrisisState.completedTools.includes('tool5')) moneyCrisisState.completedTools.push('tool5');
+            saveState();
+
+            const structuredData = {
+                "Target Recovery Income": `$${targetIncome}/mo`,
+                "Target Horizon": timelineText,
+                "Partner A Bridge": planA,
+                "Partner B Bridge": planB,
+                "Current Win": win || "None noted"
+            };
+            saveToHistory('tool5', `Roadmap: $${targetIncome}/mo target`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           MY PLAN SYNTHESIS RENDER
+           ------------------------------------------------------------------- */
+        function renderMasterPlan() {
+            const container = document.getElementById('planSynthesisContent');
+            if (!container) return;
+
+            const snap = moneyCrisisState.crisisSnapshot;
+            const completed = moneyCrisisState.completedTools;
+
+            let html = `
+                <div class="result-box">
+                    <div class="result-box-title">HOUSEHOLD CRISIS SNAPSHOT</div>
+                    <div class="result-box-content">
+                        <strong>Assessment State:</strong> ${snap.stateLabel}<br>
+                        <strong>Monthly Cash Flow Deficit:</strong> ${snap.cashFlowDeficit ? `$${snap.cashFlowDeficit}` : "Not calculated"}<br>
+                        <strong>Core Essential Monthly Baseline:</strong> ${snap.essentialBaseline ? `$${snap.essentialBaseline}` : "Not calculated"}<br>
+                        <strong>Liquid Runway:</strong> ${snap.liquidRunway}<br>
+                        <strong>Team Alignment Status:</strong> ${snap.teamAlignment}
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="result-box">
+                    <div class="result-box-title">TOOL COMPLETION TRACKER</div>
+                    <div class="result-box-content">
+                        • Crisis Triage: ${completed.includes('tool1') ? '✅ Completed' : '⏳ Pending'}<br>
+                        • Survival Budget: ${completed.includes('tool2') ? '✅ Completed' : '⏳ Pending'}<br>
+                        • Creditor Script: ${completed.includes('tool3') ? '✅ Completed' : '⏳ Pending'}<br>
+                        • Blame Stop: ${completed.includes('tool4') ? '✅ Completed' : '⏳ Pending'}<br>
+                        • Recovery Milestones: ${completed.includes('tool5') ? '✅ Completed' : '⏳ Pending'}
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="result-box">
+                    <div class="result-box-title">IMMEDIATE ACTION PLAN & AGREEMENT</div>
+                    <div class="result-box-content">
+                        1. <strong>Protect Core Essentials:</strong> Direct all available income first to housing, raw food, power, and work transportation.<br>
+                        2. <strong>Proactive Provider Contact:</strong> Reach out to lenders/landlords before missing payments to request temporary hardship terms.<br>
+                        3. <strong>Team Alignment:</strong> Maintain daily 5-minute evening check-ins. Keep money discussions within set boundaries to prevent burnout.
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // Attach Form Event Listeners
+        function setupFormListeners() {
+            document.getElementById('formTool1').addEventListener('submit', processTool1);
+            document.getElementById('formTool2').addEventListener('submit', processTool2);
+            document.getElementById('formTool3').addEventListener('submit', processTool3);
+            document.getElementById('formTool4').addEventListener('submit', processTool4);
+            document.getElementById('formTool5').addEventListener('submit', processTool5);
+        }
+    </script>
+</body>
+</html>

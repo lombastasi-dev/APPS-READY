@@ -1,0 +1,1819 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OS Orang Tua Baru™ — Sistem Koordinasi Beban Kerja, Istirahat, Hubungan & Keluarga</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --sage: #A8DADC;
+            --sage-dark: #457B9D;
+            --terracotta: #E29578;
+            --terracotta-dark: #D97757;
+            --bg-grad-start: #F1FAEE;
+            --bg-grad-end: #FFF8F5;
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --sidebar-width: 270px;
+            --radius-xl: 16px;
+            --radius-md: 8px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-grad-start), var(--bg-grad-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            overflow-x: hidden;
+        }
+
+        /* Gaya Sidebar */
+        aside {
+            width: var(--sidebar-width);
+            background: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: var(--terracotta);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--text-main);
+        }
+
+        .sidebar-nav {
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-category {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 12px 12px 4px 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+        }
+
+        .nav-item:hover {
+            background-color: var(--bg-grad-start);
+            color: var(--text-main);
+        }
+
+        .nav-item.active {
+            background-color: var(--sage);
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        /* Header Seluler */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            z-index: 95;
+        }
+
+        /* Konten Utama */
+        main {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-container {
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 36px 20px;
+            flex: 1;
+        }
+
+        /* Kartu & UI */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, #ffffff, #fcfcfc);
+            border-left: 5px solid var(--terracotta);
+        }
+
+        h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn {
+            background-color: var(--terracotta);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background-color: var(--terracotta-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--bg-grad-start);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e2ede0;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--sage-dark);
+            border: 1px solid var(--sage-dark);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--bg-grad-start);
+        }
+
+        .btn-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .btn-danger:hover {
+            background-color: #f5c6cb;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.82rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Formulir */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.88rem;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        select, input[type="text"], input[type="number"], textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            background: #fff;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--sage-dark);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        /* Grid Dasbor */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--sage);
+        }
+
+        .tool-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: var(--radius-md);
+            background: var(--bg-grad-start);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--terracotta);
+            font-size: 16px;
+        }
+
+        .tool-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .tool-card p {
+            font-size: 0.83rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Gaya Hasil / Output */
+        .result-box {
+            background: var(--bg-grad-start);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-top: 24px;
+            border: 1px solid rgba(168, 218, 220, 0.5);
+        }
+
+        .result-section {
+            margin-bottom: 18px;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .result-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-section h4 {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--sage-dark);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .result-section p, .result-section li {
+            font-size: 0.88rem;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+
+        .result-section ul {
+            padding-left: 18px;
+            margin-top: 6px;
+        }
+
+        /* Tabel */
+        .split-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+
+        .split-table th, .split-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.88rem;
+        }
+
+        .split-table th {
+            font-weight: 600;
+            color: var(--text-muted);
+            background-color: var(--bg-grad-start);
+        }
+
+        /* Slider */
+        .slider-group {
+            margin-bottom: 16px;
+        }
+
+        .slider-header-flex {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--terracotta);
+            cursor: pointer;
+        }
+
+        /* Progress Bar */
+        .progress-bar-container {
+            background: var(--border-color);
+            border-radius: 999px;
+            height: 12px;
+            overflow: hidden;
+            display: flex;
+            margin: 10px 0;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            transition: width 0.4s ease;
+        }
+
+        /* Riwayat & Akordeon */
+        .history-container {
+            margin-top: 24px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .history-item {
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            font-size: 0.85rem;
+        }
+
+        .history-item-header {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        /* Notifikasi Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--text-main);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            box-shadow: var(--shadow-md);
+            z-index: 1000;
+            display: none;
+        }
+
+        /* Banner Rekomendasi */
+        .rec-box {
+            background: #f0f7f7;
+            border: 1px solid var(--sage);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            margin-top: 16px;
+        }
+
+        .rec-box h4 {
+            font-size: 0.9rem;
+            color: var(--sage-dark);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Lencana / Badge */
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 99px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .badge-green { background: #d4edda; color: #155724; }
+        .badge-yellow { background: #fff3cd; color: #856404; }
+        .badge-red { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #e2ede0; color: #2b2d42; }
+
+        /* Utilitas */
+        .hidden { display: none !important; }
+        .flex-row { display: flex; gap: 12px; align-items: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+        .mt-4 { margin-top: 16px; }
+        .mt-2 { margin-top: 8px; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+            background: rgba(255,255,255,0.5);
+            line-height: 1.4;
+        }
+
+        /* CSS Cetak / Print */
+        @media print {
+            aside, .mobile-header, .sidebar-overlay, .btn, .btn-group, .history-container, .no-print {
+                display: none !important;
+            }
+            main {
+                margin-left: 0 !important;
+                padding-top: 0 !important;
+            }
+            .content-container {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+            }
+        }
+
+        /* Tampilan Seluler */
+        @media(max-width: 768px) {
+            aside { transform: translateX(-100%); }
+            aside.open { transform: translateX(0); }
+            .mobile-header { display: flex; }
+            main { margin-left: 0; padding-top: 60px; }
+            .content-container { padding: 20px 14px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Seluler -->
+    <div class="mobile-header">
+        <button class="hamburger" id="hamburgerBtn" aria-label="Buka Navigasi">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <div style="font-weight: 700; font-size: 1rem; color: var(--terracotta);">
+            <i class="fa-solid fa-seedling"></i> OS ORANG TUA BARU™
+        </div>
+        <div style="width: 24px;"></div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Navigasi Sidebar -->
+    <aside id="sidebar">
+        <div class="sidebar-header">
+            <i class="fa-solid fa-seedling"></i>
+            <div>
+                <h1>OS ORANG TUA BARU™</h1>
+                <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 500;">Koordinasi Tahun Pertama</div>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <div class="nav-category">Platform Utama</div>
+            <a class="nav-item active" data-target="dashboard">
+                <i class="fa-solid fa-house"></i> Dasbor
+            </a>
+            <a class="nav-item" data-target="reset7day">
+                <i class="fa-solid fa-calendar-check"></i> Reset 7 Hari
+            </a>
+
+            <div class="nav-category">Modul Koordinasi</div>
+            <a class="nav-item" data-target="tool1">
+                <i class="fa-solid fa-scale-balanced"></i> Beban Kerja & Keadilan
+            </a>
+            <a class="nav-item" data-target="tool2">
+                <i class="fa-solid fa-bed"></i> Istirahat & Pembagian Tugas
+            </a>
+            <a class="nav-item" data-target="tool3">
+                <i class="fa-solid fa-wallet"></i> Diskusi Keuangan
+            </a>
+            <a class="nav-item" data-target="tool4">
+                <i class="fa-solid fa-heart"></i> Cek Keharmonisan
+            </a>
+            <a class="nav-item" data-target="tool5">
+                <i class="fa-solid fa-chart-line"></i> Evaluasi Mingguan Orang Tua
+            </a>
+
+            <div class="nav-category">Catatan & Sistem</div>
+            <a class="nav-item" data-target="plan">
+                <i class="fa-solid fa-file-contract"></i> Rencana Orang Tua Baru Saya
+            </a>
+            <a class="nav-item" data-target="history">
+                <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya
+            </a>
+            <a class="nav-item" data-target="privacy">
+                <i class="fa-solid fa-shield-halved"></i> Privasi & Penyimpanan
+            </a>
+        </nav>
+    </aside>
+
+    <!-- Area Tampilan Utama -->
+    <main>
+        <div class="content-container">
+
+            <!-- TAMPILAN DASBOR -->
+            <section id="dashboard-view" class="view-section">
+                <div class="card hero-card">
+                    <h2>OS Koordinasi & Kelangsungan Hidup Orang Tua Baru</h2>
+                    <p class="subtitle">Ubah kelelahan, beban kerja tak kasat mata, ketegangan finansial, tekanan keintiman, dan rasa frustrasi yang tak terucapkan menjadi informasi yang jelas, penyesuaian praktis, dan langkah selanjutnya yang terarah.</p>
+                    
+                    <div id="weeklyCheckinBanner" class="hidden" style="background: var(--bg-grad-start); padding: 12px 16px; border-radius: var(--radius-md); font-size: 0.88rem; margin-top: 12px; border-left: 4px solid var(--sage-dark);">
+                        <i class="fa-solid fa-bell"></i> <strong>Selamat datang kembali!</strong> Waktunya untuk evaluasi mingguan Anda. Jalankan <a href="#" onclick="switchView('tool5'); return false;" style="color: var(--terracotta); font-weight: 600;">Evaluasi Mingguan Orang Tua</a> untuk menyelaraskan minggu ke depan.
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <h3 style="font-size: 1.1rem;"><i class="fa-solid fa-compass" style="color: var(--sage-dark);"></i> Mulai Di Sini: Orientasi</h3>
+                            <p style="font-size: 0.88rem; color: var(--text-muted); margin-top: 4px;">Tahun pertama tidak membutuhkan keseimbangan harian yang sempurna. Tahun pertama membutuhkan sistem untuk menyadari beban berlebih sebelum berubah menjadi kekesalan yang terpendam.</p>
+                        </div>
+                    </div>
+                    <div style="font-size: 0.85rem; background: var(--bg-grad-start); padding: 12px 16px; border-radius: var(--radius-md); margin-top: 12px;">
+                        <strong>Aturan Operasional:</strong> Mulailah dengan area yang paling menyebabkan gesekan hari ini • Gunakan hasil sebagai pemantik diskusi, bukan vonis • Pengalaman salah satu pasangan tidak membatalkan pengalaman pasangan lainnya.
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="tool-card" onclick="switchView('tool1')">
+                        <div class="tool-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                        <h3>Beban Kerja & Keadilan</h3>
+                        <p>Uraikan tugas dan beban pikiran tak kasat mata yang diam-diam menumpuk pada satu orang.</p>
+                    </div>
+                    <div class="tool-card" onclick="switchView('tool2')">
+                        <div class="tool-icon"><i class="fa-solid fa-bed"></i></div>
+                        <h3>Istirahat & Pembagian Tugas</h3>
+                        <p>Ubah utang tidur menjadi gambaran istirahat faktual dan rencana pembagian jam jaga malam yang jelas.</p>
+                    </div>
+                    <div class="tool-card" onclick="switchView('tool3')">
+                        <div class="tool-icon"><i class="fa-solid fa-wallet"></i></div>
+                        <h3>Diskusi Keuangan</h3>
+                        <p>Petakan perubahan keuangan, kurangi saling menyalahkan, dan sepakati aturan pengeluaran yang jelas.</p>
+                    </div>
+                    <div class="tool-card" onclick="switchView('tool4')">
+                        <div class="tool-icon"><i class="fa-solid fa-heart"></i></div>
+                        <h3>Cek Keharmonisan</h3>
+                        <p>Menghidupkan kembali kedekatan dan kasih sayang tanpa mengubah keintiman menjadi suatu kewajiban.</p>
+                    </div>
+                    <div class="tool-card" onclick="switchView('tool5')">
+                        <div class="tool-icon"><i class="fa-solid fa-chart-line"></i></div>
+                        <h3>Evaluasi Mingguan Orang Tua</h3>
+                        <p>Bandingkan pengalaman masing-masing pasangan selama seminggu dan temukan satu fokus diskusi.</p>
+                    </div>
+                    <div class="tool-card" onclick="switchView('reset7day')" style="border-color: var(--terracotta);">
+                        <div class="tool-icon" style="color: var(--terracotta);"><i class="fa-solid fa-calendar-check"></i></div>
+                        <h3>Panduan Reset 7 Hari</h3>
+                        <p>Perjalanan terpandu langkah demi langkah melalui ke-5 modul untuk penyelarasan menyeluruh.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODUL 1: BEBAN KERJA & KEADILAN -->
+            <section id="tool1-view" class="view-section hidden">
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <h2>Pembagi Beban Kerja — Audit Beban Tak Kasat Mata & Keadilan</h2>
+                            <p class="subtitle">"Saya merasa melakukan semuanya dan pasangan saya tidak menyadarinya."</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="loadSampleTool1()">Muat Contoh Skenario</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetTool('tool1')">Mulai Ulang</button>
+                        </div>
+                    </div>
+
+                    <div id="t1SampleBanner" class="hidden" style="background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 16px;">
+                        <i class="fa-solid fa-info-circle"></i> Contoh skenario dimuat — ini adalah model demonstrasi, bukan data pribadi Anda.
+                    </div>
+
+                    <form id="tool1Form" onsubmit="handleTool1Submit(event)">
+                        <div style="overflow-x: auto;">
+                            <table class="split-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tugas Rumah Tangga / Bayi</th>
+                                        <th>Penanggung Jawab Utama</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tool1TasksBody">
+                                    <!-- Diisi oleh JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <button type="submit" class="btn"><i class="fa-solid fa-calculator"></i> Analisis Distribusi Tugas</button>
+                    </form>
+
+                    <div id="tool1Result" class="result-box hidden"></div>
+                </div>
+
+                <div class="card history-container">
+                    <div class="flex-between">
+                        <h3>Audit Tersimpan</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool1')">Hapus Riwayat Modul</button>
+                    </div>
+                    <div id="tool1History" class="mt-4"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 2: ISTIRAHAT & PEMBAGIAN TUGAS -->
+            <section id="tool2-view" class="view-section hidden">
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <h2>Istirahat & Pembagian Tugas — Perencana Jaga Malam</h2>
+                            <p class="subtitle">"Kami berdebat karena kami berdua sama-sama lelah dan tidak ada yang tahu siapa yang lebih parah."</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="loadSampleTool2()">Muat Contoh Skenario</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetTool('tool2')">Mulai Ulang</button>
+                        </div>
+                    </div>
+
+                    <div id="t2SampleBanner" class="hidden" style="background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 16px;">
+                        <i class="fa-solid fa-info-circle"></i> Contoh skenario dimuat — ini adalah model demonstrasi, bukan data pribadi Anda.
+                    </div>
+
+                    <form id="tool2Form" onsubmit="handleTool2Submit(event)">
+                        <div class="form-group">
+                            <label>Tahap Usia Bayi:</label>
+                            <select id="t2BabyAge" required>
+                                <option value="0-6 minggu">0–6 minggu (Fase Kolik / Bayi Baru Lahir)</option>
+                                <option value="6-12 minggu">6–12 minggu</option>
+                                <option value="3-6 bulan">3–6 bulan (Fase Regresi Tidur)</option>
+                                <option value="6-9 bulan">6–9 bulan</option>
+                                <option value="9-12 bulan">9–12 bulan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Lama Tidur Pasangan A Semalam (Jam):</label>
+                            <input type="number" id="t2SleepA" step="0.5" min="0" max="24" required placeholder="misal, 4.5">
+                        </div>
+                        <div class="form-group">
+                            <label>Lama Tidur Pasangan B Semalam (Jam):</label>
+                            <input type="number" id="t2SleepB" step="0.5" min="0" max="24" required placeholder="misal, 6.0">
+                        </div>
+                        <div class="form-group">
+                            <label>Siapa yang Menangani Bayi Terbangun Semalam?</label>
+                            <select id="t2WakingsHandler" required>
+                                <option value="Pasangan A">Pasangan A</option>
+                                <option value="Pasangan B">Pasangan B</option>
+                                <option value="Bagi Dua Rata">Bagi Dua Rata</option>
+                                <option value="N/A Bayi Tidur Nyenyak">N/A (Bayi tidur nyenyak sepanjang malam)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tidur Siang Hari Ini (Jam):</label>
+                            <div class="flex-row">
+                                <input type="number" id="t2NapA" step="0.5" min="0" max="10" placeholder="Tidur siang Pasangan A" required>
+                                <input type="number" id="t2NapB" step="0.5" min="0" max="10" placeholder="Tidur siang Pasangan B" required>
+                            </div>
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-header-flex">
+                                <span>Tingkat Energi Pasangan A Saat Ini (1–10):</span>
+                                <span id="t2ValA">5</span>
+                            </div>
+                            <input type="range" id="t2EnergyA" min="1" max="10" value="5" oninput="document.getElementById('t2ValA').innerText = this.value">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-header-flex">
+                                <span>Tingkat Energi Pasangan B Saat Ini (1–10):</span>
+                                <span id="t2ValB">5</span>
+                            </div>
+                            <input type="range" id="t2EnergyB" min="1" max="10" value="5" oninput="document.getElementById('t2ValB').innerText = this.value">
+                        </div>
+                        <button type="submit" class="btn mt-4"><i class="fa-solid fa-bed-pulse"></i> Hitung Gambaran Istirahat & Pembagian Tugas</button>
+                    </form>
+
+                    <div id="tool2Result" class="result-box hidden"></div>
+                </div>
+
+                <div class="card history-container">
+                    <div class="flex-between">
+                        <h3>Kalkulasi Tersimpan</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool2')">Hapus Riwayat Modul</button>
+                    </div>
+                    <div id="tool2History" class="mt-4"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 3: DISKUSI KEUANGAN -->
+            <section id="tool3-view" class="view-section hidden">
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <h2>Diskusi Keuangan — Penyelarasan Finansial</h2>
+                            <p class="subtitle">"Dulu kami selalu sependapat tentang uang. Sekarang semuanya lebih mahal dan kami bertengkar untuk setiap pembelian."</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="loadSampleTool3()">Muat Contoh Skenario</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetTool('tool3')">Mulai Ulang</button>
+                        </div>
+                    </div>
+
+                    <div id="t3SampleBanner" class="hidden" style="background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 16px;">
+                        <i class="fa-solid fa-info-circle"></i> Contoh skenario dimuat — ini adalah model demonstrasi, bukan data pribadi Anda.
+                    </div>
+
+                    <form id="tool3Form" onsubmit="handleTool3Submit(event)">
+                        <div class="form-group">
+                            <label>Perubahan Pendapatan Bulanan Rumah Tangga:</label>
+                            <select id="t3IncomeChange" required>
+                                <option value="Tetap">Tetap</option>
+                                <option value="Berkurang">Pengurangan Jam Kerja / Pemotongan Gaji</option>
+                                <option value="Satu pendapatan hilang">Satu Pendapatan Hilang (Pasangan mengambil cuti/menjadi ibu rumah tangga)</option>
+                                <option value="Meningkat">Meningkat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Perkiraan Pengeluaran Bulanan Baru untuk Bayi (Rp/USD):</label>
+                            <input type="number" id="t3Expenses" min="0" required placeholder="misal, 600">
+                        </div>
+                        <div class="form-group">
+                            <label>Sumber Utama Ketegangan Finansial:</label>
+                            <select id="t3Tension" required>
+                                <option value="Biaya popok/susu formula">Biaya popok, susu formula, & kebutuhan pokok rutin</option>
+                                <option value="Biaya medis">Biaya dokter anak / medis yang tak terduga</option>
+                                <option value="Kehilangan pendapatan">Kesulitan hidup dengan satu pendapatan atau pendapatan berkurang</option>
+                                <option value="Ketidakseimbangan pengeluaran">Perbedaan pendapat tentang pengeluaran pribadi vs kebutuhan bayi</option>
+                                <option value="Kepanikan tabungan">Tabungan terkuras dengan cepat</option>
+                                <option value="Perbedaan pendapat tentang kebutuhan">Peralatan mana yang benar-benar wajib vs sekadar keinginan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Batas Minimal Pembelian yang Perlu Didiskusikan (Rp/USD):</label>
+                            <input type="number" id="t3Threshold" min="0" value="50" required placeholder="Jumlah yang membutuhkan jeda diskusi 24 jam">
+                            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:4px;">Pengeluaran non-pokok di atas nominal ini membutuhkan jeda/diskusi 24 jam terlebih dahulu.</div>
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-header-flex">
+                                <span>Tingkat Stres Keuangan Pasangan A (1–10):</span>
+                                <span id="t3ValA">6</span>
+                            </div>
+                            <input type="range" id="t3StressA" min="1" max="10" value="6" oninput="document.getElementById('t3ValA').innerText = this.value">
+                        </div>
+                        <div class="slider-group">
+                            <div class="slider-header-flex">
+                                <span>Tingkat Stres Keuangan Pasangan B (1–10):</span>
+                                <span id="t3ValB">6</span>
+                            </div>
+                            <input type="range" id="t3StressB" min="1" max="10" value="6" oninput="document.getElementById('t3ValB').innerText = this.value">
+                        </div>
+                        <button type="submit" class="btn mt-4"><i class="fa-solid fa-coins"></i> Buat Rencana Penyelarasan Keuangan</button>
+                    </form>
+
+                    <div id="tool3Result" class="result-box hidden"></div>
+                </div>
+
+                <div class="card history-container">
+                    <div class="flex-between">
+                        <h3>Penyelarasan Keuangan Tersimpan</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool3')">Hapus Riwayat Modul</button>
+                    </div>
+                    <div id="tool3History" class="mt-4"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 4: CEK KEHARMONISAN -->
+            <section id="tool4-view" class="view-section hidden">
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <h2>Cek Keharmonisan — Membangun Kedekatan Tanpa Tekanan</h2>
+                            <p class="subtitle">"Kami sudah tidak intim selama berminggu-minggu/berbulan-bulan dan tidak ada yang tahu bagaimana memulainya kembali."</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="loadSampleTool4()">Muat Contoh Skenario</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetTool('tool4')">Mulai Ulang</button>
+                        </div>
+                    </div>
+
+                    <div id="t4SampleBanner" class="hidden" style="background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 16px;">
+                        <i class="fa-solid fa-info-circle"></i> Contoh skenario dimuat — ini adalah model demonstrasi, bukan data pribadi Anda.
+                    </div>
+
+                    <form id="tool4Form" onsubmit="handleTool4Submit(event)">
+                        <div class="form-group">
+                            <label>Kapan Terakhir Kali Anda Merasa Dekat Secara Fisik (seksual maupun non-seksual):</label>
+                            <select id="t4LastClose" required>
+                                <option value="Hari ini">Hari ini</option>
+                                <option value="Minggu ini">Minggu ini</option>
+                                <option value="Beberapa minggu lalu">Beberapa minggu lalu</option>
+                                <option value="Beberapa bulan lalu">Beberapa bulan lalu</option>
+                                <option value="Lupa / Tidak ingat">Lupa / Tidak ingat</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Hambatan Utama Saat Ini:</label>
+                            <select id="t4Barrier" required>
+                                <option value="Kelelahan">Kelelahan luar biasa / kurang tidur</option>
+                                <option value="Tidak ada waktu">Sama sekali tidak ada waktu pribadi (bayi selalu bangun/di dekat kami)</option>
+                                <option value="Bayi di kamar">Bayi tidur di kamar kita</option>
+                                <option value="Perubahan tubuh">Bentuk tubuh / pemulihan pascamelahirkan</option>
+                                <option value="Kekesalan terpendam">Pekerjaan rumah tangga tak terselesaikan / kekesalan emosional</option>
+                                <option value="Tidak ada suasana hati">Perubahan hormon / penurunan gairah</option>
+                                <option value="Rasa takut sakit">Rasa tidak nyaman secara fisik / Takut sakit</option>
+                                <option value="Lainnya">Tekanan/beban lainnya</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Apa yang Paling Anda Rindukan?</label>
+                            <select id="t4MissMost" required>
+                                <option value="Seks">Seks / Hubungan Intim</option>
+                                <option value="Berpelukan">Berpelukan santai / tidur dalam pelukan</option>
+                                <option value="Sentuhan fisik">Sentuhan tanpa tuntutan dan pelukan hangat</option>
+                                <option value="Merasa diinginkan">Merasa diinginkan di luar peran sebagai orang tua</option>
+                                <option value="Kasih sayang sederhana">Bergandengan tangan dan kecupan mesra</option>
+                                <option value="Waktu berdua">Obrolan tanpa gangguan / kencan berdua</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Satu Hal Kecil yang Dilakukan Pasangan yang Masih Membuat Anda Merasa Diperhatikan:</label>
+                            <textarea id="t4Appreciation" placeholder="misal, Mengisikan ulang gelas air minum saya tanpa diminta saat sedang menyusui..."></textarea>
+                        </div>
+                        <button type="submit" class="btn"><i class="fa-solid fa-heart-pulse"></i> Buat Rencana Menjalin Kembali Kedekatan</button>
+                    </form>
+
+                    <div id="tool4Result" class="result-box hidden"></div>
+                </div>
+
+                <div class="card history-container">
+                    <div class="flex-between">
+                        <h3>Cek Tersimpan</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool4')">Hapus Riwayat Modul</button>
+                    </div>
+                    <div id="tool4History" class="mt-4"></div>
+                </div>
+            </section>
+
+            <!-- MODUL 5: EVALUASI MINGGUAN ORANG TUA -->
+            <section id="tool5-view" class="view-section hidden">
+                <div class="card">
+                    <div class="flex-between">
+                        <div>
+                            <h2>Evaluasi Mingguan Orang Tua — Cek Berkala Keluarga</h2>
+                            <p class="subtitle">"Kami tidak pernah lagi membicarakan tentang kami. Hanya tentang bayi."</p>
+                        </div>
+                        <div class="btn-group">
+                            <button class="btn btn-secondary btn-sm" onclick="loadSampleTool5()">Muat Contoh Skenario</button>
+                            <button class="btn btn-outline btn-sm" onclick="resetTool('tool5')">Mulai Ulang</button>
+                        </div>
+                    </div>
+
+                    <div id="t5SampleBanner" class="hidden" style="background: #fff3cd; color: #856404; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; margin-bottom: 16px;">
+                        <i class="fa-solid fa-info-circle"></i> Contoh skenario dimuat — ini adalah model demonstrasi, bukan data pribadi Anda.
+                    </div>
+
+                    <form id="tool5Form" onsubmit="handleTool5Submit(event)">
+                        <h3 style="font-size: 0.95rem; color: var(--sage-dark); margin-bottom: 12px;">Penilaian Pasangan A (1–10)</h3>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Keharmonisan sebagai pasangan</span><span id="p5_a1_val">5</span></div><input type="range" id="p5_a1" min="1" max="10" value="5" oninput="document.getElementById('p5_a1_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Keadilan pembagian beban kerja</span><span id="p5_a2_val">5</span></div><input type="range" id="p5_a2" min="1" max="10" value="5" oninput="document.getElementById('p5_a2_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Kualitas komunikasi</span><span id="p5_a3_val">5</span></div><input type="range" id="p5_a3" min="1" max="10" value="5" oninput="document.getElementById('p5_a3_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Kecukupan istirahat / tidur pribadi</span><span id="p5_a4_val">5</span></div><input type="range" id="p5_a4" min="1" max="10" value="5" oninput="document.getElementById('p5_a4_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Rasa percaya diri sebagai orang tua</span><span id="p5_a5_val">7</span></div><input type="range" id="p5_a5" min="1" max="10" value="7" oninput="document.getElementById('p5_a5_val').innerText = this.value"></div>
+                        
+                        <div class="form-group mt-2">
+                            <label>Refleksi Pribadi Pasangan A ("Satu hal yang saya harap pasangan saya ketahui minggu ini"):</label>
+                            <textarea id="p5_a_text" placeholder="Disimpan secara lokal di perangkat ini saja..."></textarea>
+                        </div>
+
+                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 20px 0;">
+
+                        <h3 style="font-size: 0.95rem; color: var(--terracotta); margin-bottom: 12px;">Penilaian Pasangan B (1–10)</h3>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Keharmonisan sebagai pasangan</span><span id="p5_b1_val">5</span></div><input type="range" id="p5_b1" min="1" max="10" value="5" oninput="document.getElementById('p5_b1_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Keadilan pembagian beban kerja</span><span id="p5_b2_val">5</span></div><input type="range" id="p5_b2" min="1" max="10" value="5" oninput="document.getElementById('p5_b2_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Kualitas komunikasi</span><span id="p5_b3_val">5</span></div><input type="range" id="p5_b3" min="1" max="10" value="5" oninput="document.getElementById('p5_b3_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Kecukupan istirahat / tidur pribadi</span><span id="p5_b4_val">5</span></div><input type="range" id="p5_b4" min="1" max="10" value="5" oninput="document.getElementById('p5_b4_val').innerText = this.value"></div>
+                        <div class="slider-group"><div class="slider-header-flex"><span>Rasa percaya diri sebagai orang tua</span><span id="p5_b5_val">7</span></div><input type="range" id="p5_b5" min="1" max="10" value="7" oninput="document.getElementById('p5_b5_val').innerText = this.value"></div>
+                        
+                        <div class="form-group mt-2">
+                            <label>Refleksi Pribadi Pasangan B ("Satu hal yang saya harap pasangan saya ketahui minggu ini"):</label>
+                            <textarea id="p5_b_text" placeholder="Disimpan secara lokal di perangkat ini saja..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn mt-4"><i class="fa-solid fa-chart-pie"></i> Buat Dasbor Evaluasi Mingguan</button>
+                    </form>
+
+                    <div id="tool5Result" class="result-box hidden"></div>
+                </div>
+
+                <div class="card history-container">
+                    <div class="flex-between">
+                        <h3>Evaluasi Tersimpan</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool5')">Hapus Riwayat Modul</button>
+                    </div>
+                    <div id="tool5History" class="mt-4"></div>
+                </div>
+            </section>
+
+            <!-- PANDUAN RESET 7 HARI -->
+            <section id="reset7day-view" class="view-section hidden">
+                <div class="card">
+                    <h2>Urutan Reset 7 Hari Orang Tua Baru</h2>
+                    <p class="subtitle">Perjalanan terstruktur dan ringan yang dirancang untuk menyelaraskan kembali rumah tangga Anda dalam satu minggu tanpa merasa terbebani.</p>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+                        <div style="background: var(--bg-grad-start); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--terracotta);">
+                            <strong>Hari 1: Audit Pekerjaan Tak Kasat Mata</strong> — Ungkap beban mental dengan <a href="#" onclick="switchView('tool1'); return false;">Pembagi Beban Kerja</a>.
+                        </div>
+                        <div style="background: var(--bg-grad-start); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--sage-dark);">
+                            <strong>Hari 2: Istirahat Malam & Pembagian Tugas</strong> — Atasi kelelahan dengan <a href="#" onclick="switchView('tool2'); return false;">Istirahat & Pembagian Tugas</a>.
+                        </div>
+                        <div style="background: var(--bg-grad-start); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--sage-dark);">
+                            <strong>Hari 3: Kesepakatan Keuangan Sederhana</strong> — Kurangi gesekan pengeluaran dengan <a href="#" onclick="switchView('tool3'); return false;">Diskusi Keuangan</a>.
+                        </div>
+                        <div style="background: var(--bg-grad-start); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--terracotta);">
+                            <strong>Hari 4: Sentuhan Tanpa Tuntutan</strong> — Bangun kembali kedekatan dengan lembut lewat <a href="#" onclick="switchView('tool4'); return false;">Cek Keharmonisan</a>.
+                        </div>
+                        <div style="background: var(--bg-grad-start); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--sage-dark);">
+                            <strong>Hari 5: Penyelarasan Mingguan</strong> — Bandingkan pengalaman menggunakan <a href="#" onclick="switchView('tool5'); return false;">Evaluasi Mingguan Orang Tua</a>.
+                        </div>
+                        <div style="background: var(--bg-grad-start); padding: 14px; border-radius: var(--radius-md); border-left: 4px solid var(--terracotta);">
+                            <strong>Hari 6 & 7: Rangkum & Rencanakan</strong> — Tinjau <a href="#" onclick="switchView('plan'); return false;">Rencana Orang Tua Baru Saya</a> dan cetak kesepakatan 30 hari Anda.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- RENCANA ORANG TUA BARU SAYA (RANGKUMAN DAPAT DICETAK) -->
+            <section id="plan-view" class="view-section hidden">
+                <div class="card hero-card">
+                    <div class="flex-between">
+                        <div>
+                            <h2>Rencana Orang Tua Baru Saya</h2>
+                            <p class="subtitle">Rangkuman terpadu dari kesepakatan aktif dan prioritas dari seluruh modul yang telah diselesaikan.</p>
+                        </div>
+                        <button class="btn btn-secondary no-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana</button>
+                    </div>
+                    <div id="planContainer" style="margin-top: 16px;">
+                        <!-- Rangkuman terpadu diisi oleh JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAMPILAN RIWAYAT GABUNGAN -->
+            <section id="history-view" class="view-section hidden">
+                <div class="card">
+                    <div class="flex-between">
+                        <h2>Riwayat Gabungan Saya</h2>
+                        <button class="btn btn-danger btn-sm" onclick="clearAllHistory()">Hapus Semua Riwayat Penyimpanan</button>
+                    </div>
+                    <p class="subtitle" style="margin-bottom: 12px;">Tampilan menyeluruh dari seluruh catatan modul yang tersimpan di perangkat ini.</p>
+                    <div id="unifiedHistoryContainer" class="mt-4"></div>
+                </div>
+            </section>
+
+            <!-- TAMPILAN PRIVASI & PENYIMPANAN -->
+            <section id="privacy-view" class="view-section hidden">
+                <div class="card">
+                    <h2>Kebijakan Privasi & Penyimpanan Data</h2>
+                    <p class="subtitle">Data pribadi hubungan dan keluarga Anda tidak pernah meninggalkan peramban (browser) pribadi Anda.</p>
+                    
+                    <div class="result-section">
+                        <h4><i class="fa-solid fa-hard-drive"></i> 100% Penyimpanan Lokal</h4>
+                        <p>OS ORANG TUA BARU™ beroperasi sepenuhnya di sisi klien (client-side). Isian, riwayat kalkulasi, dan refleksi disimpan secara eksklusif di <code>localStorage</code> peramban Anda. Tidak ada server jarak jauh, basis data, atau analitik pihak ketiga yang terhubung dengan data Anda.</p>
+                    </div>
+
+                    <div class="result-section">
+                        <h4><i class="fa-solid fa-user-lock"></i> Penanganan Refleksi Pribadi</h4>
+                        <p>Refleksi mingguan yang dimasukkan dalam Modul 5 disimpan secara terpisah dan secara tegas tidak ditampilkan pada kartu hasil antarmuka utama. Namun, <code>localStorage</code> peramban tidak dienkripsi. Jika berbagi perangkat, hapus data setelah sesi Anda selesai.</p>
+                    </div>
+
+                    <div class="btn-group mt-4">
+                        <button class="btn btn-danger btn-sm" onclick="clearPrivateReflections()">Hapus Hanya Refleksi Pribadi Tersimpan</button>
+                        <button class="btn btn-danger btn-sm" onclick="clearAllHistory()">Hapus Semua Data Aplikasi OS</button>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+
+        <footer>
+            OS ORANG TUA BARU™ — Hanya untuk koordinasi praktis orang tua. Bukan saran medis, keuangan, atau terapi. Untuk masalah kesehatan atau medis anak, hubungi penyedia layanan kesehatan Anda.
+        </footer>
+    </main>
+
+    <!-- Notifikasi Toast -->
+    <div id="toast" class="toast">Berhasil disalin ke papan klip!</div>
+
+    <script>
+        // --- MODEL STATUS UTAMA ---
+        const newParentOSState = {
+            completedTools: [],
+            toolResults: {},
+            weeklyCheckin: { lastCompletedAt: null },
+            privacyAcknowledged: true
+        };
+
+        // Daftar tugas untuk Pembagi Beban Kerja
+        const tool1TasksList = [
+            "Menyusui/Memeberi Makan", "Mengganti Popok", "Menenangkan Bayi Tidur", "Terbangun Malam Hari",
+            "Memandikan Bayi", "Janji Temu Dokter", "Mencuci Pakaian", "Mencuci/Menyiapkan Botol",
+            "Belanja Kebutuhan", "Memasak", "Membersihkan Rumah", "Dukungan Emosional untuk Pasangan",
+            "Perencanaan/Penjadwalan", "Riset Kebutuhan Bayi"
+        ];
+
+        // --- UTILITAS BANTUAN ---
+        function escapeHTML(str) {
+            if (str === null || str === undefined) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        function showToast(msg = "Berhasil disalin ke papan klip!") {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2200);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => showToast());
+            } else {
+                let textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.position = "fixed";
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast();
+                } catch (err) {
+                    showToast("Gagal menyalin");
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+
+        // --- LOGIKA NAVIGASI ---
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        function switchView(targetId) {
+            navItems.forEach(item => {
+                if(item.getAttribute('data-target') === targetId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            viewSections.forEach(section => {
+                if(section.id === targetId + '-view') {
+                    section.classList.remove('hidden');
+                } else {
+                    section.classList.add('hidden');
+                }
+            });
+
+            if(targetId === 'plan') renderNewParentPlan();
+            if(targetId === 'history') renderUnifiedHistory();
+
+            sidebar.classList.remove('open');
+            sidebarOverlay.style.display = 'none';
+            window.scrollTo(0, 0);
+        }
+
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                switchView(item.getAttribute('data-target'));
+            });
+        });
+
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.style.display = sidebar.classList.contains('open') ? 'block' : 'none';
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.style.display = 'none';
+        });
+
+        // --- MANAJER PENYIMPANAN & RIWAYAT ---
+        const VERSION_KEY_PREFIX = "newparentos_v2_";
+
+        function saveToHistory(toolId, data) {
+            try {
+                const key = `${VERSION_KEY_PREFIX}history_${toolId}`;
+                let history = JSON.parse(localStorage.getItem(key)) || [];
+                history.unshift({ id: Date.now(), date: new Date().toLocaleString('id-ID'), data });
+                if(history.length > 30) history = history.slice(0, 30);
+                localStorage.setItem(key, JSON.stringify(history));
+                renderHistory(toolId);
+                
+                if(!newParentOSState.completedTools.includes(toolId)) {
+                    newParentOSState.completedTools.push(toolId);
+                }
+                newParentOSState.toolResults[toolId] = data;
+            } catch (e) {
+                console.error("Gagal menyimpan ke penyimpanan", e);
+            }
+        }
+
+        function clearToolHistory(toolId) {
+            if(confirm("Hapus riwayat tersimpan untuk modul ini?")) {
+                localStorage.removeItem(`${VERSION_KEY_PREFIX}history_${toolId}`);
+                renderHistory(toolId);
+                showToast("Riwayat modul berhasil dihapus.");
+            }
+        }
+
+        function clearAllHistory() {
+            if(confirm("Apakah Anda yakin ingin menghapus SEMUA riwayat tersimpan dan data aplikasi? Tindakan ini tidak dapat dibatalkan.")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                    localStorage.removeItem(`${VERSION_KEY_PREFIX}history_${t}`);
+                });
+                localStorage.removeItem(`${VERSION_KEY_PREFIX}private_reflection_A`);
+                localStorage.removeItem(`${VERSION_KEY_PREFIX}private_reflection_B`);
+                newParentOSState.completedTools = [];
+                newParentOSState.toolResults = {};
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => renderHistory(t));
+                renderUnifiedHistory();
+                renderNewParentPlan();
+                showToast("Semua data aplikasi telah dihapus.");
+            }
+        }
+
+        function clearPrivateReflections() {
+            if(confirm("Hapus refleksi pribadi yang tersimpan di perangkat ini?")) {
+                localStorage.removeItem(`${VERSION_KEY_PREFIX}private_reflection_A`);
+                localStorage.removeItem(`${VERSION_KEY_PREFIX}private_reflection_B`);
+                showToast("Refleksi berhasil dihapus.");
+            }
+        }
+
+        function renderHistory(toolId) {
+            const container = document.getElementById(`${toolId}History`);
+            if(!container) return;
+            const key = `${VERSION_KEY_PREFIX}history_${toolId}`;
+            const history = JSON.parse(localStorage.getItem(key)) || [];
+            
+            if(history.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Belum ada catatan yang tersimpan.</p>';
+                return;
+            }
+
+            container.innerHTML = history.map((item, idx) => `
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <span>Catatan #${history.length - idx}</span>
+                        <span>${escapeHTML(item.date)}</span>
+                    </div>
+                    <div>${escapeHTML(item.data.summary || 'Catatan Analisis Modul')}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryContainer');
+            if(!container) return;
+            let all = [];
+            
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                const h = JSON.parse(localStorage.getItem(`${VERSION_KEY_PREFIX}history_${t}`)) || [];
+                h.forEach(item => {
+                    all.push({ ...item, toolId: t });
+                });
+            });
+
+            all.sort((a,b) => b.id - a.id);
+
+            if(all.length === 0) {
+                container.innerHTML = '<p style="color:var(--text-muted); font-size:0.85rem;">Tidak ada riwayat ditemukan dari modul apa pun.</p>';
+                return;
+            }
+
+            const toolNames = { 
+                tool1: "Pembagi Beban Kerja", 
+                tool2: "Istirahat & Pembagian Tugas", 
+                tool3: "Diskusi Keuangan", 
+                tool4: "Cek Keharmonisan", 
+                tool5: "Evaluasi Mingguan" 
+            };
+
+            container.innerHTML = all.map(item => `
+                <div class="history-item">
+                    <div class="history-item-header">
+                        <span class="badge badge-info">${escapeHTML(toolNames[item.toolId])}</span>
+                        <span>${escapeHTML(item.date)}</span>
+                    </div>
+                    <div>${escapeHTML(item.data.summary)}</div>
+                </div>
+            `).join('');
+        }
+
+        function resetTool(toolId) {
+            document.getElementById(`${toolId}Form`).reset();
+            const res = document.getElementById(`${toolId}Result`);
+            res.classList.add('hidden');
+            res.innerHTML = '';
+            const banner = document.getElementById(`${toolId.replace('tool', 't')}SampleBanner`);
+            if(banner) banner.classList.add('hidden');
+            showToast("Formulir direset.");
+        }
+
+        // --- INISIALISASI SAAT HALAMAN DIMUAT ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Periksa kunjungan untuk banner evaluasi mingguan
+            const lastVisit = localStorage.getItem(`${VERSION_KEY_PREFIX}last_visit`);
+            const now = new Date().getTime();
+            if(lastVisit) {
+                const diffDays = (now - parseInt(lastVisit)) / (1000 * 60 * 60 * 24);
+                if(diffDays >= 5) {
+                    document.getElementById('weeklyCheckinBanner').classList.remove('hidden');
+                }
+            }
+            localStorage.setItem(`${VERSION_KEY_PREFIX}last_visit`, now.toString());
+
+            initTool1Tasks();
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => renderHistory(t));
+        });
+
+
+        // --- MODUL 1: LOGIKA PEMBAGI BEBAN KERJA ---
+        function initTool1Tasks() {
+            const tbody = document.getElementById('tool1TasksBody');
+            tbody.innerHTML = tool1TasksList.map((task, idx) => `
+                <tr>
+                    <td><strong>${escapeHTML(task)}</strong></td>
+                    <td>
+                        <select name="task_${idx}" class="t1-select" data-task="${escapeHTML(task)}">
+                            <option value="Saya">Saya</option>
+                            <option value="Pasangan Saya">Pasangan Saya</option>
+                            <option value="Keduanya">Keduanya (Bersama)</option>
+                            <option value="Belum Ada">Belum Ditugaskan</option>
+                            <option value="N/A">N/A (Tidak Berlaku)</option>
+                        </select>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadSampleTool1() {
+            document.getElementById('t1SampleBanner').classList.remove('hidden');
+            const selects = document.querySelectorAll('.t1-select');
+            selects.forEach(sel => {
+                const task = sel.getAttribute('data-task');
+                if(["Menyusui/Memeberi Makan", "Menenangkan Bayi Tidur", "Terbangun Malam Hari", "Mencuci/Menyiapkan Botol", "Mencuci Pakaian", "Perencanaan/Penjadwalan", "Riset Kebutuhan Bayi"].includes(task)) {
+                    sel.value = "Saya";
+                } else if(["Janji Temu Dokter", "Belanja Kebutuhan", "Memasak"].includes(task)) {
+                    sel.value = "Pasangan Saya";
+                } else {
+                    sel.value = "Keduanya";
+                }
+            });
+            showToast("Contoh skenario pembagian beban kerja tidak seimbang dimuat!");
+        }
+
+        function handleTool1Submit(e) {
+            e.preventDefault();
+            const selects = document.querySelectorAll('.t1-select');
+            let counts = { Saya: 0, "Pasangan Saya": 0, Keduanya: 0, "Belum Ada": 0, "N/A": 0 };
+            let invisibleTasksCount = 0;
+            let invisibleMe = 0;
+
+            selects.forEach(sel => {
+                const val = sel.value;
+                counts[val] = (counts[val] || 0) + 1;
+                const task = sel.getAttribute('data-task');
+                if(["Dukungan Emosional untuk Pasangan", "Perencanaan/Penjadwalan", "Riset Kebutuhan Bayi"].includes(task)) {
+                    invisibleTasksCount++;
+                    if(val === "Saya") invisibleMe++;
+                }
+            });
+
+            const activeTotal = selects.length - counts["N/A"];
+            const mePct = activeTotal > 0 ? Math.round((counts["Saya"] / activeTotal) * 100) : 0;
+            const partnerPct = activeTotal > 0 ? Math.round((counts["Pasangan Saya"] / activeTotal) * 100) : 0;
+            const bothPct = activeTotal > 0 ? Math.round((counts["Keduanya"] / activeTotal) * 100) : 0;
+
+            const summaryStr = `Audit Pembagian Tugas: Saya (${mePct}%), Pasangan (${partnerPct}%), Bersama (${bothPct}%)`;
+
+            const resultHTML = `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-chart-pie"></i> GAMBARAN DISTRIBUSI TUGAS</h4>
+                    <p>Gambaran distribusi pekerjaan nyata & tak kasat mata berdasarkan audit mandiri:</p>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: ${mePct}%; background: var(--terracotta);" title="Saya: ${mePct}%"></div>
+                        <div class="progress-bar-fill" style="width: ${partnerPct}%; background: var(--sage-dark);" title="Pasangan: ${partnerPct}%"></div>
+                        <div class="progress-bar-fill" style="width: ${bothPct}%; background: var(--sage);" title="Bersama: ${bothPct}%"></div>
+                    </div>
+                    <p style="font-size:0.85rem; color:var(--text-muted);">Anda: ${mePct}% | Pasangan: ${partnerPct}% | Bersama: ${bothPct}%</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-ghost"></i> BEBAN KERJA TAK KASAT MATA TERUNGKAP</h4>
+                    <p>Beban kognitif (menyusun jadwal, memantau stok kebutuhan, daftar tugas di kepala) sering kali diam-diam menumpuk pada satu orang. Dalam audit ini, Anda mencatat memegang ${invisibleMe} dari 3 kategori utama beban kognitif.</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-triangle-exclamation"></i> POTENSI SUMBER KEKESALAN</h4>
+                    <p>${mePct > 55 || partnerPct > 55 ? "Pemusatan tanggung jawab yang signifikan pada satu orang dapat memicu kelelahan berlebih dan ketegangan jangka panjang." : "Tanggung jawab terbagi secara relatif merata, meskipun pembagian peran yang jelas tetap penting agar tidak ada tugas yang terlewat."}</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-hands-holding-child"></i> SATU PERUBAHAN TANGGUNG JAWAB UNTUK DICOBA</h4>
+                    <p><strong>Eksperimen Pengalihan 7 Hari:</strong> Pilih <em>satu</em> tanggung jawab rutin (misal, menyiapkan botol atau menenangkan bayi di malam hari) dan alihkan penanggung jawab penuh—mulai dari perencanaan hingga eksekusi—ke pasangan selama 7 hari.</p>
+                </div>
+
+                <div class="rec-box">
+                    <h4><i class="fa-solid fa-compass"></i> SARAN REKOMENDASI SISTEM</h4>
+                    <p>Persepsi beban kerja yang tidak seimbang berdampak langsung pada kelelahan. Pertimbangkan untuk menjalankan <a href="#" onclick="switchView('tool2'); return false;">Perencana Istirahat & Pembagian Tugas</a> berikutnya untuk menjaga waktu tidur malam ini.</p>
+                </div>
+
+                <div class="btn-group mt-4">
+                    <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('tool1Result').innerText)"><i class="fa-solid fa-copy"></i> Salin Hasil</button>
+                </div>
+            `;
+
+            const resBox = document.getElementById('tool1Result');
+            resBox.innerHTML = resultHTML;
+            resBox.classList.remove('hidden');
+
+            saveToHistory('tool1', { summary: summaryStr, mePct, partnerPct, bothPct });
+        }
+
+
+        // --- MODUL 2: LOGIKA ISTIRAHAT & PEMBAGIAN TUGAS ---
+        function loadSampleTool2() {
+            document.getElementById('t2SampleBanner').classList.remove('hidden');
+            document.getElementById('t2BabyAge').value = "0-6 minggu";
+            document.getElementById('t2SleepA').value = "3.5";
+            document.getElementById('t2SleepB').value = "5.5";
+            document.getElementById('t2WakingsHandler').value = "Pasangan A";
+            document.getElementById('t2NapA').value = "0";
+            document.getElementById('t2NapB').value = "1.0";
+            document.getElementById('t2EnergyA').value = "2";
+            document.getElementById('t2EnergyB').value = "4";
+            document.getElementById('t2ValA').innerText = "2";
+            document.getElementById('t2ValB').innerText = "4";
+            showToast("Contoh skenario kelelahan malam hari dengan bayi baru lahir dimuat!");
+        }
+
+        function handleTool2Submit(e) {
+            e.preventDefault();
+            const age = document.getElementById('t2BabyAge').value;
+            const sleepA = parseFloat(document.getElementById('t2SleepA').value) || 0;
+            const sleepB = parseFloat(document.getElementById('t2SleepB').value) || 0;
+            const handler = document.getElementById('t2WakingsHandler').value;
+            const napA = parseFloat(document.getElementById('t2NapA').value) || 0;
+            const napB = parseFloat(document.getElementById('t2NapB').value) || 0;
+            const energyA = parseInt(document.getElementById('t2EnergyA').value);
+            const energyB = parseInt(document.getElementById('t2EnergyB').value);
+
+            const totalA = sleepA + napA;
+            const totalB = sleepB + napB;
+            const mostDepleted = totalA < totalB ? "Pasangan A" : (totalB < totalA ? "Pasangan B" : "Keduanya sama-sama lelah");
+
+            const summaryStr = `Gambaran Istirahat: Pasangan A (${totalA}j istirahat, E:${energyA}) | Pasangan B (${totalB}j istirahat, E:${energyB})`;
+
+            const resultHTML = `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-bed"></i> GAMBARAN ISTIRAHAT SAAT INI</h4>
+                    <p><strong>Total Istirahat Pasangan A:</strong> ${totalA} jam (${sleepA}j malam + ${napA}j siang) | Tingkat Energi: ${energyA}/10</p>
+                    <p><strong>Total Istirahat Pasangan B:</strong> ${totalB} jam (${sleepB}j malam + ${napB}j siang) | Tingkat Energi: ${energyB}/10</p>
+                    <p><strong>Prioritas Pemulihan Utama:</strong> ${mostDepleted}. (Gambaran ini adalah alat bantu perencanaan operasional, bukan ajang adu penderitaan).</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-shield-halved"></i> RENCANA JAGA MALAM INI</h4>
+                    <p>${mostDepleted === "Pasangan A" 
+                        ? "Pasangan B memegang tanggung jawab utama menjaga bayi terbangun dari jam 21.00 hingga 02.00 untuk memastikan Pasangan A mendapat tidur tanpa gangguan minimal 5 jam." 
+                        : (mostDepleted === "Pasangan B" 
+                            ? "Pasangan A memegang tanggung jawab utama menjaga bayi terbangun dari jam 21.00 hingga 02.00 untuk memberikan Pasangan B istirahat tanpa gangguan." 
+                            : "Bagi jam jaga malam secara bersih: Shift 1 (21.00–02.00) dipegang Pasangan A; Shift 2 (02.00–07.00) dipegang Pasangan B.")}</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-hand-holding-hand"></i> KAPAN HARUS BERGANTIAN (TAG-OUT)</h4>
+                    <p>Jika tingkat energi turun di bawah 3/10 atau emosi mulai memuncak saat bertugas malam, segera lakukan pergantian jaga (tag-out) tanpa perdebatan atau penilaian.</p>
+                </div>
+
+                <div class="rec-box">
+                    <h4><i class="fa-solid fa-compass"></i> SARAN REKOMENDASI SISTEM</h4>
+                    <p>Jika kurang tidur parah memicu gesekan komunikasi, jadwalkan <a href="#" onclick="switchView('tool5'); return false;">Evaluasi Mingguan Orang Tua</a> saat sudah cukup istirahat untuk menyelaraskan kembali prioritas.</p>
+                </div>
+
+                <div class="btn-group mt-4">
+                    <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('tool2Result').innerText)"><i class="fa-solid fa-copy"></i> Salin Hasil</button>
+                </div>
+            `;
+
+            const resBox = document.getElementById('tool2Result');
+            resBox.innerHTML = resultHTML;
+            resBox.classList.remove('hidden');
+
+            saveToHistory('tool2', { summary: summaryStr, totalA, totalB, energyA, energyB });
+        }
+
+
+        // --- MODUL 3: LOGIKA DISKUSI KEUANGAN ---
+        function loadSampleTool3() {
+            document.getElementById('t3SampleBanner').classList.remove('hidden');
+            document.getElementById('t3IncomeChange').value = "Satu pendapatan hilang";
+            document.getElementById('t3Expenses').value = "750";
+            document.getElementById('t3Tension').value = "Kehilangan pendapatan";
+            document.getElementById('t3Threshold').value = "50";
+            document.getElementById('t3StressA').value = "8";
+            document.getElementById('t3StressB').value = "7";
+            document.getElementById('t3ValA').innerText = "8";
+            document.getElementById('t3ValB').innerText = "7";
+            showToast("Contoh skenario tekanan finansial dimuat!");
+        }
+
+        function handleTool3Submit(e) {
+            e.preventDefault();
+            const income = document.getElementById('t3IncomeChange').value;
+            const expenses = document.getElementById('t3Expenses').value;
+            const tension = document.getElementById('t3Tension').value;
+            const threshold = document.getElementById('t3Threshold').value || "50";
+            const stressA = document.getElementById('t3StressA').value;
+            const stressB = document.getElementById('t3StressB').value;
+
+            const summaryStr = `Penyelarasan Keuangan: Pendapatan (${income}), Pengeluaran Baru (~${expenses}/bln), Batas Diskusi (${threshold})`;
+
+            const resultHTML = `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-wallet"></i> GAMBARAN REALITAS KEUANGAN</h4>
+                    <p><strong>Perubahan Pendapatan:</strong> ${income} | <strong>Perkiraan Biaya Bayi:</strong> ~${expenses}/bulan</p>
+                    <p><strong>Tingkat Stres Keuangan Mandiri:</strong> Pasangan A (${stressA}/10) | Pasangan B (${stressB}/10)</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-bullseye"></i> TITIK TEKANAN UTAMA</h4>
+                    <p>Area gesekan utama yang teridentifikasi: <strong>${escapeHTML(tension)}</strong>. Di balik gesekan pengeluaran biasanya terdapat kekhawatiran bersama tentang rasa aman dan stabilitas selama masa transisi ini.</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-scale-balanced"></i> ATURAN KESEPAKATAN PENGELUARAN OPSIONAL</h4>
+                    <p><strong>Aturan Diskusi Batas Nominal ${escapeHTML(threshold)}:</strong> Setiap pembelian barang pribadi atau kebutuhan bayi yang tidak mendesak di atas nominal <strong>${escapeHTML(threshold)}</strong> membutuhkan jeda 24 jam dan konfirmasi singkat bersama sebelum dibeli.</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-comments"></i> Naskah / Panduan Obrolan</h4>
+                    <p><em>"Saya tahu kita berdua sama-sama merasa stres soal keuangan saat ini dengan kondisi ${escapeHTML(income.toLowerCase())}. Saya ingin kita menghadapi anggaran ini sebagai tim. Mari luangkan waktu 15 menit akhir minggu ini untuk meninjau pengeluaran rutin kita."</em></p>
+                </div>
+
+                <div class="btn-group mt-4">
+                    <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('tool3Result').innerText)"><i class="fa-solid fa-copy"></i> Salin Hasil</button>
+                </div>
+            `;
+
+            const resBox = document.getElementById('tool3Result');
+            resBox.innerHTML = resultHTML;
+            resBox.classList.remove('hidden');
+
+            saveToHistory('tool3', { summary: summaryStr, income, expenses, threshold });
+        }
+
+
+        // --- MODUL 4: LOGIKA CEK KEHARMONISAN ---
+        function loadSampleTool4() {
+            document.getElementById('t4SampleBanner').classList.remove('hidden');
+            document.getElementById('t4LastClose').value = "Beberapa bulan lalu";
+            document.getElementById('t4Barrier').value = "Kelelahan";
+            document.getElementById('t4MissMost').value = "Berpelukan";
+            document.getElementById('t4Appreciation').value = "Selalu memastikan botol minum saya terisi penuh setiap pagi.";
+            showToast("Contoh skenario kerenggangan hubungan dimuat!");
+        }
+
+        function handleTool4Submit(e) {
+            e.preventDefault();
+            const lastClose = document.getElementById('t4LastClose').value;
+            const barrier = document.getElementById('t4Barrier').value;
+            const missMost = document.getElementById('t4MissMost').value;
+            const appreciation = document.getElementById('t4Appreciation').value;
+
+            const summaryStr = `Cek Keharmonisan: Kedekatan Terakhir (${lastClose}), Hambatan (${barrier}), Kerinduan (${missMost})`;
+
+            const resultHTML = `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-heart"></i> GAMBARAN KEHARMONISAN HUBUNGAN</h4>
+                    <p><strong>Terakhir Merasa Dekat Secara Fisik:</strong> ${escapeHTML(lastClose)}</p>
+                    <p><strong>Hambatan Utama Teridentifikasi:</strong> ${escapeHTML(barrier)}</p>
+                    <p><strong>Hal yang Paling Dirindukan:</strong> ${escapeHTML(missMost)}</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-hand-holding-heart"></i> RITUAL MEMBANGUN KEDEKATAN TANPA TEKANAN</h4>
+                    <p><strong>Pelukan 60 Detik:</strong> Lakukan pelukan harian selama 60 detik tanpa tuntutan di akhir hari dengan kesepakatan bersama bahwa hal ini murni kasih sayang tanpa ekspektasi atau kewajiban lebih lanjut.</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-comments"></i> PEMANTIK DISKUSI</h4>
+                    <p><em>"Saya rindu merasa dekat denganmu, tapi saya tahu kita berdua sedang lelah. Mari lepaskan dulu tekanan soal hubungan intim dan mulai dengan 10 menit berpelukan santai di sofa malam ini."</em></p>
+                </div>
+
+                ${appreciation.trim() ? `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-sun"></i> APRESIASI YANG DICATAT</h4>
+                    <p>"${escapeHTML(appreciation)}"</p>
+                </div>` : ''}
+
+                <div class="btn-group mt-4">
+                    <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('tool4Result').innerText)"><i class="fa-solid fa-copy"></i> Salin Hasil</button>
+                </div>
+            `;
+
+            const resBox = document.getElementById('tool4Result');
+            resBox.innerHTML = resultHTML;
+            resBox.classList.remove('hidden');
+
+            saveToHistory('tool4', { summary: summaryStr, barrier, missMost });
+        }
+
+
+        // --- MODUL 5: LOGIKA EVALUASI MINGGUAN ORANG TUA ---
+        function loadSampleTool5() {
+            document.getElementById('t5SampleBanner').classList.remove('hidden');
+            // Pasangan A
+            document.getElementById('p5_a1').value = 4; document.getElementById('p5_a1_val').innerText = "4";
+            document.getElementById('p5_a2').value = 3; document.getElementById('p5_a2_val').innerText = "3";
+            document.getElementById('p5_a3').value = 4; document.getElementById('p5_a3_val').innerText = "4";
+            document.getElementById('p5_a4').value = 2; document.getElementById('p5_a4_val').innerText = "2";
+            document.getElementById('p5_a5').value = 7; document.getElementById('p5_a5_val').innerText = "7";
+            document.getElementById('p5_a_text').value = "Merasa sangat kewalahan dengan cucian dan terbangun malam.";
+
+            // Pasangan B
+            document.getElementById('p5_b1').value = 5; document.getElementById('p5_b1_val').innerText = "5";
+            document.getElementById('p5_b2').value = 5; document.getElementById('p5_b2_val').innerText = "5";
+            document.getElementById('p5_b3').value = 5; document.getElementById('p5_b3_val').innerText = "5";
+            document.getElementById('p5_b4').value = 4; document.getElementById('p5_b4_val').innerText = "4";
+            document.getElementById('p5_b5').value = 8; document.getElementById('p5_b5_val').innerText = "8";
+            document.getElementById('p5_b_text').value = "Stres karena tuntutan pekerjaan.";
+
+            showToast("Contoh evaluasi mingguan dimuat!");
+        }
+
+        function getBadge(val) {
+            if(val >= 7) return `<span class="badge badge-green">${val}/10</span>`;
+            if(val >= 4) return `<span class="badge badge-yellow">${val}/10</span>`;
+            return `<span class="badge badge-red">${val}/10</span>`;
+        }
+
+        function handleTool5Submit(e) {
+            e.preventDefault();
+            const categories = ["Keharmonisan sebagai pasangan", "Keadilan pembagian beban kerja", "Kualitas komunikasi", "Kecukupan istirahat/tidur pribadi", "Rasa percaya diri sebagai orang tua"];
+            
+            const scoresA = [
+                parseInt(document.getElementById('p5_a1').value),
+                parseInt(document.getElementById('p5_a2').value),
+                parseInt(document.getElementById('p5_a3').value),
+                parseInt(document.getElementById('p5_a4').value),
+                parseInt(document.getElementById('p5_a5').value)
+            ];
+
+            const scoresB = [
+                parseInt(document.getElementById('p5_b1').value),
+                parseInt(document.getElementById('p5_b2').value),
+                parseInt(document.getElementById('p5_b3').value),
+                parseInt(document.getElementById('p5_b4').value),
+                parseInt(document.getElementById('p5_b5').value)
+            ];
+
+            // Simpan refleksi secara aman
+            const privA = document.getElementById('p5_a_text').value;
+            const privB = document.getElementById('p5_b_text').value;
+            if(privA) localStorage.setItem(`${VERSION_KEY_PREFIX}private_reflection_A`, privA);
+            if(privB) localStorage.setItem(`${VERSION_KEY_PREFIX}private_reflection_B`, privB);
+
+            let gaps = [];
+            let lowestCatIdx = 0;
+            let lowestCombined = 20;
+
+            for(let i=0; i<5; i++) {
+                const combined = scoresA[i] + scoresB[i];
+                if(combined < lowestCombined) {
+                    lowestCombined = combined;
+                    lowestCatIdx = i;
+                }
+                if(Math.abs(scoresA[i] - scoresB[i]) >= 3) {
+                    gaps.push(`${categories[i]} (Pasangan A: ${scoresA[i]}, Pasangan B: ${scoresB[i]})`);
+                }
+            }
+
+            const summaryStr = `Evaluasi Mingguan: Kategori Terendah Bersama (${categories[lowestCatIdx]})`;
+
+            const resultHTML = `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-chart-line"></i> DASBOR EVALUASI MINGGUAN</h4>
+                    <table class="split-table" style="margin-top:8px;">
+                        <tr><th>Kategori</th><th>Pasangan A</th><th>Pasangan B</th></tr>
+                        ${categories.map((cat, idx) => `
+                            <tr>
+                                <td><strong>${escapeHTML(cat)}</strong></td>
+                                <td>${getBadge(scoresA[idx])}</td>
+                                <td>${getBadge(scoresB[idx])}</td>
+                            </tr>
+                        `).join('')}
+                    </table>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-arrows-split-up-and-left"></i> PERBEDAAN PERSEPSI (Beda 3+ Poin)</h4>
+                    <p>${gaps.length > 0 ? gaps.map(g => escapeHTML(g)).join('<br>') : "Tidak ada perbedan signifikan minggu ini—persepsi Anda berdua teratur dengan baik."}</p>
+                </div>
+
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-comments"></i> SATU FOKUS DISKUSI</h4>
+                    <p>Nilai gabungan terendah Anda minggu ini adalah pada area <strong>${escapeHTML(categories[lowestCatIdx])}</strong>. Luangkan waktu 10 menit untuk mendiskusikan topik tunggal ini tanpa melebar ke masalah lain.</p>
+                </div>
+
+                <div class="result-section" style="background:#fff; border:1px dashed var(--terracotta);">
+                    <p style="font-size:0.82rem; color:var(--terracotta); font-weight:600;">
+                        <i class="fa-solid fa-lock"></i> Refleksi pribadi yang dimasukkan di atas tetap tersimpan secara khusus di perangkat lokal ini dan tidak ditampilkan pada kartu ringkasan.
+                    </p>
+                </div>
+
+                <div class="btn-group mt-4">
+                    <button class="btn btn-secondary btn-sm" onclick="copyToClipboard(document.getElementById('tool5Result').innerText)"><i class="fa-solid fa-copy"></i> Salin Hasil</button>
+                </div>
+            `;
+
+            const resBox = document.getElementById('tool5Result');
+            resBox.innerHTML = resultHTML;
+            resBox.classList.remove('hidden');
+
+            saveToHistory('tool5', { summary: summaryStr, lowestCategory: categories[lowestCatIdx] });
+        }
+
+
+        // --- RENCANA ORANG TUA BARU SAYA (TAMPILAN RANGKUMAN) ---
+        function renderNewParentPlan() {
+            const container = document.getElementById('planContainer');
+            if(!container) return;
+
+            const t1 = newParentOSState.toolResults['tool1'];
+            const t2 = newParentOSState.toolResults['tool2'];
+            const t3 = newParentOSState.toolResults['tool3'];
+            const t4 = newParentOSState.toolResults['tool4'];
+            const t5 = newParentOSState.toolResults['tool5'];
+
+            if(!t1 && !t2 && !t3 && !t4 && !t5) {
+                container.innerHTML = `
+                    <div style="background:var(--bg-grad-start); padding:20px; border-radius:var(--radius-md); text-align:center;">
+                        <p style="color:var(--text-muted);">Belum ada modul yang diselesaikan. Selesaikan modul apa saja untuk mulai membuat rencana terpadu Anda.</p>
+                        <button class="btn btn-sm mt-4" onclick="switchView('tool1')">Mulai Modul 1</button>
+                    </div>`;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-scale-balanced"></i> DISTRIBUSI BEBAN KERJA</h4>
+                    <p>${t1 ? escapeHTML(t1.summary) : "Belum diaudit."}</p>
+                </div>
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-bed"></i> RENCANA ISTIRAHAT & JAGA MALAM</h4>
+                    <p>${t2 ? escapeHTML(t2.summary) : "Belum dihitung."}</p>
+                </div>
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-wallet"></i> KESEPAKATAN KEUANGAN</h4>
+                    <p>${t3 ? escapeHTML(t3.summary) : "Belum ditetapkan."}</p>
+                </div>
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-heart"></i> KESEPAKATAN KEHARMONISAN</h4>
+                    <p>${t4 ? escapeHTML(t4.summary) : "Belum dicek."}</p>
+                </div>
+                <div class="result-section">
+                    <h4><i class="fa-solid fa-chart-line"></i> FOKUS EVALUASI MINGGUAN</h4>
+                    <p>${t5 ? escapeHTML(t5.summary) : "Belum diselesaikan."}</p>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>

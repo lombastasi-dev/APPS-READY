@@ -1,0 +1,2128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Workload Fairness™ — Sistem Bukti Beban Kerja, Batasan, Eskalasi & Akuntabilitas Tim</title>
+  
+  <!-- Google Fonts & Font Awesome CDN dengan Fallbacks -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* RESET & BASE STYLES */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: linear-gradient(135deg, #F8F9FA 0%, #FFF5F2 100%);
+      color: #212529;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* COLOR PALETTE VARIABLES */
+    :root {
+      --slate-gray: #495057;
+      --slate-hover: #343a40;
+      --energetic-orange: #E76F51;
+      --orange-light: #F4A261;
+      --orange-bg: #FDF0ED;
+      --bg-gradient: linear-gradient(135deg, #F8F9FA 0%, #FFF5F2 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #212529;
+      --text-muted: #6C757D;
+      --border-color: #E9ECEF;
+      --sidebar-width: 260px;
+    }
+
+    /* LAYOUT STRUCTURE */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+    }
+
+    /* SIDEBAR STYLES */
+    .sidebar {
+      width: var(--sidebar-width);
+      background-color: #FFFFFF;
+      border-right: 1px solid var(--border-color);
+      box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header i {
+      font-size: 24px;
+      color: var(--energetic-orange);
+    }
+
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--slate-gray);
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .sidebar-nav {
+      padding: 16px 12px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-category {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin: 14px 12px 6px 12px;
+      letter-spacing: 0.5px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      margin-bottom: 4px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover, .nav-item:focus {
+      background-color: #F8F9FA;
+      color: var(--slate-gray);
+      outline: none;
+    }
+
+    .nav-item.active {
+      background-color: var(--slate-gray);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active i {
+      color: var(--energetic-orange);
+    }
+
+    .nav-item i {
+      width: 18px;
+      text-align: center;
+      font-size: 15px;
+    }
+
+    /* MOBILE HEADER & OVERLAY */
+    .mobile-header {
+      display: none;
+      height: 60px;
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--border-color);
+      padding: 0 20px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 900;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--slate-gray);
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 950;
+      backdrop-filter: blur(2px);
+    }
+
+    /* MAIN CONTENT AREA */
+    .main-wrapper {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: calc(100% - var(--sidebar-width));
+    }
+
+    .content-container {
+      max-width: 880px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 24px;
+      flex: 1;
+    }
+
+    /* CARDS & UI COMPONENTS */
+    .card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--slate-gray);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .card-title i {
+      color: var(--energetic-orange);
+    }
+
+    .card-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: -10px;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    /* FORM STYLES */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate-gray);
+      margin-bottom: 8px;
+    }
+
+    .form-control, select, textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--text-main);
+      background-color: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--energetic-orange);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(231, 111, 81, 0.15);
+    }
+
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .radio-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .radio-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      background: #F8F9FA;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--slate-gray);
+      transition: all 0.2s ease;
+    }
+
+    .radio-label:hover {
+      border-color: var(--energetic-orange);
+    }
+
+    .radio-label input[type="radio"] {
+      accent-color: var(--energetic-orange);
+    }
+
+    /* BUTTONS */
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--energetic-orange);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover, .btn-primary:focus {
+      background-color: #D65A3C;
+      box-shadow: 0 4px 12px rgba(231, 111, 81, 0.25);
+      outline: none;
+    }
+
+    .btn-secondary {
+      background-color: #E9ECEF;
+      color: var(--slate-gray);
+    }
+
+    .btn-secondary:hover, .btn-secondary:focus {
+      background-color: #DEE2E6;
+      outline: none;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border-color);
+      color: var(--slate-gray);
+    }
+
+    .btn-outline:hover, .btn-outline:focus {
+      border-color: var(--slate-gray);
+      background-color: #F8F9FA;
+      outline: none;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    /* OUTPUT & RESULT DISPLAY */
+    .output-section {
+      margin-top: 32px;
+      display: none;
+    }
+
+    .output-section.active {
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .script-box {
+      background: #F8F9FA;
+      border-left: 4px solid var(--energetic-orange);
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      position: relative;
+      margin: 12px 0;
+      font-size: 14px;
+      line-height: 1.6;
+      color: #333;
+      white-space: pre-line;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 12px;
+      cursor: pointer;
+      color: var(--slate-gray);
+      transition: all 0.2s;
+    }
+
+    .copy-btn:hover {
+      background: var(--energetic-orange);
+      color: #FFF;
+      border-color: var(--energetic-orange);
+    }
+
+    /* VISUAL PROGRESS / BARS */
+    .progress-bar-container {
+      background: #E9ECEF;
+      border-radius: 20px;
+      height: 12px;
+      width: 100%;
+      overflow: hidden;
+      margin: 8px 0 16px 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--orange-light), var(--energetic-orange));
+      border-radius: 20px;
+      transition: width 0.5s ease;
+    }
+
+    /* UNIFIED SNAPSHOT & RESULT CARDS */
+    .snapshot-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .snapshot-card {
+      background: #F8F9FA;
+      padding: 12px 16px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .snapshot-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .snapshot-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--slate-gray);
+      margin-top: 2px;
+    }
+
+    .priority-banner {
+      background: var(--orange-bg);
+      border: 1px solid rgba(231, 111, 81, 0.3);
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .priority-banner h4 {
+      color: var(--energetic-orange);
+      font-size: 14px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .priority-banner p {
+      font-size: 13px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    /* HISTORY ACCORDION */
+    .history-accordion {
+      margin-top: 40px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 24px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 0;
+    }
+
+    .history-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--slate-gray);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-content {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .history-content.open {
+      display: block;
+    }
+
+    .history-item {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* DASHBOARD GRID */
+    .hero-banner {
+      text-align: center;
+      padding: 32px 20px;
+      background: #FFFFFF;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      margin-bottom: 32px;
+      border: 1px solid rgba(231, 111, 81, 0.1);
+    }
+
+    .hero-banner h2 {
+      font-size: 26px;
+      color: var(--slate-gray);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero-banner p {
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 650px;
+      margin: 0 auto 16px auto;
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+    }
+
+    .dash-card {
+      background: #FFFFFF;
+      border-radius: 12px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .dash-card:hover, .dash-card:focus {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border-color: var(--energetic-orange);
+      outline: none;
+    }
+
+    .dash-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 10px;
+      background: var(--orange-bg);
+      color: var(--energetic-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .dash-card h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--slate-gray);
+    }
+
+    .dash-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* LOOP VISUALIZATIONS */
+    .loop-box {
+      background: #FFFFFF;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+    }
+
+    .loop-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--slate-gray);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .loop-steps {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+    }
+
+    .loop-step {
+      background: #F8F9FA;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      color: var(--slate-gray);
+      font-weight: 500;
+    }
+
+    .loop-arrow {
+      color: var(--energetic-orange);
+      font-weight: bold;
+    }
+
+    /* FOOTER */
+    .app-footer {
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      background: #FFFFFF;
+      margin-top: auto;
+      line-height: 1.5;
+    }
+
+    /* TOAST NOTIFICATION */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--slate-gray);
+      color: #FFFFFF;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* SAFETY / GUIDANCE NOTICES */
+    .safety-notice {
+      background: #EBF8FF;
+      border-left: 4px solid #3182CE;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      font-size: 12px;
+      color: #2B6CB0;
+      margin-bottom: 16px;
+      line-height: 1.5;
+    }
+
+    /* PRINT STYLES */
+    @media print {
+      .sidebar, .mobile-header, .btn-group, .history-accordion, .app-footer, .copy-btn, .nav-category {
+        display: none !important;
+      }
+      .main-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      .content-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #CCC !important;
+        page-break-inside: avoid;
+      }
+      body {
+        background: #FFF !important;
+        color: #000 !important;
+      }
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .mobile-header {
+        display: flex;
+      }
+      .sidebar-overlay.open {
+        display: block;
+      }
+      .main-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+      .content-container {
+        padding: 20px 16px;
+      }
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+      .loop-steps {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .loop-arrow {
+        transform: rotate(90deg);
+        margin: 2px 0 2px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE HEADER -->
+  <div class="mobile-header">
+    <div style="display:flex; align-items:center; gap:10px;">
+      <i class="fa-solid fa-scale-balanced" style="color:var(--energetic-orange); font-size:20px;"></i>
+      <span style="font-weight:700; color:var(--slate-gray);">Workload Fairness™</span>
+    </div>
+    <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka Navigasi">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-scale-balanced"></i>
+        <h1>Workload Fairness™</h1>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-category">Mesin Utama</div>
+        <a class="nav-item active" data-tool="dashboard" tabindex="0">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dasbor</span>
+        </a>
+        <a class="nav-item" data-tool="tool1" tabindex="0">
+          <i class="fa-solid fa-magnifying-glass-chart"></i>
+          <span>1. Pengumpul Bukti</span>
+        </a>
+        <a class="nav-item" data-tool="tool2" tabindex="0">
+          <i class="fa-solid fa-comments"></i>
+          <span>2. Percakapan Rekan Kerja</span>
+        </a>
+        <a class="nav-item" data-tool="tool3" tabindex="0">
+          <i class="fa-solid fa-user-tie"></i>
+          <span>3. Eskalasi Manajer</span>
+        </a>
+        <a class="nav-item" data-tool="tool4" tabindex="0">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>4. Rencana Perlindungan Diri</span>
+        </a>
+        <a class="nav-item" data-tool="tool5" tabindex="0">
+          <i class="fa-solid fa-diagram-project"></i>
+          <span>5. Perbaikan Tim</span>
+        </a>
+
+        <div class="nav-category">Sintesis & Sistem</div>
+        <a class="nav-item" data-tool="plan" tabindex="0">
+          <i class="fa-solid fa-clipboard-list"></i>
+          <span>Rencana Beban Kerja Saya</span>
+        </a>
+        <a class="nav-item" data-tool="reset" tabindex="0">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Reset 7-Hari</span>
+        </a>
+        <a class="nav-item" data-tool="history" tabindex="0">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Riwayat Saya</span>
+        </a>
+        <a class="nav-item" data-tool="privacy" tabindex="0">
+          <i class="fa-solid fa-lock"></i>
+          <span>Privasi & Keamanan</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="main-wrapper">
+      <main class="content-container">
+
+        <!-- DASHBOARD VIEW -->
+        <section id="dashboard" class="tool-view active">
+          <div class="hero-banner">
+            <h2>Sistem Operasi Workload Fairness™</h2>
+            <p>Buat beban kerja terlihat. Lindungi kapasitas Anda. Perbaiki sistemnya.</p>
+            <p style="font-size: 13px; color: var(--slate-gray); font-style: italic;">"Ketika kepemilikan beban kerja tidak terlihat, orang yang dapat diandalkan sering kali menjadi jaring pengaman tersembunyi."</p>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTool('tool1')" tabindex="0">
+              <div class="dash-card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+              <h3>1. Pengumpul Bukti</h3>
+              <p>Audit pekerjaan yang ditugaskan versus eksekusi aktual dan dokumentasikan dampak operasional secara objektif.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool2')" tabindex="0">
+              <div class="dash-card-icon"><i class="fa-solid fa-comments"></i></div>
+              <h3>2. Percakapan Rekan Kerja</h3>
+              <p>Atasi ketidakseimbangan beban kerja secara langsung dengan rekan kerja tanpa tuduhan yang tidak produktif.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool3')" tabindex="0">
+              <div class="dash-card-icon"><i class="fa-solid fa-user-tie"></i></div>
+              <h3>3. Eskalasi Manajer</h3>
+              <p>Eskalasikan secara bersih menggunakan fakta, dampak kapasitas, konsekuensi bisnis, dan usulan solusi.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool4')" tabindex="0">
+              <div class="dash-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+              <h3>4. Rencana Perlindungan Diri</h3>
+              <p>Hentikan bekerja berlebihan dan menyelamatkan hasil kerja secara diam-diam sambil melindungi reputasi Anda.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('tool5')" tabindex="0">
+              <div class="dash-card-icon"><i class="fa-solid fa-diagram-project"></i></div>
+              <h3>5. Perbaikan Tim</h3>
+              <p>Gantikan kepemilikan yang ambigu dengan papan tugas RACI yang terlihat dan akuntabilitas sistemik.</p>
+            </div>
+            <div class="dash-card" onclick="switchTool('plan')" tabindex="0">
+              <div class="dash-card-icon"><i class="fa-solid fa-clipboard-list"></i></div>
+              <h3>Rencana Keadilan Beban Kerja Saya</h3>
+              <p>Sintesiskan seluruh bukti, skrip, batasan, dan perbaikan sistem ke dalam satu rencana tindakan.</p>
+            </div>
+          </div>
+
+          <!-- THE SILENT RESCUE LOOP VISUALIZATIONS -->
+          <div class="loop-box">
+            <div class="loop-title" style="color: #C53030;">
+              <i class="fa-solid fa-circle-exclamation"></i> Siklus Penyelamatan Diam-Diam (Pola Saat Ini)
+            </div>
+            <div class="loop-steps">
+              <span class="loop-step">Tugas Terlewat</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Orang yang Handal Menyelamatkan</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Tenggat Waktu Tetap Terpenuhi</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Masalah Menjadi Tidak Terlihat</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Kepemilikan Tidak Pernah Berubah</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Orang yang Handal Mendapat Lebih Banyak Kerja</span>
+            </div>
+          </div>
+
+          <div class="loop-box" style="border-color: #2F855A;">
+            <div class="loop-title" style="color: #2F855A;">
+              <i class="fa-solid fa-circle-check"></i> Siklus Beban Kerja Terakuntabilitas (Model Operasional Diperbarui)
+            </div>
+            <div class="loop-steps">
+              <span class="loop-step">Tugas Ditugaskan</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Pemilik Terlihat</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Status & Hambatan Terlihat</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Keputusan Prioritasi</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Serah Terima / Eskalasi</span> <span class="loop-arrow">→</span>
+              <span class="loop-step">Sistem Belajar & Menyesuaikan</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1: EVIDENCE GATHERER -->
+        <section id="tool1" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-magnifying-glass-chart"></i>
+              Alat 1: Pengumpul Bukti
+            </div>
+            <p class="card-subtitle">
+              Penyusunan masalah: "Saya merasa melakukan semuanya, tetapi saya butuh bukti sebelum mengatakan apa pun."
+            </p>
+
+            <form id="form-tool1" onsubmit="event.preventDefault(); runTool1();">
+              <div class="form-group">
+                <label class="form-label" for="t1-tasks">Tugas tim (dipisahkan koma atau baris baru):</label>
+                <textarea id="t1-tasks" required placeholder="misal: Onboarding Klien, Laporan Metrik Mingguan, Triase Bug, Peninjauan Kode"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t1-assigned">Siapa yang ditugaskan / bertanggung jawab atas masing-masing tugas:</label>
+                <textarea id="t1-assigned" required placeholder="misal: Rekan kerja bertanggung jawab atas Laporan Metrik dan Triase Bug; Saya melakukan Onboarding Klien"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t1-actual">Siapa yang sebenarnya mengerjakan masing-masing tugas (eksekusi aktual):</label>
+                <textarea id="t1-actual" required placeholder="misal: Saya akhirnya menyelesaikan 80% Laporan Metrik dan melakukan seluruh Triase Bug"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t1-frequency">Frekuensi hasil kerja yang terlewat:</label>
+                <select id="t1-frequency">
+                  <option value="Mingguan">Mingguan</option>
+                  <option value="Bulanan">Bulanan</option>
+                  <option value="Jarang">Jarang</option>
+                  <option value="Menerus">Terus-menerus</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t1-impact">Dampak pada pekerjaan & jadwal Anda:</label>
+                <textarea id="t1-impact" required placeholder="misal: Lembur 3 hari/minggu, melewatkan tenggat waktu tugas strategis saya sendiri"></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Analisis Bukti</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSample1()"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('form-tool1', 'output-tool1')"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="output-tool1" class="output-section">
+            <div class="card">
+              <div class="card-title"><i class="fa-solid fa-chart-bar"></i> Analisis & Temuan Bukti Beban Kerja</div>
+
+              <div id="t1-snapshot" class="snapshot-grid"></div>
+              <div id="t1-priority" class="priority-banner"></div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">PEMBAGIAN KERJA</h4>
+                <p id="t1-out-split" style="font-size: 13px; color: var(--text-muted);"></p>
+                <div class="progress-bar-container">
+                  <div id="t1-bar" class="progress-bar-fill" style="width: 50%;"></div>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">KALKULATOR DAMPAK</h4>
+                <p id="t1-out-impact" style="font-size: 13px; color: #333; background: #FFF5F2; padding: 12px; border-radius: 8px; border: 1px solid rgba(231,111,81,0.15);"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">DIAGNOSIS POLA</h4>
+                <p id="t1-out-pattern" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">LOG DOKUMENTASI</h4>
+                <p id="t1-out-doc" style="font-size: 13px; color: var(--text-muted);"></p>
+                <div class="script-box" style="font-size: 12px; font-family: monospace;" id="t1-log-template"></div>
+                <button class="btn btn-outline btn-sm" onclick="copyText('t1-log-template')"><i class="fa-regular fa-copy"></i> Salin Templat Log Bukti Beban Kerja</button>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">EVALUASI DIRI (PERILAKU PENYELAMATAN)</h4>
+                <p id="t1-out-self" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div id="t1-next-step" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-color);"></div>
+            </div>
+          </div>
+
+          <!-- History Accordion -->
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool1')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Log Riwayat (Alat 1)</span>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool1"></i>
+            </div>
+            <div class="history-content" id="hist-content-tool1"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: PEER CONVERSATION -->
+        <section id="tool2" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-comments"></i>
+              Alat 2: Percakapan Rekan Kerja
+            </div>
+            <p class="card-subtitle">
+              Penyusunan masalah: "Saya ingin berbicara dengan mereka secara langsung sebelum melapor ke atasan."
+            </p>
+
+            <form id="form-tool2" onsubmit="event.preventDefault(); runTool2();">
+              <div class="form-group">
+                <label class="form-label">Hubungan Anda dengan rekan kerja:</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t2-rel" value="Ramah"> Ramah</label>
+                  <label class="radio-label"><input type="radio" name="t2-rel" value="Netral" checked> Netral</label>
+                  <label class="radio-label"><input type="radio" name="t2-rel" value="Renggang"> Renggang</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t2-want">Apa yang secara spesifik Anda inginkan mereka lakukan?</label>
+                <textarea id="t2-want" required placeholder="misal: Menyelesaikan bagian laporan klien yang ditugaskan kepada mereka pada hari Kamis sebelum jam kerja berakhir"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t2-tried">Apa yang sudah pernah Anda coba?</label>
+                <textarea id="t2-tried" required placeholder="misal: Mengerjakannya sendiri, memberi isyarat dalam rapat, mengirim pengingat halus di Slack"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Kemungkinan reaksi mereka:</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t2-react" value="Defensif" checked> Defensif</label>
+                  <label class="radio-label"><input type="radio" name="t2-react" value="Terbuka"> Terbuka</label>
+                  <label class="radio-label"><input type="radio" name="t2-react" value="Acuh"> Acuh / Mengabaikan</label>
+                  <label class="radio-label"><input type="radio" name="t2-react" value="Eskalasi"> Akan melapor ke atasan</label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Buat Skrip Percakapan</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSample2()"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('form-tool2', 'output-tool2')"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="output-tool2" class="output-section">
+            <div class="card">
+              <div class="card-title"><i class="fa-solid fa-comment-dots"></i> Strategi & Skrip Percakapan</div>
+
+              <div id="t2-snapshot" class="snapshot-grid"></div>
+              <div id="t2-priority" class="priority-banner"></div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray);">SKRIP PEMBUKA</h4>
+                <div class="script-box">
+                  <button class="copy-btn" onclick="copyText('t2-script-text')"><i class="fa-regular fa-copy"></i> Salin Skrip</button>
+                  <span id="t2-script-text"></span>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">HASIL BERSAMA (SHARED OUTCOME)</h4>
+                <p id="t2-out-we" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">PERMINTAAN SPESIFIK</h4>
+                <p id="t2-out-ask" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">PROTOKOL KONFIRMASI (JIKA MEREKA SETUJU)</h4>
+                <p id="t2-out-agree" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">RESPONS SANGGAHAN / MENJAGA BATASAN</h4>
+                <p id="t2-out-deflect" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">JIKA MEREKA MENGESKALASI / MENJADI DEFENSIF</h4>
+                <p id="t2-out-escalate" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div id="t2-next-step" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-color);"></div>
+            </div>
+          </div>
+
+          <!-- History Accordion -->
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool2')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Log Riwayat (Alat 2)</span>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool2"></i>
+            </div>
+            <div class="history-content" id="hist-content-tool2"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: MANAGER CONVERSATION -->
+        <section id="tool3" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-user-tie"></i>
+              Alat 3: Eskalasi Manajer
+            </div>
+            <p class="card-subtitle">
+              Penyusunan masalah: "Percakapan langsung tidak berhasil atau tidak aman. Saya perlu memberi tahu atasan saya."
+            </p>
+
+            <form id="form-tool3" onsubmit="event.preventDefault(); runTool3();">
+              <div class="form-group">
+                <label class="form-label" for="t3-evidence">Bukti terdokumentasi apa yang Anda miliki?</label>
+                <textarea id="t3-evidence" required placeholder="misal: Catatan log selama 3 minggu laporan klien yang terlewat, email yang menunjukkan pengambilalihan tugas"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t3-outcomes">Bagaimana hal ini memengaruhi hasil tim & tujuan bisnis?</label>
+                <textarea id="t3-outcomes" required placeholder="misal: Penundaan hasil kerja ke klien utama, kejenuhan (burnout) tim, risiko kesalahan"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Gaya kepemimpinan atasan Anda:</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t3-style" value="Berorientasi aksi" checked> Berorientasi aksi</label>
+                  <label class="radio-label"><input type="radio" name="t3-style" value="Menghindari konflik"> Menghindari konflik</label>
+                  <label class="radio-label"><input type="radio" name="t3-style" value="Membutuhkan data"> Membutuhkan data</label>
+                  <label class="radio-label"><input type="radio" name="t3-style" value="Melindungi tim"> Melindungi tim</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Apakah anggota tim lain pernah mengangkat masalah ini?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t3-others" value="Ya"> Ya</label>
+                  <label class="radio-label"><input type="radio" name="t3-others" value="Tidak"> Tidak</label>
+                  <label class="radio-label"><input type="radio" name="t3-others" value="Tidak yakin" checked> Tidak yakin</label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-briefcase"></i> Buat Rencana Eskalasi</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSample3()"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('form-tool3', 'output-tool3')"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="output-tool3" class="output-section">
+            <div class="card">
+              <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> Ringkasan & Skrip Eskalasi</div>
+
+              <div id="t3-snapshot" class="snapshot-grid"></div>
+              <div id="t3-priority" class="priority-banner"></div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray);">SKRIP MANAJER (FOKUS DAMPAK BISNIS)</h4>
+                <div class="script-box">
+                  <button class="copy-btn" onclick="copyText('t3-script-text')"><i class="fa-regular fa-copy"></i> Salin Skrip</button>
+                  <span id="t3-script-text"></span>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">PENDEKATAN PENYAJIAN DATA</h4>
+                <p id="t3-out-data" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">PENAWARAN SOLUSI</h4>
+                <p id="t3-out-solution" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">JIKA MANAJER BERTINDAK</h4>
+                <p id="t3-out-acts" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">JIKA MANAJER MENGABAIKAN / RAGU (PERTANYAAN PRIORITAS)</h4>
+                <p id="t3-out-ignores" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">PELINDUNG DOKUMENTASI PROFESIONAL</h4>
+                <p id="t3-out-shield" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div id="t3-next-step" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-color);"></div>
+            </div>
+          </div>
+
+          <!-- History Accordion -->
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool3')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Log Riwayat (Alat 3)</span>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool3"></i>
+            </div>
+            <div class="history-content" id="hist-content-tool3"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 4: SELF-PROTECTION PLAN -->
+        <section id="tool4" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-shield-halved"></i>
+              Alat 4: Rencana Perlindungan Diri
+            </div>
+            <p class="card-subtitle">
+              Penyusunan masalah: "Saya harus berhenti mengambil alih tugas mereka tanpa merusak tim atau reputasi saya."
+            </p>
+
+            <form id="form-tool4" onsubmit="event.preventDefault(); runTool4();">
+              <div class="form-group">
+                <label class="form-label" for="t4-covering">Tugas/hasil kerja apa yang saat ini Anda ambil alih?</label>
+                <textarea id="t4-covering" required placeholder="misal: Pelaporan klien, slide presentasi, persiapan rapat"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t4-happens">Apa yang akan terjadi seketika jika Anda berhenti mengambil alih?</label>
+                <textarea id="t4-happens" required placeholder="misal: Laporan klien terlambat, rapat dimulai tanpa dek presentasi"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Apakah Anda bersedia berhenti menyelamatkan secara otomatis untuk memperlihatkan celah masalah?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t4-fail" value="Ya"> Ya</label>
+                  <label class="radio-label"><input type="radio" name="t4-fail" value="Pilihan" checked> Secara Selektif (Pekerjaan non-kritis)</label>
+                  <label class="radio-label"><input type="radio" name="t4-fail" value="Tidak"> Tidak</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Tujuan utama / prioritas Anda:</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t4-prio" value="Lindungi pekerjaan saya" checked> Lindungi pekerjaan saya</label>
+                  <label class="radio-label"><input type="radio" name="t4-prio" value="Perbaiki tim"> Perbaiki tim</label>
+                  <label class="radio-label"><input type="radio" name="t4-prio" value="Sekadar bertahan"> Sekadar bertahan</label>
+                  <label class="radio-label"><input type="radio" name="t4-prio" value="Cari jalan keluar"> Cari jalan keluar</label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-shield"></i> Buat Rencana Perlindungan</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSample4()"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('form-tool4', 'output-tool4')"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="output-tool4" class="output-section">
+            <div class="card">
+              <div class="card-title"><i class="fa-solid fa-list-check"></i> Strategi Perlindungan & Batasan</div>
+
+              <div id="t4-snapshot" class="snapshot-grid"></div>
+              <div id="t4-priority" class="priority-banner"></div>
+
+              <div class="safety-notice">
+                <i class="fa-solid fa-triangle-exclamation"></i> <strong>Standar Keselamatan Operasional:</strong> Jangan pernah secara sengaja mengabaikan pekerjaan yang krusial bagi keselamatan, kepatuhan hukum, atau berdampak besar pada klien hanya untuk "membuktikan poin." Perlihatkan celah pada pekerjaan rutin, dan eskalasikan risiko berdampak besar ke manajemen terlebih dahulu.
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">RENCANA PENARIKAN DIRI DARI PENGAMBILALIHAN TUGAS</h4>
+                <p id="t4-out-withdraw" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">SERAH TERIMA TRANSPARAN</h4>
+                <p id="t4-out-handoff" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray);">PERNYATAAN BATASAN DIRI (BOUNDARY STATEMENT)</h4>
+                <div class="script-box">
+                  <button class="copy-btn" onclick="copyText('t4-boundary-text')"><i class="fa-regular fa-copy"></i> Salin Pernyataan</button>
+                  <span id="t4-boundary-text"></span>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">TEKNIK DOKUMENTASI</h4>
+                <p id="t4-out-doc" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">USULAN SISTEM TIM</h4>
+                <p id="t4-out-proposal" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div id="t4-next-step" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-color);"></div>
+            </div>
+          </div>
+
+          <!-- History Accordion -->
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool4')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Log Riwayat (Alat 4)</span>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool4"></i>
+            </div>
+            <div class="history-content" id="hist-content-tool4"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 5: THE TEAM FIX -->
+        <section id="tool5" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-diagram-project"></i>
+              Alat 5: Perbaikan Tim
+            </div>
+            <p class="card-subtitle">
+              Penyusunan masalah: "Ini bukan cuma tentang satu orang. Seluruh sistem membiarkan mereka lolos dari tanggung jawab."
+            </p>
+
+            <form id="form-tool5" onsubmit="event.preventDefault(); runTool5();">
+              <div class="form-group">
+                <label class="form-label" for="t5-assigned">Bagaimana pekerjaan saat ini pembagiannya?</label>
+                <select id="t5-assigned">
+                  <option value="Peran jelas">Peran jelas</option>
+                  <option value="Bergantian">Bergantian (Rotasi)</option>
+                  <option value="Sukarela">Sukarela / Siapa cepat dia dapat</option>
+                  <option value="Tidak jelas" selected>Tidak jelas / Ad-hoc</option>
+                  <option value="Ditugaskan atasan">Atasan menugaskan dari atas ke bawah</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t5-tracked">Bagaimana akuntabilitas dipantau?</label>
+                <select id="t5-tracked">
+                  <option value="Dasbor publik">Dasbor publik / Papan tugas</option>
+                  <option value="Pemeriksaan manajer">Pemeriksaan 1-on-1 dengan Manajer</option>
+                  <option value="Laporan mandiri">Status dilaporkan mandiri</option>
+                  <option value="Tidak dipantau" selected>Tidak dipantau / Informal</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="t5-fair">Seperti apa kondisi adil yang ideal menurut Anda?</label>
+                <textarea id="t5-fair" required placeholder="misal: Papan tugas transparan, penanggung jawab tunggal yang jelas per tugas, tenggat waktu yang tegas"></textarea>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Apakah Anda bersedia membantu merancang ulang sistem tersebut?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-redesign" value="Ya"> Ya</label>
+                  <label class="radio-label"><input type="radio" name="t5-redesign" value="Tidak"> Tidak</label>
+                  <label class="radio-label"><input type="radio" name="t5-redesign" value="Hanya jika atasan memimpin" checked> Hanya jika atasan memimpin</label>
+                </div>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-sitemap"></i> Buat Rancangan Ulang Proses</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSample5()"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                <button type="button" class="btn btn-outline" onclick="resetTool('form-tool5', 'output-tool5')"><i class="fa-solid fa-rotate-right"></i> Reset</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="output-tool5" class="output-section">
+            <div class="card">
+              <div class="card-title"><i class="fa-solid fa-gears"></i> Rancangan Ulang Sistem & Cetak Biru Implementasi</div>
+
+              <div id="t5-snapshot" class="snapshot-grid"></div>
+              <div id="t5-priority" class="priority-banner"></div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">USULAN PROSES (RACI & DASBOR)</h4>
+                <p id="t5-out-proposal" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray);">SKRIP USULAN RAPAT TIM</h4>
+                <div class="script-box">
+                  <button class="copy-btn" onclick="copyText('t5-meeting-text')"><i class="fa-regular fa-copy"></i> Salin Usulan</button>
+                  <span id="t5-meeting-text"></span>
+                </div>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">ALAT AKUNTABILITAS</h4>
+                <p id="t5-out-tool" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">STRATEGI PERUBAHAN BUDAYA</h4>
+                <p id="t5-out-culture" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 16px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 4px;">JIKA SISTEM GAGAL (DIAGNOSIS KEPEMIMPINAN)</h4>
+                <p id="t5-out-fail" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div id="t5-next-step" style="margin-top:24px; padding-top:16px; border-top:1px solid var(--border-color);"></div>
+            </div>
+          </div>
+
+          <!-- History Accordion -->
+          <div class="history-accordion">
+            <div class="history-header" onclick="toggleHistory('tool5')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Log Riwayat (Alat 5)</span>
+              <i class="fa-solid fa-chevron-down" id="hist-icon-tool5"></i>
+            </div>
+            <div class="history-content" id="hist-content-tool5"></div>
+          </div>
+        </section>
+
+        <!-- SYNTHESIS: MY WORKLOAD FAIRNESS PLAN -->
+        <section id="plan" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-clipboard-list"></i>
+              Rencana Keadilan Beban Kerja Saya
+            </div>
+            <p class="card-subtitle">
+              Sintesis Gambaran Umum Beban Kerja, Strategi Lengkap, dan Cetak Biru Tindakan yang Dapat Dicetak.
+            </p>
+
+            <div id="plan-empty-notice" style="padding: 20px; text-align: center; color: var(--text-muted);">
+              <i class="fa-solid fa-folder-open" style="font-size: 32px; margin-bottom: 12px; color: var(--border-color);"></i>
+              <p>Anda belum menyelesaikan analisis alat beban kerja apa pun. Selesaikan alat 1 hingga 5 untuk membangun rencana operasional beban kerja lengkap Anda.</p>
+              <button class="btn btn-primary" style="margin-top: 16px;" onclick="switchTool('tool1')">Mulai Alat 1: Pengumpul Bukti</button>
+            </div>
+
+            <div id="plan-content" style="display:none;">
+              <div id="plan-snapshot" class="snapshot-grid"></div>
+
+              <div class="priority-banner">
+                <h4><i class="fa-solid fa-flag"></i> Prioritas Utama Keseluruhan</h4>
+                <p id="plan-master-priority"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">1. RINGKASAN BUKTI</h4>
+                <p id="plan-evidence-summary" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">2. SKRIP PERCAKAPAN REKAN KERJA</h4>
+                <div class="script-box" id="plan-peer-script"></div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">3. RINGKASAN ESKALASI MANAJER</h4>
+                <div class="script-box" id="plan-manager-script"></div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">4. PERNYATAAN PERLINDUNGAN DIRI & BATASAN</h4>
+                <div class="script-box" id="plan-boundary-statement"></div>
+              </div>
+
+              <div style="margin-bottom: 20px;">
+                <h4 style="font-size: 14px; color: var(--slate-gray); margin-bottom: 6px;">5. USULAN PERANCANGAN ULANG SISTEM</h4>
+                <p id="plan-team-proposal" style="font-size: 13px; color: var(--text-muted);"></p>
+              </div>
+
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana Keadilan Beban Kerja</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 7-DAY RESET -->
+        <section id="reset" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-calendar-check"></i>
+              Reset Beban Kerja 7-Hari
+            </div>
+            <p class="card-subtitle">
+              Panduan urutan harian untuk berpindah secara sistematis dari frustrasi terpendam menuju akuntabilitas beban kerja yang transparan.
+            </p>
+
+            <div style="display: flex; flex-direction: column; gap: 16px;">
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid var(--energetic-orange);">
+                <strong>Hari 1: Petakan Beban Kerja</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Jalankan Alat 1 (Pengumpul Bukti) untuk mencatat tanggung jawab yang ditugaskan versus eksekusi aktual secara objektif.</p>
+              </div>
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid var(--orange-light);">
+                <strong>Hari 2: Siapkan Percakapan Langsung</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Jalankan Alat 2 (Percakapan Rekan Kerja) untuk membuat permintaan operasional yang tidak menuduh.</p>
+              </div>
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid var(--slate-gray);">
+                <strong>Hari 3: Siapkan Eskalasi Manajer</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Jalankan Alat 3 (Eskalasi Manajer) untuk menyusun kapasitas, dampak bisnis, dan pilihan solusi.</p>
+              </div>
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid var(--energetic-orange);">
+                <strong>Hari 4: Hentikan Penyelamatan Diam-Diam</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Jalankan Alat 4 (Perlindungan Diri) untuk menetapkan serah terima transparan dan menghentikan pengambilalihan tugas otomatis.</p>
+              </div>
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid var(--orange-light);">
+                <strong>Hari 5: Rancang Ulang Akuntabilitas Tim</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Jalankan Alat 5 (Perbaikan Tim) untuk memperkenalkan kerangka kerja RACI pemilik tunggal dan pelacakan tugas yang terlihat.</p>
+              </div>
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid var(--slate-gray);">
+                <strong>Hari 6: Sintesiskan Gambaran Umum Lengkap</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Tinjau Ringkasan Beban Kerja terpadu Anda dan verifikasi keselarasan di seluruh alat.</p>
+              </div>
+              <div style="background: #F8F9FA; padding: 16px; border-radius: 8px; border-left: 4px solid #2F855A;">
+                <strong>Hari 7: Buat Rencana Action 30-Hari</strong>
+                <p style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">Ekspor atau cetak Rencana Keadilan Beban Kerja lengkap Anda dan jadwalkan evaluasi peninjauan 30 hari.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- HISTORY MANAGER -->
+        <section id="history" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-clock-rotate-left"></i>
+              Analisis & Riwayat Tersimpan Saya
+            </div>
+            <p class="card-subtitle">
+              Kelola catatan tersimpan yang disimpan secara lokal di peramban Anda.
+            </p>
+
+            <div style="display:flex; gap:12px; margin-bottom:20px;">
+              <button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-solid fa-trash-can"></i> Hapus Semua Riwayat</button>
+            </div>
+
+            <div id="unified-history-container"></div>
+          </div>
+        </section>
+
+        <!-- PRIVACY VIEW -->
+        <section id="privacy" class="tool-view" style="display:none;">
+          <div class="card">
+            <div class="card-title">
+              <i class="fa-solid fa-lock"></i>
+              Privasi, Penyimpanan Lokal & Keamanan
+            </div>
+            <p class="card-subtitle">
+              Bagaimana informasi beban kerja Anda dikelola.
+            </p>
+
+            <div style="font-size: 13px; color: var(--text-main); line-height: 1.6;">
+              <p style="margin-bottom: 12px;"><strong>100% Eksekusi Peramban Lokal:</strong> Workload Fairness™ berjalan sepenuhnya di peramban web Anda. Tidak ada data formulir, entri teks, atau skrip yang dihasilkan yang dikirimkan ke server eksternal, basis data cloud, atau penyedia analitik.</p>
+              <p style="margin-bottom: 12px;"><strong>Pemberitahuan Penyimpanan Lokal:</strong> Analisis tersimpan dan status sistem Anda disimpan secara lokal di perangkat Anda melalui <code>localStorage</code> peramban. Menghapus cookie atau cache peramban dapat menghapus data yang tersimpan kecuali telah dicetak atau diekspor.</p>
+              <p style="margin-bottom: 12px;"><strong>Praktik Terbaik Keamanan Data:</strong> Hindari menyertakan nomor identitas pribadi yang sensitif, catatan pelanggan rahasia, atau rahasia perusahaan dalam kolom teks bebas. Tetap fokuskan deskripsi pada peran operasional dan hasil kerja.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- GLOBAL FOOTER -->
+      <footer class="app-footer">
+        Hanya untuk manajemen beban kerja di tempat kerja dan perencanaan komunikasi. Bukan nasihat hukum, HR, ketenagakerjaan, mediasi, atau profesional. Jika situasi Anda melibatkan pelecehan, diskriminasi, balasan negatif, ancaman, masalah gaji, keselamatan, atau masalah tempat kerja serius lainnya, berkonsultasilah dengan pihak internal tempat kerja, hukum, serikat pekerja, regulator, atau dukungan profesional yang tepat.
+      </footer>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast" id="toast">
+    <i class="fa-solid fa-circle-check" style="color:var(--energetic-orange);"></i>
+    <span id="toast-message">Tersalin!</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* UNIFIED CENTRAL STATE MODEL */
+    let workloadFairnessState = {
+      completedTools: [],
+      toolResults: {},
+      currentInputs: {},
+      historyMeta: {},
+      recommendations: [],
+      productMode: "complete",
+      lastUpdated: null
+    };
+
+    /* UTILITY: ESCAPE HTML FOR SECURITY */
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    /* NAVIGATION & UI CONTROLS */
+    const navItems = document.querySelectorAll('.nav-item');
+    const toolViews = document.querySelectorAll('.tool-view');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+    function switchTool(toolId) {
+      navItems.forEach(item => {
+        if (item.getAttribute('data-tool') === toolId) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      toolViews.forEach(view => {
+        if (view.id === toolId) {
+          view.style.display = 'block';
+        } else {
+          view.style.display = 'none';
+        }
+      });
+
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      if (toolId.startsWith('tool')) {
+        renderHistory(toolId);
+      } else if (toolId === 'plan') {
+        renderPlanView();
+      } else if (toolId === 'history') {
+        renderUnifiedHistory();
+      }
+    }
+
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        switchTool(item.getAttribute('data-tool'));
+      });
+      item.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          switchTool(item.getAttribute('data-tool'));
+        }
+      });
+    });
+
+    hamburgerBtn.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+    });
+
+    /* TOAST NOTIFICATION */
+    function showToast(msg = 'Tersalin!') {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-message').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function copyText(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText || el.textContent;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => showToast('Tersalin ke papan klip!'));
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        showToast('Tersalin ke papan klip!');
+      }
+    }
+
+    /* RESET TOOL FUNCTION */
+    function resetTool(formId, outputId) {
+      document.getElementById(formId).reset();
+      const out = document.getElementById(outputId);
+      if (out) out.classList.remove('active');
+      showToast('Formulir direset');
+    }
+
+    /* LOCALSTORAGE HISTORY & STATE MANAGEMENT */
+    function saveState() {
+      try {
+        workloadFairnessState.lastUpdated = new Date().toISOString();
+        localStorage.setItem('workloadfair_v2_state', JSON.stringify(workloadFairnessState));
+      } catch (e) {
+        console.warn('LocalStorage save failed', e);
+      }
+    }
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem('workloadfair_v2_state');
+        if (saved) {
+          workloadFairnessState = JSON.parse(saved);
+        }
+      } catch (e) {
+        console.warn('LocalStorage load failed', e);
+      }
+    }
+
+    function saveToHistory(toolId, summary, data, resultObj) {
+      const key = `workloadfair_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key) || '[]');
+      } catch(e) { history = []; }
+
+      const newItem = {
+        id: Date.now(),
+        tool: toolId,
+        timestamp: new Date().toLocaleString('id-ID'),
+        summary: summary,
+        inputs: data,
+        result: resultObj
+      };
+
+      history.unshift(newItem);
+      if (history.length > 30) history = history.slice(0, 30);
+      try {
+        localStorage.setItem(key, JSON.stringify(history));
+      } catch(e) {}
+
+      // Update central state
+      if (!workloadFairnessState.completedTools.includes(toolId)) {
+        workloadFairnessState.completedTools.push(toolId);
+      }
+      workloadFairnessState.toolResults[toolId] = {
+        summary: summary,
+        data: data,
+        result: resultObj,
+        timestamp: newItem.timestamp
+      };
+      saveState();
+      renderHistory(toolId);
+    }
+
+    function renderHistory(toolId) {
+      const contentDiv = document.getElementById(`hist-content-${toolId}`);
+      if (!contentDiv) return;
+
+      const key = `workloadfair_history_${toolId}`;
+      let history = [];
+      try {
+        history = JSON.parse(localStorage.getItem(key) || '[]');
+      } catch(e) { history = []; }
+
+      if (history.length === 0) {
+        contentDiv.innerHTML = '<p style="font-size:12px; color:var(--text-muted); padding:8px 0;">Belum ada catatan tersimpan.</p>';
+        return;
+      }
+
+      let html = `<div style="display:flex; justify-content:flex-end; margin-bottom:8px;">
+        <button class="btn btn-outline btn-sm" onclick="clearHistory('${toolId}')"><i class="fa-solid fa-trash-can"></i> Hapus Riwayat</button>
+      </div>`;
+
+      history.forEach((item, index) => {
+        html += `
+          <div class="history-item">
+            <div>
+              <strong style="color:var(--slate-gray);">${escapeHTML(item.summary)}</strong>
+              <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${escapeHTML(item.timestamp)}</div>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="deleteHistoryItem('${toolId}', ${index})"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+        `;
+      });
+
+      contentDiv.innerHTML = html;
+    }
+
+    function deleteHistoryItem(toolId, index) {
+      const key = `workloadfair_history_${toolId}`;
+      let history = JSON.parse(localStorage.getItem(key) || '[]');
+      history.splice(index, 1);
+      localStorage.setItem(key, JSON.stringify(history));
+      renderHistory(toolId);
+      showToast('Catatan dihapus');
+    }
+
+    function clearHistory(toolId) {
+      if (confirm("Apakah Anda yakin ingin menghapus riwayat untuk alat ini?")) {
+        const key = `workloadfair_history_${toolId}`;
+        localStorage.removeItem(key);
+        renderHistory(toolId);
+        showToast('Riwayat dibersihkan');
+      }
+    }
+
+    function clearAllHistory() {
+      if (confirm("Apakah Anda yakin ingin menghapus SEMUA riwayat beban kerja tersimpan di seluruh alat?")) {
+        ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(id => {
+          localStorage.removeItem(`workloadfair_history_${id}`);
+        });
+        localStorage.removeItem('workloadfair_v2_state');
+        workloadFairnessState = { completedTools: [], toolResults: {}, currentInputs: {}, historyMeta: {}, recommendations: [], productMode: "complete", lastUpdated: null };
+        renderUnifiedHistory();
+        showToast('Semua riwayat dibersihkan');
+      }
+    }
+
+    function toggleHistory(toolId) {
+      const content = document.getElementById(`hist-content-${toolId}`);
+      const icon = document.getElementById(`hist-icon-${toolId}`);
+      if (content.classList.contains('open')) {
+        content.classList.remove('open');
+        icon.className = 'fa-solid fa-chevron-down';
+      } else {
+        content.classList.add('open');
+        icon.className = 'fa-solid fa-chevron-up';
+      }
+    }
+
+    function renderUnifiedHistory() {
+      const container = document.getElementById('unified-history-container');
+      if (!container) return;
+      let html = '';
+      let totalCount = 0;
+
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+        const key = `workloadfair_history_${toolId}`;
+        let history = [];
+        try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+        totalCount += history.length;
+
+        if (history.length > 0) {
+          html += `<h4 style="font-size:14px; color:var(--slate-gray); margin:16px 0 8px 0; border-bottom:1px solid var(--border-color); padding-bottom:4px;">CATATAN ${toolId.toUpperCase()}</h4>`;
+          history.forEach(item => {
+            html += `
+              <div class="history-item">
+                <div>
+                  <strong style="color:var(--slate-gray);">${escapeHTML(item.summary)}</strong>
+                  <div style="font-size:11px; color:var(--text-muted); margin-top:2px;">${escapeHTML(item.timestamp)}</div>
+                </div>
+              </div>
+            `;
+          });
+        }
+      });
+
+      if (totalCount === 0) {
+        container.innerHTML = '<p style="font-size:13px; color:var(--text-muted); text-align:center; padding:20px;">Tidak ditemukan catatan beban kerja yang tersimpan.</p>';
+      } else {
+        container.innerHTML = html;
+      }
+    }
+
+    /* SAMPLE SCENARIO LOADERS */
+    function loadSample1() {
+      document.getElementById('t1-tasks').value = '1. Onboarding Klien\n2. Dasbor Performa Mingguan\n3. Triase Eskalasi Pelanggan\n4. Peninjauan Kode & QA\n5. Tagihan Vendor\n6. Slide Strategi Bulanan';
+      document.getElementById('t1-assigned').value = 'Rekan kerja ditugaskan untuk: Dasbor Performa Mingguan & Tagihan Vendor. Saya ditugaskan untuk Onboarding Klien & Slide Strategi.';
+      document.getElementById('t1-actual').value = 'Rekan kerja hanya mengerjakan ~20% Dasbor Performa dan mengabaikan Tagihan Vendor. Saya menyelesaikan 80% Dasbor dan seluruh Tagihan Vendor agar sistem tidak terblokir.';
+      document.getElementById('t1-frequency').value = 'Mingguan';
+      document.getElementById('t1-impact').value = 'Terpaksa lembur 2,5 jam setiap hari Kamis. Hasil kerja slide strategi saya sendiri tertunda dua kali bulan ini.';
+      showToast('Skenario contoh dimuat');
+    }
+
+    function loadSample2() {
+      document.querySelectorAll('input[name="t2-rel"]').forEach(r => r.checked = (r.value === 'Netral'));
+      document.getElementById('t2-want').value = 'Menyelesaikan bagian laporan klien yang ditugaskan kepada mereka pada hari Kamis jam 3 sore agar saya dapat menggabungkannya tanpa harus lembur.';
+      document.getElementById('t2-tried').value = 'Mengerjakannya sendiri agar memenuhi tenggat waktu, memberi pengingat halus di Slack, dan memberi komentar tidak langsung dalam rapat tim.';
+      document.querySelectorAll('input[name="t2-react"]').forEach(r => r.checked = (r.value === 'Defensif'));
+      showToast('Skenario contoh dimuat');
+    }
+
+    function loadSample3() {
+      document.getElementById('t3-evidence').value = 'Catatan log terbukti selama 3 minggu berturut-turut menunjukkan 4 kali tenggat waktu laporan terlewat, 8 jam lembur yang terserap, dan email yang menunjukkan permintaan langsung dikirim tanpa ada balasan.';
+      document.getElementById('t3-outcomes').value = 'Penyerahan laporan klien tertunda 24 jam sebanyak dua kali, frustrasi tim tinggi, dan kapasitas saya berkurang 25%.';
+      document.querySelectorAll('input[name="t3-style"]').forEach(r => r.checked = (r.value === 'Berorientasi aksi'));
+      document.querySelectorAll('input[name="t3-others"]').forEach(r => r.checked = (r.value === 'Tidak yakin'));
+      showToast('Skenario contoh dimuat');
+    }
+
+    function loadSample4() {
+      document.getElementById('t4-covering').value = 'Penggabungan laporan klien, tindak lanjut vendor, dan persiapan slide rapat.';
+      document.getElementById('t4-happens').value = 'Laporan klien akan melewati tenggat waktu dan klien akan mengirim email ke manajemen menanyakan pembaruan.';
+      document.querySelectorAll('input[name="t4-fail"]').forEach(r => r.checked = (r.value === 'Pilihan'));
+      document.querySelectorAll('input[name="t4-prio"]').forEach(r => r.checked = (r.value === 'Lindungi pekerjaan saya'));
+      showToast('Skenario contoh dimuat');
+    }
+
+    function loadSample5() {
+      document.getElementById('t5-assigned').value = 'Tidak jelas';
+      document.getElementById('t5-tracked').value = 'Tidak dipantau';
+      document.getElementById('t5-fair').value = 'Papan tugas digital yang terlihat dengan penanggung jawab tunggal untuk setiap hasil kerja dan tenggat waktu mingguan yang pasti.';
+      document.querySelectorAll('input[name="t5-redesign"]').forEach(r => r.checked = (r.value === 'Hanya jika atasan memimpin'));
+      showToast('Skenario contoh dimuat');
+    }
+
+    /* CANONICAL TOOL 1 LOGIC */
+    function runTool1() {
+      const tasks = document.getElementById('t1-tasks').value;
+      const assigned = document.getElementById('t1-assigned').value;
+      const actual = document.getElementById('t1-actual').value;
+      const freq = document.getElementById('t1-frequency').value;
+      const impact = document.getElementById('t1-impact').value;
+
+      let estHours = freq === 'Mingguan' ? '4–6 jam/minggu' : freq === 'Menerus' ? '8+ jam/minggu' : '2–3 jam/bulan';
+      let progressWidth = freq === 'Menerus' ? '85%' : freq === 'Mingguan' ? '65%' : '35%';
+
+      // Unified Snapshot & Priority
+      document.getElementById('t1-snapshot').innerHTML = `
+        <div class="snapshot-card"><div class="snapshot-label">Status Kepemilikan</div><div class="snapshot-value">Celah Kepemilikan Berulang</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Kekuatan Bukti</div><div class="snapshot-value">Sinyal Sedang</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Kapasitas Pribadi</div><div class="snapshot-value">Terganggu / Beban Berlebih</div></div>
+      `;
+
+      document.getElementById('t1-priority').innerHTML = `
+        <h4><i class="fa-solid fa-flag"></i> Satu Prioritas Anda</h4>
+        <p>Dokumentasikan log tugas yang ditugaskan vs eksekusi aktual selama 1–2 minggu sebelum melakukan eskalasi untuk menghindari penyampaian emosional.</p>
+      `;
+
+      document.getElementById('t1-out-split').innerHTML = `<strong>Pembagian Tugas Ditugaskan vs Eksekusi Aktual:</strong> Informasi yang dimasukkan menunjukkan bahwa kepemilikan yang ditugaskan [${escapeHTML(assigned.slice(0, 80))}] berulang kali berbeda dari eksekusi aktual [${escapeHTML(actual.slice(0, 80))}].`;
+      document.getElementById('t1-bar').style.width = progressWidth;
+
+      document.getElementById('t1-out-impact').innerHTML = `<strong>Ilustrasi Beban Kerja Tambahan:</strong> ${estHours} (Perkiraan perencanaan berdasarkan frekuensi yang dipilih).<br><strong>Biaya Langsung Dilaporkan Pengguna:</strong> ${escapeHTML(impact)}`;
+
+      document.getElementById('t1-out-pattern').innerHTML = `<strong>Refleksi Pola:</strong> Potensi celah kepemilikan berulang terdeteksi. Ketika tugas berulang kali diselamatkan dan diselesaikan oleh orang yang sama tanpa pelacakan formal, celah insentif terbentuk di mana hasil kerja yang terlewat tidak membawa visibilitas operasional bagi pemilik yang ditunjuk.`;
+
+      const logTemplate = `TANGGAL: [YYYY-MM-DD]\nHASIL KERJA: [Nama Tugas]\nPEMILIK DITUGASKAN: [Nama Rekan Kerja]\nPELAKSANA AKTUAL: [Nama Anda]\nWAKTU / KAPASITAS TERSERAP: [misal, 2 jam]\nKONSEKUENSI BISNIS: [misal, Slide strategi tertunda, risiko laporan klien]`;
+      document.getElementById('t1-log-template').innerText = logTemplate;
+
+      document.getElementById('t1-out-doc').innerHTML = `Pertahankan catatan dokumentasi yang objektif dan berbasis fakta:`;
+
+      document.getElementById('t1-out-self').innerHTML = `Dengan menyelesaikan hasil kerja secara diam-diam tanpa mencatat hambatan transparan atau memberi tahu pemilik tugas, anggota tim yang handal secara tidak sengaja menjadi jaring pengaman yang tidak terlihat, menyembunyikan kegagalan sistem.`;
+
+      document.getElementById('t1-next-step').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div><strong>Tindakan Selanjutnya yang Disarankan:</strong> Atasi hal ini secara langsung atau siapkan ringkasan eskalasi manajer.</div>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('tool2')">Lanjut ke Percakapan Rekan Kerja <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+
+      document.getElementById('output-tool1').classList.add('active');
+
+      const resultObj = { estHours, impact, pattern: "Potensi celah kepemilikan berulang terdeteksi." };
+      saveToHistory('tool1', `Audit: Hasil kerja terlewat (${freq}) [${estHours}]`, { tasks, freq }, resultObj);
+    }
+
+    /* CANONICAL TOOL 2 LOGIC */
+    function runTool2() {
+      const rel = document.querySelector('input[name="t2-rel"]:checked').value;
+      const want = document.getElementById('t2-want').value;
+      const tried = document.getElementById('t2-tried').value;
+      const react = document.querySelector('input[name="t2-react"]:checked').value;
+
+      let script = `Halo [Nama], saya ingin berdiskusi mengenai alur kerja kita dalam hasil kerja tim.
+
+Akhir-akhir ini, saya mengambil alih untuk menyelesaikan ${want.slice(0, 60)}... demi memastikan kita memenuhi tenggat waktu tim. Namun, hal ini menyita kapasitas yang dibutuhkan untuk hasil kerja utama saya, dan saya tidak dapat terus menyerap bagian tambahan ini.
+
+Bisakah kita menyepakati struktur serah terima yang jelas sehingga Anda dapat sepenuhnya memiliki tugas ini ke depannya?`;
+
+      document.getElementById('t2-snapshot').innerHTML = `
+        <div class="snapshot-card"><div class="snapshot-label">Konteks Hubungan</div><div class="snapshot-value">${escapeHTML(rel)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Antisipasi Reaksi</div><div class="snapshot-value">${escapeHTML(react)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Strategi</div><div class="snapshot-value">Permintaan Operasional Bebas Tuduhan</div></div>
+      `;
+
+      document.getElementById('t2-priority').innerHTML = `
+        <h4><i class="fa-solid fa-flag"></i> Satu Prioritas Anda</h4>
+        <p>Jaga agar diskusi 100% berfokus pada kepemilikan tugas masa depan dan kapasitas ruang kerja pribadi, bukan kesalahan masa lalu.</p>
+      `;
+
+      document.getElementById('t2-script-text').innerText = script;
+      document.getElementById('t2-out-we').innerText = `"Kita berdua ingin hasil kerja tim selesai tepat waktu dan memenuhi standar kualitas tanpa ada yang harus bekerja lembur yang tidak terencana."`;
+      document.getElementById('t2-out-ask').innerText = `Permintaan Spesifik: "${escapeHTML(want)}"`;
+      document.getElementById('t2-out-agree').innerText = `Kirimkan catatan konfirmasi tertulis segera setelahnya: "Terima kasih sudah berdiskusi hari ini! Sekadar mengonfirmasi, Anda akan mengambil kepemilikan penuh atas [tugas] mulai Kamis ini."`;
+      document.getElementById('t2-out-deflect').innerText = `Pertahankan batasan secara profesional: "Saya paham kapasitas Anda terbatas, tetapi saya tidak dapat menyerap hasil kerja ini tanpa mengabaikan prioritas utama saya. Jika kapasitas menjadi kendala, mari minta [Manajer] untuk memperjelas prioritasi."`;
+      document.getElementById('t2-out-escalate').innerText = `Jika mereka bereaksi defensif atau mengeskalasi: Tetap tenang dan hindari berdebat tentang motif. Dokumentasikan pembicaraan tersebut dan siapkan eskalasi beban kerja faktual untuk manajer Anda.`;
+
+      document.getElementById('t2-next-step').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div><strong>Tindakan Selanjutnya yang Disarankan:</strong> Jika percakapan dengan rekan kerja tidak berhasil atau tidak aman, eskalasikan ke manajemen.</div>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('tool3')">Lanjut ke Eskalasi Manajer <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+
+      document.getElementById('output-tool2').classList.add('active');
+
+      const resultObj = { script, want, react };
+      saveToHistory('tool2', `Skrip Rekan Kerja (Hubungan ${rel}, Reaksi ${react})`, { want, react }, resultObj);
+    }
+
+    /* CANONICAL TOOL 3 LOGIC */
+    function runTool3() {
+      const evidence = document.getElementById('t3-evidence').value;
+      const outcomes = document.getElementById('t3-outcomes').value;
+      const style = document.querySelector('input[name="t3-style"]:checked').value;
+      const others = document.querySelector('input[name="t3-others"]:checked').value;
+
+      let script = `Halo [Nama Manajer], saya ingin meminta waktu 15 menit untuk mendiskusikan keselarasan beban kerja, kapasitas, dan kepemilikan tugas.
+
+Selama beberapa minggu terakhir, saya berulang kali menyerap tugas di luar cakupan utama saya (${escapeHTML(evidence.slice(0, 60))}...).
+
+Hal ini memengaruhi hasil bisnis utama karena ${escapeHTML(outcomes.slice(0, 60))}... Saya ingin memastikan fokus utama saya tetap pada tujuan strategis penting, jadi saya memohon arahan Anda tentang bagaimana kita dapat mengatur kepemilikan tugas secara bersih.`;
+
+      document.getElementById('t3-snapshot').innerHTML = `
+        <div class="snapshot-card"><div class="snapshot-label">Gaya Manajer</div><div class="snapshot-value">${escapeHTML(style)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Bukti Disiapkan</div><div class="snapshot-value">Log Terdokumentasi</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Fokus Eskalasi</div><div class="snapshot-value">Dampak Bisnis & Kapasitas</div></div>
+      `;
+
+      document.getElementById('t3-priority').innerHTML = `
+        <h4><i class="fa-solid fa-flag"></i> Satu Prioritas Anda</h4>
+        <p>Sajikan percakapan seputar perlindungan hasil kerja bisnis utama dan kapasitas, bukan keluhan pribadi.</p>
+      `;
+
+      document.getElementById('t3-script-text').innerText = script;
+      document.getElementById('t3-out-data').innerText = `Sajikan bukti secara netral: Sesuaikan penyampaian untuk manajer yang "${escapeHTML(style)}". Fokus pada tanggal, hasil kerja spesifik, jam kapasitas yang terserap, dan risiko operasional.`;
+      document.getElementById('t3-out-solution').innerText = `Bawa dua pilihan solusi: 1) Tugaskan kembali hasil kerja spesifik pada papan tugas, atau 2) Tetapkan kerangka kerja RACI pemilik tunggal yang jelas.`;
+      document.getElementById('t3-out-acts').innerText = `Jika manajer bertindak: Dukung transisi dengan menjaga batasan tugas yang ketat dan memberikan pembaruan kemajuan secara jelas pada cakupan tugas Anda.`;
+      document.getElementById('t3-out-ignores').innerText = `Uji Prioritasi Manajer Utama: "Target utama saya yang mana yang harus saya tunda agar dapat terus mengambil alih tugas sekunder ini?"`;
+      document.getElementById('t3-out-shield').innerText = `Pelindung Dokumentasi Profesional: Pertahankan semua komunikasi 100% bersifat operasional, faktual, dan selaras dengan kebijakan perusahaan.`;
+
+      document.getElementById('t3-next-step').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div><strong>Tindakan Selanjutnya yang Disarankan:</strong> Tetapkan batasan pribadi untuk mencegah penyelamatan otomatis secara diam-diam.</div>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('tool4')">Lanjut ke Rencana Perlindungan Diri <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+
+      document.getElementById('output-tool3').classList.add('active');
+
+      const resultObj = { script, style, outcomes };
+      saveToHistory('tool3', `Ringkasan Manajer (Gaya ${style})`, { evidence, style }, resultObj);
+    }
+
+    /* CANONICAL TOOL 4 LOGIC */
+    function runTool4() {
+      const covering = document.getElementById('t4-covering').value;
+      const happens = document.getElementById('t4-happens').value;
+      const fail = document.querySelector('input[name="t4-fail"]:checked').value;
+      const prio = document.querySelector('input[name="t4-prio"]:checked').value;
+
+      document.getElementById('t4-snapshot').innerHTML = `
+        <div class="snapshot-card"><div class="snapshot-label">Tujuan Utama</div><div class="snapshot-value">${escapeHTML(prio)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Pilihan Visibilitas Celah</div><div class="snapshot-value">${escapeHTML(fail)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Status Batasan Diri</div><div class="snapshot-value">Transisi Aktif</div></div>
+      `;
+
+      document.getElementById('t4-priority').innerHTML = `
+        <h4><i class="fa-solid fa-flag"></i> Satu Prioritas Anda</h4>
+        <p>Hentikan tindakan pengecekan dan penyelamatan tanpa diminta. Biarkan status tugas rutin dan hambatan tetap terlihat pada sistem pelacak resmi tim.</p>
+      `;
+
+      document.getElementById('t4-out-withdraw').innerText = `Hentikan pengambilalihan tugas informal secara bertahap selama 1–2 minggu. Arahkan semua pertanyaan mengenai hasil kerja sekunder langsung kepada pemilik tugas yang ditunjuk.`;
+      document.getElementById('t4-out-handoff').innerText = `Catatan Serah Terima Transparan: "Halo [Nama], saya telah menyelesaikan bagian [Proyek] yang ditugaskan kepada saya. Mengalihkan sisanya kepada Anda untuk [Bagian Mereka] yang jatuh tempo pada [Tanggal]."`;
+
+      let boundary = `Saat ini saya sepenuhnya berkomitmen pada hasil kerja utama saya (${escapeHTML(prio)}). Untuk menjaga standar kualitas, saya tidak dapat membantu hasil kerja sekunder di luar cakupan saya ke depannya.`;
+      document.getElementById('t4-boundary-text').innerText = boundary;
+
+      document.getElementById('t4-out-doc').innerText = `Simpan catatan log berstempel waktu. Jika hasil kerja terhenti setelah Anda berhenti mengambil alih, biarkan hambatan tersebut terlihat di papan tugas tanpa membuat kegaduhan emosional.`;
+      document.getElementById('t4-out-proposal').innerText = `Usulkan pembuatan papan Kanban tim yang transparan (Akan Dikerjakan / Sedang Dikerjakan / Terhalang / Selesai) agar status tugas terlihat secara universal.`;
+
+      document.getElementById('t4-next-step').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div><strong>Tindakan Selanjutnya yang Disarankan:</strong> Usulkan perbaikan akuntabilitas tim secara struktural.</div>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('tool5')">Lanjut ke Perbaikan Tim <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+
+      document.getElementById('output-tool4').classList.add('active');
+
+      const resultObj = { boundary, prio, fail };
+      saveToHistory('tool4', `Rencana Perlindungan (Prioritas: ${prio})`, { covering, prio }, resultObj);
+    }
+
+    /* CANONICAL TOOL 5 LOGIC */
+    function runTool5() {
+      const assigned = document.getElementById('t5-assigned').value;
+      const tracked = document.getElementById('t5-tracked').value;
+      const fair = document.getElementById('t5-fair').value;
+      const redesign = document.querySelector('input[name="t5-redesign"]:checked').value;
+
+      document.getElementById('t5-snapshot').innerHTML = `
+        <div class="snapshot-card"><div class="snapshot-label">Pembagian Saat Ini</div><div class="snapshot-value">${escapeHTML(assigned)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Pelacakan Akuntabilitas</div><div class="snapshot-value">${escapeHTML(tracked)}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Arsitektur Target</div><div class="snapshot-value">RACI & Kanban</div></div>
+      `;
+
+      document.getElementById('t5-priority').innerHTML = `
+        <h4><i class="fa-solid fa-flag"></i> Satu Prioritas Anda</h4>
+        <p>Usulkan transisi pelacakan tugas ke matriks RACI pemilik tunggal dengan papan status Kanban yang terlihat.</p>
+      `;
+
+      document.getElementById('t5-out-proposal').innerText = `Implementasikan Kerangka Kerja RACI pemilik tunggal (Responsible, Accountable, Consulted, Informed) dan pelacakan tugas visual. Pengaturan saat ini (pembagian ${escapeHTML(assigned)} / pelacakan ${escapeHTML(tracked)}) menciptakan titik buta akuntabilitas.`;
+
+      let script = `Tim, seiring bertambahnya volume proyek kita, saya ingin mengusulkan penyederhanaan pelacakan alur kerja kita.
+
+Menggunakan dasbor bersama di mana setiap hasil kerja memiliki tepat satu pemilik yang bertanggung jawab dan kolom status yang eksplisit (Tugas Baru -> Sedang Dikerjakan -> Terhalang -> Selesai) akan memberi semua orang visibilitas yang jelas dan serah terima yang lancar.`;
+
+      document.getElementById('t5-meeting-text').innerText = script;
+      document.getElementById('t5-out-tool').innerText = `Adopsi papan Kanban standar. Setiap tiket WAJIB memiliki tepat SATU pemilik terdaftar yang bertanggung jawab atas pembaruan status.`;
+      document.getElementById('t5-out-culture').innerText = `Ubah budaya tim dari 'penyelamatan diam-diam' menjadi pengungkapan hambatan secara terbuka selama rapat rutin atau evaluasi mingguan.`;
+      document.getElementById('t5-out-fail').innerText = `Diagnosis Kepemimpinan: Jika manajemen berulang kali menolak pelacakan tugas dasar atau akuntabilitas pemilik tunggal, kendala utama terletak pada budaya organisasi, bukan pada rekan kerja secara individu. Fokuslah pada perlindungan batasan kapasitas pribadi Anda.`;
+
+      document.getElementById('t5-next-step').innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div><strong>Tindakan Selanjutnya yang Disarankan:</strong> Lihat Rencana Keadilan Beban Kerja lengkap yang telah disintesis.</div>
+          <button class="btn btn-primary btn-sm" onclick="switchTool('plan')">Lihat Rencana Beban Kerja Utama <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+
+      document.getElementById('output-tool5').classList.add('active');
+
+      const resultObj = { pitch: script, assigned, tracked };
+      saveToHistory('tool5', `Perancangan Ulang Sistem (${assigned} / ${tracked})`, { fair, redesign }, resultObj);
+    }
+
+    /* MASTER SYNTHESIS: MY WORKLOAD PLAN VIEW */
+    function renderPlanView() {
+      const empty = document.getElementById('plan-empty-notice');
+      const content = document.getElementById('plan-content');
+      const res = workloadFairnessState.toolResults;
+
+      if (!workloadFairnessState.completedTools || workloadFairnessState.completedTools.length === 0) {
+        empty.style.display = 'block';
+        content.style.display = 'none';
+        return;
+      }
+
+      empty.style.display = 'none';
+      content.style.display = 'block';
+
+      // Build Master Snapshot
+      document.getElementById('plan-snapshot').innerHTML = `
+        <div class="snapshot-card"><div class="snapshot-label">Modul Selesai</div><div class="snapshot-value">${workloadFairnessState.completedTools.length} / 5 Modul</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Sinyal Beban Kerja</div><div class="snapshot-value">${res.tool1 ? 'Celah Berulang Terdokumentasi' : 'Audit Menunggu'}</div></div>
+        <div class="snapshot-card"><div class="snapshot-label">Status Eskalasi</div><div class="snapshot-value">${res.tool3 ? 'Ringkasan Disiapkan' : 'Percakapan Langsung Dahulu'}</div></div>
+      `;
+
+      document.getElementById('plan-master-priority').innerText = res.tool1 ? 
+        "Lakukan percakapan langsung dengan rekan kerja atau eskalasi manajer menggunakan bukti terdokumentasi sambil menetapkan batasan pengambilalihan tugas pribadi." : 
+        "Selesaikan Alat 1 (Pengumpul Bukti) untuk menetapkan acuan dasar beban kerja yang objektif.";
+
+      document.getElementById('plan-evidence-summary').innerHTML = res.tool1 ? 
+        `<strong>Beban Tambahan:</strong> ${escapeHTML(res.tool1.result.estHours)}.<br><strong>Dampak:</strong> ${escapeHTML(res.tool1.result.impact)}` : 
+        "Belum ada audit bukti yang diselesaikan.";
+
+      document.getElementById('plan-peer-script').innerText = res.tool2 ? res.tool2.result.script : "Belum ada skrip percakapan rekan kerja yang dibuat.";
+      document.getElementById('plan-manager-script').innerText = res.tool3 ? res.tool3.result.script : "Belum ada skrip eskalasi manajer yang dibuat.";
+      document.getElementById('plan-boundary-statement').innerText = res.tool4 ? res.tool4.result.boundary : "Belum ada pernyataan batasan diri yang dibuat.";
+      document.getElementById('plan-team-proposal').innerText = res.tool5 ? res.tool5.result.pitch : "Belum ada usulan sistem tim yang dibuat.";
+    }
+
+    // INITIALIZATION
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderHistory('tool1');
+    });
+  </script>
+</body>
+</html>

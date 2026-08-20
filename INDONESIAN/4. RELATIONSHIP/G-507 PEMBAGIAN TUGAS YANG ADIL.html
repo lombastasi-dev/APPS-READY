@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rumah Adil — Perangkat Beban Rumah Tangga & Beban Mental</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slateBlue: '#457B9D',
+                        slateBlueDark: '#1D3557',
+                        warmOrange: '#F4A261',
+                        warmOrangeHover: '#E76F51',
+                        softBg: '#F8F9FA',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .nav-item.active {
+            background-color: #1D3557;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .nav-item.active i {
+            color: #F4A261;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F8F9FA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="bg-softBg font-sans text-gray-800 antialiased min-h-screen flex flex-col md:flex-row">
+
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-slateBlueDark text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-warmOrange"></i>
+        <span id="toast-message" class="text-sm font-medium">Pesan notifikasi</span>
+    </div>
+
+    <div class="md:hidden bg-slateBlueDark text-white p-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-house-chimney-window text-warmOrange text-xl"></i>
+            <span class="font-bold text-lg tracking-wide">RUMAH ADIL™</span>
+        </div>
+        <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" class="text-white hover:text-warmOrange focus:outline-none p-1">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"></div>
+
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out h-screen md:h-auto overflow-y-auto">
+        <div class="p-6 border-b border-gray-100 flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-slateBlueDark text-warmOrange flex items-center justify-center text-xl shadow-sm">
+                <i class="fa-solid fa-house-chimney-window"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-slateBlueDark text-lg tracking-tight leading-none">RUMAH ADIL™</h1>
+                <p class="text-xs text-gray-500 mt-1 font-medium">Sistem Operasi untuk Pasangan</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Memulai</div>
+            
+            <a href="javascript:void(0)" onclick="switchTab('start-here')" id="nav-start-here" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-shield-halved w-5 text-center text-gray-400"></i>
+                <span>Mulai Di Sini / Keamanan</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-gauge-high w-5 text-center text-gray-400"></i>
+                <span>Dasbor / Ikhtisar</span>
+            </a>
+
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mt-6 mb-2">Perangkat</div>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool1')" id="nav-tool1" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-list-check w-5 text-center text-gray-400"></i>
+                <span>01 — Audit Tugas</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool2')" id="nav-tool2" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-brain w-5 text-center text-gray-400"></i>
+                <span>02 — Pekerjaan Tak Terlihat</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool3')" id="nav-tool3" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-handshake-simple w-5 text-center text-gray-400"></i>
+                <span>03 — Pelimpahan Tugas</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool4')" id="nav-tool4" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-sliders w-5 text-center text-gray-400"></i>
+                <span>04 — Penentu Standar</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool5')" id="nav-tool5" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-chart-line w-5 text-center text-gray-400"></i>
+                <span>05 — Tinjauan Mingguan</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100 bg-gray-50/50 text-xs text-gray-500 space-y-1">
+            <p class="font-semibold text-slateBlueDark">RUMAH ADIL™ v2.0</p>
+            <p>Lihat pekerjaan. Bagikan kepemilikan. Kurangi kekesalan.</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto min-h-screen p-4 sm:p-6 lg:p-10 max-w-6xl mx-auto w-full">
+
+        <section id="start-here" class="space-y-8">
+            <div class="border-b border-gray-200 pb-5">
+                <div class="flex items-center space-x-3 text-slateBlue font-semibold text-sm uppercase tracking-wider">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Orientasi & Dasar</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Mulai Di Sini / Privasi & Keamanan</h1>
+                <p class="text-gray-600 mt-2 text-sm sm:text-base leading-relaxed max-w-3xl">
+                    Konteks penting sebelum memulai perjalanan refleksi rumah tangga Anda. Panduan singkat tentang apa yang dilakukan Rumah Adil, bagaimana informasi Anda ditangani, dan cara menggunakan perangkat ini dengan aman.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-amber-400 border border-gray-100 shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">🔒 Privat secara Desain</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Rumah Adil dirancang agar refleksi rumah tangga dan riwayat tersimpan Anda tetap berada di penyimpanan lokal peramban Anda. Perangkat saat ini tidak memerlukan akun atau mengirim jawaban Anda ke basis data Rumah Adil.
+                    </p>
+                    <p class="text-[11px] text-gray-400 italic">
+                        Catatan: Aset teknis (font & ikon CSS) mungkin dimuat dari pustaka CDN standar secara terpisah dari data Anda.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-slateBlue border border-gray-100 shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">❤️ Alat Refleksi Non-Klinis</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Rumah Adil adalah alat refleksi dan komunikasi rumah tangga mandiri. Ini bukan terapi, diagnosis, intervensi krisis, atau pengganti perawatan medis profesional yang berkualifikasi.
+                    </p>
+                    <p class="text-[11px] text-gray-500 font-medium">
+                        Skor & rasio adalah alat bantu percakapan, bukan evaluasi psikologis.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-red-500 border border-gray-100 shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">⚠️ Pemberitahuan Keamanan</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Jika hubungan Anda melibatkan kekerasan, ancaman, kontrol paksa, kecanduan serius, atau bahaya langsung di mana konfrontasi langsung dapat membahayakan seseorang, jangan gunakan perangkat Rumah Adil sebagai pengganti dukungan keselamatan profesional.
+                    </p>
+                    <p class="text-[11px] text-red-600 font-semibold">
+                        Utamakan keselamatan pribadi terlebih dahulu.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/80 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-slateBlueDark">Apa yang Dapat Dibantu oleh Rumah Adil untuk Anda Lihat</h2>
+                    <p class="text-xs text-gray-500 mt-1">Konflik rumah tangga jarang terjadi karena siapa yang "malas." Ini biasanya tentang pekerjaan tak terlihat dan kepemilikan yang tidak jelas.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">01 — KEJELASAN</span>
+                        <p class="text-xs text-gray-700">Lihat beban kerja rumah tangga yang sebenarnya, bukan mengandalkan ingatan.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">02 — BAHASA</span>
+                        <p class="text-xs text-gray-700">Berikan kata-kata pada perencanaan, antisipasi, dan beban mental.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">03 — KEPEMILIKAN</span>
+                        <p class="text-xs text-gray-700">Beralih dari "membantu" menuju tanggung jawab penuh.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">04 — KESEPAKATAN</span>
+                        <p class="text-xs text-gray-700">Buat definisi bersama tentang apa arti "selesai" sebenarnya.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">05 — TINJAUAN</span>
+                        <p class="text-xs text-gray-700">Periksa mingguan apakah pengaturan baru berjalan dengan baik.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50/60 rounded-xl border border-amber-200/60 text-xs text-amber-800 leading-relaxed flex items-start space-x-3">
+                    <i class="fa-solid fa-scale-balanced text-warmOrange text-base mt-0.5"></i>
+                    <div>
+                        <strong class="font-semibold text-amber-900">Filosofi Keadilan:</strong> Adil tidak selalu berarti 50/50. Rumah tangga yang adil mempertimbangkan jam kerja berbayar, jadwal, tingkat energi, dan kapasitas mental. Rumah Adil membantu Anda memeriksa sistem daripada menghitung poin.
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h2 class="text-lg font-bold text-slateBlueDark">Sistem 5 Langkah</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div onclick="switchTab('tool1')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Langkah 1</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Audit Tugas</h3>
+                        <p class="text-xs text-gray-500">Petakan 16 tugas dasar fisik dan administratif.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool2')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Langkah 2</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Pekerjaan Tak Terlihat</h3>
+                        <p class="text-xs text-gray-500">Identifikasi beban kognitif dan pelacakan emosional.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool3')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Langkah 3</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Pelimpahan Tugas</h3>
+                        <p class="text-xs text-gray-500">Strukturkan pertukaran tugas dan hasilkan naskah.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool4')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Langkah 4</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Penentu Standar</h3>
+                        <p class="text-xs text-gray-500">Sepakati standar Rumah Layak Huni Minimal.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool5')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Langkah 5</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Tinjauan Mingguan</h3>
+                        <p class="text-xs text-gray-500">Lakukan pemeriksaan pulsa mingguan 5 penggeser.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between bg-slateBlueDark text-white p-6 rounded-2xl shadow-md gap-4">
+                <div>
+                    <h3 class="font-bold text-base">Siap membuat sistem terlihat?</h3>
+                    <p class="text-xs text-gray-300 mt-0.5">Mulai dengan Alat 01 atau langsung menuju dasbor ikhtisar.</p>
+                </div>
+                <div class="flex space-x-3 w-full sm:w-auto">
+                    <button onclick="switchTab('dashboard')" class="flex-1 sm:flex-none px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium text-xs transition-colors text-center">
+                        Ke Dasbor
+                    </button>
+                    <button onclick="switchTab('tool1')" class="flex-1 sm:flex-none px-6 py-2.5 bg-warmOrange hover:bg-warmOrangeHover text-slateBlueDark font-bold rounded-xl text-xs transition-colors shadow text-center">
+                        Mulai Audit Tugas <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5">
+                <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark">SISTEM OPERASI RUMAH ADIL™</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">Lihat pekerjaan. Bagikan kepemilikan. Kurangi kekesalan.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4 md:col-span-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-semibold">
+                        <i class="fa-solid fa-lightbulb text-warmOrange"></i>
+                        <span>Prinsip Produk Inti</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slateBlueDark">Buat yang Tak Terlihat Menjadi Terlihat</h2>
+                    <p class="text-sm text-gray-600 leading-relaxed max-w-3xl">
+                        Kekesalan terbangun ketika satu pasangan diam-diam memikul beban mental dan fisik dalam mengelola rumah tangga. Rumah Adil menyediakan kerangka kerja konkret dan tidak menghakimi untuk memberi nama tugas, menegosiasikan pengalihan, menetapkan standar, dan melakukan kalibrasi ulang mingguan.
+                    </p>
+                </div>
+
+                <div onclick="switchTab('tool1')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Alat 01</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Audit Tugas</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Petakan 16 tugas dasar di seluruh Mitra A dan Mitra B. Hitung kesenjangan pembagian tugas dan identifikasi konsentrasi tugas tak terlihat.</p>
+                </div>
+
+                <div onclick="switchTab('tool2')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Alat 02</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Peta Pekerjaan Tak Terlihat</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Ungkap beban kognitif di 6 domain: inventaris, perencanaan sosial, administrasi, kesehatan keluarga, dan suasana emosional.</p>
+                </div>
+
+                <div onclick="switchTab('tool3')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Alat 03</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Pelimpahan Tugas</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Negosiasikan pengalihan kepemilikan yang bersih (Perhatikan + Rencanakan + Laksanakan) dan hasilkan naskah percakapan rendah gesekan.</p>
+                </div>
+
+                <div onclick="switchTab('tool4')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Alat 04</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Penentu Standar</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Rekonsiliasi perbedaan kebersihan. Sepakati garis dasar Rumah Layak Huni Minimal untuk menghentikan pertempuran kesempurnaan.</p>
+                </div>
+
+                <div onclick="switchTab('tool5')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group md:col-span-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Alat 05</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Tinjauan Pulsa Mingguan</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Nilai 5 metrik utama mingguan (Keadilan, Apresiasi, Tindak Lanjut, Energi, Stres). Deteksi penyimpangan sistem sebelum berubah menjadi kekesalan.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tool1" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Alat 01 — Diagnostik</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Audit Tugas</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Petakan 16 tugas dasar fisik dan administratif rumah tangga.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool1')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Muat Contoh Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool1" onsubmit="event.preventDefault(); calculateTool1();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slateBlueDark text-base border-b border-gray-100 pb-3">16 Tanggung Jawab Rumah Tangga</h3>
+                    <div id="tool1-task-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Hitung Kepemilikan Tugas</span>
+                </button>
+            </form>
+
+            <div id="output-tool1" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool2" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Alat 02 — Beban Mental</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Peta Pekerjaan Tak Terlihat</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Tentukan siapa yang memikul beban mental dalam merencanakan, memperhatikan, dan mengantisipasi.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool2')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Muat Contoh Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool2" onsubmit="event.preventDefault(); calculateTool2();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slateBlueDark text-base border-b border-gray-100 pb-3">6 Domain Kognitif</h3>
+                    <div id="tool2-questions-container" class="space-y-6">
+                        </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Hasilkan Peta Beban Mental</span>
+                </button>
+            </form>
+
+            <div id="output-tool2" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool3" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Alat 03 — Rencana Tindakan</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Pelimpahan Tugas</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Tukar kepemilikan penuh (Perhatikan + Rencanakan + Laksanakan) dengan naskah uji coba 14 hari.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool3')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Muat Contoh Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool3" onsubmit="event.preventDefault(); calculateTool3();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Jam Kerja Berbayar Mitra A / Minggu</label>
+                            <input type="number" id="t3-hours-a" value="40" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Jam Kerja Berbayar Mitra B / Minggu</label>
+                            <input type="number" id="t3-hours-b" value="40" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Tugas yang Ingin Dilepaskan Mitra A</label>
+                            <select id="t3-give-a" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Tugas yang Bersedia Diambil Mitra B</label>
+                            <select id="t3-take-b" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-handshake-simple"></i>
+                    <span>Hasilkan Kesepakatan Pelimpahan & Naskah</span>
+                </button>
+            </form>
+
+            <div id="output-tool3" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool4" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Alat 04 — Penyelarasan</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Penentu Standar</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Rekonsiliasi ekspektasi rumah tangga dan tetapkan garis dasar "Rumah Layak Huni Minimal".</p>
+                </div>
+                <button onclick="loadSampleScenario('tool4')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Muat Contoh Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool4" onsubmit="event.preventDefault(); calculateTool4();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Standar Dapur</label>
+                            <select id="t4-kitchen" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                                <option value="Bersihkan sambil memasak">Bersihkan sambil memasak (Meja berkilau)</option>
+                                <option value="Bersihkan sebelum tidur">Bersihkan sebelum tidur (Piring dibersihkan harian)</option>
+                                <option value="Bersihkan saat penuh">Bersihkan saat wastafel penuh</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Irama Cuci Baju</label>
+                            <select id="t4-laundry" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                                <option value="Lipat & simpan hari itu juga">Lipat & simpan hari itu juga</option>
+                                <option value="Cuci di hari tertentu, lipat nanti">Cuci di hari tertentu, lipat nanti</option>
+                                <option value="Cuci saat pakaian habis">Cuci saat pakaian habis</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Area Bersama</label>
+                            <select id="t4-common" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                                <option value="Rapi & bebas kekacauan harian">Rapi & bebas kekacauan harian</option>
+                                <option value="Bersihkan akhir pekan">Bersihkan akhir pekan</option>
+                                <option value="Berpenghuni / Kekacauan fungsional ok">Berpenghuni / Kekacauan fungsional ok</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-gray-100">
+                        <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Titik Gesekan Terbesar / Hal yang Mengganggu</label>
+                        <input type="text" id="t4-peeve" placeholder="Contoh: Meninggalkan pakaian bersih di keranjang selama seminggu, atau cangkir kopi kotor di meja" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Tetapkan Garis Dasar Standar Rumah Tangga</span>
+                </button>
+            </form>
+
+            <div id="output-tool4" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool5" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Alat 05 — Kalibrasi Ulang</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Tinjauan Pulsa Mingguan</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Pemeriksaan 5 penggeser untuk memantau kesehatan sistem dan mendeteksi penyimpangan sejak dini.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool5')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Muat Contoh Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool5" onsubmit="event.preventDefault(); calculateTool5();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slateBlueDark text-base border-b border-gray-100 pb-3">Pulsa Sistem Mingguan (Skala 1 hingga 10)</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>1. Persepsi Keadilan</span>
+                            <span id="v-s1" class="text-slateBlue font-bold text-sm">7 / 10</span>
+                        </div>
+                        <input type="range" id="s1" min="1" max="10" value="7" oninput="document.getElementById('v-s1').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>2. Apresiasi yang Dirasakan</span>
+                            <span id="v-s2" class="text-slateBlue font-bold text-sm">5 / 10</span>
+                        </div>
+                        <input type="range" id="s2" min="1" max="10" value="5" oninput="document.getElementById('v-s2').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>3. Tindak Lanjut Pelimpahan</span>
+                            <span id="v-s3" class="text-slateBlue font-bold text-sm">8 / 10</span>
+                        </div>
+                        <input type="range" id="s3" min="1" max="10" value="8" oninput="document.getElementById('v-s3').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>4. Istirahat & Energi Pribadi</span>
+                            <span id="v-s4" class="text-slateBlue font-bold text-sm">6 / 10</span>
+                        </div>
+                        <input type="range" id="s4" min="1" max="10" value="6" oninput="document.getElementById('v-s4').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>5. Manajemen Stres Rumah Tangga</span>
+                            <span id="v-s5" class="text-slateBlue font-bold text-sm">6 / 10</span>
+                        </div>
+                        <input type="range" id="s5" min="1" max="10" value="6" oninput="document.getElementById('v-s5').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Hitung Skor Pulsa Mingguan</span>
+                </button>
+            </form>
+
+            <div id="output-tool5" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+        // DATA CONSTANTS
+        const TOOL1_TASKS = [
+            "Memasak & Persiapan Makanan",
+            "Belanja Bahan Makanan",
+            "Perencanaan Menu Makanan",
+            "Pembersihan Rumah Harian",
+            "Pembersihan Mendalam & Kamar Mandi",
+            "Mencuci & Melipat Pakaian",
+            "Mencuci Piring & Merapikan Dapur",
+            "Membayar Tagihan & Anggaran Keuangan",
+            "Penjadwalan Janji Temu",
+            "Perawatan & Perbaikan Rumah",
+            "Perawatan Kendaraan & Bahan Bakar",
+            "Perawatan Hewan Peliharaan & Kunjungan Dokter Hewan",
+            "Transportasi Anak & Logistik",
+            "Pekerjaan Rumah Sekolah & Formulir",
+            "Kalender Sosial & Hadiah",
+            "Pemeriksaan Emosional Keluarga"
+        ];
+
+        const INVISIBLE_TASK_KEYS = [
+            "Perencanaan Menu Makanan",
+            "Membayar Tagihan & Anggaran Keuangan",
+            "Penjadwalan Janji Temu",
+            "Kalender Sosial & Hadiah",
+            "Pemeriksaan Emosional Keluarga"
+        ];
+
+        const TOOL2_QUESTIONS = [
+            { id: "inv1", title: "Kalender Sosial & Keluarga", desc: "Mengingat ulang tahun, membeli hadiah, mengonfirmasi RSVP, menjadwalkan kunjungan keluarga." },
+            { id: "inv2", title: "Inventaris Rumah & Perlengkapan", desc: "Menyadari saat tisu toilet, deterjen, atau kebutuhan pokok mulai habis sebelum kehabisan." },
+            { id: "inv3", title: "Antisipasi Menu & Jadwal", desc: "Memutuskan menu makan malam, memperhitungkan malam sibuk dan preferensi diet." },
+            { id: "inv4", title: "Administrasi & Kesehatan", desc: "Menjadwalkan pemeriksaan gigi, melacak resep obat, mengatur file pajak/asuransi." },
+            { id: "inv5", title: "Iklim Emosional", desc: "Menyadari tingkat stres, merencanakan waktu pemulihan, menjaga keharmonisan keluarga." },
+            { id: "inv6", title: "Penelitian Vendor & Perbaikan", desc: "Mencari kontraktor, membandingkan penawaran, mengoordinasikan waktu kedatangan layanan." }
+        ];
+
+        // UTILITY FUNCTIONS
+        function showToast(message, iconClass = "fa-circle-check") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMessage.innerText = message;
+            toastIcon.className = `fa-solid ${iconClass} text-warmOrange`;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+
+            if (isHidden) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function switchTab(tabId) {
+            // Sembunyikan semua bagian tab
+            const sections = ['start-here', 'dashboard', 'tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Nonaktifkan semua item navigasi
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // Tampilkan bagian yang dipilih
+            const targetSection = document.getElementById(tabId);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            // Aktifkan item navigasi
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) activeNav.classList.add('active');
+
+            // Tutup sidebar seluler jika terbuka
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                toggleMobileSidebar();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function saveHistory(toolKey, data) {
+            try {
+                const storageKey = `fairhome_history_${toolKey}`;
+                let history = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                history.unshift({ timestamp: new Date().toISOString(), ...data });
+                if (history.length > 30) history = history.slice(0, 30);
+                localStorage.setItem(storageKey, JSON.stringify(history));
+            } catch (e) {
+                console.error("Kesalahan penyimpanan LocalStorage:", e);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Naskah disalin ke papan klip!", "fa-copy");
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            showToast("Naskah disalin ke papan klip!", "fa-copy");
+        }
+
+        // INITIALIZE DYNAMIC FORMS
+        function initForms() {
+            // Alat 1 Tugas
+            const t1Container = document.getElementById('tool1-task-container');
+            if (t1Container) {
+                t1Container.innerHTML = TOOL1_TASKS.map((task, idx) => `
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100 flex flex-col justify-between space-y-2">
+                        <span class="text-xs font-semibold text-gray-800">${task}</span>
+                        <select id="t1-select-${idx}" class="w-full text-xs p-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-slateBlue focus:outline-none bg-white">
+                            <option value="Mitra A">Mitra A</option>
+                            <option value="Mitra B">Mitra B</option>
+                            <option value="Bersama" selected>Bersama</option>
+                            <option value="Tidak Ada">Tidak Ada / Terlantar</option>
+                            <option value="Diluar">Diluar / Outsourcing</option>
+                        </select>
+                    </div>
+                `).join('');
+            }
+
+            // Alat 2 Pertanyaan
+            const t2Container = document.getElementById('tool2-questions-container');
+            if (t2Container) {
+                t2Container.innerHTML = TOOL2_QUESTIONS.map((q) => `
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-2">
+                        <div>
+                            <h4 class="text-sm font-bold text-slateBlueDark">${q.title}</h4>
+                            <p class="text-xs text-gray-500">${q.desc}</p>
+                        </div>
+                        <div class="pt-1">
+                            <select id="${q.id}" class="w-full text-xs p-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-slateBlue focus:outline-none bg-white">
+                                <option value="Mitra A">Mitra A Utamanya</option>
+                                <option value="Mitra B">Mitra B Utamanya</option>
+                                <option value="Bersama" selected>Bersama Sama Rata</option>
+                                <option value="Tidak Ada">Tidak Ada / Sering Gesekan</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Alat 3 Pemilih Tugas
+            const giveSelect = document.getElementById('t3-give-a');
+            const takeSelect = document.getElementById('t3-take-b');
+            if (giveSelect && takeSelect) {
+                const optionsHTML = TOOL1_TASKS.map(task => `<option value="${task}">${task}</option>`).join('');
+                giveSelect.innerHTML = optionsHTML;
+                takeSelect.innerHTML = optionsHTML;
+                if (TOOL1_TASKS.length > 1) takeSelect.selectedIndex = 1;
+            }
+        }
+
+        // SAMPLE SCENARIOS
+        function loadSampleScenario(toolKey) {
+            if (toolKey === 'tool1') {
+                // Pembagian berat ke Mitra A (12 A, 2 B, 2 Bersama)
+                TOOL1_TASKS.forEach((_, idx) => {
+                    const sel = document.getElementById(`t1-select-${idx}`);
+                    if (sel) {
+                        if (idx < 12) sel.value = 'Mitra A';
+                        else if (idx < 14) sel.value = 'Mitra B';
+                        else sel.value = 'Bersama';
+                    }
+                });
+                showToast("Contoh Alat 1 dimuat: Pembagian Sangat Timpang", "fa-wand-magic-sparkles");
+                calculateTool1();
+            } else if (toolKey === 'tool2') {
+                // Mitra A memikul semua 6 domain beban mental
+                TOOL2_QUESTIONS.forEach((q) => {
+                    const sel = document.getElementById(q.id);
+                    if (sel) sel.value = 'Mitra A';
+                });
+                showToast("Contoh Alat 2 dimuat: Beban Mental Mitra A", "fa-wand-magic-sparkles");
+                calculateTool2();
+            } else if (toolKey === 'tool3') {
+                document.getElementById('t3-hours-a').value = 40;
+                document.getElementById('t3-hours-b').value = 55;
+                document.getElementById('t3-give-a').value = "Perencanaan Menu Makanan";
+                document.getElementById('t3-take-b').value = "Belanja Bahan Makanan";
+                showToast("Contoh Alat 3 dimuat: Jam Kerja & Pertukaran", "fa-wand-magic-sparkles");
+                calculateTool3();
+            } else if (toolKey === 'tool4') {
+                document.getElementById('t4-kitchen').value = "Bersihkan sambil memasak";
+                document.getElementById('t4-laundry').value = "Cuci saat pakaian habis";
+                document.getElementById('t4-common').value = "Rapi & bebas kekacauan harian";
+                document.getElementById('t4-peeve').value = "Meninggalkan pakaian bersih tidak dilipat di keranjang berhari-hari";
+                showToast("Contoh Alat 4 dimuat: Ketidakcocokan Standar", "fa-wand-magic-sparkles");
+                calculateTool4();
+            } else if (toolKey === 'tool5') {
+                document.getElementById('s1').value = 7;
+                document.getElementById('s2').value = 3;
+                document.getElementById('s3').value = 8;
+                document.getElementById('s4').value = 4;
+                document.getElementById('s5').value = 5;
+
+                document.getElementById('v-s1').innerText = "7 / 10";
+                document.getElementById('v-s2').innerText = "3 / 10";
+                document.getElementById('v-s3').innerText = "8 / 10";
+                document.getElementById('v-s4').innerText = "4 / 10";
+                document.getElementById('v-s5').innerText = "5 / 10";
+
+                showToast("Contoh Alat 5 dimuat: Pulsa Apresiasi Rendah", "fa-wand-magic-sparkles");
+                calculateTool5();
+            }
+        }
+
+        // TOOL 1 LOGIC: CHORE AUDIT
+        function calculateTool1() {
+            let countA = 0, countB = 0, countBoth = 0, countNobody = 0, countOutsourced = 0;
+            let invisibleA = 0, invisibleB = 0;
+
+            TOOL1_TASKS.forEach((task, idx) => {
+                const val = document.getElementById(`t1-select-${idx}`).value;
+                const isInvisible = INVISIBLE_TASK_KEYS.includes(task);
+
+                if (val === 'Mitra A') {
+                    countA++;
+                    if (isInvisible) invisibleA++;
+                } else if (val === 'Mitra B') {
+                    countB++;
+                    if (isInvisible) invisibleB++;
+                } else if (val === 'Bersama') {
+                    countBoth++;
+                } else if (val === 'Tidak Ada') {
+                    countNobody++;
+                } else if (val === 'Diluar') {
+                    countOutsourced++;
+                }
+            });
+
+            const pctA = Math.round((countA / 16) * 100);
+            const pctB = Math.round((countB / 16) * 100);
+            const pctShared = Math.round(((countBoth + countNobody + countOutsourced) / 16) * 100);
+            const gap = Math.abs(countA - countB);
+
+            let statusBadge = "";
+            let statusDesc = "";
+            if (gap <= 2) {
+                statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">PEMBAGIAN SEIMBANG</span>`;
+                statusDesc = "Kepemilikan rumah tangga didistribusikan secara merata di antara pasangan.";
+            } else if (gap <= 5) {
+                statusBadge = `<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">KECENDERUNGAN SEDANG</span>`;
+                statusDesc = "Salah satu pasangan memikul porsi yang terlihat lebih tinggi dari pekerjaan fisik dan administratif.";
+            } else {
+                statusBadge = `<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">KETIMPANGAN TINGGI</span>`;
+                statusDesc = "Ketidakseimbangan signifikan terdeteksi. Pemilik utama berisiko kelelahan.";
+            }
+
+            const outputEl = document.getElementById('output-tool1');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <h3 class="text-xl font-bold text-slateBlueDark">Diagnosis Audit Tugas</h3>
+                        <p class="text-xs text-gray-500">Rasio Pembagian Tugas & Ketimpangan Sistem</p>
+                    </div>
+                    <div>${statusBadge}</div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Mitra A Utama</span>
+                        <div class="text-2xl font-bold text-slateBlueDark">${countA} <span class="text-xs font-normal text-gray-500">(${pctA}%)</span></div>
+                        <p class="text-[11px] text-gray-500">${invisibleA} tugas tak terlihat dimiliki</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Mitra B Utama</span>
+                        <div class="text-2xl font-bold text-slateBlueDark">${countB} <span class="text-xs font-normal text-gray-500">(${pctB}%)</span></div>
+                        <p class="text-[11px] text-gray-500">${invisibleB} tugas tak terlihat dimiliki</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Bersama / Lainnya</span>
+                        <div class="text-2xl font-bold text-slateBlueDark">${countBoth + countNobody + countOutsourced} <span class="text-xs font-normal text-gray-500">(${pctShared}%)</span></div>
+                        <p class="text-[11px] text-gray-500">${countNobody} terlantar, ${countOutsourced} diluar/outsourcing</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Mitra A (${pctA}%)</span>
+                        <span>Bersama (${pctShared}%)</span>
+                        <span>Mitra B (${pctB}%)</span>
+                    </div>
+                    <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden flex">
+                        <div class="bg-slateBlue h-full" style="width: ${pctA}%"></div>
+                        <div class="bg-warmOrange h-full" style="width: ${pctShared}%"></div>
+                        <div class="bg-slateBlueDark h-full" style="width: ${pctB}%"></div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 space-y-2 text-xs text-gray-700 leading-relaxed">
+                    <h4 class="font-bold text-slateBlue uppercase tracking-wider text-[11px]">Interpretasi Sistem</h4>
+                    <p>${statusDesc}</p>
+                    <p><strong>Konteks Keadilan:</strong> Ingat bahwa pembagian 50/50 tidak wajib untuk rumah tangga yang sehat jika jam kerja berbayar atau kapasitas fisik berbeda. Namun, jika satu pasangan memegang volume tugas fisik tinggi bersamaan dengan pekerjaan tak terlihat tinggi, kekesalan kemungkinan besar terjadi.</p>
+                </div>
+            `;
+
+            saveHistory('tool1', {
+                summary: `Pembagian: A=${countA}, B=${countB}, Bersama=${countBoth+countNobody+countOutsourced} — Kesenjangan: ${gap}`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 2 LOGIC: INVISIBLE WORK
+        function calculateTool2() {
+            let loadA = 0, loadB = 0, loadBoth = 0, loadNobody = 0;
+            const results = [];
+
+            TOOL2_QUESTIONS.forEach((q) => {
+                const val = document.getElementById(q.id).value;
+                results.push({ domain: q.title, owner: val });
+                if (val === 'Mitra A') loadA++;
+                else if (val === 'Mitra B') loadB++;
+                else if (val === 'Bersama') loadBoth++;
+                else if (val === 'Tidak Ada') loadNobody++;
+            });
+
+            let primaryCarrier = "Beban Seimbang";
+            if (loadA >= 4) primaryCarrier = "Mitra A (Tekanan Kognitif Tinggi)";
+            else if (loadB >= 4) primaryCarrier = "Mitra B (Tekanan Kognitif Tinggi)";
+
+            const outputEl = document.getElementById('output-tool2');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4">
+                    <h3 class="text-xl font-bold text-slateBlueDark">Peta Pekerjaan Tak Terlihat</h3>
+                    <p class="text-xs text-gray-500">Profil Beban Kognitif & Kepemilikan Mental</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Pengemban Beban Mental Utama</span>
+                        <div class="text-lg font-bold text-slateBlueDark">${primaryCarrier}</div>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Domain Kognitif Bersama</span>
+                        <div class="text-lg font-bold text-slateBlueDark">${loadBoth} dari 6 Domain Dibagi</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-slateBlueDark uppercase tracking-wider">Rincian Kepemilikan Domain</h4>
+                    <div class="space-y-1.5">
+                        ${results.map(r => `
+                            <div class="p-3 bg-gray-50 rounded-xl flex justify-between items-center text-xs">
+                                <span class="font-medium text-gray-800">${r.domain}</span>
+                                <span class="font-bold ${r.owner === 'Mitra A' ? 'text-slateBlue' : r.owner === 'Mitra B' ? 'text-slateBlueDark' : 'text-warmOrange'}">${r.owner}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200/60 text-xs text-gray-700 leading-relaxed space-y-2">
+                    <h4 class="font-bold text-amber-900 uppercase tracking-wider text-[11px]">Rekomendasi Sistem</h4>
+                    <p>Beban mental menyebabkan kelelahan karena tidak pernah "mati." Untuk meringankan pengemban utama, alihkan kepemilikan domain penuh menggunakan <strong>Alat 03: Pelimpahan Tugas</strong> daripada sekadar meminta bantuan berkala.</p>
+                </div>
+            `;
+
+            saveHistory('tool2', {
+                summary: `Beban Mental: A=${loadA}, B=${loadB}, Bersama=${loadBoth}`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 3 LOGIC: THE HANDOFF
+        function calculateTool3() {
+            const hoursA = parseInt(document.getElementById('t3-hours-a').value) || 0;
+            const hoursB = parseInt(document.getElementById('t3-hours-b').value) || 0;
+            const giveA = document.getElementById('t3-give-a').value;
+            const takeB = document.getElementById('t3-take-b').value;
+
+            const scriptText = `Hai! Aku sedang merenungkan bagaimana kita mengelola sistem rumah tangga kita. Saat ini, kamu bekerja ${hoursB} jam/minggu dan aku bekerja ${hoursA} jam/minggu. Aku ingin mencoba eksperimen 14 hari di mana aku menyerahkan kepemilikan penuh (Perhatikan + Rencanakan + Laksanakan) dari "${giveA}", sambil mengambil alih atau menyelaraskan "${takeB}". Mari kita uji coba selama dua minggu dan lakukan pemeriksaan singkat 10 menit setelahnya. Bagaimana menurutmu?`;
+
+            const outputEl = document.getElementById('output-tool3');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4">
+                    <h3 class="text-xl font-bold text-slateBlueDark">Kesepakatan Pelimpahan Tugas</h3>
+                    <p class="text-xs text-gray-500">Protokol Transfer Kepemilikan Penuh (Uji Coba 14 Hari)</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 space-y-1">
+                        <span class="text-xs font-semibold text-slateBlue uppercase">Mitra A Menyerahkan</span>
+                        <div class="text-base font-bold text-slateBlueDark">${giveA}</div>
+                    </div>
+                    <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-100 space-y-1">
+                        <span class="text-xs font-semibold text-amber-800 uppercase">Mitra B Mengambil Alih</span>
+                        <div class="text-base font-bold text-slateBlueDark">${takeB}</div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-softBg rounded-xl border border-gray-200 text-xs text-gray-700 space-y-2">
+                    <h4 class="font-bold text-slateBlueDark uppercase tracking-wider text-[11px]">Definisi Kepemilikan Penuh</h4>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="p-2 bg-white rounded-lg border border-gray-100"><strong class="block text-slateBlue">1. PERHATIKAN</strong> Menyadari saat diperlukan</div>
+                        <div class="p-2 bg-white rounded-lg border border-gray-100"><strong class="block text-slateBlue">2. RENCANAKAN</strong> Waktu & persiapan</div>
+                        <div class="p-2 bg-white rounded-lg border border-gray-100"><strong class="block text-slateBlue">3. LAKSANAKAN</strong> Melakukannya sepenuhnya</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-bold text-slateBlueDark uppercase tracking-wider">Naskah Percakapan Rendah Gesekan</h4>
+                        <button onclick="copyToClipboard(\`${scriptText.replace(/'/g, "\\'")}\`)" class="px-3 py-1 bg-warmOrange hover:bg-warmOrangeHover text-slateBlueDark font-bold rounded-lg text-xs transition-colors shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Salin Naskah</span>
+                        </button>
+                    </div>
+                    <div class="p-4 bg-slateBlueDark text-gray-100 rounded-xl text-xs leading-relaxed font-mono">
+                        "${scriptText}"
+                    </div>
+                </div>
+            `;
+
+            saveHistory('tool3', {
+                summary: `Pelimpahan: Menyerahkan "${giveA}" untuk "${takeB}"`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 4 LOGIC: STANDARD SETTER
+        function calculateTool4() {
+            const kitchen = document.getElementById('t4-kitchen').value;
+            const laundry = document.getElementById('t4-laundry').value;
+            const common = document.getElementById('t4-common').value;
+            const peeve = document.getElementById('t4-peeve').value || "Tidak ditentukan";
+
+            const outputEl = document.getElementById('output-tool4');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4">
+                    <h3 class="text-xl font-bold text-slateBlueDark">Piagam Rumah Layak Huni Minimal (MVH)</h3>
+                    <p class="text-xs text-gray-500">Garis Dasar Standar Rumah Tangga yang Disepakati</p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-3.5 bg-softBg rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-700">Target Dapur:</span>
+                        <span class="font-semibold text-slateBlue">${kitchen}</span>
+                    </div>
+                    <div class="p-3.5 bg-softBg rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-700">Irama Cuci Baju:</span>
+                        <span class="font-semibold text-slateBlue">${laundry}</span>
+                    </div>
+                    <div class="p-3.5 bg-softBg rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-700">Area Bersama:</span>
+                        <span class="font-semibold text-slateBlue">${common}</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200/60 space-y-1 text-xs">
+                    <h4 class="font-bold text-amber-900 uppercase tracking-wider text-[11px]">Titik Gesekan Utama yang Dibahas</h4>
+                    <p class="text-gray-800 font-medium">"${peeve}"</p>
+                    <p class="text-[11px] text-gray-500 mt-1">Aturan: Pasangan dengan standar lebih tinggi dapat memilih untuk mengambil alih kepemilikan penuh atas tugas spesifik tersebut, atau menegosiasikan kompromi pada garis dasar MVH.</p>
+                </div>
+            `;
+
+            saveHistory('tool4', {
+                summary: `Standar: Dapur=${kitchen}, Cuci Baju=${laundry}`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 5 LOGIC: WEEKLY REVIEW
+        function calculateTool5() {
+            const s1 = parseInt(document.getElementById('s1').value);
+            const s2 = parseInt(document.getElementById('s2').value);
+            const s3 = parseInt(document.getElementById('s3').value);
+            const s4 = parseInt(document.getElementById('s4').value);
+            const s5 = parseInt(document.getElementById('s5').value);
+
+            const avgScore = ((s1 + s2 + s3 + s4 + s5) / 5).toFixed(1);
+
+            let pulseBadge = "";
+            let actionText = "";
+            let adjustmentText = "";
+
+            if (avgScore >= 7.5) {
+                pulseBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">PULSA OPTIMAL (${avgScore}/10)</span>`;
+                actionText = "Sistem rumah tangga Anda seimbang. Ekspresikan rasa terima kasih atas upaya kecil spesifik minggu ini.";
+                adjustmentText = "Pertahankan rutinitas saat ini. Tidak perlu pertukaran tugas besar.";
+            } else if (avgScore >= 5.0) {
+                pulseBadge = `<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">PENYIMPANGAN SEDANG (${avgScore}/10)</span>`;
+                actionText = "Gesekan mulai terbangun. Jadwalkan pemeriksaan 10 menit untuk membahas apresiasi yang dirasakan.";
+                adjustmentText = "Identifikasi 1 tugas kecil untuk dilimpahkan atau turunkan standar sementara.";
+            } else {
+                pulseBadge = `<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">TEKANAN SISTEM (${avgScore}/10)</span>`;
+                actionText = "Stres tinggi atau ketidakadilan yang dirasakan terdeteksi. Hindari bahasa menyalahkan dan tinjau bersama Alat 01 Audit Tugas.";
+                adjustmentText = "Lakukan pengaturan ulang segera: hentikan tugas non-esensial dan tetapkan garis dasar Rumah Layak Huni Minimal.";
+            }
+
+            const outputEl = document.getElementById('output-tool5');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <h3 class="text-xl font-bold text-slateBlueDark">Pulsa Rumah Tangga Mingguan</h3>
+                        <p class="text-xs text-gray-500">Evaluasi Sistem 5 Metrik</p>
+                    </div>
+                    <div>${pulseBadge}</div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Keadilan</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s1}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Apresiasi</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s2}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Pelimpahan</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s3}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Energi</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s4}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100 col-span-2 sm:col-span-1">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Stres</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s5}/10</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-3.5 bg-amber-50/50 rounded-xl border border-amber-100 space-y-2">
+                        <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wider">SATU TINDAKAN APRESIASI</h4>
+                        <p class="text-xs text-gray-700 leading-relaxed">${actionText}</p>
+                    </div>
+                    <div class="p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 space-y-2">
+                        <h4 class="text-xs font-bold text-slateBlue uppercase tracking-wider">SATU PENYESUAIAN</h4>
+                        <p class="text-xs text-gray-700 leading-relaxed">${adjustmentText}</p>
+                    </div>
+                </div>
+
+                <div class="p-3.5 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 leading-relaxed flex items-center space-x-3">
+                    <i class="fa-solid fa-rotate-left text-slateBlue text-lg"></i>
+                    <div>
+                        <strong class="text-gray-800">PENGATURAN ULANG:</strong> Sistem rumah tangga bersifat dinamis. Sangat normal untuk melakukan kalibrasi ulang setiap minggu seiring perubahan tuntutan pekerjaan, kesehatan, dan kebutuhan keluarga.
+                    </div>
+                </div>
+            `;
+
+            saveHistory('tool5', {
+                summary: `Skor Pulsa Mingguan: ${avgScore}/10 — Apresiasi: ${s2}/10, Keadilan: ${s1}/10`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Initialize on DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            initForms();
+        });
+    </script>
+</body>
+</html>

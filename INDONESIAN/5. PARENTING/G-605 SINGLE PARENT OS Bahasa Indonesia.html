@@ -1,0 +1,1395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SingleParentOS — Pusat Komando Orang Tua Tunggal™</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --navy: #1D3557;
+            --coral: #E76F51;
+            --soft-teal: #457B9D;
+            --bg-start: #F1FAEE;
+            --bg-end: #FFF5F2;
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --sidebar-width: 260px;
+            --success: #2A9D8F;
+            --warning: #E9C46A;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        #app-container { display: flex; width: 100%; min-height: 100vh; }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0; bottom: 0; left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i { color: var(--coral); font-size: 1.5rem; }
+        .sidebar-header h1 { font-size: 1.1rem; color: var(--navy); font-weight: 700; letter-spacing: -0.5px; }
+
+        .nav-links { list-style: none; padding: 16px 12px; flex-grow: 1; overflow-y: auto; }
+        .nav-item { margin-bottom: 4px; }
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 14px;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .nav-link:hover { background-color: #F8F9FA; color: var(--navy); }
+        .nav-link.active { background-color: var(--navy); color: #FFFFFF; }
+        .nav-link i { width: 20px; text-align: center; font-size: 1rem; }
+        .nav-link.active i { color: var(--coral); }
+
+        /* Main Content */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .content-body { max-width: 900px; width: 100%; margin: 0 auto; padding: 32px 24px 60px; flex-grow: 1; }
+
+        .mobile-header {
+            display: none;
+            background-color: var(--card-bg);
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-title { display: flex; align-items: center; gap: 10px; font-weight: 700; color: var(--navy); }
+        .hamburger-btn { background: none; border: none; font-size: 1.25rem; color: var(--navy); cursor: pointer; padding: 4px; }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 950;
+        }
+
+        /* Card & UI Elements */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+        }
+
+        .hero-banner {
+            text-align: center;
+            padding: 32px 20px;
+            margin-bottom: 28px;
+            background: linear-gradient(135deg, var(--navy) 0%, #2A4365 100%);
+            color: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(29, 53, 87, 0.15);
+        }
+
+        .hero-banner h2 { font-size: 1.8rem; font-weight: 700; margin-bottom: 8px; }
+        .hero-banner p { font-size: 1.05rem; color: #E2E8F0; font-weight: 300; }
+
+        .tool-header { margin-bottom: 24px; }
+        .tool-header h2 { font-size: 1.5rem; color: var(--navy); margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+        .tool-header p.problem-statement { color: var(--coral); font-style: italic; font-weight: 500; font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-weight: 600; font-size: 0.9rem; color: var(--navy); margin-bottom: 6px; }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #FAFAFA;
+            transition: border-color 0.2s ease;
+        }
+        .form-control:focus { outline: none; border-color: var(--soft-teal); background-color: #FFFFFF; }
+        textarea.form-control { resize: vertical; min-height: 80px; }
+
+        .checkbox-group, .radio-group { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; }
+        .checkbox-label, .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 400;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background-color: #F8F9FA;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-row { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-primary { background-color: var(--coral); color: white; }
+        .btn-primary:hover { background-color: #D65A3C; }
+        .btn-secondary { background-color: #E9ECEF; color: var(--navy); }
+        .btn-secondary:hover { background-color: #DEE2E6; }
+        .btn-copy { background-color: var(--navy); color: white; padding: 6px 12px; font-size: 0.8rem; border-radius: 6px; }
+        .btn-copy:hover { background-color: var(--soft-teal); }
+
+        /* Dashboard Grid */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
+        .tool-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .tool-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0,0,0,0.08); border-color: var(--soft-teal); }
+        .tool-card-icon {
+            width: 44px; height: 44px; border-radius: 10px; background-color: #FFF5F2; color: var(--coral);
+            display: flex; align-items: center; justify-content: center; font-size: 1.25rem; margin-bottom: 16px;
+        }
+        .tool-card h3 { font-size: 1.1rem; color: var(--navy); margin-bottom: 6px; }
+        .tool-card p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; flex-grow: 1; }
+
+        /* Results Display */
+        .results-section { margin-top: 32px; display: none; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .result-box {
+            background-color: #F8F9FA;
+            border-left: 4px solid var(--soft-teal);
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 16px;
+        }
+        .result-box.alert { border-left-color: var(--coral); background-color: #FFF5F2; }
+        .result-box.win { border-left-color: var(--success); background-color: #E8F5E9; }
+        .result-box h4 { font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; color: var(--navy); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        .script-box { background-color: #FFFFFF; border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap; margin-top: 6px; color: #1A202C; }
+
+        .schedule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 8px; margin-bottom: 16px; }
+        .day-column { background: #F8F9FA; border: 1px solid var(--border-color); border-radius: 8px; padding: 8px; font-size: 0.8rem; }
+        .day-column h5 { text-align: center; color: var(--navy); margin-bottom: 6px; font-weight: 700; }
+        .heat-high { background-color: #FFCDD2; border-color: #EF9A9A; }
+        .heat-med { background-color: #FFF9C4; border-color: #FFF59D; }
+        .heat-low { background-color: #C8E6C9; border-color: #A5D6A7; }
+
+        /* History & Plan */
+        .history-section { margin-top: 40px; border-top: 1px solid var(--border-color); padding-top: 24px; }
+        .history-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+        .history-header h3 { font-size: 1rem; color: var(--navy); }
+        .history-list { margin-top: 12px; display: none; }
+        .history-item { background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 8px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; }
+
+        .app-footer { text-align: center; padding: 20px; font-size: 0.8rem; color: var(--text-muted); border-top: 1px solid var(--border-color); background-color: var(--card-bg); margin-top: auto; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background-color: var(--navy); color: white; padding: 10px 18px; border-radius: 8px; font-size: 0.85rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 2000; animation: fadeIn 0.2s ease; }
+
+        .view-content { display: none; }
+        .view-content.active { display: block; }
+
+        /* Print Media Styles */
+        @media print {
+            .sidebar, .mobile-header, .btn-row, .history-section, .app-footer, .tool-card-icon, #toast { display: none !important; }
+            .main-content { margin-left: 0 !important; width: 100% !important; }
+            .content-body { max-width: 100% !important; padding: 0 !important; }
+            .card { box-shadow: none !important; border: 1px solid #ccc !important; }
+            .result-box { border-left-width: 2px !important; }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar-overlay.open { display: block; }
+            .main-content { margin-left: 0; width: 100%; }
+            .mobile-header { display: flex; }
+            .schedule-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- Navigasi Sidebar -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-compass"></i>
+                <h1>SingleParentOS™</h1>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <a class="nav-link active" data-view="dashboard">
+                        <i class="fa-solid fa-gauge"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="money-map">
+                        <i class="fa-solid fa-wallet"></i>
+                        <span>Peta Keuangan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="schedule-solver">
+                        <i class="fa-solid fa-calendar-week"></i>
+                        <span>Solusi Jadwal</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="coparent-boundary">
+                        <i class="fa-solid fa-comments"></i>
+                        <span>Batas Ko-Parenting</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="guilt-check">
+                        <i class="fa-solid fa-heart-shield"></i>
+                        <span>Evaluasi Rasa Bersalah</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="solo-planner">
+                        <i class="fa-solid fa-battery-charging"></i>
+                        <span>Perencana Waktu Mandiri</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="reset-sequence">
+                        <i class="fa-solid fa-arrow-right-rotate"></i>
+                        <span>Reset 7 Hari</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="household-plan">
+                        <i class="fa-solid fa-clipboard-list"></i>
+                        <span>Rencana Rumah Tangga Saya</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" data-view="privacy">
+                        <i class="fa-solid fa-user-lock"></i>
+                        <span>Privasi & Data</span>
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Area Konten Utama -->
+        <main class="main-content">
+            <div class="mobile-header">
+                <div class="mobile-title">
+                    <i class="fa-solid fa-compass" style="color: var(--coral);"></i>
+                    <span>SingleParentOS™</span>
+                </div>
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka Menu">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+            </div>
+
+            <div class="content-body">
+                
+                <!-- TAMPILAN 0: DASHBOARD -->
+                <div id="view-dashboard" class="view-content active">
+                    <div class="hero-banner">
+                        <h2>Pusat Komando Orang Tua Tunggal™</h2>
+                        <p>Kelola rumah tangga Anda secara mandiri layaknya sebuah tim profesional.</p>
+                    </div>
+
+                    <div class="card" id="dashboard-snapshot-card">
+                        <h3 style="color: var(--navy); margin-bottom: 12px;">Ringkasan Kondisi Rumah Tangga</h3>
+                        <div id="dashboard-qualitative-status" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px;">
+                            <!-- Diisi secara dinamis -->
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="color: var(--navy); margin-bottom: 12px;">Apa tantangan terberat Anda saat ini?</h3>
+                        <div class="btn-row" style="margin-top: 8px;">
+                            <button class="btn btn-secondary" onclick="switchView('money-map')"><i class="fa-solid fa-wallet"></i> Uang cepat habis</button>
+                            <button class="btn btn-secondary" onclick="switchView('schedule-solver')"><i class="fa-solid fa-calendar-week"></i> Jadwal terlalu padat</button>
+                            <button class="btn btn-secondary" onclick="switchView('coparent-boundary')"><i class="fa-solid fa-comments"></i> Hambatan komunikasi</button>
+                            <button class="btn btn-secondary" onclick="switchView('guilt-check')"><i class="fa-solid fa-heart-shield"></i> Merasa kurang maksimal</button>
+                            <button class="btn btn-secondary" onclick="switchView('solo-planner')"><i class="fa-solid fa-battery-charging"></i> Tidak ada waktu istirahat</button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="tool-card" onclick="switchView('money-map')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-wallet"></i></div>
+                            <h3>Peta Keuangan</h3>
+                            <p>Kelola keuangan tunggal, analisis arus kas, dan atasi kebocoran anggaran.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('schedule-solver')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                            <h3>Solusi Jadwal</h3>
+                            <p>Selesaikan tuntutan 40 jam dengan realitas 24 jam dan petakan cakupan mingguan.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('coparent-boundary')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-comments"></i></div>
+                            <h3>Batas Ko-Parenting</h3>
+                            <p>Buat draf naskah yang tenang, tegas, dan profesional untuk menangani gesekan logistik.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('guilt-check')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-heart-shield"></i></div>
+                            <h3>Evaluasi Rasa Bersalah</h3>
+                            <p>Ubah rasa bersalah menjadi empati diri yang realistis dan standar yang jelas.</p>
+                        </div>
+                        <div class="tool-card" onclick="switchView('solo-planner')">
+                            <div class="tool-card-icon"><i class="fa-solid fa-battery-charging"></i></div>
+                            <h3>Perencana Waktu Mandiri</h3>
+                            <p>Sediakan slot pemulihan diri tanpa biaya atau hemat biaya untuk mencegah kelelahan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 1: PETA KEUANGAN -->
+                <div id="view-money-map" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-wallet" style="color: var(--coral);"></i> Peta Keuangan</h2>
+                        <p class="problem-statement">"Satu penghasilan. Terlalu banyak pengeluaran. Bingung ke mana alirannya."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-money-map">
+                            <div class="form-group">
+                                <label for="mm-income">Pendapatan bulanan (setelah pajak):</label>
+                                <input type="number" id="mm-income" class="form-control" placeholder="contoh: 5000000" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="mm-support">Dukungan anak / tunjangan yang diterima (opsional):</label>
+                                <input type="number" id="mm-support" class="form-control" placeholder="contoh: 1000000" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="mm-fixed">Pengeluaran tetap (sewa, asuransi, biaya sekolah/pengasuhan):</label>
+                                <input type="number" id="mm-fixed" class="form-control" placeholder="contoh: 3000000" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="mm-variable">Pengeluaran variabel (makanan, bensin, kegiatan, ekstra):</label>
+                                <input type="number" id="mm-variable" class="form-control" placeholder="contoh: 1500000" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="mm-debt">Pembayaran utang/cicilan:</label>
+                                <input type="number" id="mm-debt" class="form-control" placeholder="contoh: 500000" required min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="mm-savings">Target tabungan bulan ini (opsional):</label>
+                                <input type="number" id="mm-savings" class="form-control" placeholder="contoh: 200000" min="0">
+                            </div>
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Hitung Peta Keuangan</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleMoneyMap()">Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('money-map')">Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-money-map" class="results-section"></div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('money-map')">
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Peta Keuangan Tersimpan</h3>
+                            <i class="fa-solid fa-chevron-down" id="history-arrow-money-map"></i>
+                        </div>
+                        <div class="history-list" id="history-list-money-map"></div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 2: SOLUSI JADWAL MINGGUAN -->
+                <div id="view-schedule-solver" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-calendar-week" style="color: var(--coral);"></i> Solusi Jadwal Mingguan</h2>
+                        <p class="problem-statement">"Saya punya tanggung jawab 40 jam tetapi hanya ada 24 jam dalam sehari."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-schedule-solver">
+                            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Petakan minggu tipikal Anda untuk mengidentifikasi titik krisis dan celah pengasuhan.</p>
+                            
+                            <div id="schedule-days-container"></div>
+
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Analisis Jadwal</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleSchedule()">Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('schedule-solver')">Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-schedule-solver" class="results-section"></div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('schedule-solver')">
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Jadwal Tersimpan</h3>
+                            <i class="fa-solid fa-chevron-down" id="history-arrow-schedule-solver"></i>
+                        </div>
+                        <div class="history-list" id="history-list-schedule-solver"></div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 3: BATAS KO-PARENTING -->
+                <div id="view-coparent-boundary" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-comments" style="color: var(--coral);"></i> Batas Ko-Parenting</h2>
+                        <p class="problem-statement">"Komunikasi dengan mantan pasangan sering memicu konflik."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-coparent-boundary">
+                            <div class="form-group">
+                                <label for="cp-issue">Apa kendalanya?</label>
+                                <textarea id="cp-issue" class="form-control" placeholder="contoh: Mantan konsisten mengantar anak terlambat 45 menit tanpa memberi kabar." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="cp-need">Apa yang Anda butuhkan dari mereka?</label>
+                                <textarea id="cp-need" class="form-control" placeholder="contoh: Pengantaran tepat waktu atau pemberitahuan 30 menit sebelumnya." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="cp-style">Gaya komunikasi saat ini:</label>
+                                <select id="cp-style" class="form-control" required>
+                                    <option value="Hostile">Musuh / Keras</option>
+                                    <option value="Cold" selected>Dingin</option>
+                                    <option value="Civil">Formal / Sopan</option>
+                                    <option value="Friendly">Ramah</option>
+                                    <option value="Inconsistent">Tidak Konsisten</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Apakah ini mendesak?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="cp-urgent" value="Yes"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="cp-urgent" value="No" checked> Tidak</label>
+                                    <label class="radio-label"><input type="radio" name="cp-urgent" value="Can wait"> Bisa Menunggu</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="cp-fear">Apa kekhawatiran Anda jika diam saja?</label>
+                                <textarea id="cp-fear" class="form-control" placeholder="contoh: Ini menjadi kebiasaan baru dan jadwal malam saya terus terganggu." required></textarea>
+                            </div>
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-paper-plane"></i> Buat Draf Pesan Batas</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleCoparent()">Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('coparent-boundary')">Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-coparent-boundary" class="results-section"></div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('coparent-boundary')">
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Naskah Tersimpan</h3>
+                            <i class="fa-solid fa-chevron-down" id="history-arrow-coparent-boundary"></i>
+                        </div>
+                        <div class="history-list" id="history-list-coparent-boundary"></div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 4: EVALUASI RASA BERSAHAH -->
+                <div id="view-guilt-check" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-heart-shield" style="color: var(--coral);"></i> Evaluasi Rasa Bersalah</h2>
+                        <p class="problem-statement">"Saya merasa kurang maksimal dalam segala hal."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-guilt-check">
+                            <div class="form-group">
+                                <label for="gc-feeling">Apa yang membuat Anda merasa bersalah saat ini?</label>
+                                <textarea id="gc-feeling" class="form-control" placeholder="contoh: Saya lembur dua kali minggu ini dan membeli makanan siap saji lagi untuk makan malam." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Hal ini berkaitan dengan siapa/apa?</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="gc-target" value="Child" checked> Anak</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="gc-target" value="Work"> Pekerjaan</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="gc-target" value="Your Needs"> Kebutuhan Pribadi</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="gc-target" value="Your Ex"> Mantan Pasangan</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="gc-advice">Nasihat apa yang akan Anda berikan kepada sesama orang tua tunggal dalam situasi ini?</label>
+                                <textarea id="gc-advice" class="form-control" placeholder="contoh: Kamu sudah bekerja keras untuk mencukupi kebutuhan. Sekali-kali membeli makanan siap saji tidak akan merusak masa depan anakmu." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="gc-done-well">Hal baik apa yang berhasil Anda lakukan hari ini? (opsional)</label>
+                                <textarea id="gc-done-well" class="form-control" placeholder="contoh: Memastikan anak-anak menggosok gigi dan memberikan pelukan hangat sebelum tidur."></textarea>
+                            </div>
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-arrows-rotate"></i> Ubah Sudut Pandang</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleGuilt()">Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('guilt-check')">Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-guilt-check" class="results-section"></div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('guilt-check')">
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Evaluasi Tersimpan</h3>
+                            <i class="fa-solid fa-chevron-down" id="history-arrow-guilt-check"></i>
+                        </div>
+                        <div class="history-list" id="history-list-guilt-check"></div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 5: PERENCANA WAKTU MANDIRI -->
+                <div id="view-solo-planner" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-battery-charging" style="color: var(--coral);"></i> Perencana Waktu Mandiri</h2>
+                        <p class="problem-statement">"Saya belum memiliki waktu untuk diri sendiri selama berminggu-minggu dan merasa sangat lelah."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-solo-planner">
+                            <div class="form-group">
+                                <label for="st-hours">Berapa jam waktu mandiri yang Anda dapatkan minggu lalu?</label>
+                                <input type="number" id="st-hours" class="form-control" placeholder="contoh: 0" min="0" required step="0.5">
+                            </div>
+                            <div class="form-group">
+                                <label>Kegiatan apa yang menyegarkan pikiran Anda?</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="st-recharge" value="Ketenangan" checked> Ketenangan</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="st-recharge" value="Olahraga"> Olahraga</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="st-recharge" value="Sosialisasi"> Sosialisasi</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="st-recharge" value="Kreativitas"> Kreativitas</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="st-recharge" value="Alam"> Alam</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="st-recharge" value="Tidur"> Tidur</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="st-childcare">Opsi bantuan pengasuhan yang tersedia:</label>
+                                <textarea id="st-childcare" class="form-control" placeholder="contoh: Kakek/Nenek pada hari Sabtu, jam sekolah, atau jadwal bersama mantan pasangan" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="st-budget">Anggaran untuk perawatan diri:</label>
+                                <select id="st-budget" class="form-control" required>
+                                    <option value="Rp 0">Rp 0</option>
+                                    <option value="Di bawah Rp 100.000" selected>Di bawah Rp 100.000</option>
+                                    <option value="Di bawah Rp 300.000">Di bawah Rp 300.000</option>
+                                    <option value="Sesuai kebutuhan">Sesuai kebutuhan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="st-obstacle">Hambatan terbesar untuk mendapatkan waktu mandiri:</label>
+                                <select id="st-obstacle" class="form-control" required>
+                                    <option value="Tidak ada bantuan pengasuhan">Tidak ada bantuan pengasuhan</option>
+                                    <option value="Rasa bersalah" selected>Rasa bersalah</option>
+                                    <option value="Biaya">Biaya</option>
+                                    <option value="Tenaga / Energi">Tenaga / Energi</option>
+                                    <option value="Bingung harus melakukan apa">Bingung harus melakukan apa</option>
+                                </select>
+                            </div>
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calendar-plus"></i> Buat Rencana Waktu Mandiri</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleSolo()">Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('solo-planner')">Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-solo-planner" class="results-section"></div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('solo-planner')">
+                            <h3><i class="fa-solid fa-clock-rotate-left"></i> Rencana Tersimpan</h3>
+                            <i class="fa-solid fa-chevron-down" id="history-arrow-solo-planner"></i>
+                        </div>
+                        <div class="history-list" id="history-list-solo-planner"></div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 6: URUTAN RESET 7 HARI -->
+                <div id="view-reset-sequence" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-arrow-right-rotate" style="color: var(--coral);"></i> Reset Rumah Tangga 7 Hari</h2>
+                        <p class="problem-statement">Langkah-langkah terstruktur untuk menstabilkan rumah tangga orang tua tunggal Anda.</p>
+                    </div>
+                    <div class="card">
+                        <p style="margin-bottom: 16px; font-size: 0.95rem;">Ikuti panduan ini secara bertahap setiap hari untuk mengatasi titik krisis tanpa merasa kewalahan.</p>
+                        <div style="display: flex; flex-direction: column; gap: 12px;">
+                            <div class="result-box" style="margin-bottom: 0;">
+                                <h4>HARI 1: PETA KEUANGAN</h4>
+                                <p>Petakan arus kas satu pendapatan Anda dan temukan kebocoran anggaran.</p>
+                                <button class="btn btn-secondary" style="margin-top: 8px;" onclick="switchView('money-map')">Buka Peta Keuangan</button>
+                            </div>
+                            <div class="result-box" style="margin-bottom: 0;">
+                                <h4>HARI 2: SOLUSI JADWAL</h4>
+                                <p>Petakan cakupan mingguan, komitmen kerja, dan titik krisis pengasuhan.</p>
+                                <button class="btn btn-secondary" style="margin-top: 8px;" onclick="switchView('schedule-solver')">Buka Solusi Jadwal</button>
+                            </div>
+                            <div class="result-box" style="margin-bottom: 0;">
+                                <h4>HARI 3: BATAS KO-PARENTING</h4>
+                                <p>Tetapkan batasan yang tenang, tegas, dan profesional terkait logistik utama.</p>
+                                <button class="btn btn-secondary" style="margin-top: 8px;" onclick="switchView('coparent-boundary')">Buka Batas Ko-Parenting</button>
+                            </div>
+                            <div class="result-box" style="margin-bottom: 0;">
+                                <h4>HARI 4: EVALUASI RASA BERSAHAH</h4>
+                                <p>Lepaskan standar perfeksionisme dan tetapkan ekspektasi yang realistis.</p>
+                                <button class="btn btn-secondary" style="margin-top: 8px;" onclick="switchView('guilt-check')">Buka Evaluasi Rasa Bersalah</button>
+                            </div>
+                            <div class="result-box" style="margin-bottom: 0;">
+                                <h4>HARI 5: PERENCANA WAKTU MANDIRI</h4>
+                                <p>Jadwalkan waktu pemulihan diri yang tidak dapat diganggu gugat untuk menjaga energi Anda.</p>
+                                <button class="btn btn-secondary" style="margin-top: 8px;" onclick="switchView('solo-planner')">Buka Perencana Waktu Mandiri</button>
+                            </div>
+                            <div class="result-box win" style="margin-bottom: 0;">
+                                <h4>HARI 6 & 7: SINTESIS & EVALUASI</h4>
+                                <p>Tinjau ringkasan rumah tangga Anda dan susun rencana aksi untuk 30 hari ke depan.</p>
+                                <button class="btn btn-primary" style="margin-top: 8px;" onclick="switchView('household-plan')">Lihat Rencana Utama</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 7: RENCANA RUMAH TANGGA SAYA -->
+                <div id="view-household-plan" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-clipboard-list" style="color: var(--coral);"></i> Rencana Rumah Tangga Orang Tua Tunggal</h2>
+                        <p class="problem-statement">Ringkasan terpadu dari hasil analisis alat, prioritas utama, dan rekomendasi Lintas-Modul.</p>
+                    </div>
+
+                    <div id="household-plan-content">
+                        <!-- Diisi secara dinamis melalui renderHouseholdPlan() -->
+                    </div>
+
+                    <div class="btn-row" style="margin-top: 20px;">
+                        <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana Rumah Tangga</button>
+                    </div>
+                </div>
+
+                <!-- TAMPILAN 8: PRIVASI & DATA -->
+                <div id="view-privacy" class="view-content">
+                    <div class="tool-header">
+                        <h2><i class="fa-solid fa-user-lock" style="color: var(--coral);"></i> Privasi & Kontrol Data Lokal</h2>
+                        <p class="problem-statement">Data rumah tangga Anda tersimpan sepenuhnya di peramban (browser) Anda.</p>
+                    </div>
+                    <div class="card">
+                        <h4 style="color: var(--navy); margin-bottom: 8px;">Tanpa Pengiriman ke Cloud</h4>
+                        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 16px;">
+                            SingleParentOS™ beroperasi sepenuhnya di dalam peramban Anda menggunakan JavaScript. Tidak ada akun, basis data jarak jauh, server AI, atau pelacak eksternal yang digunakan. Angka keuangan, jadwal, naskah ko-parenting, dan catatan Anda tidak pernah meninggalkan perangkat ini.
+                        </p>
+                        <h4 style="color: var(--navy); margin-bottom: 8px;">Pengelolaan Penyimpanan Peramban</h4>
+                        <p style="font-size: 0.9rem; line-height: 1.5; color: var(--text-main); margin-bottom: 16px;">
+                            Data disimpan secara lokal di bawah ruang nama localStorage (<code>singleparentos_v2_state</code>). Menghapus tembolok (cache) peramban atau penyimpanan pribadi akan menghapus data yang tersimpan.
+                        </p>
+                        <div class="btn-row">
+                            <button class="btn btn-primary" style="background-color: #D9534F;" onclick="confirmClearAllData()"><i class="fa-solid fa-trash-can"></i> Hapus Seluruh Data Aplikasi</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer Global -->
+            <footer class="app-footer">
+                SingleParentOS™ — Hanya untuk tujuan perencanaan praktis. Bukan saran hukum, keuangan, atau terapi medis.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Notifikasi Toast -->
+    <div id="toast">Berhasil disalin ke papan klip!</div>
+
+    <script>
+        // --- MESIN PENYIMPANAN & STATUS PUSAT ---
+        const STORAGE_KEY_STATE = 'singleparentos_v2_state';
+        const STORAGE_KEY_HISTORY = 'singleparentos_v2_history';
+
+        let singleParentState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        const TOOLS = ['money-map', 'schedule-solver', 'coparent-boundary', 'guilt-check', 'solo-planner'];
+        const DAYS = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function safeParseStorage(key, fallback) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : fallback;
+            } catch(e) {
+                console.error("Gagal membaca penyimpanan:", key, e);
+                return fallback;
+            }
+        }
+
+        function saveState() {
+            try {
+                singleParentState.lastUpdated = new Date().toISOString();
+                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(singleParentState));
+            } catch(e) {
+                console.error("Gagal menyimpan status ke localStorage", e);
+            }
+        }
+
+        function loadState() {
+            singleParentState = safeParseStorage(STORAGE_KEY_STATE, {
+                completedTools: [],
+                toolResults: {},
+                lastUpdated: null
+            });
+        }
+
+        function saveToHistory(toolId, data) {
+            const key = `${STORAGE_KEY_HISTORY}_${toolId}`;
+            let history = safeParseStorage(key, []);
+            history.unshift({
+                id: Date.now(),
+                timestamp: new Date().toLocaleString('id-ID', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                data: data
+            });
+            if (history.length > 30) history = history.slice(0, 30);
+            try {
+                localStorage.setItem(key, JSON.stringify(history));
+            } catch(e) {
+                console.error("Gagal menyimpan riwayat", e);
+            }
+            renderHistory(toolId);
+            updateDashboardStats();
+        }
+
+        function getHistory(toolId) {
+            return safeParseStorage(`${STORAGE_KEY_HISTORY}_${toolId}`, []);
+        }
+
+        function deleteHistoryItem(toolId, id) {
+            const key = `${STORAGE_KEY_HISTORY}_${toolId}`;
+            let history = getHistory(toolId);
+            history = history.filter(item => item.id !== id);
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory(toolId);
+            updateDashboardStats();
+            showToast("Catatan dihapus.");
+        }
+
+        function clearHistory(toolId) {
+            if (!confirm("Apakah Anda yakin ingin menghapus riwayat tersimpan untuk fitur ini?")) return;
+            localStorage.removeItem(`${STORAGE_KEY_HISTORY}_${toolId}`);
+            renderHistory(toolId);
+            updateDashboardStats();
+            showToast("Riwayat dibersihkan.");
+        }
+
+        function confirmClearAllData() {
+            if (confirm("Apakah Anda yakin ingin menghapus SELURUH data tersimpan, peta keuangan, dan riwayat di SingleParentOS™? Tindakan ini tidak dapat dibatalkan.")) {
+                localStorage.clear();
+                singleParentState = { completedTools: [], toolResults: {}, lastUpdated: null };
+                TOOLS.forEach(tool => renderHistory(tool));
+                updateDashboardStats();
+                switchView('dashboard');
+                showToast("Semua data berhasil dihapus.");
+            }
+        }
+
+        // --- NAVIGASI & TAMPILAN ---
+        const navLinks = document.querySelectorAll('.nav-link');
+        const viewContents = document.querySelectorAll('.view-content');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+
+        function switchView(targetViewId) {
+            navLinks.forEach(link => {
+                if (link.getAttribute('data-view') === targetViewId) link.classList.add('active');
+                else link.classList.remove('active');
+            });
+
+            viewContents.forEach(view => {
+                if (view.id === `view-${targetViewId}`) view.classList.add('active');
+                else view.classList.remove('active');
+            });
+
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            updateDashboardStats();
+            if (targetViewId === 'household-plan') renderHouseholdPlan();
+        }
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                switchView(link.getAttribute('data-view'));
+            });
+        });
+
+        hamburgerBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            sidebarOverlay.classList.toggle('open');
+        });
+
+        sidebarOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+        });
+
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast("Berhasil disalin ke papan klip!"));
+            } else {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast("Berhasil disalin ke papan klip!");
+            }
+        }
+
+        // --- TAMPILKAN RIWAYAT & DASHBOARD ---
+        function renderHistory(toolId) {
+            const listEl = document.getElementById(`history-list-${toolId}`);
+            if (!listEl) return;
+            const history = getHistory(toolId);
+
+            if (history.length === 0) {
+                listEl.innerHTML = `<p style="font-size:0.85rem; color: var(--text-muted); padding: 8px 0;">Belum ada riwayat tersimpan.</p>`;
+                return;
+            }
+
+            let html = `<div style="text-align:right; margin-bottom: 8px;">
+                <button class="btn btn-secondary" style="padding:4px 8px; font-size:0.75rem;" onclick="clearHistory('${toolId}')">Hapus Riwayat</button>
+            </div>`;
+
+            history.forEach(item => {
+                let summaryText = "Catatan";
+                if (toolId === 'money-map') summaryText = `Pemasukan: Rp${item.data.income.toLocaleString('id-ID')} | Pengeluaran: Rp${item.data.totalOutflow.toLocaleString('id-ID')}`;
+                else if (toolId === 'schedule-solver') summaryText = `Analisis jadwal mingguan`;
+                else if (toolId === 'coparent-boundary') summaryText = `Masalah: ${escapeHTML(item.data.issue.substring(0, 30))}...`;
+                else if (toolId === 'guilt-check') summaryText = `Sudut pandang baru: ${escapeHTML(item.data.feeling.substring(0, 30))}...`;
+                else if (toolId === 'solo-planner') summaryText = `Waktu Mandiri: ${item.data.hours}j | Anggaran: ${escapeHTML(item.data.budget)}`;
+
+                html += `
+                <div class="history-item">
+                    <div>
+                        <strong>${summaryText}</strong>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">${escapeHTML(item.timestamp)}</div>
+                    </div>
+                    <button class="btn btn-secondary" style="padding: 2px 6px; font-size: 0.7rem;" onclick="deleteHistoryItem('${toolId}', ${item.id})"><i class="fa-solid fa-trash"></i></button>
+                </div>`;
+            });
+
+            listEl.innerHTML = html;
+        }
+
+        function toggleHistory(toolId) {
+            const listEl = document.getElementById(`history-list-${toolId}`);
+            const arrowEl = document.getElementById(`history-arrow-${toolId}`);
+            if (listEl.style.display === 'block') {
+                listEl.style.display = 'none';
+                arrowEl.className = 'fa-solid fa-chevron-down';
+            } else {
+                listEl.style.display = 'block';
+                arrowEl.className = 'fa-solid fa-chevron-up';
+            }
+        }
+
+        function updateDashboardStats() {
+            const container = document.getElementById('dashboard-qualitative-status');
+            if (!container) return;
+
+            const res = singleParentState.toolResults;
+            let statusHtml = '';
+
+            // Status Keuangan
+            const mm = res['money-map'];
+            const mmLabel = mm ? (mm.net >= 0 ? 'Surplus' : 'Defisit') : 'Belum Dianalisis';
+            const mmClass = mm ? (mm.net >= 0 ? 'heat-low' : 'heat-high') : 'day-column';
+            statusHtml += `<div class="${mmClass}"><strong>Keuangan:</strong> ${mmLabel}</div>`;
+
+            // Status Jadwal
+            const sch = res['schedule-solver'];
+            const schLabel = sch ? `${sch.overloadedCount} Hari Padat` : 'Belum Dianalisis';
+            const schClass = sch ? (sch.overloadedCount > 0 ? 'heat-high' : 'heat-low') : 'day-column';
+            statusHtml += `<div class="${schClass}"><strong>Jadwal:</strong> ${schLabel}</div>`;
+
+            // Status Ko-Parenting
+            const cp = res['coparent-boundary'];
+            const cpLabel = cp ? `Komunikasi ${cp.style}` : 'Belum Dianalisis';
+            statusHtml += `<div class="day-column"><strong>Ko-Parenting:</strong> ${cpLabel}</div>`;
+
+            // Evaluasi Rasa Bersalah
+            const gc = res['guilt-check'];
+            const gcLabel = gc ? 'Sudah Dievaluasi' : 'Belum Dianalisis';
+            statusHtml += `<div class="day-column"><strong>Rasa Bersalah:</strong> ${gcLabel}</div>`;
+
+            // Waktu Mandiri
+            const st = res['solo-planner'];
+            const stLabel = st ? `${st.hours} Jam Mandiri` : 'Belum Dianalisis';
+            const stClass = st ? (st.hours < 2 ? 'heat-high' : 'heat-low') : 'day-column';
+            statusHtml += `<div class="${stClass}"><strong>Pemulihan:</strong> ${stLabel}</div>`;
+
+            container.innerHTML = statusHtml;
+        }
+
+        function resetForm(toolId) {
+            const form = document.getElementById(`form-${toolId}`);
+            if (form) form.reset();
+            const resultsDiv = document.getElementById(`results-${toolId}`);
+            if (resultsDiv) resultsDiv.style.display = 'none';
+            showToast("Formulir dibersihkan.");
+        }
+
+        // --- PEMBUAT MATRIKS JADWAL ---
+        function buildScheduleGrid() {
+            const container = document.getElementById('schedule-days-container');
+            if (!container) return;
+            let html = '';
+            DAYS.forEach(day => {
+                html += `
+                <div class="card" style="padding: 16px; margin-bottom: 12px; background: #FAFDFC;">
+                    <h4 style="color: var(--navy); margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">${day}</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px;">
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight:600;">Jam Kerja:</label>
+                            <input type="text" id="sch-work-${day}" class="form-control" placeholder="contoh: 08:00 - 17:00">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight:600;">Pendampingan Anak:</label>
+                            <input type="text" id="sch-care-${day}" class="form-control" placeholder="contoh: Sekolah / Nenek">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight:600;">Tugas Wajib:</label>
+                            <input type="text" id="sch-tasks-${day}" class="form-control" placeholder="contoh: Jadwal dokter">
+                        </div>
+                        <div>
+                            <label style="font-size: 0.8rem; font-weight:600;">Tingkat Energi Anda:</label>
+                            <select id="sch-energy-${day}" class="form-control">
+                                <option value="Sedang" selected>Sedang</option>
+                                <option value="Tinggi">Tinggi</option>
+                                <option value="Rendah">Rendah</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        // --- FITUR 1: PETA KEUANGAN ---
+        document.getElementById('form-money-map').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const income = parseFloat(document.getElementById('mm-income').value) || 0;
+            const support = parseFloat(document.getElementById('mm-support').value) || 0;
+            const fixed = parseFloat(document.getElementById('mm-fixed').value) || 0;
+            const variable = parseFloat(document.getElementById('mm-variable').value) || 0;
+            const debt = parseFloat(document.getElementById('mm-debt').value) || 0;
+            const savings = parseFloat(document.getElementById('mm-savings').value) || 0;
+
+            const totalIncome = income + support;
+            const totalOutflow = fixed + variable + debt + savings;
+            const net = totalIncome - totalOutflow;
+
+            const fixedPct = totalIncome > 0 ? Math.round((fixed / totalIncome) * 100) : 0;
+            const varPct = totalIncome > 0 ? Math.round((variable / totalIncome) * 100) : 0;
+            const debtPct = totalIncome > 0 ? Math.round((debt / totalIncome) * 100) : 0;
+
+            let alerts = [];
+            if (fixedPct > 60) alerts.push(`Biaya tetap menyerap ${fixedPct}% pendapatan (ideal di bawah 50%). Ini membatasi fleksibilitas arus kas.`);
+            if (varPct > 35) alerts.push(`Pengeluaran variabel berada di angka ${varPct}%. Pembelian impulsif atau makanan luar bisa menjadi sumber kebocoran.`);
+            if (debtPct > 20) alerts.push(`Cicilan utang menyerap ${debtPct}% pendapatan, menciptakan tekanan arus kas yang signifikan.`);
+            if (net < 0) alerts.push(`Defisit Kritis: Pengeluaran melebihi pendapatan sebesar Rp${Math.abs(net).toLocaleString('id-ID')} per bulan.`);
+
+            if (alerts.length === 0) alerts.push("Struktur pengeluaran Anda cukup seimbang terhadap total pendapatan!");
+
+            let priority = net < 0 ? "Atasi Defisit Kas Bulanan" : "Bangun Dana Darurat";
+
+            singleParentState.toolResults['money-map'] = {
+                totalIncome, totalOutflow, net, fixedPct, varPct, debtPct, priority, alerts
+            };
+            if (!singleParentState.completedTools.includes('money-map')) singleParentState.completedTools.push('money-map');
+            saveState();
+
+            const resultsDiv = document.getElementById('results-money-map');
+            resultsDiv.innerHTML = `
+                <div class="result-box ${net >= 0 ? 'win' : 'alert'}">
+                    <h4>RINGKASAN KEUANGAN ANDA</h4>
+                    <p style="font-size: 1.1rem; font-weight:700;">
+                        Total Pemasukan: Rp${totalIncome.toLocaleString('id-ID')} | Pengeluaran: Rp${totalOutflow.toLocaleString('id-ID')}
+                    </p>
+                    <p style="margin-top: 4px;">
+                        Posisi Bersih: <strong style="color:${net >= 0 ? '#2A9D8F' : '#E76F51'}">${net >= 0 ? 'Surplus' : 'Defisit'} sebesar Rp${Math.abs(net).toLocaleString('id-ID')}</strong>
+                    </p>
+                </div>
+                <div class="result-box">
+                    <h4>ALOKASI PENGELUARAN</h4>
+                    <p>• Pengeluaran Tetap: <strong>${fixedPct}%</strong></p>
+                    <p>• Pengeluaran Variabel: <strong>${varPct}%</strong></p>
+                    <p>• Pembayaran Utang: <strong>${debtPct}%</strong></p>
+                    <p>• Target Tabungan: <strong>${totalIncome > 0 ? Math.round((savings/totalIncome)*100) : 0}%</strong></p>
+                </div>
+                <div class="result-box alert">
+                    <h4>HAL YANG PERLU DIPERHATIKAN (PERINGATAN KEBOCORAN)</h4>
+                    <ul style="padding-left: 20px;">
+                        ${alerts.map(a => `<li style="margin-bottom:4px;">${escapeHTML(a)}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="result-box win">
+                    <h4>PRIORITAS UTAMA ANDA</h4>
+                    <p><strong>${escapeHTML(priority)}</strong></p>
+                </div>
+            `;
+            resultsDiv.style.display = 'block';
+
+            saveToHistory('money-map', { income: totalIncome, totalOutflow, net });
+        });
+
+        function loadSampleMoneyMap() {
+            document.getElementById('mm-income').value = 6000000;
+            document.getElementById('mm-support').value = 1000000;
+            document.getElementById('mm-fixed').value = 4200000;
+            document.getElementById('mm-variable').value = 2200000;
+            document.getElementById('mm-debt').value = 800000;
+            document.getElementById('mm-savings').value = 200000;
+            showToast("Skenario contoh dimuat.");
+        }
+
+        // --- FITUR 2: SOLUSI JADWAL ---
+        document.getElementById('form-schedule-solver').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let overloadedDays = [];
+            let energyGaps = [];
+
+            DAYS.forEach(day => {
+                const work = document.getElementById(`sch-work-${day}`).value.trim();
+                const care = document.getElementById(`sch-care-${day}`).value.trim();
+                const tasks = document.getElementById(`sch-tasks-${day}`).value.trim();
+                const energy = document.getElementById(`sch-energy-${day}`).value;
+
+                if (work && !care && (day !== 'Sabtu' && day !== 'Minggu')) {
+                    energyGaps.push(`${day}: Terdapat jam kerja tanpa penjagaan atau pendampingan anak yang jelas.`);
+                }
+                if (work && tasks && energy === 'Rendah') {
+                    overloadedDays.push(day);
+                }
+            });
+
+            const resultsDiv = document.getElementById('results-schedule-solver');
+
+            let heatMapHtml = '<div class="schedule-grid">';
+            DAYS.forEach(day => {
+                const energy = document.getElementById(`sch-energy-${day}`).value;
+                let heatClass = energy === 'Rendah' ? 'heat-high' : (energy === 'Sedang' ? 'heat-med' : 'heat-low');
+                heatMapHtml += `
+                    <div class="day-column ${heatClass}">
+                        <h5>${day}</h5>
+                        <div>Energi: <strong>${escapeHTML(energy)}</strong></div>
+                    </div>`;
+            });
+            heatMapHtml += '</div>';
+
+            let priority = energyGaps.length > 0 ? "Atasi Celah Pendampingan Anak" : "Jaga Waktu Istirahat di Hari Berenergi Rendah";
+
+            singleParentState.toolResults['schedule-solver'] = {
+                overloadedCount: overloadedDays.length,
+                gapsCount: energyGaps.length,
+                priority: priority
+            };
+            if (!singleParentState.completedTools.includes('schedule-solver')) singleParentState.completedTools.push('schedule-solver');
+            saveState();
+
+            resultsDiv.innerHTML = `
+                <div class="result-box">
+                    <h4>PETA INTENSITAS JADWAL</h4>
+                    ${heatMapHtml}
+                </div>
+                <div class="result-box alert">
+                    <h4>PENDAMPINGAN & TITIK KRISIS</h4>
+                    <ul style="padding-left: 20px;">
+                        ${(energyGaps.length > 0 ? energyGaps : ["Terdeteksi potensi kelelahan di pertengahan minggu."]).map(p => `<li style="margin-bottom:4px;">${escapeHTML(p)}</li>`).join('')}
+                    </ul>
+                </div>
+                <div class="result-box win">
+                    <h4>PRIORITAS UTAMA ANDA</h4>
+                    <p><strong>${escapeHTML(priority)}</strong></p>
+                </div>
+            `;
+            resultsDiv.style.display = 'block';
+
+            saveToHistory('schedule-solver', { overloadedCount: overloadedDays.length });
+        });
+
+        function loadSampleSchedule() {
+            DAYS.forEach(day => {
+                const workInput = document.getElementById(`sch-work-${day}`);
+                const careInput = document.getElementById(`sch-care-${day}`);
+                const tasksInput = document.getElementById(`sch-tasks-${day}`);
+                const energySelect = document.getElementById(`sch-energy-${day}`);
+
+                if (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat'].includes(day)) {
+                    workInput.value = '08:00 - 17:00';
+                    careInput.value = day === 'Rabu' ? '' : 'Sekolah / Tempat Penitipan';
+                    tasksInput.value = 'Memasak, mencuci, menemani belajar';
+                    energySelect.value = (day === 'Rabu' || day === 'Kamis') ? 'Rendah' : 'Sedang';
+                } else {
+                    workInput.value = '';
+                    careInput.value = 'Pengasuhan mandiri';
+                    tasksInput.value = 'Belanja bulanan, ke taman';
+                    energySelect.value = day === 'Sabtu' ? 'Tinggi' : 'Sedang';
+                }
+            });
+            showToast("Skenario contoh dimuat.");
+        }
+
+        // --- FITUR 3: BATAS KO-PARENTING ---
+        document.getElementById('form-coparent-boundary').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const issue = document.getElementById('cp-issue').value.trim();
+            const need = document.getElementById('cp-need').value.trim();
+            const style = document.getElementById('cp-style').value;
+
+            let script = `Halo,\n\nMengenai ${issue.toLowerCase()}: untuk seterusnya, ${need.toLowerCase()}.\n\nHal ini penting demi menjaga kepastian dan kelancaran jadwal anak. Terima kasih atas kerjasamanya.`;
+
+            singleParentState.toolResults['coparent-boundary'] = { issue, need, style, script, priority: "Pertahankan Batas Komunikasi yang Tegas" };
+            if (!singleParentState.completedTools.includes('coparent-boundary')) singleParentState.completedTools.push('coparent-boundary');
+            saveState();
+
+            const resultsDiv = document.getElementById('results-coparent-boundary');
+            resultsDiv.innerHTML = `
+                <div class="result-box">
+                    <h4>PRINSIP BATAS KOMUNIKASI</h4>
+                    <p>"Saya hanya berkomunikasi mengenai logistik dan kesejahteraan anak."</p>
+                </div>
+                <div class="result-box win">
+                    <h4>NASKAH PESAN YANG DAPAT DISALIN
+                        <button class="btn btn-copy" onclick="copyToClipboard(\`${script.replace(/`/g, '\\`').replace(/\n/g, '\\n')}\`)"><i class="fa-solid fa-copy"></i> Salin Naskah</button>
+                    </h4>
+                    <div class="script-box">${escapeHTML(script)}</div>
+                </div>
+                <div class="result-box alert">
+                    <h4>STRATEGI MERESPONS</h4>
+                    <p>Jika dibalas dengan emosi atau nada negatif, tunda merespons selama 2 jam. Balas hanya pada poin logistik yang relevan.</p>
+                </div>
+            `;
+            resultsDiv.style.display = 'block';
+
+            saveToHistory('coparent-boundary', { issue, need, style });
+        });
+
+        function loadSampleCoparent() {
+            document.getElementById('cp-issue').value = 'Mantan mengantar anak terlambat 45 menit setiap hari Minggu tanpa kabar.';
+            document.getElementById('cp-need').value = 'Mengantar tepat jam 18:00 atau memberi kabar minimal 30 menit sebelumnya.';
+            document.getElementById('cp-style').value = 'Cold';
+            document.getElementById('cp-fear').value = 'Jadwal tidur anak terganggu.';
+            showToast("Skenario contoh dimuat.");
+        }
+
+        // --- FITUR 4: EVALUASI RASA BERSAHAH ---
+        document.getElementById('form-guilt-check').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const feeling = document.getElementById('gc-feeling').value.trim();
+            const advice = document.getElementById('gc-advice').value.trim();
+            const doneWell = document.getElementById('gc-done-well').value.trim();
+
+            singleParentState.toolResults['guilt-check'] = { feeling, advice, doneWell, priority: "Lepaskan Beban Perfeksionisme" };
+            if (!singleParentState.completedTools.includes('guilt-check')) singleParentState.completedTools.push('guilt-check');
+            saveState();
+
+            const resultsDiv = document.getElementById('results-guilt-check');
+            resultsDiv.innerHTML = `
+                <div class="result-box win">
+                    <h4>PERUBAHAN SUDUT PANDANG</h4>
+                    <p><strong>Nasihat yang akan Anda berikan pada orang lain:</strong></p>
+                    <p style="font-style: italic; color: #2D3748; margin-top:4px;">"${escapeHTML(advice)}"</p>
+                    <p style="margin-top: 8px;">Berikan kepedulian dan pemahaman yang sama kepada diri Anda sendiri hari ini.</p>
+                </div>
+                ${doneWell ? `<div class="result-box"><h4>HAL BAIK YANG BERHASIL ANDA LAKUKAN HARI INI</h4><p>${escapeHTML(doneWell)}</p></div>` : ''}
+            `;
+            resultsDiv.style.display = 'block';
+
+            saveToHistory('guilt-check', { feeling, advice });
+        });
+
+        function loadSampleGuilt() {
+            document.getElementById('gc-feeling').value = 'Lembur dua kali minggu ini dan membeli makanan siap saji lagi.';
+            document.getElementById('gc-advice').value = 'Kamu bekerja keras untuk mencukupi kebutuhan keluarga secara mandiri. Makanan instan sekali-kali tidak masalah.';
+            document.getElementById('gc-done-well').value = 'Membacakan cerita dan memeluk anak sebelum tidur.';
+            showToast("Skenario contoh dimuat.");
+        }
+
+        // --- FITUR 5: PERENCANA WAKTU MANDIRI ---
+        document.getElementById('form-solo-planner').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const hours = parseFloat(document.getElementById('st-hours').value) || 0;
+            const childcare = document.getElementById('st-childcare').value.trim();
+            const budget = document.getElementById('st-budget').value;
+            const obstacle = document.getElementById('st-obstacle').value;
+
+            singleParentState.toolResults['solo-planner'] = { hours, childcare, budget, obstacle, priority: "Sediakan Slot Istirahat 45 Menit" };
+            if (!singleParentState.completedTools.includes('solo-planner')) singleParentState.completedTools.push('solo-planner');
+            saveState();
+
+            const resultsDiv = document.getElementById('results-solo-planner');
+            resultsDiv.innerHTML = `
+                <div class="result-box ${hours < 2 ? 'alert' : 'win'}">
+                    <h4>AUDIT WAKTU MANDIRI</h4>
+                    <p>Waktu istirahat mandiri minggu lalu: <strong>${hours} jam</strong>. (Target minimal: 2 jam seminggu).</p>
+                    <p style="margin-top:4px;">Hambatan utama: <strong>${escapeHTML(obstacle)}</strong>.</p>
+                </div>
+                <div class="result-box win">
+                    <h4>KOMITMEN PEMULIHAN MINGGU INI</h4>
+                    <p>Sediakan satu slot waktu <strong>45 menit</strong> menggunakan bantuan pengasuhan yang ada (<em>${escapeHTML(childcare)}</em>). Jadwalkan ini sebagai prioritas penting.</p>
+                </div>
+            `;
+            resultsDiv.style.display = 'block';
+
+            saveToHistory('solo-planner', { hours, budget, obstacle });
+        });
+
+        function loadSampleSolo() {
+            document.getElementById('st-hours').value = 0.5;
+            document.getElementById('st-childcare').value = 'Kakek/Nenek pada Sabtu pagi atau saat jam sekolah';
+            document.getElementById('st-budget').value = 'Di bawah Rp 100.000';
+            document.getElementById('st-obstacle').value = 'Rasa bersalah';
+            showToast("Skenario contoh dimuat.");
+        }
+
+        // --- SINTESIS RENCANA UTAMA RUMAH TANGGA ---
+        function renderHouseholdPlan() {
+            const container = document.getElementById('household-plan-content');
+            if (!container) return;
+
+            const res = singleParentState.toolResults;
+            const keys = Object.keys(res);
+
+            if (keys.length === 0) {
+                container.innerHTML = `<div class="card"><p style="color: var(--text-muted);">Belum ada analisis alat yang selesai. Jalankan salah satu fitur untuk menghasilkan rencana terpadu Anda.</p></div>`;
+                return;
+            }
+
+            let html = '';
+
+            // Ringkasan Prioritas
+            html += `<div class="card"><h3 style="color: var(--navy); margin-bottom: 12px;">Prioritas Aktif</h3><ul style="padding-left: 20px;">`;
+            
+            const toolNames = {
+                'money-map': 'PETA KEUANGAN',
+                'schedule-solver': 'SOLUSI JADWAL',
+                'coparent-boundary': 'BATAS KO-PARENTING',
+                'guilt-check': 'EVALUASI RASA BERSAHAH',
+                'solo-planner': 'WAKTU MANDIRI'
+            };
+
+            keys.forEach(k => {
+                if (res[k].priority) {
+                    const labelName = toolNames[k] || k.toUpperCase().replace('-', ' ');
+                    html += `<li style="margin-bottom: 6px;"><strong>${labelName}:</strong> ${escapeHTML(res[k].priority)}</li>`;
+                }
+            });
+            html += `</ul></div>`;
+
+            // Rekomendasi Lintas-Modul
+            let recs = [];
+            if (res['money-map'] && res['money-map'].net < 0 && res['schedule-solver'] && res['schedule-solver'].overloadedCount > 0) {
+                recs.push("Tekanan keuangan tinggi berbarengan dengan jadwal padat: Pilih menu makanan yang praktis dan hemat untuk menjaga anggaran serta energi.");
+            }
+            if (res['solo-planner'] && res['solo-planner'].obstacle === 'Rasa bersalah') {
+                recs.push("Rasa bersalah menghambat pemulihan diri: Tinjau kembali sudut pandang baru dari Evaluasi Rasa Bersalah sebelum menjadwalkan waktu mandiri.");
+            }
+            if (recs.length === 0) recs.push("Fokus menyelesaikan tugas dengan prioritas tertinggi terlebih dahulu sebelum melakukan penyesuaian tambahan.");
+
+            html += `<div class="card"><h3 style="color: var(--navy); margin-bottom: 12px;">Analisis Lintas-Modul</h3><ul style="padding-left: 20px;">`;
+            recs.forEach(r => html += `<li style="margin-bottom: 6px;">${escapeHTML(r)}</li>`);
+            html += `</ul></div>`;
+
+            container.innerHTML = html;
+        }
+
+        // --- INISIALISASI ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            buildScheduleGrid();
+            TOOLS.forEach(tool => renderHistory(tool));
+            updateDashboardStats();
+        });
+    </script>
+</body>
+</html>

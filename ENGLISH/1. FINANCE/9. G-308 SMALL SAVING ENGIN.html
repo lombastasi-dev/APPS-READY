@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Small-Savings Engine™ — Financial Independence OS</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS Variables & Commercial Theme Setup */
+        :root {
+            --purple-primary: #7C3AED;
+            --purple-hover: #6D28D9;
+            --purple-light: #F5F3FF;
+            --rose-primary: #F43F5E;
+            --rose-light: #FFF1F2;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --bg-gradient: linear-gradient(135deg, #F5F3FF 0%, #FFF1F2 100%);
+            --card-bg: #FFFFFF;
+            --sidebar-width: 260px;
+            --border-color: #E5E7EB;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #F3F4F6;
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: var(--purple-primary);
+        }
+
+        .sidebar-header h2 {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            line-height: 1.2;
+        }
+
+        .sidebar-header span {
+            display: block;
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button:hover {
+            background: var(--purple-light);
+            color: var(--purple-primary);
+        }
+
+        .nav-item.active button {
+            background: var(--purple-primary);
+            color: #FFFFFF;
+        }
+
+        .nav-item.active button i {
+            color: #FFFFFF;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            height: 60px;
+            background: #FFFFFF;
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--purple-primary);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* Main Workspace */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .content-area {
+            max-width: 840px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 20px;
+            flex: 1;
+        }
+
+        .view-pane {
+            display: none;
+        }
+
+        .view-pane.active {
+            display: block;
+        }
+
+        /* Global UI Controls & Cards */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--purple-primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: var(--purple-hover);
+        }
+
+        .btn-secondary {
+            background: var(--purple-light);
+            color: var(--purple-primary);
+        }
+
+        .btn-secondary:hover {
+            background: #EDE9FE;
+        }
+
+        .btn-outline {
+            border: 1px solid var(--purple-primary);
+            color: var(--purple-primary);
+            background: transparent;
+        }
+
+        .btn-outline:hover {
+            background: var(--purple-light);
+        }
+
+        .btn-danger {
+            background: #FEE2E2;
+            color: #DC2626;
+        }
+        .btn-danger:hover {
+            background: #FCA5A5;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: var(--purple-primary);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 16px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* Unified Results Architecture */
+        .output-box {
+            display: none;
+            background: #FFFFFF;
+            border-left: 4px solid var(--purple-primary);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .output-box.active {
+            display: block;
+        }
+
+        .output-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--purple-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid #F3F4F6;
+            padding-bottom: 10px;
+        }
+
+        /* Tool Dashboard Components */
+        .dashboard-hero {
+            background: linear-gradient(135deg, var(--purple-primary) 0%, #4C1D95 100%);
+            color: #FFFFFF;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+        }
+
+        .dashboard-hero h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-hero p {
+            color: #E9D5FF;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+        }
+
+        .tool-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .tool-card i {
+            font-size: 24px;
+            color: var(--purple-primary);
+            margin-bottom: 12px;
+        }
+
+        .tool-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .tool-card p {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Unified History & Accordions */
+        .history-section {
+            margin-top: 24px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: #F9FAFB;
+            border: 1px solid #F3F4F6;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item-content {
+            flex: 1;
+            padding-right: 12px;
+        }
+
+        /* Gamified Elements & Interactive Grids */
+        .tracker-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
+            gap: 8px;
+            margin: 16px 0;
+        }
+
+        .tracker-cell {
+            aspect-ratio: 1;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            background: #FFFFFF;
+            transition: all 0.2s ease;
+        }
+
+        .tracker-cell:focus {
+            outline: 2px solid var(--purple-primary);
+            outline-offset: 1px;
+        }
+
+        .tracker-cell.checked {
+            background: var(--purple-primary);
+            color: #FFFFFF;
+            border-color: var(--purple-primary);
+        }
+
+        .badge-list {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: var(--rose-light);
+            color: var(--rose-primary);
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge.unearned {
+            background: #F3F4F6;
+            color: #9CA3AF;
+        }
+
+        .script-card {
+            background: #F9FAFB;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 12px;
+            position: relative;
+        }
+
+        .script-card p {
+            font-size: 13.5px;
+            line-height: 1.5;
+            padding-right: 70px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .custom-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 13px;
+        }
+
+        .custom-table th, .custom-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .custom-table th {
+            background: var(--purple-light);
+            color: var(--purple-primary);
+            font-weight: 600;
+        }
+
+        .rec-box {
+            background: var(--purple-light);
+            border: 1px solid #DDD6FE;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 16px;
+            font-size: 13px;
+        }
+
+        .rec-box h4 {
+            color: var(--purple-primary);
+            font-size: 14px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Global Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            background: #111827;
+            color: #FFFFFF;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 13px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 200;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        .app-footer {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            background: rgba(255,255,255,0.5);
+            margin-top: auto;
+        }
+
+        /* Printable Plan CSS */
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .app-footer, .btn, .history-section, .no-print {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .content-area {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card, .output-box {
+                box-shadow: none !important;
+                border: 1px solid #DDD !important;
+            }
+            .view-pane {
+                display: block !important;
+            }
+            .view-pane:not(#plan) {
+                display: none !important;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.open {
+                display: block;
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .content-area {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fa-solid fa-vault" style="color: var(--purple-primary); font-size:20px;"></i>
+            <span style="font-weight:700; color: var(--purple-primary);">Small-Savings Engine™</span>
+        </div>
+        <button class="menu-btn" id="mobileMenuBtn" aria-label="Toggle navigation menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-vault"></i>
+                <div>
+                    <h2>Savings Engine™</h2>
+                    <span>Micro-Savings OS V2</span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item active" data-view="dashboard">
+                    <button><i class="fa-solid fa-chart-pie"></i> Home / Dashboard</button>
+                </li>
+                <li class="nav-item" data-view="tool1">
+                    <button><i class="fa-solid fa-filter-circle-dollar"></i> Leak Auditor</button>
+                </li>
+                <li class="nav-item" data-view="tool2">
+                    <button><i class="fa-solid fa-gamepad"></i> $5 Game Builder</button>
+                </li>
+                <li class="nav-item" data-view="tool3">
+                    <button><i class="fa-solid fa-shield-halved"></i> Social Defense</button>
+                </li>
+                <li class="nav-item" data-view="tool4">
+                    <button><i class="fa-solid fa-magnifying-glass-dollar"></i> Cash Reclaimer</button>
+                </li>
+                <li class="nav-item" data-view="tool5">
+                    <button><i class="fa-solid fa-layer-group"></i> Habit Stacker</button>
+                </li>
+                <li class="nav-item" data-view="reset7">
+                    <button><i class="fa-solid fa-calendar-check"></i> 7-Day Reset Guide</button>
+                </li>
+                <li class="nav-item" data-view="plan">
+                    <button><i class="fa-solid fa-file-invoice-dollar"></i> My Savings Plan</button>
+                </li>
+                <li class="nav-item" data-view="history">
+                    <button><i class="fa-solid fa-clock-rotate-left"></i> My History</button>
+                </li>
+                <li class="nav-item" data-view="privacy">
+                    <button><i class="fa-solid fa-user-lock"></i> Privacy & Data</button>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="main-wrapper">
+            <main class="content-area">
+                
+                <!-- VIEW: DASHBOARD -->
+                <div id="dashboard" class="view-pane active">
+                    <div class="dashboard-hero">
+                        <h1>Small-Savings Engine™</h1>
+                        <p>Turn tiny residual dollars into real financial independence as a single earner. Locate hidden overhead, gamify micro-deposits, and build repeatable savings habits.</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <h2 style="font-size:16px;">Milestone Progress Badges</h2>
+                            <span style="font-size:12px; color:var(--text-muted);" id="badgeCountText">0 / 4 Earned</span>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin:6px 0 12px;">Earn progress badges automatically as you complete analyses and save micro-habits.</p>
+                        <div class="badge-list" id="dashboardBadges">
+                            <span class="badge unearned"><i class="fa-solid fa-seedling"></i> Engine Started</span>
+                            <span class="badge unearned"><i class="fa-solid fa-fire"></i> Micro-Saver</span>
+                            <span class="badge unearned"><i class="fa-solid fa-shield"></i> Budget Defender</span>
+                            <span class="badge unearned"><i class="fa-solid fa-gem"></i> Capital Builder</span>
+                        </div>
+                    </div>
+
+                    <div class="grid-2">
+                        <div class="card tool-card" onclick="switchView('tool1')">
+                            <i class="fa-solid fa-filter-circle-dollar"></i>
+                            <h3>Single-Living Leak Auditor</h3>
+                            <p>Identify solo-living overhead pressure and locate estimated routine savings opportunities.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool2')">
+                            <i class="fa-solid fa-gamepad"></i>
+                            <h3>$5 Game Builder</h3>
+                            <p>Gamify small deposits into a visible milestone game to reach cushion goals stress-free.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool3')">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <h3>Social Pressure Defense</h3>
+                            <p>Tactful scripts and low-cost alternatives to maintain friends without overspending.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool4')">
+                            <i class="fa-solid fa-magnifying-glass-dollar"></i>
+                            <h3>Found Cash Reclaimer</h3>
+                            <p>Uncover unused items, subscriptions, and bill reviews hiding right in your routine.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('tool5')">
+                            <i class="fa-solid fa-layer-group"></i>
+                            <h3>Habit Stacking Planner</h3>
+                            <p>Tie micro-saving triggers seamlessly to daily habits with a 30-day tracking board.</p>
+                        </div>
+                        <div class="card tool-card" onclick="switchView('reset7')">
+                            <i class="fa-solid fa-calendar-check"></i>
+                            <h3>7-Day Small-Savings Reset</h3>
+                            <p>Follow a structured step-by-step sequence to build your complete micro-savings plan.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 1 -->
+                <div id="tool1" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Single-Living Leak Auditor</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool1()">Load Sample</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool1()">Start Over</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Evaluate solo-living baseline costs and locate realistic routine savings opportunities.</p>
+
+                        <form id="formTool1">
+                            <div class="form-group">
+                                <label for="t1Income">Monthly Net Income ($)</label>
+                                <input type="number" id="t1Income" class="form-control" placeholder="2100" min="1" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Rent">Monthly Rent / Housing ($)</label>
+                                <input type="number" id="t1Rent" class="form-control" placeholder="1100" min="0" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Grocery">Solo Grocery Spending per Week ($)</label>
+                                <input type="number" id="t1Grocery" class="form-control" placeholder="85" min="0" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Convenience">Single-Serving / Convenience Food Premium</label>
+                                <select id="t1Convenience" class="form-control">
+                                    <option value="Low">Low (Mostly cook raw ingredients)</option>
+                                    <option value="Moderate" selected>Moderate (Mix of prepped/frozen food)</option>
+                                    <option value="High">High (Single takeout orders/pre-cut foods)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1Utility">Monthly Utilities / Wi-Fi ($)</label>
+                                <input type="number" id="t1Utility" class="form-control" placeholder="150" min="0" step="any" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Run Audit Analysis</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool1" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-chart-bar"></i> Single-Living Overhead Analysis</div>
+                        <div id="t1Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Audit History</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool1')">Clear History</button>
+                        </div>
+                        <div id="historyTool1" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 2 -->
+                <div id="tool2" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">$5 Game Builder</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool2()">Load Sample</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool2()">Start Over</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Turn tiny recurring deposits into a clear, visible cash cushion map.</p>
+
+                        <form id="formTool2">
+                            <div class="form-group">
+                                <label for="t2Freq">Savings Frequency</label>
+                                <select id="t2Freq" class="form-control">
+                                    <option value="Daily">Daily</option>
+                                    <option value="Weekly" selected>Weekly</option>
+                                    <option value="Payday">Every Payday (Bi-weekly)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2Amount">Base Challenge Amount ($)</label>
+                                <select id="t2Amount" class="form-control">
+                                    <option value="1">$1 bills / micro-transfers</option>
+                                    <option value="2">$2 micro-save</option>
+                                    <option value="3">$3 round-up estimate</option>
+                                    <option value="5" selected>$5 bills / weekly deposits</option>
+                                    <option value="10">$10 per interval</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2Target">Target Milestone ($)</label>
+                                <select id="t2Target" class="form-control">
+                                    <option value="50">$50 Emergency Cushion</option>
+                                    <option value="100" selected>$100 Comfort Fund</option>
+                                    <option value="250">$250 Freedom Buffer</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Build My Game Map</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool2" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-trophy"></i> Milestone Horizon Map</div>
+                        <div id="t2Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Saved Games History</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool2')">Clear History</button>
+                        </div>
+                        <div id="historyTool2" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 3 -->
+                <div id="tool3" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Social Pressure Defense Script</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool3()">Load Sample</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool3()">Start Over</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Protect your budget while keeping your social connection strong.</p>
+
+                        <form id="formTool3">
+                            <div class="form-group">
+                                <label for="t3Scenario">Social Spending Scenario</label>
+                                <select id="t3Scenario" class="form-control">
+                                    <option value="Weekend drinks / Bar nights">Weekend drinks / Bar nights</option>
+                                    <option value="Group vacation / Weekend trips">Group vacation / Weekend trips</option>
+                                    <option value="Gift exchanges / Birthdays">Gift exchanges / Birthdays</option>
+                                    <option value="Dining at expensive spots" selected>Dining at expensive spots</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3Budget">Your Fun Budget Allocation for This Week ($)</label>
+                                <input type="number" id="t3Budget" class="form-control" placeholder="15" min="0" step="any" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3Dynamic">Peer Group Dynamic</label>
+                                <select id="t3Dynamic" class="form-control">
+                                    <option value="High pressure">High pressure (Persistent spenders)</option>
+                                    <option value="Understanding">Understanding (Good listeners)</option>
+                                    <option value="Mixed" selected>Mixed Group</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Generate Defense Scripts</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool3" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-shield-halved"></i> Social Scripts & Boundaries</div>
+                        <div id="t3Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Script History</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool3')">Clear History</button>
+                        </div>
+                        <div id="historyTool3" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 4 -->
+                <div id="tool4" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Found Cash Reclaimer</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool4()">Load Sample</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool4()">Start Over</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Identify hidden value in unused items, unmonitored bills, and forgotten subscriptions.</p>
+
+                        <form id="formTool4">
+                            <div class="form-group">
+                                <label>Unused Gift Cards / Loyalty Points Available?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t4Gift" value="Yes" checked> Yes</label>
+                                    <label class="radio-label"><input type="radio" name="t4Gift" value="No"> No</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4Closet">Unused Items in Closet / Storage</label>
+                                <select id="t4Closet" class="form-control">
+                                    <option value="1-5 items">1-5 items (Light clutter)</option>
+                                    <option value="5-10 items" selected>5-10 items (Moderate clutter)</option>
+                                    <option value="Many items">Many items (Substantial overflow)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4Subs">Subscriptions Not Used in Last 30 Days</label>
+                                <input type="number" id="t4Subs" class="form-control" placeholder="2" min="0" step="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4Bills">Utility / Bill Providers with No Rate Check in 12 Months</label>
+                                <input type="number" id="t4Bills" class="form-control" placeholder="1" min="0" step="1" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Calculate Hidden Value</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool4" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-sack-dollar"></i> Reclamation Audit Results</div>
+                        <div id="t4Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Reclaim History</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool4')">Clear History</button>
+                        </div>
+                        <div id="historyTool4" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: TOOL 5 -->
+                <div id="tool5" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Habit Stacking Savings Planner</h2>
+                            <div style="display:flex; gap:8px;">
+                                <button class="btn btn-secondary btn-sm" onclick="loadSampleTool5()">Load Sample</button>
+                                <button class="btn btn-outline btn-sm" onclick="resetTool5()">Start Over</button>
+                            </div>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Attach a micro-saving action to an existing routine habit so it becomes automatic.</p>
+
+                        <form id="formTool5">
+                            <div class="form-group">
+                                <label for="t5Habit">Existing Daily Habit Anchor</label>
+                                <select id="t5Habit" class="form-control">
+                                    <option value="Morning coffee / tea brew" selected>Morning coffee / tea brew</option>
+                                    <option value="Checking phone right after work">Checking phone right after work</option>
+                                    <option value="Receiving payday notification">Receiving payday notification</option>
+                                    <option value="Evening wind-down routine">Evening wind-down routine</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5Amount">Micro-Savings Amount Tied to Habit ($)</label>
+                                <select id="t5Amount" class="form-control">
+                                    <option value="1">$1</option>
+                                    <option value="2" selected>$2</option>
+                                    <option value="3">$3</option>
+                                    <option value="5">$5</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5Transfer">Transfer Mechanism</label>
+                                <select id="t5Transfer" class="form-control">
+                                    <option value="Manual bank app transfer" selected>Manual bank app transfer</option>
+                                    <option value="Cash drop into physical jar">Cash drop into physical jar</option>
+                                    <option value="Automated recurring bank rule">Automated recurring bank rule</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width:100%;">Create Habit Blueprint</button>
+                        </form>
+                    </div>
+
+                    <div id="outTool5" class="output-box">
+                        <div class="output-title"><i class="fa-solid fa-repeat"></i> Micro-Habit Blueprint & Tracker</div>
+                        <div id="t5Results"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size:14px;">Habit Stack History</h3>
+                            <button class="btn btn-outline btn-sm" onclick="clearToolHistory('tool5')">Clear History</button>
+                        </div>
+                        <div id="historyTool5" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: 7-DAY RESET GUIDE -->
+                <div id="reset7" class="view-pane">
+                    <div class="card">
+                        <h2 style="font-size:18px; margin-bottom:8px;">7-Day Small-Savings Reset</h2>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">A structured guided roadmap to transform your micro-savings routine in seven days.</p>
+                        
+                        <div style="display:flex; flex-direction:column; gap:12px;">
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 1: Find the Pressure</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Run the <a href="#" onclick="switchView('tool1'); return false;">Leak Auditor</a> to establish your solo overhead baseline.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 2: Create a Milestone Target</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Set up your savings horizon with the <a href="#" onclick="switchView('tool2'); return false;">$5 Game Builder</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 3: Protect Budget Socially</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Generate customized scripts using <a href="#" onclick="switchView('tool3'); return false;">Social Defense</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 4: Reclaim Immediate Cash</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Audit hidden household assets with the <a href="#" onclick="switchView('tool4'); return false;">Cash Reclaimer</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 5: Make Saving Automatic-ish</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Attach micro-deposits to daily anchors using the <a href="#" onclick="switchView('tool5'); return false;">Habit Stacker</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 6: Review System Snapshot</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Check cross-tool synthesis and recommendations on <a href="#" onclick="switchView('dashboard'); return false;">Dashboard</a>.</p>
+                            </div>
+                            <div style="background:#F9FAFB; padding:12px; border-radius:8px; border:1px solid var(--border-color);">
+                                <strong style="color:var(--purple-primary);">Day 7: Lock In Your Operating Plan</strong>
+                                <p style="font-size:13px; color:var(--text-muted); margin-top:4px;">Generate and print your synthesized <a href="#" onclick="switchView('plan'); return false;">My Savings Plan</a>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: MY SAVINGS PLAN -->
+                <div id="plan" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">My Small-Savings Operating Plan</h2>
+                            <button class="btn btn-primary btn-sm no-print" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Plan</button>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Synthesized overview of active tools, targets, and habit rules.</p>
+
+                        <div id="planContent">
+                            <!-- Populated dynamically via renderPlan() -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW: HISTORY -->
+                <div id="history" class="view-pane">
+                    <div class="card">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                            <h2 style="font-size:18px;">Unified History Log</h2>
+                            <button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Clear All History</button>
+                        </div>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Review saved calculations and analyses across all modules.</p>
+
+                        <div id="unifiedHistoryList" class="history-list"></div>
+                    </div>
+                </div>
+
+                <!-- VIEW: PRIVACY -->
+                <div id="privacy" class="view-pane">
+                    <div class="card">
+                        <h2 style="font-size:18px; margin-bottom:12px;">Privacy & Local Data Control</h2>
+                        <p style="font-size:13.5px; color:var(--text-main); line-height:1.6; margin-bottom:16px;">
+                            Small-Savings Engine™ operates entirely inside your browser. No financial information, personal entries, or calculation results are ever sent to external servers or databases.
+                        </p>
+                        <div style="background:var(--purple-light); padding:16px; border-radius:10px; margin-bottom:16px; font-size:13px;">
+                            <strong style="color:var(--purple-primary);"><i class="fa-solid fa-shield-halved"></i> Data Storage Policy</strong>
+                            <ul style="padding-left:18px; margin-top:8px; line-height:1.5;">
+                                <li>All history items are stored in your browser's standard <code style="background:#E0E7FF; padding:2px 4px; border-radius:4px;">localStorage</code>.</li>
+                                <li>No account or registration is required to use this application.</li>
+                                <li>You can clear your local data at any time using the clear buttons provided in each tool or history pane.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Global Footer -->
+            <footer class="app-footer">
+                Small-Savings Engine™ — Practical micro-budgeting operating system. Educational tool, not registered financial investment advice.
+            </footer>
+        </div>
+    </div>
+
+    <!-- Global Toast Element -->
+    <div id="toast" class="toast" role="status" aria-live="polite">Script copied to clipboard!</div>
+
+    <script>
+        /* CENTRAL STATE MODEL */
+        const PRODUCT_MODE = "complete"; // Modes: leak, game, social, cash, habit, reset7, complete
+
+        let smallSavingsState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        /* SECURITY & INPUT ESCAPING */
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        /* NAVIGATION & SIDEBAR LOGIC */
+        function switchView(viewId) {
+            document.querySelectorAll('.view-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const targetView = document.getElementById(viewId);
+            if (targetView) targetView.classList.add('active');
+
+            const targetNav = document.querySelector(`.nav-item[data-view="${viewId}"]`);
+            if (targetNav) targetNav.classList.add('active');
+
+            // Close mobile overlay
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+            
+            if(viewId === 'plan') renderPlan();
+            if(viewId === 'history') renderUnifiedHistory();
+
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                switchView(item.getAttribute('data-view'));
+            });
+        });
+
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('open');
+            });
+        }
+
+        if (sidebarOverlay) {
+            sidebarOverlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.remove('open');
+            });
+        }
+
+        /* GLOBAL UTILITIES & TOAST */
+        function showToast(text) {
+            const toast = document.getElementById('toast');
+            toast.textContent = text;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Copied to clipboard!");
+                }).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy text");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* LOCAL STORAGE & STATE MANAGEMENT */
+        function saveState() {
+            try {
+                localStorage.setItem('smallsavings_v2_state', JSON.stringify(smallSavingsState));
+            } catch(e) {
+                console.error('Failed to save state:', e);
+            }
+        }
+
+        function loadState() {
+            try {
+                const stored = localStorage.getItem('smallsavings_v2_state');
+                if (stored) {
+                    smallSavingsState = JSON.parse(stored);
+                }
+            } catch(e) {
+                console.error('Failed to load state:', e);
+            }
+        }
+
+        function saveHistory(toolId, summary, rawData = {}) {
+            const key = `smallsavings_history_${toolId}`;
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+
+            const timestamp = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute:'2-digit' });
+            history.unshift({ timestamp, summary, rawData });
+            if (history.length > 30) history.pop();
+
+            try {
+                localStorage.setItem(key, JSON.stringify(history));
+            } catch(e) {}
+
+            if (!smallSavingsState.completedTools.includes(toolId)) {
+                smallSavingsState.completedTools.push(toolId);
+            }
+            smallSavingsState.toolResults[toolId] = { summary, rawData, timestamp };
+            smallSavingsState.lastUpdated = new Date().toISOString();
+            saveState();
+
+            renderHistory(toolId);
+            updateMilestoneBadges();
+        }
+
+        function renderHistory(toolId) {
+            const key = `smallsavings_history_${toolId}`;
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+            
+            const container = document.getElementById(`history${toolId.charAt(0).toUpperCase() + toolId.slice(1)}`);
+            if (!container) return;
+
+            if (history.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:12px;">No saved history for this module yet.</div>`;
+                return;
+            }
+
+            container.innerHTML = history.map((item, idx) => `
+                <div class="history-item">
+                    <div class="history-item-content">
+                        <strong style="color:var(--purple-primary);">${escapeHTML(item.timestamp)}:</strong> ${escapeHTML(item.summary)}
+                    </div>
+                    <button class="btn btn-outline btn-sm" onclick="deleteHistoryItem('${toolId}', ${idx})" title="Delete entry"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            `).join('');
+        }
+
+        function deleteHistoryItem(toolId, idx) {
+            const key = `smallsavings_history_${toolId}`;
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+            if (idx >= 0 && idx < history.length) {
+                history.splice(idx, 1);
+                try { localStorage.setItem(key, JSON.stringify(history)); } catch(e){}
+                renderHistory(toolId);
+                updateMilestoneBadges();
+            }
+        }
+
+        function clearToolHistory(toolId) {
+            if (confirm("Are you sure you want to clear history for this tool?")) {
+                localStorage.removeItem(`smallsavings_history_${toolId}`);
+                renderHistory(toolId);
+                updateMilestoneBadges();
+                showToast("Tool history cleared.");
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Are you sure you want to clear history across all modules?")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => localStorage.removeItem(`smallsavings_history_${t}`));
+                smallSavingsState.completedTools = [];
+                smallSavingsState.toolResults = {};
+                saveState();
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => renderHistory(t));
+                renderUnifiedHistory();
+                updateMilestoneBadges();
+                showToast("All history cleared.");
+            }
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryList');
+            if (!container) return;
+
+            let allEntries = [];
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+                let history = [];
+                try { history = JSON.parse(localStorage.getItem(`smallsavings_history_${toolId}`) || '[]'); } catch(e){}
+                history.forEach(item => {
+                    allEntries.push({ ...item, toolId });
+                });
+            });
+
+            if (allEntries.length === 0) {
+                container.innerHTML = `<div style="color:var(--text-muted); font-size:13px;">No history records found. Run analyses across your tools to populate this view.</div>`;
+                return;
+            }
+
+            container.innerHTML = allEntries.map(item => `
+                <div class="history-item">
+                    <div class="history-item-content">
+                        <span style="font-weight:700; color:var(--purple-primary); text-transform:uppercase; font-size:11px;">[${escapeHTML(item.toolId)}]</span>
+                        <span style="color:var(--text-muted); font-size:12px;">${escapeHTML(item.timestamp)}:</span>
+                        <span>${escapeHTML(item.summary)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateMilestoneBadges() {
+            const badgeContainer = document.getElementById('dashboardBadges');
+            const badgeCountText = document.getElementById('badgeCountText');
+            let totalEntries = 0;
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                let items = [];
+                try { items = JSON.parse(localStorage.getItem(`smallsavings_history_${t}`) || '[]'); } catch(e){}
+                totalEntries += items.length;
+            });
+
+            const badgeDefs = [
+                { id: 1, name: 'Engine Started', icon: 'fa-seedling', req: 0 },
+                { id: 2, name: 'Micro-Saver', icon: 'fa-fire', req: 1 },
+                { id: 3, name: 'Budget Defender', icon: 'fa-shield', req: 3 },
+                { id: 4, name: 'Capital Builder', icon: 'fa-gem', req: 7 }
+            ];
+
+            let earnedCount = 0;
+            let badgesHTML = badgeDefs.map(b => {
+                const earned = totalEntries >= b.req;
+                if (earned) earnedCount++;
+                return `<span class="badge ${earned ? '' : 'unearned'}"><i class="fa-solid ${b.icon}"></i> ${b.name}</span>`;
+            }).join('');
+
+            if (badgeContainer) badgeContainer.innerHTML = badgesHTML;
+            if (badgeCountText) badgeCountText.textContent = `${earnedCount} / 4 Earned`;
+        }
+
+        /* CROSS-TOOL RECOMMENDATIONS ENGINE */
+        function getRecommendation(currentToolId, data = {}) {
+            let rec = { title: "", text: "", targetView: "" };
+
+            if (currentToolId === 'tool1') {
+                rec = {
+                    title: "Recommended Next Move: Cash Reclaimer",
+                    text: "Since solo fixed costs consume a solid portion of income, reclaim immediate cash or cut subscriptions using Found Cash Reclaimer.",
+                    targetView: "tool4"
+                };
+            } else if (currentToolId === 'tool2') {
+                rec = {
+                    title: "Recommended Next Move: Habit Stacker",
+                    text: "You have a milestone horizon goal! Tie your periodic deposits directly to a daily habit anchor using Habit Stacker.",
+                    targetView: "tool5"
+                };
+            } else if (currentToolId === 'tool3') {
+                rec = {
+                    title: "Recommended Next Move: $5 Game Builder",
+                    text: "Protecting your social budget helps keep money in your pocket. Channel your weekly savings into an active milestone game.",
+                    targetView: "tool2"
+                };
+            } else if (currentToolId === 'tool4') {
+                rec = {
+                    title: "Recommended Next Move: $5 Game Builder",
+                    text: "Don't let reclaimed cash disappear into routine spending! Sweep found cash into your active milestone game.",
+                    targetView: "tool2"
+                };
+            } else if (currentToolId === 'tool5') {
+                rec = {
+                    title: "Recommended Next Move: My Savings Plan",
+                    text: "Your habit stack anchor is set. Synthesize all active tools into your unified Small-Savings Operating Plan.",
+                    targetView: "plan"
+                };
+            }
+
+            return `
+                <div class="rec-box">
+                    <h4><i class="fa-solid fa-compass"></i> ${escapeHTML(rec.title)}</h4>
+                    <p>${escapeHTML(rec.text)}</p>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="switchView('${rec.targetView}')">Go to Next Tool <i class="fa-solid fa-arrow-right"></i></button>
+                </div>
+            `;
+        }
+
+        /* TOOL 1: SINGLE-LIVING LEAK AUDITOR */
+        function loadSampleTool1() {
+            document.getElementById('t1Income').value = 2100;
+            document.getElementById('t1Rent').value = 1100;
+            document.getElementById('t1Grocery').value = 87.5;
+            document.getElementById('t1Convenience').value = 'Moderate';
+            document.getElementById('t1Utility').value = 150;
+        }
+
+        function resetTool1() {
+            document.getElementById('formTool1').reset();
+            document.getElementById('outTool1').classList.remove('active');
+        }
+
+        document.getElementById('formTool1').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const income = parseFloat(document.getElementById('t1Income').value) || 0;
+            const rent = parseFloat(document.getElementById('t1Rent').value) || 0;
+            const groceryWeekly = parseFloat(document.getElementById('t1Grocery').value) || 0;
+            const utility = parseFloat(document.getElementById('t1Utility').value) || 0;
+            const convenience = document.getElementById('t1Convenience').value;
+
+            if (income <= 0) {
+                alert("Please enter a valid monthly income greater than 0.");
+                return;
+            }
+
+            const groceryMonthly = groceryWeekly * 4.33;
+            const totalFixed = rent + groceryMonthly + utility;
+            const singleTaxPct = Math.min(Math.round((totalFixed / income) * 100), 100);
+
+            let estSavings = 40;
+            if (convenience === 'High') estSavings += 30;
+            if (groceryMonthly > 400) estSavings += 20;
+
+            const resDiv = document.getElementById('t1Results');
+            resDiv.innerHTML = `
+                <div style="margin-bottom:16px;">
+                    <strong>Selected Overhead Ratio:</strong> Approximately <strong>${singleTaxPct}%</strong> of your monthly income is allocated to basic solo housing, utilities, and grocery baseline.
+                    <div style="background:#E5E7EB; border-radius:10px; height:12px; margin-top:8px; overflow:hidden;">
+                        <div style="background:${singleTaxPct > 70 ? 'var(--rose-primary)' : 'var(--purple-primary)'}; width:${singleTaxPct}%; height:100%;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <h4 style="font-size:14px; color:var(--purple-primary); margin-bottom:6px;">3 Single-Specific Savings Ideas</h4>
+                    <ul style="padding-left:18px; font-size:13px; color:var(--text-main); line-height:1.5;">
+                        <li><strong>Batch Meal Prep:</strong> Cook 3-portion single meals to eliminate solo food waste (est. ~$25/mo).</li>
+                        <li><strong>Internet Tier Audit:</strong> Evaluate 100 Mbps standard single-user tier to cut overhead (est. ~$20/mo).</li>
+                        <li><strong>Subscription Swapping:</strong> Maintain only one active streaming service per month (est. ~$15/mo).</li>
+                    </ul>
+                </div>
+                <div style="background:var(--purple-light); padding:12px; border-radius:8px; margin-bottom:16px; font-size:13px;">
+                    <strong style="color:var(--purple-primary);">Found Cash Potential:</strong> Estimated <strong>$${estSavings} - $${estSavings + 30}/month</strong> in practical routine optimization (planning estimate).
+                </div>
+                <div style="font-size:13px;">
+                    <strong>Top 2 Moves for This Week:</strong>
+                    <ol style="padding-left:18px; margin-top:4px;">
+                        <li>Audit utility/wifi plans for single-user tier discounts.</li>
+                        <li>Freeze half of fresh bread/groceries upon purchase to prevent solo spoilage.</li>
+                    </ol>
+                </div>
+                ${getRecommendation('tool1')}
+            `;
+            document.getElementById('outTool1').classList.add('active');
+            saveHistory('tool1', `Audit completed: ${singleTaxPct}% solo overhead. Est. savings: $${estSavings}-$${estSavings+30}/mo.`, { singleTaxPct, estSavings });
+        });
+
+        /* TOOL 2: $5 GAME BUILDER */
+        function loadSampleTool2() {
+            document.getElementById('t2Freq').value = 'Weekly';
+            document.getElementById('t2Amount').value = '5';
+            document.getElementById('t2Target').value = '100';
+        }
+
+        function resetTool2() {
+            document.getElementById('formTool2').reset();
+            document.getElementById('outTool2').classList.remove('active');
+        }
+
+        document.getElementById('formTool2').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const freq = document.getElementById('t2Freq').value;
+            const amount = parseFloat(document.getElementById('t2Amount').value) || 5;
+            const target = parseFloat(document.getElementById('t2Target').value) || 100;
+
+            const stepsNeeded = Math.ceil(target / amount);
+            let daysFactor = 7;
+            if (freq === 'Daily') daysFactor = 1;
+            if (freq === 'Payday') daysFactor = 14;
+
+            const totalDays = stepsNeeded * daysFactor;
+            const targetDate = new Date();
+            targetDate.setDate(targetDate.getDate() + totalDays);
+
+            let cellsHTML = '';
+            for (let i = 1; i <= stepsNeeded; i++) {
+                cellsHTML += `<div class="tracker-cell" tabindex="0" role="checkbox" aria-checked="false" aria-label="Save ${i} of $${amount}" onclick="toggleTrackerCell(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleTrackerCell(this);}">$${amount}</div>`;
+            }
+
+            const resDiv = document.getElementById('t2Results');
+            resDiv.innerHTML = `
+                <div style="margin-bottom:12px; font-size:13.5px;">
+                    <strong>Milestone Horizon:</strong> Reaching your <strong>$${target} Target</strong> in approximately <strong>${stepsNeeded} deposits</strong> (Est. target date: <strong>${targetDate.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}</strong>).
+                </div>
+                <div>
+                    <strong style="font-size:13px;">Interactive Milestone Tracker:</strong> (Click or focus+space to check off saves)
+                    <div class="tracker-grid">${cellsHTML}</div>
+                </div>
+                <div style="background:var(--rose-light); padding:12px; border-radius:8px; margin:12px 0; font-size:13px;">
+                    <strong style="color:var(--rose-primary);">Psychological Anchor Reframe:</strong> Micro-deposits train your brain to identify as an active builder. Behavioral momentum builds financial resilience faster than waiting for lump sums.
+                </div>
+                <div style="font-size:13px;">
+                    <strong>Zero-Cost Celebration Trigger:</strong> Upon reaching $${target}, treat yourself to a zero-cost relaxation reward: a full afternoon movie, scenic hike, or a long warm bath with zero phone interrupts.
+                </div>
+                ${getRecommendation('tool2')}
+            `;
+            document.getElementById('outTool2').classList.add('active');
+            saveHistory('tool2', `Game created: $${amount} ${freq} targeting $${target} by ${targetDate.toLocaleDateString('en-US', {month:'short', day:'numeric'})}.`, { amount, freq, target, stepsNeeded });
+        });
+
+        function toggleTrackerCell(cell) {
+            cell.classList.toggle('checked');
+            const isChecked = cell.classList.contains('checked');
+            cell.setAttribute('aria-checked', isChecked ? "true" : "false");
+        }
+
+        /* TOOL 3: SOCIAL PRESSURE DEFENSE SCRIPT */
+        function loadSampleTool3() {
+            document.getElementById('t3Scenario').value = 'Dining at expensive spots';
+            document.getElementById('t3Budget').value = 15;
+            document.getElementById('t3Dynamic').value = 'Mixed';
+        }
+
+        function resetTool3() {
+            document.getElementById('formTool3').reset();
+            document.getElementById('outTool3').classList.remove('active');
+        }
+
+        document.getElementById('formTool3').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const scenario = document.getElementById('t3Scenario').value;
+            const budget = parseFloat(document.getElementById('t3Budget').value) || 0;
+            const dynamic = document.getElementById('t3Dynamic').value;
+
+            let script1 = `Hey! I’m capping my fun spend at $${budget} this week to crush a personal goal. I'd love to join for dessert/drinks right after, or catch up before!`;
+            let script2 = `I'm scaling back on ${scenario.toLowerCase()} right now while saving for a cushion goal. Count me out for this round, but let’s hang out one-on-one soon!`;
+            let script3 = `Sounds super fun! My spending limit for outings is $${budget} right now, so I'll grab an appetizer and stick to water. Excited to catch up!`;
+
+            if (dynamic === 'High pressure') {
+                script1 = `I have a strict $${budget} spending boundary this week for personal goals. I won't be doing full dinner/event, but I'd love to catch up for tea or coffee later!`;
+            }
+
+            const hostScript1 = `Hey friends! Instead of going out to a noisy spot, come over to my place this weekend! I'll make a batch of iced tea and popcorn—bring your favorite snack.`;
+            const hostScript2 = `Let's do a relaxed park hangout or coffee walk this Saturday instead. Super easy on the wallet for everyone!`;
+
+            const resDiv = document.getElementById('t3Results');
+            resDiv.innerHTML = `
+                <h4 style="font-size:14px; color:var(--purple-primary); margin-bottom:8px;">3 Tactful Defense Scripts</h4>
+                <div class="script-card">
+                    <p>"${escapeHTML(script1)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(script1).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+                <div class="script-card">
+                    <p>"${escapeHTML(script2)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(script2).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+                <div class="script-card">
+                    <p>"${escapeHTML(script3)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(script3).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+
+                <h4 style="font-size:14px; color:var(--purple-primary); margin:16px 0 8px;">Low-Cost Alternative Hosting Scripts</h4>
+                <div class="script-card">
+                    <p>"${escapeHTML(hostScript1)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(hostScript1).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+                <div class="script-card">
+                    <p>"${escapeHTML(hostScript2)}"</p>
+                    <button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHTML(hostScript2).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Copy</button>
+                </div>
+
+                <div style="background:var(--purple-light); padding:12px; border-radius:8px; margin-top:12px; font-size:13px;">
+                    <strong>Social Boundary Principle:</strong> Authentic friendships value your presence, not your purchasing capacity. Setting clear spending boundaries filters for healthy relationships while protecting your financial goals.
+                </div>
+                ${getRecommendation('tool3')}
+            `;
+            document.getElementById('outTool3').classList.add('active');
+            saveHistory('tool3', `Scripts generated for ${scenario} with $${budget} budget.`, { scenario, budget, dynamic });
+        });
+
+        /* TOOL 4: FOUND CASH RECLAIMER */
+        function loadSampleTool4() {
+            document.querySelector('input[name="t4Gift"][value="Yes"]').checked = true;
+            document.getElementById('t4Closet').value = '5-10 items';
+            document.getElementById('t4Subs').value = 2;
+            document.getElementById('t4Bills').value = 1;
+        }
+
+        function resetTool4() {
+            document.getElementById('formTool4').reset();
+            document.getElementById('outTool4').classList.remove('active');
+        }
+
+        document.getElementById('formTool4').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const hasGifts = document.querySelector('input[name="t4Gift"]:checked').value === 'Yes';
+            const closet = document.getElementById('t4Closet').value;
+            const subs = parseInt(document.getElementById('t4Subs').value) || 0;
+            const bills = parseInt(document.getElementById('t4Bills').value) || 0;
+
+            let minCash = 0;
+            let maxCash = 0;
+
+            if (hasGifts) { minCash += 25; maxCash += 75; }
+            if (closet === '1-5 items') { minCash += 30; maxCash += 80; }
+            if (closet === '5-10 items') { minCash += 70; maxCash += 180; }
+            if (closet === 'Many items') { minCash += 150; maxCash += 350; }
+            
+            const recurringMin = (subs * 10) + (bills * 15);
+            const recurringMax = (subs * 25) + (bills * 40);
+
+            const totalMin = minCash + recurringMin;
+            const totalMax = maxCash + recurringMax;
+
+            const resDiv = document.getElementById('t4Results');
+            resDiv.innerHTML = `
+                <div style="font-size:15px; margin-bottom:12px;">
+                    Estimated Reclaimable Value: <strong style="color:var(--purple-primary); font-size:18px;">$${totalMin} - $${totalMax}</strong>
+                </div>
+
+                <table class="custom-table">
+                    <thead>
+                        <tr>
+                            <th>Asset Source</th>
+                            <th>Priority Action</th>
+                            <th>Est. Potential Value</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${hasGifts ? `<tr><td>Gift Cards / Points</td><td>Use for routine groceries or sell on verified swap portal</td><td>$25 - $75 (One-time)</td></tr>` : ''}
+                        <tr><td>Unused Closet Items</td><td>List top 3 items on local marketplace</td><td>$30 - $180 (One-time)</td></tr>
+                        ${subs > 0 ? `<tr><td>Unused Subscriptions (${subs})</td><td>Cancel immediately via app store or account portal</td><td>$${subs*10} - $${subs*25}/mo (Recurring)</td></tr>` : ''}
+                        ${bills > 0 ? `<tr><td>Unmonitored Bills (${bills})</td><td>Call provider or switch to lower single-user tier</td><td>$${bills*15} - $${bills*40}/mo (Recurring)</td></tr>` : ''}
+                    </tbody>
+                </table>
+
+                <div style="background:var(--rose-light); padding:12px; border-radius:8px; margin-top:12px; font-size:13px;">
+                    <strong style="color:var(--rose-primary);">Dedicated Sweep Strategy:</strong> As soon as reclaimed cash arrives or subscription money is freed up, sweep 100% of it into your active milestone game within 24 hours.
+                </div>
+                ${getRecommendation('tool4')}
+            `;
+            document.getElementById('outTool4').classList.add('active');
+            saveHistory('tool4', `Audit completed: Found $${totalMin}-$${totalMax} in reclaimable routine cash/savings.`, { totalMin, totalMax, subs, bills });
+        });
+
+        /* TOOL 5: HABIT STACKING SAVINGS PLANNER */
+        function loadSampleTool5() {
+            document.getElementById('t5Habit').value = 'Morning coffee / tea brew';
+            document.getElementById('t5Amount').value = '2';
+            document.getElementById('t5Transfer').value = 'Manual bank app transfer';
+        }
+
+        function resetTool5() {
+            document.getElementById('formTool5').reset();
+            document.getElementById('outTool5').classList.remove('active');
+        }
+
+        document.getElementById('formTool5').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const habit = document.getElementById('t5Habit').value;
+            const amount = document.getElementById('t5Amount').value;
+            const transfer = document.getElementById('t5Transfer').value;
+
+            let trackerCells = '';
+            for (let i = 1; i <= 30; i++) {
+                trackerCells += `<div class="tracker-cell" tabindex="0" role="checkbox" aria-checked="false" aria-label="Day ${i}" onclick="toggleTrackerCell(this)" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleTrackerCell(this);}">D${i}</div>`;
+            }
+
+            const formulaText = `After I ${habit.toLowerCase()}, I will immediately save $${amount} via ${transfer.toLowerCase()}.`;
+
+            const resDiv = document.getElementById('t5Results');
+            resDiv.innerHTML = `
+                <div style="background:var(--purple-light); padding:16px; border-radius:10px; border:1px dashed var(--purple-primary); margin-bottom:16px; text-align:center;">
+                    <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px;">Habit Stack Statement</div>
+                    <div style="font-size:15px; font-weight:700; color:var(--purple-primary);">
+                        "${escapeHTML(formulaText)}"
+                    </div>
+                    <button class="btn btn-secondary btn-sm" style="margin-top:10px;" onclick="copyToClipboard('${escapeHTML(formulaText).replace(/'/g, "\\'")}')"><i class="fa-regular fa-copy"></i> Copy Formula</button>
+                </div>
+
+                <div>
+                    <strong style="font-size:13px;">30-Day Check-in Board:</strong>
+                    <div class="tracker-grid">${trackerCells}</div>
+                </div>
+
+                <div style="margin-top:12px; font-size:13px;">
+                    <strong style="color:var(--purple-primary);">Friction-Reduction Tip:</strong> Position your bank app icon right next to your primary habit app (e.g., social or morning alarm) to keep transfers under 10 seconds.
+                </div>
+                ${getRecommendation('tool5')}
+            `;
+            document.getElementById('outTool5').classList.add('active');
+            saveHistory('tool5', `Habit Stacked: $${amount} tied to ${habit}.`, { habit, amount, transfer, formulaText });
+        });
+
+        /* RENDER MY SAVINGS PLAN */
+        function renderPlan() {
+            const container = document.getElementById('planContent');
+            if (!container) return;
+
+            const t1 = smallSavingsState.toolResults['tool1']?.rawData || {};
+            const t2 = smallSavingsState.toolResults['tool2']?.rawData || {};
+            const t3 = smallSavingsState.toolResults['tool3']?.rawData || {};
+            const t4 = smallSavingsState.toolResults['tool4']?.rawData || {};
+            const t5 = smallSavingsState.toolResults['tool5']?.rawData || {};
+
+            container.innerHTML = `
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">1. Solo Cost Baseline</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t1.singleTaxPct ? `Overhead ratio: <strong>${t1.singleTaxPct}%</strong> of net income. Est. savings potential: <strong>$${t1.estSavings}-$${t1.estSavings+30}/mo</strong>.` : 'Not completed yet. Run Leak Auditor.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">2. Active Milestone Game</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t2.target ? `Target: <strong>$${t2.target}</strong> via <strong>$${t2.amount} ${t2.freq}</strong> contributions (${t2.stepsNeeded} total deposits).` : 'Not completed yet. Run $5 Game Builder.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">3. Social Spending Boundary</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t3.budget !== undefined ? `Weekly fun spending limit: <strong>$${t3.budget}</strong> for <em>${escapeHTML(t3.scenario)}</em>.` : 'Not completed yet. Run Social Defense.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">4. Reclaimed Cash & Savings</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t4.totalMin ? `Est. total value identified: <strong>$${t4.totalMin} - $${t4.totalMax}</strong> across subscriptions and assets.` : 'Not completed yet. Run Cash Reclaimer.'}</p>
+                    </div>
+                    <div style="padding:12px; background:#F9FAFB; border-radius:8px; border:1px solid var(--border-color);">
+                        <strong style="color:var(--purple-primary); font-size:14px;">5. Habit Stack Commitment</strong>
+                        <p style="font-size:13px; margin-top:4px;">${t5.formulaText ? `Formula: <em>"${escapeHTML(t5.formulaText)}"</em>` : 'Not completed yet. Run Habit Stacker.'}</p>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => renderHistory(t));
+            updateMilestoneBadges();
+        });
+    </script>
+</body>
+</html>

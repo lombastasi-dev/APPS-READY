@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WORKPLACE LANGUAGE COACH™ — Komersial V2</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* DESIGN TOKENS & VISUAL IDENTITY */
+        :root {
+            --primary-blue: #1E3A8A;
+            --primary-hover: #1B3278;
+            --accent-blue: #3B82F6;
+            --accent-light: #EFF6FF;
+            --bg-gradient-start: #F0F4FF;
+            --bg-gradient-end: #EBF2FE;
+            --card-bg: #FFFFFF;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --success-green: #10B981;
+            --warning-amber: #F59E0B;
+            --purple-accent: #8B5CF6;
+            --radius-lg: 12px;
+            --radius-md: 8px;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        /* BASE & RESET */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* LAYOUT STRUCTURE */
+        .app-container {
+            display: flex;
+            flex: 1;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* SIDEBAR STYLES */
+        .sidebar {
+            width: 260px;
+            background-color: var(--card-bg);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: var(--primary-blue);
+        }
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            line-height: 1.2;
+            letter-spacing: -0.2px;
+        }
+
+        .sidebar-header span {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--accent-blue);
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border: none;
+            background: transparent;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button:hover {
+            background-color: #F1F5F9;
+            color: var(--primary-blue);
+        }
+
+        .nav-item.active button {
+            background-color: var(--primary-blue);
+            color: #FFFFFF;
+        }
+
+        .nav-item.active button i {
+            color: #FFFFFF;
+        }
+
+        .nav-item button i {
+            font-size: 15px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 8px 12px;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-wrapper {
+            flex: 1;
+            margin-left: 260px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: calc(100% - 260px);
+        }
+
+        .top-bar {
+            display: none;
+            background: #FFFFFF;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--primary-blue);
+            cursor: pointer;
+        }
+
+        .top-bar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 860px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 20px;
+        }
+
+        /* UI COMPONENTS */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 8px;
+        }
+
+        .form-control, select, textarea {
+            width: 100%;
+            padding: 11px 14px;
+            border: 1px solid #CBD5E1;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-main);
+            background-color: #FFFFFF;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        /* RANGE SLIDER STYLES */
+        .range-container {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .range-slider {
+            flex: 1;
+            height: 6px;
+            background: #E2E8F0;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--accent-blue);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .range-value {
+            font-weight: 700;
+            color: var(--primary-blue);
+            min-width: 30px;
+            text-align: right;
+            font-size: 15px;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 13.5px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-blue);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: #F1F5F9;
+            color: #475569;
+            border: 1px solid #CBD5E1;
+        }
+
+        .btn-secondary:hover {
+            background-color: #E2E8F0;
+            color: var(--text-main);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary-blue);
+            border: 1px solid var(--primary-blue);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--accent-light);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* OUTPUT STYLES */
+        .output-section {
+            margin-top: 24px;
+            display: none;
+        }
+
+        .output-card {
+            background-color: #FFFFFF;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--accent-blue);
+            box-shadow: var(--shadow-sm);
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .output-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--accent-blue);
+        }
+
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 13px;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .copy-btn:hover {
+            background-color: #F1F5F9;
+            color: var(--primary-blue);
+        }
+
+        .output-body {
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: var(--text-main);
+            white-space: pre-wrap;
+        }
+
+        /* RECOMMENDATION ENGINE BANNER */
+        .recommendation-card {
+            background: linear-gradient(135deg, #EFF6FF 0%, #E0E7FF 100%);
+            border: 1px solid #BFDBFE;
+            border-radius: var(--radius-lg);
+            padding: 16px 20px;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .recommendation-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recommendation-content i {
+            font-size: 20px;
+            color: var(--accent-blue);
+        }
+
+        .recommendation-text h4 {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .recommendation-text p {
+            font-size: 12.5px;
+            color: #475569;
+        }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .dashboard-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+            border-color: #DBEAFE;
+        }
+
+        .dashboard-card-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background-color: var(--accent-light);
+            color: var(--accent-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .dashboard-card-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .dashboard-card-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* ORIENTATION / RULE BOX */
+        .orientation-card {
+            background-color: #FFFFFF;
+            border-left: 4px solid var(--primary-blue);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border-top: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .orientation-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .orientation-rules {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .orientation-rules li {
+            font-size: 13px;
+            color: #334155;
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            line-height: 1.5;
+        }
+
+        .orientation-rules li i {
+            color: var(--accent-blue);
+            margin-top: 3px;
+        }
+
+        /* 7-DAY ACCELERATOR STYLES */
+        .day-accordion {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .day-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .day-header {
+            padding: 16px 20px;
+            background-color: #F8FAFC;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: 600;
+            color: var(--text-main);
+            transition: background 0.2s;
+        }
+
+        .day-header:hover {
+            background-color: #F1F5F9;
+        }
+
+        .day-title-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .day-badge {
+            background-color: var(--primary-blue);
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .day-body {
+            padding: 20px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: #334155;
+        }
+
+        /* HISTORY SECTION */
+        .history-section {
+            margin-top: 32px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .history-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+
+        .history-item {
+            background: #FFFFFF;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .history-item-header {
+            padding: 12px 16px;
+            background-color: #F8FAFC;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 13.5px;
+            font-weight: 600;
+            color: #334155;
+        }
+
+        .history-item-header:hover {
+            background-color: #F1F5F9;
+        }
+
+        .history-item-body {
+            padding: 16px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 13px;
+            color: #475569;
+            background: #FFFFFF;
+            line-height: 1.6;
+        }
+
+        /* FOOTER */
+        .app-footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: #FFFFFF;
+            margin-top: auto;
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-blue);
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 13.5px;
+            font-weight: 500;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        /* OVERLAY FOR MOBILE SIDEBAR */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar, .top-bar, .btn-row, .copy-btn, .history-section, .app-footer, .toast, .mobile-toggle, .nav-list {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+                width: 100% !important;
+            }
+            .main-content {
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            .card, .output-card, .orientation-card {
+                box-shadow: none !important;
+                border: 1px solid #CBD5E1 !important;
+                page-break-inside: avoid;
+            }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .top-bar {
+                display: flex;
+            }
+
+            .main-content {
+                padding: 20px 16px;
+            }
+
+            .recommendation-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-comments"></i>
+                <div>
+                    <h1>WORKPLACE<br>LANGUAGE COACH</h1>
+                    <span>Komersial V2</span>
+                </div>
+            </div>
+            <ul class="nav-list">
+                <li class="nav-item active">
+                    <button onclick="switchTool('dashboard')">
+                        <i class="fa-solid fa-chart-pie"></i> Dasbor Utama
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('tool1')">
+                        <i class="fa-solid fa-users-line"></i> Rapat & Networking
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('tool2')">
+                        <i class="fa-solid fa-clipboard-check"></i> Klarifikasi Instruksi
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('tool3')">
+                        <i class="fa-solid fa-mug-hot"></i> Percakapan Santai (Small Talk)
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('tool4')">
+                        <i class="fa-solid fa-paper-plane"></i> Penyelaras Email & Slack
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('tool5')">
+                        <i class="fa-solid fa-heart-pulse"></i> Redam Kecemasan & Rasa Percaya Diri
+                    </button>
+                </li>
+                
+                <div class="nav-divider"></div>
+
+                <li class="nav-item">
+                    <button onclick="switchTool('accelerator')">
+                        <i class="fa-solid fa-calendar-check"></i> Akselerator 7-Hari
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('global-history')">
+                        <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Tersimpan
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button onclick="switchTool('privacy')">
+                        <i class="fa-solid fa-shield-halved"></i> Privasi & Data
+                    </button>
+                </li>
+            </ul>
+        </aside>
+
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <!-- MOBILE TOP BAR -->
+            <div class="top-bar">
+                <button class="mobile-toggle" onclick="toggleMobileSidebar()">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="top-bar-title" id="mobileTitle">Dasbor Utama</div>
+                <div style="width: 20px;"></div>
+            </div>
+
+            <!-- MAIN CONTENT AREA -->
+            <main class="main-content">
+
+                <!-- DASHBOARD -->
+                <div id="dashboard-view" class="view-section">
+                    <div class="card" style="background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 100%); color: white;">
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 6px;">Workplace Language Coach™</h2>
+                        <p style="font-size: 14.5px; opacity: 0.9; font-weight: 400;">Ubah kompetensi tugas menjadi kepercayaan diri sosial di tempat kerja.</p>
+                    </div>
+
+                    <!-- START HERE / ORIENTATION -->
+                    <div class="orientation-card">
+                        <div class="orientation-title">
+                            <i class="fa-solid fa-compass"></i> Mulai Di Sini: Prinsip Operasional Utama
+                        </div>
+                        <p style="font-size: 13px; color: #475569;">Hambatan komunikasi di tempat kerja jarang disebabkan oleh kurangnya talenta; melainkan karena kekurangan frasa yang tepat dan keraguan menentukan nada bicara (tone).</p>
+                        <ul class="orientation-rules">
+                            <li><i class="fa-solid fa-check-circle"></i> <strong>Aturan 1: Fokus pada kejelasan, bukan kesempurnaan.</strong> Penutur asli pun sering terbata-bata dan menyusun ulang kalimat mereka.</li>
+                            <li><i class="fa-solid fa-check-circle"></i> <strong>Aturan 2: Pilih alat yang sesuai dengan kebutuhan mendesak Anda</strong> (Lisan, Tulisan, Klarifikasi Tugas, atau Penyelarasan Emosi).</li>
+                            <li><i class="fa-solid fa-check-circle"></i> <strong>Aturan 3: Latih frasa yang dihasilkan dengan mengucapkannya keras-keras 2–3 kali</strong> dan simpan favorit Anda di Riwayat Tersimpan.</li>
+                        </ul>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" onclick="switchTool('tool1')">
+                            <div class="dashboard-card-icon"><i class="fa-solid fa-users-line"></i></div>
+                            <div class="dashboard-card-title">Panduan Rapat & Networking</div>
+                            <div class="dashboard-card-desc">Siapkan frasa lisan yang tepat untuk berbicara, menyela dengan sopan, dan menyampaikan pendapat dengan percaya diri.</div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('tool2')">
+                            <div class="dashboard-card-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <div class="dashboard-card-title">Klarifikasi Tugas Eksekutif</div>
+                            <div class="dashboard-card-desc">Ubah pemahaman tugas yang parsial menjadi pesan konfirmasi yang profesional dan lancar.</div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('tool3')">
+                            <div class="dashboard-card-icon"><i class="fa-solid fa-mug-hot"></i></div>
+                            <div class="dashboard-card-title">Protokol Obrolan Santai & Koneksi</div>
+                            <div class="dashboard-card-desc">Kuasai obrolan ringan di tempat kerja, topik pembuka yang luwes, dan frasa penutup yang sopan.</div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('tool4')">
+                            <div class="dashboard-card-icon"><i class="fa-solid fa-paper-plane"></i></div>
+                            <div class="dashboard-card-title">Akselerator Penyelarasan Nada Tulis</div>
+                            <div class="dashboard-card-desc">Sempurnakan draf tertulis untuk mencapai keseimbangan yang tepat antara kesopanan dan ketegasan.</div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('tool5')">
+                            <div class="dashboard-card-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+                            <div class="dashboard-card-title">Peredam Kecemasan Sebelum Berbicara</div>
+                            <div class="dashboard-card-desc">Daftar periksa penenangan fisik, frasa jangkar penolong, dan pembentukan ulang pola pikir sebelum berbicara.</div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('accelerator')">
+                            <div class="dashboard-card-icon" style="background-color: #FEE2E2; color: #EF4444;"><i class="fa-solid fa-calendar-check"></i></div>
+                            <div class="dashboard-card-title">Akselerator Kepercayaan Diri 7-Hari</div>
+                            <div class="dashboard-card-desc">Panduan langkah demi langkah mingguan yang terstruktur untuk kelancaran berkomunikasi di tempat kerja.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 1: MEETINGS & NETWORKING -->
+                <div id="tool1-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-users-line"></i> Panduan Rapat & Networking</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Hasilkan respon lisan profesional untuk interaksi rapat secara langsung.</p>
+                        
+                        <form id="tool1-form" onsubmit="event.preventDefault(); generateTool1();">
+                            <div class="form-group">
+                                <label for="t1-scenario">Konteks Skenario</label>
+                                <select id="t1-scenario" class="form-control">
+                                    <option value="Meeting opinion">Pendapat dalam rapat (Menyampaikan pemikiran terstruktur)</option>
+                                    <option value="Interrupting politely">Menyela dengan sopan (Masuk ke dalam diskusi yang sedang berjalan)</option>
+                                    <option value="Asking for clarification">Meminta klarifikasi (Tindak lanjut secara lisan)</option>
+                                    <option value="Watercooler small talk">Obrolan santai di pantry (Networking informal)</option>
+                                    <option value="Presenting updates">Mempresentasikan pembaruan (Penyampaian status & kemajuan)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t1-message">Pesan utama atau pemikiran inti</label>
+                                <textarea id="t1-message" class="form-control" placeholder="Contoh: Saya rasa kita perlu memeriksa anggaran Q3 sebelum memfinalisasi strategi pemasaran ini..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t1-confidence">Tingkat kepercayaan diri saat ini (1 = Cemas, 5 = Sangat Siap)</label>
+                                <div class="range-container">
+                                    <input type="range" id="t1-confidence" class="range-slider" min="1" max="5" value="3" oninput="document.getElementById('t1-conf-val').innerText = this.value">
+                                    <span id="t1-conf-val" class="range-value">3</span>
+                                </div>
+                            </div>
+
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Hasilkan Skrip Lisan</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample1()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="t1-output" class="output-section">
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Versi Profesional (Konteks Formal)</span>
+                                <button class="copy-btn" onclick="copyText('t1-script-prof')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t1-script-prof"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Versi Ringkas (Langsung pada Inti / Direct)</span>
+                                <button class="copy-btn" onclick="copyText('t1-script-conc')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t1-script-conc"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Versi Santai / Ramah (Rekan Kerja / Kolaboratif)</span>
+                                <button class="copy-btn" onclick="copyText('t1-script-friend')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t1-script-friend"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--success-green);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--success-green);">Tips Pengucapan & Aliran Bicara</span>
+                            </div>
+                            <div class="output-body" id="t1-flow-tip"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--warning-amber);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--warning-amber);">Frasa Penyelamat (Jika Tiba-Tiba Lupa Kata)</span>
+                            </div>
+                            <div class="output-body" id="t1-recovery"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--purple-accent);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--purple-accent);">Latihan Mikro</span>
+                            </div>
+                            <div class="output-body" id="t1-practice"></div>
+                        </div>
+
+                        <!-- RECOMMENDATION ENGINE CONTAINER -->
+                        <div id="t1-rec-container"></div>
+                    </div>
+
+                    <!-- LOCAL HISTORY -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span class="history-title">Riwayat Tersimpan Modul Ini</span>
+                            <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool1')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="tool1-history-list"></div>
+                    </div>
+                </div>
+
+                <!-- TOOL 2: INSTRUCTION CLARIFIER -->
+                <div id="tool2-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-clipboard-check"></i> Klarifikasi Tugas Eksekutif</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Konfirmasi ekspektasi tugas secara profesional tanpa terlihat kurang kompeten.</p>
+                        
+                        <form id="tool2-form" onsubmit="event.preventDefault(); generateTool2();">
+                            <div class="form-group">
+                                <label for="t2-understood">Bagian yang sudah Anda pahami (Tugas utama)</label>
+                                <textarea id="t2-understood" class="form-control" placeholder="Contoh: Saya paham bahwa saya perlu memperbarui presentasi status klien sebelum hari Jumat..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t2-unclear">Bagian yang masih belum jelas (Kesenjangan / Cakupan / Batas Waktu)</label>
+                                <textarea id="t2-unclear" class="form-control" placeholder="Contoh: Belum jelas apakah metrik keuangan regional perlu dimasukkan juga..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t2-sender">Pemberi Tugas</label>
+                                <select id="t2-sender" class="form-control">
+                                    <option value="Manager">Manajer / Atasan Langsung</option>
+                                    <option value="Peer">Rekan Kerja / Anggota Tim</option>
+                                    <option value="Client">Klien / Pemangku Kepentingan Eksternal</option>
+                                    <option value="Cross-functional partner">Rekan Kerja Lintas Fungsi (Departemen Lain)</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Hasilkan Skrip Klarifikasi</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample2()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="t2-output" class="output-section">
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Skrip Email Konfirmasi</span>
+                                <button class="copy-btn" onclick="copyText('t2-email')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t2-email"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Pesan Singkat Slack / Teams</span>
+                                <button class="copy-btn" onclick="copyText('t2-slack')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t2-slack"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Frasa Verifikasi Lisan (Diskusi Langsung / 1-on-1)</span>
+                                <button class="copy-btn" onclick="copyText('t2-spoken')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t2-spoken"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--success-green);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--success-green);">Pembentukan Upla Pola Pikir Profesional</span>
+                            </div>
+                            <div class="output-body" id="t2-reframe"></div>
+                        </div>
+
+                        <div id="t2-rec-container"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span class="history-title">Riwayat Tersimpan Modul Ini</span>
+                            <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool2')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="tool2-history-list"></div>
+                    </div>
+                </div>
+
+                <!-- TOOL 3: SOCIAL SMALL TALK BUILDER -->
+                <div id="tool3-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-mug-hot"></i> Protokol Obrolan Santai di Tempat Kerja</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Bangun hubungan yang alami di tempat kerja tanpa tekanan, dan tutuplah obrolan dengan sopan.</p>
+                        
+                        <form id="tool3-form" onsubmit="event.preventDefault(); generateTool3();">
+                            <div class="form-group">
+                                <label for="t3-setting">Lokasi / Konteks</label>
+                                <select id="t3-setting" class="form-control">
+                                    <option value="Before meeting starts">Sebelum rapat dimulai (Jeda 2 menit)</option>
+                                    <option value="Lunch break">Makan siang / Kantin</option>
+                                    <option value="Coffee machine">Area Mesin Kopi / Koridor</option>
+                                    <option value="Virtual event">Acara Virtual / Ruang Tunggu Zoom</option>
+                                    <option value="Friday wrap-up">Penutupan Hari Jumat / Akhir Jam Kerja</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t3-topic">Pilihan Topik</label>
+                                <select id="t3-topic" class="form-control">
+                                    <option value="Weekend plans">Rencana akhir pekan / Waktu santai</option>
+                                    <option value="Work workload">Beban kerja / Proyek yang sedang berjalan</option>
+                                    <option value="Weather/Hobbies">Cuaca / Hobi / Lingkungan sekitar</option>
+                                    <option value="Industry trends">Tren industri / Berita perusahaan</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t3-energy">Energi Sosial Anda Saat Ini</label>
+                                <select id="t3-energy" class="form-control">
+                                    <option value="Low">Rendah (Tetap singkat, sopan & ringan)</option>
+                                    <option value="Moderate">Sedang (Percakapan ramah standar)</option>
+                                    <option value="High">Tinggi (Diskusi aktif & ekspresif)</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Hasilkan Obrolan Santai</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample3()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="t3-output" class="output-section">
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Kalimat Pembuka (Icebreaker)</span>
+                                <button class="copy-btn" onclick="copyText('t3-opening')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t3-opening"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Pertanyaan Lanjutan (Terbuka)</span>
+                            </div>
+                            <div class="output-body" id="t3-followups"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Kalimat Penutup yang Sopan</span>
+                                <button class="copy-btn" onclick="copyText('t3-exit')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t3-exit"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--warning-amber);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--warning-amber);">Catatan Nada Bicara & Budaya</span>
+                            </div>
+                            <div class="output-body" id="t3-tone-note"></div>
+                        </div>
+
+                        <div id="t3-rec-container"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span class="history-title">Riwayat Tersimpan Modul Ini</span>
+                            <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool3')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="tool3-history-list"></div>
+                    </div>
+                </div>
+
+                <!-- TOOL 4: EMAIL & SLACK POLISHER -->
+                <div id="tool4-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-paper-plane"></i> Akselerator Penyelarasan Nada Tulis</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Ubah draf tulisan kasar menjadi komunikasi profesional yang jelas dan tersusun rapi.</p>
+                        
+                        <form id="tool4-form" onsubmit="event.preventDefault(); generateTool4();">
+                            <div class="form-group">
+                                <label for="t4-draft">Teks Draf atau Catatan Kasar</label>
+                                <textarea id="t4-draft" class="form-control" placeholder="Contoh: Halo, saya tidak bisa menyelesaikan laporan hari ini karena terlalu banyak rapat. Boleh saya kirim besok saja?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t4-recipient">Penerima Pesan</label>
+                                <select id="t4-recipient" class="form-control">
+                                    <option value="Boss">Atasan / Eksekutif / Manajer</option>
+                                    <option value="Colleague">Rekan Kerja / Sejawat</option>
+                                    <option value="External Client">Klien Eksternal</option>
+                                    <option value="HR">HRD / Tim Operasional</option>
+                                    <option value="Team">Tim / Grup Saluran Bersama</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t4-tone">Kalibrasi Nada Bicara yang Diinginkan</label>
+                                <select id="t4-tone" class="form-control">
+                                    <option value="Warm & Professional">Hangat & Profesional (Sopan & Kolaboratif)</option>
+                                    <option value="Firm & Direct">Tegas & Langsung (Batasan jelas, tanpa basa-basi)</option>
+                                    <option value="Apologetic">Permohonan Maaf & Berfokus Solusi (Menangani penundaan)</option>
+                                    <option value="Casual">Santai & Ramah (Pesan singkat internal)</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Sempurnakan Pesan</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample4()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="t4-output" class="output-section">
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Versi Email yang Disempurnakan</span>
+                                <button class="copy-btn" onclick="copyText('t4-email-out')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t4-email-out"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Versi Singkat Slack / Teams</span>
+                                <button class="copy-btn" onclick="copyText('t4-slack-out')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t4-slack-out"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--success-green);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--success-green);">Perubahan & Mekanisme Nada Bicara</span>
+                            </div>
+                            <div class="output-body" id="t4-changes"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--purple-accent);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--purple-accent);">Pemeriksaan Kesopanan & Otoritas</span>
+                            </div>
+                            <div class="output-body" id="t4-politeness"></div>
+                        </div>
+
+                        <div id="t4-rec-container"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span class="history-title">Riwayat Tersimpan Modul Ini</span>
+                            <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool4')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="tool4-history-list"></div>
+                    </div>
+                </div>
+
+                <!-- TOOL 5: ANXIETY & CONFIDENCE RESET -->
+                <div id="tool5-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-heart-pulse"></i> Peredam Kecemasan Sebelum Berbicara</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Rendahkan kecemasan berkomunikasi, redam rasa was-was berlebih, dan siapkan fisik Anda sebelum berbicara.</p>
+                        
+                        <form id="tool5-form" onsubmit="event.preventDefault(); generateTool5();">
+                            <div class="form-group">
+                                <label for="t5-event">Agenda Penting yang Akan Datang</label>
+                                <select id="t5-event" class="form-control">
+                                    <option value="Presentation">Presentasi / Penyampaian Deck Slide</option>
+                                    <option value="1-on-1 with manager">Diskusi 1-on-1 dengan Eksekutif / Manajer</option>
+                                    <option value="Team meeting">Rapat Tim / Standup</option>
+                                    <option value="Client call">Panggilan Klien / Negosiasi</option>
+                                    <option value="Social gathering">Acara Sosial di Tempat Kerja</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t5-trigger">Pemicu Utama Kecemasan</label>
+                                <textarea id="t5-trigger" class="form-control" placeholder="Contoh: Takut lupa kata-kata, salah mengucapkan istilah teknis, atau cemas akan logat bicara..."></textarea>
+                            </div>
+
+                            <div class="btn-row">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Susun Rencana Kepercayaan Diri</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample5()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="t5-output" class="output-section">
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Daftar Periksa Penenangan Sebelum Rapat</span>
+                            </div>
+                            <div class="output-body" id="t5-checklist"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">
+                                <span class="output-title">Frasa Jangkar Penolong (Saat Buntu)</span>
+                            </div>
+                            <div class="output-body" id="t5-anchors"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--success-green);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--success-green);">Pembentukan Ulang Pola Pikir Kognitif</span>
+                            </div>
+                            <div class="output-body" id="t5-reframe"></div>
+                        </div>
+
+                        <div class="output-card" style="border-left-color: var(--purple-accent);">
+                            <div class="output-header">
+                                <span class="output-title" style="color: var(--purple-accent);">Afirmasi Penguat Verba</span>
+                                <button class="copy-btn" onclick="copyText('t5-affirmation')"><i class="fa-regular fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-body" id="t5-affirmation"></div>
+                        </div>
+
+                        <div id="t5-rec-container"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <span class="history-title">Riwayat Tersimpan Modul Ini</span>
+                            <button class="btn btn-secondary btn-sm" onclick="clearToolHistory('tool5')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="tool5-history-list"></div>
+                    </div>
+                </div>
+
+                <!-- 7-DAY ACCELERATOR VIEW -->
+                <div id="accelerator-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-calendar-check"></i> Akselerator Kepercayaan Diri 7-Hari</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Panduan terstruktur harian yang dirancang untuk menghilangkan keraguan berkomunikasi di tempat kerja secara sistematis.</p>
+
+                        <div class="day-accordion">
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(1)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 1</span>
+                                        <span>Petakan Pemicu Bicara & Latih Skrip Rapat</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-1-body">
+                                    Buka <strong>Modul 1 (Rapat & Networking)</strong>. Masukkan skenario rapat yang paling sering Anda hadapi (misalnya: menyampaikan pendapat atau menyela). Latih hasil skrip ringkas sebanyak 3 kali secara lisan dengan napas yang teratur.
+                                </div>
+                            </div>
+
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(2)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 2</span>
+                                        <span>Kuasai Verifikasi Tugas & Klarifikasi Proaktif</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-2-body">
+                                    Buka <strong>Modul 2 (Klarifikasi Instruksi)</strong>. Buat draf pesan verifikasi untuk tugas pekerjaan yang aktif. Perhatikan bagaimana konfirmasi berpoin dapat meningkatkan kesan profesionalisme Anda.
+                                </div>
+                            </div>
+
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(3)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 3</span>
+                                        <span>Bangun Obrolan Santai Tanpa Tekanan & Penutup yang Sopan</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-3-body">
+                                    Buka <strong>Modul 3 (Percakapan Santai)</strong>. Hafalkan 1 kalimat pembuka dan 1 kalimat penutup obrolan. Gunakan saat berada di koridor atau momen pra-rapat virtual secara nyata.
+                                </div>
+                            </div>
+
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(4)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 4</span>
+                                        <span>Sempurnakan Nada Tulis & Kalibrasi Formalitas</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-4-body">
+                                    Buka <strong>Modul 4 (Penyelaras Email & Slack)</strong>. Ambil draf email kasar yang perlu Anda kirim hari ini lalu kalibrasi ke mode 'Hangat & Profesional'. Amati pergeseran nada bicaranya.
+                                </div>
+                            </div>
+
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(5)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 5</span>
+                                        <span>Penenangan Fisik & Penyiapan Frasa Jangkar Penolong</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-5-body">
+                                    Buka <strong>Modul 5 (Peredam Kecemasan)</strong>. Pelajari teknik pernapasan kotak 4-4-4 dan simpan 2 frasa jangkar penolong di catatan ponsel Anda sebelum melakukan panggilan rapat berikutnya.
+                                </div>
+                            </div>
+
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(6)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 6</span>
+                                        <span>Sintesis & Rangkuman Komunikasi Lisan/Tulisan</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-6-body">
+                                    Tinjau <strong>Riwayat Tersimpan</strong>. Identifikasi frasa mana yang terasa paling alami bagi Anda dan buat 'Buku Frasa Kerja Pribadi' Anda sendiri.
+                                </div>
+                            </div>
+
+                            <div class="day-card">
+                                <div class="day-header" onclick="toggleDay(7)">
+                                    <div class="day-title-group">
+                                        <span class="day-badge">Hari 7</span>
+                                        <span>Finalisasi Protokol Aksi & Cetak Rencana</span>
+                                    </div>
+                                    <i class="fa-solid fa-chevron-down"></i>
+                                </div>
+                                <div class="day-body" id="day-7-body">
+                                    Klik tombol <strong>Cetak Rencana Komunikasi</strong> di bawah ini untuk menghasilkan cetakan PDF/kertas bersih dari skrip tempat kerja Anda sebagai referensi di meja kerja.
+                                    <br><br>
+                                    <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana Komunikasi</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GLOBAL HISTORY VIEW -->
+                <div id="global-history-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Utama Tersimpan</div>
+                        <p class="dashboard-card-desc" style="margin-bottom: 20px;">Tinjau, salin, atau kelola semua skrip tersimpan dari kelima modul komunikasi.</p>
+                        
+                        <div class="btn-row" style="margin-bottom: 20px;">
+                            <button class="btn btn-secondary btn-sm" onclick="renderGlobalHistory()"><i class="fa-solid fa-rotate"></i> Perbarui Riwayat</button>
+                            <button class="btn btn-outline btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Riwayat Tersimpan</button>
+                        </div>
+
+                        <div id="global-history-container"></div>
+                    </div>
+                </div>
+
+                <!-- PRIVACY & DATA VIEW -->
+                <div id="privacy-view" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="card-title"><i class="fa-solid fa-shield-halved"></i> Arsitektur Privasi & Data</div>
+                        <p style="font-size: 14px; line-height: 1.6; color: #334155; margin-bottom: 16px;">
+                            WORKPLACE LANGUAGE COACH™ beroperasi di bawah kebijakan **Zero-Server, Local-First Privacy Policy** yang ketat.
+                        </p>
+                        <ul class="orientation-rules" style="margin-bottom: 20px;">
+                            <li><i class="fa-solid fa-lock"></i> <strong>Penyimpanan Khusus Peramban (Browser):</strong> Seluruh masukan, skrip yang dihasilkan, dan riwayat yang disimpan sepenuhnya tetap berada di dalam `localStorage` peramban Anda.</li>
+                            <li><i class="fa-solid fa-network-wired"></i> <strong>Tanpa Pelacakan atau Telemetri:</strong> Tidak ada analitik, basis data jarak jauh, atau skrip pelacak eksternal yang digunakan.</li>
+                            <li><i class="fa-solid fa-eye-slash"></i> <strong>Perlindungan Data Rahasia:</strong> Draf email atau rincian tugas yang dimasukkan ke dalam alat ini tidak akan pernah meninggalkan perangkat lokal Anda.</li>
+                        </ul>
+                        <button class="btn btn-secondary" onclick="clearAllData()"><i class="fa-solid fa-trash-can"></i> Hapus Semua Data Peramban Tersimpan</button>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- FOOTER -->
+            <footer class="app-footer">
+                WORKPLACE LANGUAGE COACH™ Komersial V2 — Hanya untuk pengembangan profesional dan latihan. Bukan saran hukum atau profesional resmi tempat kerja.
+            </footer>
+        </div>
+    </div>
+
+    <!-- TOAST ELEMENT -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i> Berhasil disalin ke papan klip!
+    </div>
+
+    <script>
+        /* CENTRAL STATE MANAGEMENT */
+        const workplaceCoachState = {
+            version: "2.0.0",
+            completedTools: [],
+            currentView: "dashboard",
+            currentInputs: {},
+            toolResults: {},
+            privacyAcknowledged: true,
+            lastUpdated: null
+        };
+
+        const toolNames = {
+            'dashboard': 'Dasbor Utama',
+            'tool1': 'Rapat & Networking',
+            'tool2': 'Klarifikasi Instruksi',
+            'tool3': 'Percakapan Santai (Small Talk)',
+            'tool4': 'Penyelaras Email & Slack',
+            'tool5': 'Redam Kecemasan',
+            'accelerator': 'Akselerator 7-Hari',
+            'global-history': 'Riwayat Utama Tersimpan',
+            'privacy': 'Privasi & Data'
+        };
+
+        /* NAVIGATION LOGIC */
+        function switchTool(toolId) {
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.style.display = 'none';
+            });
+
+            const targetView = document.getElementById(toolId + '-view');
+            if (targetView) {
+                targetView.style.display = 'block';
+            }
+
+            document.querySelectorAll('.nav-item').forEach((item) => {
+                item.classList.remove('active');
+            });
+
+            const navList = ['dashboard', 'tool1', 'tool2', 'tool3', 'tool4', 'tool5', 'accelerator', 'global-history', 'privacy'];
+            const navIndex = navList.indexOf(toolId);
+            if (navIndex !== -1 && document.querySelectorAll('.nav-item')[navIndex]) {
+                document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+            }
+
+            document.getElementById('mobileTitle').innerText = toolNames[toolId] || 'Dasbor Utama';
+            closeMobileSidebar();
+
+            if (['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].includes(toolId)) {
+                renderHistory(toolId);
+            } else if (toolId === 'global-history') {
+                renderGlobalHistory();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('open');
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('open');
+        }
+
+        /* ESCAPING & UTILITIES */
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function copyText(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.innerText;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => showToast()).catch(() => fallbackCopy(text));
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast();
+        }
+
+        function showToast(msg = 'Berhasil disalin ke papan klip!') {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${escapeHTML(msg)}`;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        /* LOCALSTORAGE & HISTORY ARCHITECTURE */
+        function saveHistoryItem(toolId, title, contentObj) {
+            const key = `workplace_coach_v2_history_${toolId}`;
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+            
+            const newItem = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleDateString('id-ID', { 
+                    month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' 
+                }),
+                title: escapeHTML(title),
+                data: contentObj
+            };
+
+            history.unshift(newItem);
+            if (history.length > 30) history = history.slice(0, 30);
+            
+            try {
+                localStorage.setItem(key, JSON.stringify(history));
+            } catch(e) { console.error('Kapasitas LocalStorage terlampaui', e); }
+            
+            renderHistory(toolId);
+        }
+
+        function renderHistory(toolId) {
+            const key = `workplace_coach_v2_history_${toolId}`;
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+
+            const container = document.getElementById(`${toolId}-history-list`);
+            if (!container) return;
+
+            if (history.length === 0) {
+                container.innerHTML = '<p style="font-size: 13px; color: #94A3B8; font-style: italic;">Belum ada riwayat yang disimpan untuk alat ini.</p>';
+                return;
+            }
+
+            let html = '';
+            history.forEach(item => {
+                html += `
+                    <div class="history-item">
+                        <div class="history-item-header" onclick="toggleHistoryBody(${item.id})">
+                            <span>${item.title}</span>
+                            <span style="font-size: 12px; color: #94A3B8;">${item.timestamp} <i class="fa-solid fa-chevron-down" style="margin-left: 6px;"></i></span>
+                        </div>
+                        <div class="history-item-body" id="history-body-${item.id}">
+                            ${item.data}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function toggleHistoryBody(id) {
+            const body = document.getElementById(`history-body-${id}`);
+            if (body) {
+                body.style.display = body.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        function clearToolHistory(toolId) {
+            const key = `workplace_coach_v2_history_${toolId}`;
+            localStorage.removeItem(key);
+            renderHistory(toolId);
+            showToast('Riwayat alat telah dibersihkan');
+        }
+
+        function renderGlobalHistory() {
+            const container = document.getElementById('global-history-container');
+            if (!container) return;
+
+            const tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            let combined = [];
+
+            tools.forEach(tId => {
+                const key = `workplace_coach_v2_history_${tId}`;
+                try {
+                    const h = JSON.parse(localStorage.getItem(key) || '[]');
+                    h.forEach(item => {
+                        combined.push({ ...item, toolId: tId, toolLabel: toolNames[tId] });
+                    });
+                } catch(e) {}
+            });
+
+            combined.sort((a, b) => b.id - a.id);
+
+            if (combined.length === 0) {
+                container.innerHTML = '<p style="font-size: 13.5px; color: #94A3B8; font-style: italic;">Belum ada riwayat yang tercatat di semua modul.</p>';
+                return;
+            }
+
+            let html = '';
+            combined.forEach(item => {
+                html += `
+                    <div class="history-item">
+                        <div class="history-item-header" onclick="toggleHistoryBody('g-${item.id}')">
+                            <div>
+                                <span class="day-badge" style="margin-right: 8px;">${item.toolLabel}</span>
+                                <span>${item.title}</span>
+                            </div>
+                            <span style="font-size: 12px; color: #94A3B8;">${item.timestamp} <i class="fa-solid fa-chevron-down" style="margin-left: 6px;"></i></span>
+                        </div>
+                        <div class="history-item-body" id="history-body-g-${item.id}">
+                            ${item.data}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function clearAllData() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua skrip dan riwayat tersimpan? Tindakan ini tidak dapat dibatalkan.')) {
+                localStorage.clear();
+                showToast('Semua data peramban telah dibersihkan');
+                switchTool('dashboard');
+            }
+        }
+
+        /* CROSS-MODULE RECOMMENDATION ENGINE */
+        function renderRecommendation(containerId, condition, targetTool, title, desc) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (condition) {
+                container.innerHTML = `
+                    <div class="recommendation-card">
+                        <div class="recommendation-content">
+                            <i class="fa-solid fa-lightbulb"></i>
+                            <div class="recommendation-text">
+                                <h4>Rekomendasi Langkah Selanjutnya: ${escapeHTML(title)}</h4>
+                                <p>${escapeHTML(desc)}</p>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="switchTool('${targetTool}')">Buka Alat <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = '';
+            }
+        }
+
+        /* MODULE 1: MEETINGS & NETWORKING LOGIC */
+        function loadSample1() {
+            document.getElementById('t1-scenario').value = 'Interrupting politely';
+            document.getElementById('t1-message').value = 'Saya ingin masuk ke diskusi strategi proyek untuk menyampaikan kekhawatiran tentang anggaran tanpa terdengar memotong secara kasar.';
+            document.getElementById('t1-confidence').value = '2';
+            document.getElementById('t1-conf-val').innerText = '2';
+        }
+
+        function generateTool1() {
+            const scenario = document.getElementById('t1-scenario').value;
+            const rawMsg = document.getElementById('t1-message').value.trim() || 'Saya memiliki pemikiran singkat mengenai topik ini.';
+            const msg = escapeHTML(rawMsg);
+            const conf = parseInt(document.getElementById('t1-confidence').value);
+
+            let prof = '', conc = '', friend = '', flow = '', recovery = '', practice = '';
+
+            if (scenario === 'Interrupting politely') {
+                prof = `Mohon maaf memotong pembicaraan, namun jika diperbolehkan, saya ingin menambahkan satu poin singkat terkait ${msg}...`;
+                conc = `Boleh saya menambahkan satu pemikiran singkat terkait hal tersebut? ${msg}`;
+                friend = `Boleh saya menyela sebentar di sini? Saya hanya ingin menyampaikan bahwa ${msg}`;
+                flow = `Gunakan frasa transisi yang halus seperti "Melanjutkan poin tersebut..." atau "Izin menyela sebentar..." sebelum menyampaikan poin utama Anda.`;
+            } else if (scenario === 'Meeting opinion') {
+                prof = `Dari sudut pandang saya, ${msg}. Saya percaya hal ini sejalan dengan tujuan strategis kita.`;
+                conc = `Saya menyarankan agar ${msg}. Ini akan menjaga kita tetap selaras dan efisien.`;
+                friend = `Saya tadi berpikir tentang ${msg}. Bagaimana menurut rekan-rekan sekalian?`;
+                flow = `Beri jeda sejenak setelah frasa kunci Anda agar peserta lain dapat mencernanya. Tekankan kata "perspektif" atau "rekomendasi".`;
+            } else if (scenario === 'Asking for clarification') {
+                prof = `Bisakah Anda menjelaskan sedikit lebih detail mengenai poin terakhir tentang ${msg}? Hanya untuk memastikan keselarasan penuh.`;
+                conc = `Untuk mengklarifikasi: apakah maksudnya adalah ${msg}?`;
+                friend = `Hanya ingin memastikan saya tidak salah tangkap—apakah itu berarti ${msg}?`;
+                flow = `Jaga nada bicara Anda tetap ingin tahu, bukan mengkritik. Avfiks "Hanya untuk memastikan saya menyimak..." adalah awalan yang sangat baik.`;
+            } else {
+                prof = `Saya ingin menyampaikan pembaruan mengenai ${msg}. Kami terus mengalami kemajuan yang stabil.`;
+                conc = `Pembaruan cepat tentang ${msg}: segalanya berjalan sesuai rencana.`;
+                friend = `Halo tim, ada kabar singkat terkait ${msg}!`;
+                flow = `Sampaikan poin inti terlebih dahulu (BLUF: Bottom Line Up Front), kemudian isi dengan rincian pendukung.`;
+            }
+
+            recovery = `Jika Anda kehilangan alur berpikir: "Izinkan saya merumuskan ulang kalimatnya agar lebih jelas..." atau "Singkatnya begini..."`;
+            practice = `Bacalah keras-keras sebanyak 3 kali dengan napas yang stabil: "${conc}"`;
+
+            document.getElementById('t1-script-prof').innerText = prof;
+            document.getElementById('t1-script-conc').innerText = conc;
+            document.getElementById('t1-script-friend').innerText = friend;
+            document.getElementById('t1-flow-tip').innerText = flow;
+            document.getElementById('t1-recovery').innerText = recovery;
+            document.getElementById('t1-practice').innerText = practice;
+
+            document.getElementById('t1-output').style.display = 'block';
+
+            // Save history
+            const historyHtml = `
+                <p><strong>Skenario:</strong> ${escapeHTML(scenario)}</p>
+                <p><strong>Profesional:</strong> ${escapeHTML(prof)}</p>
+                <p><strong>Ringkas:</strong> ${escapeHTML(conc)}</p>
+            `;
+            saveHistoryItem('tool1', `${scenario}: ${rawMsg.substring(0, 28)}...`, historyHtml);
+
+            // Cross-module Recommendation
+            renderRecommendation(
+                't1-rec-container',
+                conf <= 2,
+                'tool5',
+                'Peredam Kecemasan Sebelum Berbicara',
+                'Karena tingkat kepercayaan diri yang Anda laporkan tergolong rendah (≤ 2), lakukan penenangan fisik dan siapkan frasa jangkar penolong sebelum berbicara.'
+            );
+        }
+
+        /* MODULE 2: INSTRUCTION CLARIFIER LOGIC */
+        function loadSample2() {
+            document.getElementById('t2-understood').value = 'Saya paham bahwa saya harus menyiapkan bahan presentasi status klien sebelum akhir pekan.';
+            document.getElementById('t2-unclear').value = 'Belum jelas apakah saya perlu memasukkan proyeksi keuangan Q4 atau hanya berfokus pada hasil Q3.';
+            document.getElementById('t2-sender').value = 'Manager';
+        }
+
+        function generateTool2() {
+            const rawUnderstood = document.getElementById('t2-understood').value.trim() || 'tujuan tugas utama';
+            const rawUnclear = document.getElementById('t2-unclear').value.trim() || 'cakupan dan batas waktu yang pasti';
+            const understood = escapeHTML(rawUnderstood);
+            const unclear = escapeHTML(rawUnclear);
+            const sender = document.getElementById('t2-sender').value;
+
+            const email = `Halo ${sender === 'Manager' ? '[Nama Manajer]' : 'Rekan-rekan'},\n\nTerima kasih atas penjelasan detail mengenai proyek ini. Untuk memastikan pemahaman saya:\n\n- Saya akan melanjutkan pengerjaan: ${understood}\n- Ada pertanyaan singkat terkait: ${unclear}\n\nBisakah Anda memperjelas rincian tersebut agar saya dapat memastikan akurasi penuh? Terima kasih atas arahannya!\n\nHormat saya,\n[Nama Anda]`;
+            
+            const slack = `Halo! Saya ingin memastikan satu rincian untuk tugas ini. Saya sedang mengerjakan ${understood}, namun ingin mengklarifikasi: ${unclear}? Terima kasih!`;
+
+            const spoken = `"Halo, terima kasih telah menjelaskan hal ini. Hanya untuk mengonfirmasi—saya yang menangani ${understood}, betul? Selain itu, bisakah diperjelas mengenai ${unclear}?"`;
+
+            const reframe = `Mengajukan pertanyaan secara proaktif menunjukkan perhatian tinggi terhadap rincian dan komitmen pada kualitas, bukan kurangnya kemampuan. Atasan sangat menghargai karyawan yang mencegah kesalahan sejak dini.`;
+
+            document.getElementById('t2-email').innerText = email;
+            document.getElementById('t2-slack').innerText = slack;
+            document.getElementById('t2-spoken').innerText = spoken;
+            document.getElementById('t2-reframe').innerText = reframe;
+
+            document.getElementById('t2-output').style.display = 'block';
+
+            const historyHtml = `
+                <p><strong>Sudah Dipahami:</strong> ${understood}</p>
+                <p><strong>Belum Jelas:</strong> ${unclear}</p>
+                <p><strong>Pesan Slack:</strong> ${slack}</p>
+            `;
+            saveHistoryItem('tool2', `Klarifikasi untuk ${sender}`, historyHtml);
+
+            // Cross-module Recommendation
+            renderRecommendation(
+                't2-rec-container',
+                sender === 'Manager',
+                'tool4',
+                'Akselerator Penyelarasan Nada Tulis',
+                'Periksa kembali nada draf email Anda dengan Penyelaras Email untuk memastikan keseimbangan antara rasa hormat dan kejelasan.'
+            );
+        }
+
+        /* MODULE 3: SMALL TALK LOGIC */
+        function loadSample3() {
+            document.getElementById('t3-setting').value = 'Before meeting starts';
+            document.getElementById('t3-topic').value = 'Weekend plans';
+            document.getElementById('t3-energy').value = 'Low';
+        }
+
+        function generateTool3() {
+            const setting = document.getElementById('t3-setting').value;
+            const topic = document.getElementById('t3-topic').value;
+            const energy = document.getElementById('t3-energy').value;
+
+            let opening = '', follow1 = '', follow2 = '', exit = '', note = '';
+
+            if (topic === 'Weekend plans') {
+                opening = setting === 'Friday wrap-up' ? "Ada rencana seru untuk akhir pekan nanti?" : "Bagaimana akhir pekannya? Ada kegiatan menarik atau hanya bersantai?";
+                follow1 = "Kelihatannya seru! Apakah Anda memang sering melakukan hal itu?";
+                follow2 = "Wah bagus sekali! Ada rekomendasi tempat di sekitar sini untuk kegiatan itu?";
+                exit = "Baiklah, semoga sisa hari Anda menyenangkan! Mari kita ngobrol lagi nanti.";
+                note = "Mengajukan pertanyaan terbuka seperti 'Bagaimana akhir pekannya?' menjaga percakapan tetap ringan dan memberi ruang bagi lawan bicara untuk memilih seberapa banyak yang ingin dibagikan.";
+            } else if (topic === 'Work workload') {
+                opening = "Bagaimana perkembangan minggu ini? Apakah cukup padat?";
+                follow1 = "Proyek mana yang paling menyita perhatian Anda saat ini?";
+                follow2 = "Kelihatannya cukup padat ya! Bagaimana Anda mengatur semuanya?";
+                exit = "Saya biarkan Anda kembali ke daftar tugas Anda, semoga sukses dengan proyeknya!";
+                note = "Saling berbagi cerita tentang beban kerja sangat umum, namun jagalah agar tetap konstruktif dan hindari sekadar mengeluh.";
+            } else {
+                opening = "Halo! Bagaimana jalannya hari Anda sejauh ini?";
+                follow1 = "Apakah Anda sedang mengerjakan sesuatu yang menarik minggu ini?";
+                follow2 = "Bagaimana kesan Anda dengan alur kerja jarak jauh/kantor akhir-akhir ini?";
+                exit = "Senang sekali bisa mengobrol singkat! Sampai jumpa lagi nanti.";
+                note = "Basa-basi sederhana seperti 'Bagaimana harimu?' sangat aman dan alami digunakan di mana saja.";
+            }
+
+            document.getElementById('t3-opening').innerText = opening;
+            document.getElementById('t3-followups').innerText = `1. ${follow1}\n2. ${follow2}`;
+            document.getElementById('t3-exit').innerText = exit;
+            document.getElementById('t3-tone-note').innerText = note;
+
+            document.getElementById('t3-output').style.display = 'block';
+
+            const historyHtml = `
+                <p><strong>Lokasi:</strong> ${escapeHTML(setting)} | <strong>Topik:</strong> ${escapeHTML(topic)}</p>
+                <p><strong>Pembuka:</strong> ${escapeHTML(opening)}</p>
+                <p><strong>Penutup:</strong> ${escapeHTML(exit)}</p>
+            `;
+            saveHistoryItem('tool3', `${setting} - ${topic}`, historyHtml);
+
+            // Cross-module Recommendation
+            renderRecommendation(
+                't3-rec-container',
+                energy === 'Low',
+                'tool5',
+                'Peredam Kecemasan Sebelum Berbicara',
+                'Karena energi sosial Anda sedang rendah, pelajari latihan penenangan cepat untuk meminimalkan beban pikiran selama percakapan.'
+            );
+        }
+
+        /* MODULE 4: EMAIL & SLACK POLISHER LOGIC */
+        function loadSample4() {
+            document.getElementById('t4-draft').value = 'Halo, saya tidak bisa menyelesaikan laporan proyek hari ini karena rapat terlalu banyak. Boleh saya berikan besok sore saja?';
+            document.getElementById('t4-recipient').value = 'Boss';
+            document.getElementById('t4-tone').value = 'Warm & Professional';
+        }
+
+        function generateTool4() {
+            const rawDraft = document.getElementById('t4-draft').value.trim() || 'Saya membutuhkan perpanjangan waktu untuk tugas ini.';
+            const draft = escapeHTML(rawDraft);
+            const recipient = document.getElementById('t4-recipient').value;
+            const tone = document.getElementById('t4-tone').value;
+
+            let email = '', slack = '', changes = '', politeness = '';
+
+            if (tone === 'Warm & Professional') {
+                email = `Halo ${recipient === 'Boss' ? '[Nama Manajer]' : 'Tim'},\n\nSaya ingin menyampaikan pembaruan singkat mengenai laporan proyek. Berhubung jadwal rapat yang cukup padat hari ini, saya memohon sedikit tambahan waktu untuk memfinalisasi analisis ini secara menyeluruh.\n\nApakah diperbolehkan jika saya menyerahkan laporan lengkapnya besok sore? Terima kasih banyak atas pengertian Anda!\n\nHormat saya,\n[Nama Anda]`;
+                slack = `Halo ${recipient === 'Boss' ? '[Nama Manajer]' : 'semuanya'}! Pembaruan singkat: karena ada beberapa rapat beruntun hari ini, saya menargetkan untuk mengirimkan laporan akhir besok sore agar hasilnya benar-benar teliti. Semoga tidak menyulitkan!`;
+                changes = `• Melembutkan frasa yang berkesan menuntut menjadi permohonan sopan ("Apakah diperbolehkan jika...")\n• Membingkai penundaan demi menjaga kualitas hasil kerja ("memfinalisasi analisis secara menyeluruh")\n• Menambahkan salam pembuka dan penutup yang profesional.`;
+                politeness = `Formalitas Tinggi / Kehangatan Profesional. Sangat cocok untuk atasan dan pemangku kepentingan penting.`;
+            } else if (tone === 'Firm & Direct') {
+                email = `Halo ${recipient === 'Boss' ? '[Nama Manajer]' : 'Tim'},\n\nMengenai laporan proyek: guna memastikan akurasi penuh, saya memerlukan waktu hingga besok sore untuk menyelesaikan peninjauan.\n\nSaya akan mengirimkan dokumen akhirnya paling lambat besok pukul 14.00 WIB.\n\nTerima kasih,\n[Nama Anda]`;
+                slack = `Halo tim - Saya akan menyerahkan laporan proyek yang sudah difinalisasi besok sore untuk memberikan waktu peninjauan akhir yang menyeluruh. Terima kasih!`;
+                changes = `• Menghapus kata-kata basa-basi atau kata maaf berlebih untuk menyampaikan tenggat waktu secara jelas dan percaya diri.\n• Menyampaikan komitmen waktu penyerahan yang pasti dan dapat ditindaklanjuti.`;
+                politeness = `Tegas & Jelas. Sangat baik untuk koordinasi antar-tim di mana kejelasan adalah prioritas utama.`;
+            } else {
+                email = `Halo ${recipient === 'Boss' ? '[Nama Manajer]' : 'rekan-rekan'},\n\nMohon maaf atas jadwal yang cukup ketat ini, namun saya memerlukan sedikit perpanjangan waktu untuk laporan tersebut. Saya ingin memastikan seluruh angka telah diverifikasi sepenuhnya sebelum dikirimkan.\n\nSaya akan menyerahkannya kepada Anda besok sore. Terima kasih banyak atas kesabaran Anda!\n\nHormat saya,\n[Nama Anda]`;
+                slack = `Halo! Mohon maaf atas sedikit keterlambatan pada laporan ini—saya sedang memastikan seluruh angka 100% terverifikasi. Versi akhirnya akan saya bagikan di sini besok sore. Terima kasih atas kesabarannya!`;
+                changes = `• Menambahkan permohonan maaf yang sopan atas pergeseran jadwal sambil memberikan solusi yang konstruktif.`;
+                politeness = `Formalitas Sedang / Empati Tinggi. Menjaga hubungan tetap harmonis saat terjadi penyesuaian jadwal kecil.`;
+            }
+
+            document.getElementById('t4-email-out').innerText = email;
+            document.getElementById('t4-slack-out').innerText = slack;
+            document.getElementById('t4-changes').innerText = changes;
+            document.getElementById('t4-politeness').innerText = politeness;
+
+            document.getElementById('t4-output').style.display = 'block';
+
+            const historyHtml = `
+                <p><strong>Draf Asli:</strong> ${draft}</p>
+                <p><strong>Email Halus:</strong> ${escapeHTML(email)}</p>
+            `;
+            saveHistoryItem('tool4', `Email ke ${recipient} (${tone})`, historyHtml);
+
+            // Cross-module Recommendation
+            renderRecommendation(
+                't4-rec-container',
+                tone === 'Apologetic',
+                'tool2',
+                'Klarifikasi Tugas Eksekutif',
+                'Hindari meminta maaf secara berlebihan karena pergeseran jadwal. Gunakan Klarifikasi Tugas untuk menegaskan ekspektasi dan batasan secara jelas.'
+            );
+        }
+
+        /* MODULE 5: ANXIETY RESET LOGIC */
+        function loadSample5() {
+            document.getElementById('t5-event').value = 'Presentation';
+            document.getElementById('t5-trigger').value = 'Gugup kalau tiba-tiba lupa alur bicara atau salah mengucapkan istilah teknis penting di depan pimpinan.';
+        }
+
+        function generateTool5() {
+            const event = document.getElementById('t5-event').value;
+            const rawTrigger = document.getElementById('t5-trigger').value.trim() || 'Kekhawatiran membuat kesalahan berbahasa.';
+            const trigger = escapeHTML(rawTrigger);
+
+            const checklist = `1. Penenangan Fisik: Tarik napas dalam dengan pola kotak (4 detik hirup, 4 detik tahan, 4 detik hembuskan) untuk meredakan ketegangan pita suara.\n2. Perlambat Tempo Bicara: Secara sadar kurangi kecepatan bicara Anda sebesar 15%. Bicara terlalu cepat meningkatkan rasa cemas.\n3. Siapkan Catatan Jangkar: Siapkan 3 poin utama yang terlihat jelas sebagai jaring pengaman.`;
+
+            const anchors = `• "Izinkan saya merumuskan ulang kalimatnya agar lebih jelas..."\n• "Dengan kata lain..."\n• "Beralih ke poin inti di sini..."`;
+
+            const reframe = `Penutur asli pun sering kali terselip tata bahasa, hening sejenak, dan mencari kata yang tepat dalam rapat. Rekan kerja mendengarkan keahlian dan solusi Anda, bukan tata bahasa yang sempurna. Pesan Anda jauh lebih penting daripada penyampaian yang tanpa cela.`;
+
+            const affirmation = `"Saya sangat kompeten dalam peran saya. Gagasan saya memberikan nilai nyata bagi tim ini, dan saya berkomunikasi secara jelas serta efektif terlepas dari adanya kendala bahasa kecil."`;
+
+            document.getElementById('t5-checklist').innerText = checklist;
+            document.getElementById('t5-anchors').innerText = anchors;
+            document.getElementById('t5-reframe').innerText = reframe;
+            document.getElementById('t5-affirmation').innerText = affirmation;
+
+            document.getElementById('t5-output').style.display = 'block';
+
+            const historyHtml = `
+                <p><strong>Agenda:</strong> ${escapeHTML(event)}</p>
+                <p><strong>Pemicu:</strong> ${trigger}</p>
+                <p><strong>Afirmasi:</strong> ${escapeHTML(affirmation)}</p>
+            `;
+            saveHistoryItem('tool5', `Peredam untuk ${event}`, historyHtml);
+
+            // Cross-module Recommendation
+            renderRecommendation(
+                't5-rec-container',
+                true,
+                'tool1',
+                'Panduan Rapat & Networking',
+                'Setelah mental Anda lebih tenang, buatlah skrip lisan yang tepat untuk rapat yang akan datang.'
+            );
+        }
+
+        function toggleDay(dayNum) {
+            const body = document.getElementById(`day-${dayNum}-body`);
+            if (body) {
+                body.style.display = body.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        /* INITIALIZATION */
+        window.addEventListener('DOMContentLoaded', () => {
+            switchTool('dashboard');
+        });
+    </script>
+</body>
+</html>

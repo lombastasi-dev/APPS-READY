@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YoungAdultNavigator™ V2 - Sistem Penataan Hidup</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* CSS Variables & Base Styles */
+    :root {
+      --midnight: #1B1B3A;
+      --mint: #4ECDC4;
+      --mint-dark: #3bbaa3;
+      --mint-light: #e6faf8;
+      --bg-gradient: linear-gradient(135deg, #F8F9FF 0%, #F0FFFE 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --border-color: #E2E8F0;
+      --danger: #E53E3E;
+      --danger-light: #FFF5F5;
+      --warning: #DD6B20;
+      --warning-light: #FFFAF0;
+      --success: #38A169;
+      --success-light: #F0FFF4;
+      --sidebar-width: 260px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Layout Structure */
+    .app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header i {
+      font-size: 24px;
+      color: var(--mint-dark);
+    }
+
+    .sidebar-header h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--midnight);
+      line-height: 1.2;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item:hover {
+      background: #F7FAFC;
+      color: var(--midnight);
+    }
+
+    .nav-item.active {
+      background: var(--midnight);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active i {
+      color: var(--mint);
+    }
+
+    .nav-item i {
+      font-size: 15px;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background: var(--border-color);
+      margin: 8px 0;
+    }
+
+    /* Mobile Header & Overlay */
+    .mobile-header {
+      display: none;
+      background: var(--card-bg);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .mobile-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--midnight);
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--midnight);
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(27, 27, 58, 0.4);
+      z-index: 95;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* Views Framework */
+    .view-panel {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card Utilities */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+
+    /* Typography Helpers */
+    .hero-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--midnight);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tool-problem {
+      background: var(--mint-light);
+      border-left: 4px solid var(--mint-dark);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      font-size: 14.5px;
+      color: var(--midnight);
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Form UI Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--midnight);
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--mint-dark);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+    }
+
+    textarea.form-control {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .checkbox-group, .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checkbox-label, .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .checkbox-label input, .radio-label input {
+      accent-color: var(--mint-dark);
+      width: 16px;
+      height: 16px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--mint-dark);
+    }
+
+    .slider-val {
+      font-weight: 700;
+      color: var(--midnight);
+      width: 28px;
+      text-align: right;
+    }
+
+    /* Button Layout & System */
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--midnight);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background: #2a2a57;
+    }
+
+    .btn-secondary {
+      background: #EDF2F7;
+      color: var(--midnight);
+    }
+
+    .btn-secondary:hover {
+      background: #E2E8F0;
+    }
+
+    .btn-danger {
+      background: var(--danger-light);
+      color: var(--danger);
+      border: 1px solid var(--danger);
+    }
+
+    .btn-danger:hover {
+      background: var(--danger);
+      color: #FFFFFF;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+    }
+
+    /* Results Card Layout */
+    .output-container {
+      margin-top: 28px;
+      display: none;
+    }
+
+    .output-container.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .output-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .output-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .output-headline {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 8px;
+    }
+
+    .script-box {
+      background: #1B1B3A;
+      color: #F8F9FF;
+      padding: 18px;
+      border-radius: 12px;
+      font-family: monospace, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.5;
+      position: relative;
+      margin-top: 8px;
+      white-space: pre-wrap;
+    }
+
+    .script-copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .script-copy-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--midnight);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+      margin-top: 10px;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 22px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      border-color: var(--mint);
+    }
+
+    .dash-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: var(--mint-light);
+      color: var(--mint-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .dash-card h3 {
+      font-size: 15.5px;
+      font-weight: 700;
+      color: var(--midnight);
+    }
+
+    .dash-card p {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .dash-status {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      font-size: 12px;
+    }
+
+    /* Score Badge */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 12px;
+    }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-success { background: var(--success-light); color: var(--success); }
+
+    /* History Table */
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    .history-table th, .history-table td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .history-table th {
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* System / Life Map Styles */
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .matrix-box {
+      background: #F7FAFC;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .matrix-box h4 {
+      font-size: 14px;
+      color: var(--midnight);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .schedule-day {
+      background: #FAFAFA;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 10px;
+    }
+
+    .schedule-day h4 {
+      font-size: 13.5px;
+      color: var(--midnight);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* History Accordion */
+    .history-section {
+      margin-top: 32px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      background: #FAFAFA;
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: #F0F4F8;
+    }
+
+    .history-date {
+      color: var(--text-muted);
+      font-size: 11px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: auto;
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .mobile-header, .sidebar-overlay, .button-row, .btn, .history-section, footer, .nav-list {
+        display: none !important;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .content-wrapper {
+        max-width: 100% !important;
+      }
+      .card, .output-card {
+        box-shadow: none !important;
+        border: 1px solid #CCC !important;
+        page-break-inside: avoid;
+      }
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 20px 16px;
+      }
+
+      .hero-title {
+        font-size: 22px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Seluler -->
+  <header class="mobile-header">
+    <h1>YoungAdultNavigator™</h1>
+    <button class="menu-toggle" id="menuToggle" aria-label="Buka Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-compass"></i>
+        <h1>YoungAdult<br>Navigator™</h1>
+      </div>
+      <ul class="nav-list">
+        <li>
+          <a class="nav-item active" data-target="dashboard">
+            <i class="fa-solid fa-house"></i> Beranda
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="start-here">
+            <i class="fa-solid fa-flag"></i> Mulai Di Sini
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li>
+          <a class="nav-item" data-target="tool-finances">
+            <i class="fa-solid fa-wallet"></i> Keuangan Gaji Pertama
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-social">
+            <i class="fa-solid fa-users"></i> Kompas Sosial
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-independence">
+            <i class="fa-solid fa-key"></i> Cek Kemandirian
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-career">
+            <i class="fa-solid fa-briefcase"></i> Panduan Awal Karier
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-loneliness">
+            <i class="fa-solid fa-heart-crack"></i> Navigasi Kesepian
+          </a>
+        </li>
+        <li class="nav-divider"></li>
+        <li>
+          <a class="nav-item" data-target="view-7day">
+            <i class="fa-solid fa-calendar-check"></i> Reset 7 Hari
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="view-lifemap">
+            <i class="fa-solid fa-map"></i> Peta Navigasi Hidup
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="view-history">
+            <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="view-privacy">
+            <i class="fa-solid fa-user-shield"></i> Privasi & Keamanan
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <!-- VIEW 0: BERANDA / DASHBOARD -->
+        <section id="dashboard" class="view-panel active">
+          <div id="home-personalized-banner" class="card" style="background: var(--midnight); color: white; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">RANCANG USIA 20-AN ANDA DENGAN TERARAH</h2>
+            <p id="home-banner-text" style="font-size: 13.5px; opacity: 0.9; line-height: 1.4;">
+              Masa sekolah memberikan struktur pasti. Masa dewasa memberikan Anda otonomi penuh—sekaligus ketidakpastian penuh. Bangun sistem hidup Anda di bawah ini.
+            </p>
+            <div id="home-progress-pills" style="display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap;"></div>
+          </div>
+
+          <h2 class="hero-title">Sistem Hidup Dewasa Muda</h2>
+          <p class="hero-subtitle">Pilih pilar utama yang ingin dibenahi hari ini atau selesaikan seluruh Program Reset 7 Hari.</p>
+          
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTab('tool-finances')">
+              <div class="dash-icon"><i class="fa-solid fa-wallet"></i></div>
+              <h3>Keuangan Gaji Pertama</h3>
+              <p>Ubah gaji bulanan menjadi fondasi finansial yang aman tanpa harus merasa terkekang.</p>
+              <div class="dash-status" id="dash-status-finances"><i class="fa-regular fa-circle" style="color:var(--text-muted)"></i></div>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-social')">
+              <div class="dash-icon"><i class="fa-solid fa-users"></i></div>
+              <h3>Kompas Sosial</h3>
+              <p>Bina hubungan pertemanan dewasa dan jalani dunia kencan secara jujur tanpa berpura-pura.</p>
+              <div class="dash-status" id="dash-status-social"><i class="fa-regular fa-circle" style="color:var(--text-muted)"></i></div>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-independence')">
+              <div class="dash-icon"><i class="fa-solid fa-key"></i></div>
+              <h3>Cek Kemandirian</h3>
+              <p>Evaluasi kemandirian domestik dan bangun sistem keseharian yang dapat diandalkan.</p>
+              <div class="dash-status" id="dash-status-independence"><i class="fa-regular fa-circle" style="color:var(--text-muted)"></i></div>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-career')">
+              <div class="dash-icon"><i class="fa-solid fa-briefcase"></i></div>
+              <h3>Panduan Awal Karier</h3>
+              <p>Atasi imposter syndrome, terima umpan balik, dan navigasi ketidakpastian karier sejak awal.</p>
+              <div class="dash-status" id="dash-status-career"><i class="fa-regular fa-circle" style="color:var(--text-muted)"></i></div>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-loneliness')">
+              <div class="dash-icon"><i class="fa-solid fa-heart-crack"></i></div>
+              <h3>Navigasi Kesepian</h3>
+              <p>Ubah sudut pandang tentang isolasi sosial dan temukan jalan realistis untuk terhubung kembali.</p>
+              <div class="dash-status" id="dash-status-loneliness"><i class="fa-regular fa-circle" style="color:var(--text-muted)"></i></div>
+            </div>
+            <div class="dash-card" style="border: 2px dashed var(--mint-dark); background: var(--mint-light);" onclick="switchTab('view-7day')">
+              <div class="dash-icon" style="background:var(--midnight); color:var(--mint);"><i class="fa-solid fa-calendar-check"></i></div>
+              <h3>Urutan Reset 7 Hari</h3>
+              <p>Ambil alur terstruktur penuh untuk membangun peta navigasi hidup dewasa Anda.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW 0.5: MULAI DI SINI -->
+        <section id="start-here" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">Masa Dewasa Adalah Transisi Tanpa Skrip</h2>
+            <p style="font-size:14.5px; line-height:1.6; color:var(--text-main); margin-bottom:20px;">
+              Selama kurang lebih 22 tahun pertama kehidupan, alur waktu Anda sudah diaturkan: nilai, semester, liburan, dan kelompok teman sebaya. Masa dewasa awal melepas semua batasan itu sekaligus.
+            </p>
+            <div class="tool-problem">
+              <i class="fa-solid fa-compass"></i>
+              <span>Penghasilan finansial, koneksi sosial, momentum karier, dan kemandirian rumah tangga tidak terbentuk otomatis. Semuanya membutuhkan perancangan sistem secara aktif.</span>
+            </div>
+            
+            <h3 style="font-size:16px; font-weight:700; color:var(--midnight); margin-bottom:12px;">5 Pertanyaan Utama Navigasi Hidup</h3>
+            <ol style="padding-left:20px; line-height:1.8; font-size:14px; margin-bottom:24px;">
+              <li><strong>Keuangan:</strong> Apakah gaji saya membangun keamanan fondasi atau menguap begitu saja?</li>
+              <li><strong>Sosial:</strong> Bagaimana cara saya aktif membangun komunitas di luar lingkungan sekolah/kampus?</li>
+              <li><strong>Kemandirian:</strong> Urusan administratif atau rumah tangga apa yang sedang saya hindari, dan mengapa?</li>
+              <li><strong>Karier:</strong> Bagaimana saya mengubah proses belajar di awal kerja menjadi ketahanan profesional?</li>
+              <li><strong>Koneksi:</strong> Bagaimana saya mengubah perasaan terisolasi menjadi hubungan yang bermakna?</li>
+            </ol>
+
+            <button class="btn btn-primary" onclick="switchTab('tool-finances')"><i class="fa-solid fa-arrow-right"></i> Mulai Langkah 1: Keuangan Gaji Pertama</button>
+          </div>
+        </section>
+
+        <!-- TOOL 1: KEUANGAN GAJI PERTAMA -->
+        <section id="tool-finances" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-wallet" style="color:var(--mint-dark)"></i> Keuangan Gaji Pertama</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Saya akhirnya punya penghasilan bulanan, tapi uangnya habis entah ke mana."</span>
+            </div>
+
+            <form id="form-finances">
+              <div class="form-group">
+                <label for="fin-income">Gaji bersih bulanan (Rp):</label>
+                <input type="number" id="fin-income" class="form-control" placeholder="Contoh: 5000000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-rent">Biaya sewa / kontribusi tempat tinggal (Rp):</label>
+                <input type="number" id="fin-rent" class="form-control" placeholder="Contoh: 1500000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-fixed">Pengeluaran rutin tetap (HP, listrik, transportasi, langganan) (Rp):</label>
+                <input type="number" id="fin-fixed" class="form-control" placeholder="Contoh: 800000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-variable">Perkiraan pengeluaran fleksibel (makan, gaya hidup, hiburan) (Rp):</label>
+                <input type="number" id="fin-variable" class="form-control" placeholder="Contoh: 1200000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-debt">Cicilan / Pembayaran utang bulanan (Rp):</label>
+                <input type="number" id="fin-debt" class="form-control" placeholder="Contoh: 500000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-savings">Tabungan / Investasi saat ini per bulan (Rp):</label>
+                <input type="number" id="fin-savings" class="form-control" placeholder="Contoh: 500000" required min="0">
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Analisis Arus Kas</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleFinances()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-finances" class="output-container"></div>
+          
+          <div class="history-section card">
+            <div class="history-header" onclick="toggleHistory('finances')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Analisis Keuangan</span>
+              <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); clearHistory('finances');">Hapus Riwayat</button>
+            </div>
+            <div id="history-finances" class="history-list"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: KOMPAS SOSIAL -->
+        <section id="tool-social" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-users" style="color:var(--mint-dark)"></i> Kompas Sosial</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Saya bingung cara berteman di usia dewasa atau berkencan tanpa rasa canggung."</span>
+            </div>
+
+            <form id="form-social">
+              <div class="form-group">
+                <label for="soc-contact">Interaksi sosial bermakna saat ini dalam seminggu:</label>
+                <select id="soc-contact" class="form-control">
+                  <option value="Setiap Hari">Setiap Hari</option>
+                  <option value="3-4x Seminggu">3-4 kali seminggu</option>
+                  <option value="1-2x Seminggu">1-2 kali seminggu</option>
+                  <option value="Jarang">Jarang</option>
+                  <option value="Tidak Pernah">Tidak Pernah</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Apa yang sedang Anda cari? (Pilih semua yang sesuai):</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label"><input type="checkbox" name="soc-looking" value="Teman Dekat"> Teman Dekat</label>
+                  <label class="checkbox-label"><input type="checkbox" name="soc-looking" value="Teman Kasual"> Teman Main / Kasual</label>
+                  <label class="checkbox-label"><input type="checkbox" name="soc-looking" value="Pasangan / Kencan"> Pasangan / Kencan</label>
+                  <label class="checkbox-label"><input type="checkbox" name="soc-looking" value="Komunitas Hobi"> Komunitas / Komunitas Hobi</label>
+                  <label class="checkbox-label"><input type="checkbox" name="soc-looking" value="Belum Yakin"> Belum Yakin</label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="soc-fear">Hambatan atau kekhawatiran sosial terbesar:</label>
+                <select id="soc-fear" class="form-control">
+                  <option value="Rasa Penolakan">Takut Ditolak / Overthinking</option>
+                  <option value="Bingung Membuka Obrolan">Bingung Cari Topik Obrolan</option>
+                  <option value="Merasa Membosankan">Merasa Diri Membosankan</option>
+                  <option value="Takut Terlihat Terlalu Berharap">Takut Terlihat Terlalu Berharap</option>
+                  <option value="Kesibukan & Waktu">Jadwal Padat & Keterbatasan Waktu</option>
+                  <option value="Kecemasan Sosial">Kecemasan Sosial (Social Anxiety)</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="soc-tried">Usaha apa saja yang sudah coba Anda lakukan?</label>
+                <textarea id="soc-tried" class="form-control" placeholder="Contoh: Ikut event kantor, aplikasi kencan, tempat gym..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="soc-media">Bagaimana media sosial memengaruhi perasaan Anda tentang kehidupan sosial?</label>
+                <select id="soc-media" class="form-control">
+                  <option value="Terinspirasi">Terinspirasi</option>
+                  <option value="Cemas / Insecure">Cemas / Insecure</option>
+                  <option value="Ketinggalan (FOMO)">Merasa Tertinggal (FOMO)</option>
+                  <option value="Biasa Saja / Mati Rasa">Biasa Saja</option>
+                  <option value="Jarang Pakai">Jarang Menggunakan Media Sosial</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Susun Strategi Sosial</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleSocial()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-social" class="output-container"></div>
+
+          <div class="history-section card">
+            <div class="history-header" onclick="toggleHistory('social')">
+              <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Strategi Sosial</span>
+              <button class="btn btn-secondary btn-sm" onclick="event.stopPropagation(); clearHistory('social');">Hapus Riwayat</button>
+            </div>
+            <div id="history-social" class="history-list"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: CEK KEMANDIRIAN -->
+        <section id="tool-independence" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-key" style="color:var(--mint-dark)"></i> Cek Kemandirian Domestik</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Saya sering merasa belum menjadi orang dewasa seutuhnya. Antara kewalahan atau menunda urusan."</span>
+            </div>
+
+            <form id="form-independence">
+              <div class="form-group">
+                <label for="ind-living">Situasi Tempat Tinggal Saat Ini:</label>
+                <select id="ind-living" class="form-control">
+                  <option value="Sendiri (Kost/Kontrakan)">Tinggal Sendiri (Kost / Sewa Apartments / Rumah)</option>
+                  <option value="Bersama Orang Tua">Tinggal Bersama Orang Tua / Keluarga</option>
+                  <option value="Bersama Teman">Tinggal Bersama Teman / Roommate</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label>Tingkat Keterampilan Domestik Harian (Centang yang SUDAH Anda kuasai mandiri):</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label"><input type="checkbox" name="ind-skills" value="Memasak Sehat"> Memasak makanan sehat sederhana secara rutin</label>
+                  <label class="checkbox-label"><input type="checkbox" name="ind-skills" value="Manajemen Kebersihan"> Mengatur jadwal cuci baju dan kebersihan kamar/rumah</label>
+                  <label class="checkbox-label"><input type="checkbox" name="ind-skills" value="Administrasi & Tagihan"> Bayar tagihan tepat waktu tanpa diingatkan</label>
+                  <label class="checkbox-label"><input type="checkbox" name="ind-skills" value="Navigasi Kesehatan"> Mengatur janji dokter/kesehatan mandiri saat sakit</label>
+                  <label class="checkbox-label"><input type="checkbox" name="ind-skills" value="Perbaikan Dasar"> Menangani perbaikan kecil / belanja kebutuhan dasar rumah</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="ind-avoid">Tugas atau administrasi apa yang paling sering Anda tunda?</label>
+                <input type="text" id="ind-avoid" class="form-control" placeholder="Contoh: Pajak, servis kendaraan, rapihin berkas...">
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check-double"></i> Evaluasi Kemandirian</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-independence" class="output-container"></div>
+        </section>
+
+        <!-- TOOL 4: PANDUAN AWAL KARIER -->
+        <section id="tool-career" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-briefcase" style="color:var(--mint-dark)"></i> Panduan Awal Karier</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Saya merasa tidak cukup kompeten atau bingung menentukan arah di dunia kerja."</span>
+            </div>
+
+            <form id="form-career">
+              <div class="form-group">
+                <label for="car-stage">Tahap Karier Saat Ini:</label>
+                <select id="car-stage" class="form-control">
+                  <option value="Mencari Kerja">Mencari Kerja / First Jobber</option>
+                  <option value="1-2 Tahun Pertama">1-2 Tahun Pertama Bekerja</option>
+                  <option value="Pindah Jalur / Pivot">Rencana Pindah Jalur Karier (Pivot)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="car-challenge">Tantangan Utama di Tempat Kerja Saat Ini:</label>
+                <select id="car-challenge" class="form-control">
+                  <option value="Imposter Syndrome">Merasa Kurang Mampu (Imposter Syndrome)</option>
+                  <option value="Komunikasi dengan Atasan">Komunikasi / Terima Kritik dari Atasan</option>
+                  <option value="Beban Kerja & Burnout">Beban Kerja Berlebih (Burnout)</option>
+                  <option value="Gaji & Kejelasan Arah">Arah Karier & Evaluasi Gaji</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-rocket"></i> Buat Strategi Karier</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-career" class="output-container"></div>
+        </section>
+
+        <!-- TOOL 5: NAVIGASI KESEPAN -->
+        <section id="tool-loneliness" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-heart-crack" style="color:var(--mint-dark)"></i> Navigasi Kesepian</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Saya merasa kesepian dan terisolasi, meskipun dikelilingi banyak orang."</span>
+            </div>
+
+            <form id="form-loneliness">
+              <div class="form-group">
+                <label for="lon-type">Jenis Kesepian yang Paling Dirasakan:</label>
+                <select id="lon-type" class="form-control">
+                  <option value="Kesepian Emosional">Kesepian Emosional (Butuh seseorang yang benar-benar paham)</option>
+                  <option value="Kesepian Sosial">Kesepian Sosial (Kekurangan kelompok/komunitas berkumpul)</option>
+                  <option value="Kesepian Eksistensial">Kesepian Eksistensial (Bingung dengan tujuan hidup sendiri)</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-heart"></i> Temukan Jalur Koneksi</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-loneliness" class="output-container"></div>
+        </section>
+
+        <!-- VIEW: RESET 7 HARI -->
+        <section id="view-7day" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">Urutan Reset 7 Hari</h2>
+            <p class="hero-subtitle">Satu langkah kecil setiap hari untuk menata kembali kendali hidup Anda secara bertahap.</p>
+            
+            <div class="schedule-day">
+              <h4>Hari 1: Audit Keuangan Sederhana</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Hitung semua pemasukan dan pengeluaran wajib bulanan Anda menggunakan Alat Keuangan.</p>
+            </div>
+            <div class="schedule-day">
+              <h4>Hari 2: Bersihkan Lingkungan Domestik</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Rapikan area kerja dan tempat tidur. Selesaikan 1 tugas administrasi yang tertunda.</p>
+            </div>
+            <div class="schedule-day">
+              <h4>Hari 3: Pemetaan Koneksi Sosial</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Kirim pesan singkat ke 2 teman lama atau jadwalkan satu interaksi langsung minggu ini.</p>
+            </div>
+            <div class="schedule-day">
+              <h4>Hari 4: Refleksi & Batasan Pekerjaan</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Tuliskan 3 hal yang berhasil Anda pelajari minggu ini di tempat kerja.</p>
+            </div>
+            <div class="schedule-day">
+              <h4>Hari 5: Detoks Media Sosial</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Kurangi waktu layar (screen time) dan fokus pada hobi fisik tanpa gawai.</p>
+            </div>
+            <div class="schedule-day">
+              <h4>Hari 6: Evaluasi Rutinitas Kesehatan</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Pastikan jam tidur konsisten dan pola makan tercukupi nutrisinya.</p>
+            </div>
+            <div class="schedule-day">
+              <h4>Hari 7: Peninjauan Peta Navigasi Hidup</h4>
+              <p style="font-size:13.5px; color:var(--text-main);">Buka menu Peta Hidup untuk melihat kemajuan dan menyusun target bulan depan.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: PETA NAVIGASI HIDUP -->
+        <section id="view-lifemap" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">Peta Navigasi Hidup Saya</h2>
+            <p class="hero-subtitle">Gambaran menyeluruh dari pilar-pilar penting hidup Anda.</p>
+            
+            <div class="matrix-grid">
+              <div class="matrix-box">
+                <h4><i class="fa-solid fa-wallet" style="color:var(--mint-dark)"></i> Keuangan</h4>
+                <p style="font-size:13px; color:var(--text-muted);" id="map-fin-status">Belum ada data analisis.</p>
+              </div>
+              <div class="matrix-box">
+                <h4><i class="fa-solid fa-users" style="color:var(--mint-dark)"></i> Sosial</h4>
+                <p style="font-size:13px; color:var(--text-muted);" id="map-soc-status">Belum ada data analisis.</p>
+              </div>
+              <div class="matrix-box">
+                <h4><i class="fa-solid fa-key" style="color:var(--mint-dark)"></i> Kemandirian</h4>
+                <p style="font-size:13px; color:var(--text-muted);" id="map-ind-status">Belum ada data evaluasi.</p>
+              </div>
+              <div class="matrix-box">
+                <h4><i class="fa-solid fa-briefcase" style="color:var(--mint-dark)"></i> Karier</h4>
+                <p style="font-size:13px; color:var(--text-muted);" id="map-car-status">Belum ada data strategi.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- VIEW: RIWAYAT SAYA -->
+        <section id="view-history" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">Riwayat Sesi</h2>
+            <p class="hero-subtitle">Semua data analisis disimpan secara lokal di browser Anda.</p>
+            <div id="all-history-content"></div>
+            <button class="btn btn-danger btn-sm" onclick="clearAllAppHistory()" style="margin-top:15px;"><i class="fa-solid fa-trash"></i> Hapus Seluruh Data</button>
+          </div>
+        </section>
+
+        <!-- VIEW: PRIVASI & KEAMANAN -->
+        <section id="view-privacy" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">Privasi & Keamanan Data</h2>
+            <p style="font-size:14px; line-height:1.6; color:var(--text-main);">
+              <strong>100% Lokal & Privat:</strong> Aplikasi ini bekerja sepenuhnya di dalam browser Anda (*Client-side*). Tidak ada data keuangan, jawaban, atau informasi pribadi Anda yang dikirim ke server luar atau disimpan di cloud kami.
+            </p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <i class="fa-solid fa-check-circle" style="color:var(--mint)"></i>
+    <span id="toast-message">Pesan notifikasi</span>
+  </div>
+
+  <footer>
+    YoungAdultNavigator™ V2 &copy; Sistem Penataan Hidup Dewasa Muda.
+  </footer>
+
+  <!-- Javascript Logic -->
+  <script>
+    // System State & LocalStorage Management
+    const APP_STORAGE_KEY = 'YAN_V2_DATA';
+
+    function getAppData() {
+      const data = localStorage.getItem(APP_STORAGE_KEY);
+      return data ? JSON.parse(data) : { finances: [], social: [], independence: [], career: [], loneliness: [] };
+    }
+
+    function saveAppData(data) {
+      localStorage.setItem(APP_STORAGE_KEY, JSON.stringify(data));
+      updateDashboardStatus();
+      updateLifeMap();
+      renderAllHistory();
+    }
+
+    // Tab Switching Framework
+    function switchTab(targetId) {
+      document.querySelectorAll('.view-panel').forEach(panel => panel.classList.remove('active'));
+      
+      const activePanel = document.getElementById(targetId);
+      if (activePanel) {
+        activePanel.classList.add('active');
+      }
+
+      document.querySelectorAll('.nav-item').forEach(item => {
+        if (item.getAttribute('data-target') === targetId) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+
+      closeSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Sidebar & Mobile Controls
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').classList.toggle('open');
+    }
+
+    function closeSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      toastMsg.innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 3000);
+    }
+
+    // Tool 1: Financial Calculator Logic
+    document.getElementById('form-finances')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const income = parseFloat(document.getElementById('fin-income').value) || 0;
+      const rent = parseFloat(document.getElementById('fin-rent').value) || 0;
+      const fixed = parseFloat(document.getElementById('fin-fixed').value) || 0;
+      const variable = parseFloat(document.getElementById('fin-variable').value) || 0;
+      const debt = parseFloat(document.getElementById('fin-debt').value) || 0;
+      const savings = parseFloat(document.getElementById('fin-savings').value) || 0;
+
+      const totalSpent = rent + fixed + variable + debt + savings;
+      const cashflow = income - totalSpent;
+      const savingsRate = income > 0 ? ((savings / income) * 100).toFixed(1) : 0;
+
+      let statusBadge = '';
+      if (cashflow < 0) {
+        statusBadge = '<span class="badge badge-danger">Defisit Bulanan</span>';
+      } else if (savingsRate < 10) {
+        statusBadge = '<span class="badge badge-warning">Tabungan Minim</span>';
+      } else {
+        statusBadge = '<span class="badge badge-success">Keuangan Sehat</span>';
+      }
+
+      const formatRupiah = (num) => 'Rp ' + num.toLocaleString('id-ID');
+
+      const htmlResult = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-chart-pie"></i> Ringkasan Arus Kas ${statusBadge}</div>
+          <div class="output-headline">Sisa Saldo Bulanan: ${formatRupiah(cashflow)}</div>
+          <p style="font-size:13.5px; color:var(--text-muted); margin-bottom:12px;">
+            Rasio tabungan Anda saat ini adalah <strong>${savingsRate}%</strong> dari total penghasilan. Target ideal dewasa muda adalah minimal 15-20%.
+          </p>
+          <ul style="font-size:13.5px; padding-left:18px; line-height:1.6;">
+            <li><strong>Total Pengeluaran:</strong> ${formatRupiah(totalSpent)}</li>
+            <li><strong>Sewa Tempat Tinggal:</strong> ${formatRupiah(rent)} (${((rent/income)*100).toFixed(1)}% dari gaji)</li>
+            <li><strong>Cicilan/Utang:</strong> ${formatRupiah(debt)}</li>
+          </ul>
+        </div>
+      `;
+
+      const outContainer = document.getElementById('out-finances');
+      outContainer.innerHTML = htmlResult;
+      outContainer.classList.add('active');
+
+      // Save to History
+      const appData = getAppData();
+      appData.finances.unshift({
+        date: new Date().toLocaleDateString('id-ID'),
+        income, cashflow, savingsRate
+      });
+      saveAppData(appData);
+      renderLocalHistory('finances');
+      showToast('Analisis Keuangan Disimpan!');
+    });
+
+    function loadSampleFinances() {
+      document.getElementById('fin-income').value = 6000000;
+      document.getElementById('fin-rent').value = 1800000;
+      document.getElementById('fin-fixed').value = 800000;
+      document.getElementById('fin-variable').value = 1500000;
+      document.getElementById('fin-debt').value = 400000;
+      document.getElementById('fin-savings').value = 1000000;
+    }
+
+    // Tool 2: Social Compass Logic
+    document.getElementById('form-social')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const contact = document.getElementById('soc-contact').value;
+      const fear = document.getElementById('soc-fear').value;
+      
+      const htmlResult = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-compass"></i> Strategi Hubungan Sosial</div>
+          <div class="output-headline">Rencana Tindakan Koneksi</div>
+          <p style="font-size:13.5px; line-height:1.5; color:var(--text-main);">
+            Fokus Anda saat ini adalah mengatasi <strong>${fear}</strong> dengan frekuensi interaksi <strong>${contact}</strong>. 
+          </p>
+          <div class="script-box">
+            "Halo [Nama], lagi senggang minggu ini? Mau ngopi santai atau cari makan siang bareng?"
+            <button class="script-copy-btn" onclick="navigator.clipboard.writeText('Halo! Mau ngopi santai minggu ini?'); showToast('Teks disalin!');">Salin Teks</button>
+          </div>
+        </div>
+      `;
+
+      const outContainer = document.getElementById('out-social');
+      outContainer.innerHTML = htmlResult;
+      outContainer.classList.add('active');
+
+      const appData = getAppData();
+      appData.social.unshift({
+        date: new Date().toLocaleDateString('id-ID'),
+        contact, fear
+      });
+      saveAppData(appData);
+      renderLocalHistory('social');
+      showToast('Strategi Sosial Disimpan!');
+    });
+
+    function loadSampleSocial() {
+      document.getElementById('soc-contact').value = '1-2x Seminggu';
+      document.getElementById('soc-fear').value = 'Rasa Penolakan';
+      document.getElementById('soc-tried').value = 'Coba ikut komunitas lari tapi canggung.';
+    }
+
+    // Tool 3: Independence Logic
+    document.getElementById('form-independence')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const checkedSkills = document.querySelectorAll('input[name="ind-skills"]:checked').length;
+      
+      const htmlResult = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-key"></i> Skor Kemandirian Domestik</div>
+          <div class="output-headline">Skor Anda: ${checkedSkills} dari 5 Keterampilan</div>
+          <p style="font-size:13.5px; color:var(--text-muted);">
+            ${checkedSkills >= 4 ? 'Kemandirian domestik Anda sangat baik!' : 'Terus tingkatkan rutinitas harian Anda secara bertahap.'}
+          </p>
+        </div>
+      `;
+
+      const outContainer = document.getElementById('out-independence');
+      outContainer.innerHTML = htmlResult;
+      outContainer.classList.add('active');
+
+      const appData = getAppData();
+      appData.independence.unshift({
+        date: new Date().toLocaleDateString('id-ID'),
+        score: checkedSkills
+      });
+      saveAppData(appData);
+    });
+
+    // Tool 4: Career Logic
+    document.getElementById('form-career')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const stage = document.getElementById('car-stage').value;
+      const challenge = document.getElementById('car-challenge').value;
+
+      const htmlResult = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-briefcase"></i> Navigasi Karier</div>
+          <div class="output-headline">Fokus: ${challenge}</div>
+          <p style="font-size:13.5px; color:var(--text-main);">
+            Pada tahap <strong>${stage}</strong>, fokus utama Anda adalah membangun konsistensi performa serta mengelola ekspektasi kerja secara komunikatif.
+          </p>
+        </div>
+      `;
+
+      const outContainer = document.getElementById('out-career');
+      outContainer.innerHTML = htmlResult;
+      outContainer.classList.add('active');
+
+      const appData = getAppData();
+      appData.career.unshift({
+        date: new Date().toLocaleDateString('id-ID'),
+        stage, challenge
+      });
+      saveAppData(appData);
+    });
+
+    // Tool 5: Loneliness Logic
+    document.getElementById('form-loneliness')?.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const type = document.getElementById('lon-type').value;
+
+      const htmlResult = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-heart"></i> Jalur Koneksi</div>
+          <div class="output-headline">Langkah Menghadapi ${type}</div>
+          <p style="font-size:13.5px; color:var(--text-main);">
+            Kesepian adalah sinyal alami. Jadwalkan interaksi tatap muka tanpa gawai minimal 1 kali minggu ini untuk membangun kembali kehangatan koneksi.
+          </p>
+        </div>
+      `;
+
+      const outContainer = document.getElementById('out-loneliness');
+      outContainer.innerHTML = htmlResult;
+      outContainer.classList.add('active');
+
+      const appData = getAppData();
+      appData.loneliness.unshift({
+        date: new Date().toLocaleDateString('id-ID'),
+        type
+      });
+      saveAppData(appData);
+    });
+
+    // Local History Render Helpers
+    function renderLocalHistory(toolKey) {
+      const listEl = document.getElementById(`history-${toolKey}`);
+      if (!listEl) return;
+
+      const appData = getAppData();
+      const items = appData[toolKey] || [];
+
+      if (items.length === 0) {
+        listEl.innerHTML = '<p style="font-size:12px; color:var(--text-muted);">Belum ada riwayat.</p>';
+        return;
+      }
+
+      listEl.innerHTML = items.slice(0, 3).map(item => `
+        <div class="history-item">
+          <span>Data Sesi (${item.date})</span>
+          <span class="history-date">Tersimpan</span>
+        </div>
+      `).join('');
+    }
+
+    function toggleHistory(toolKey) {
+      const listEl = document.getElementById(`history-${toolKey}`);
+      if (listEl) {
+        listEl.style.display = listEl.style.display === 'none' ? 'block' : 'none';
+      }
+    }
+
+    function clearHistory(toolKey) {
+      const appData = getAppData();
+      appData[toolKey] = [];
+      saveAppData(appData);
+      renderLocalHistory(toolKey);
+      showToast('Riwayat dihapus');
+    }
+
+    function clearAllAppHistory() {
+      localStorage.removeItem(APP_STORAGE_KEY);
+      updateDashboardStatus();
+      updateLifeMap();
+      renderAllHistory();
+      showToast('Seluruh data berhasil dibersihkan');
+    }
+
+    function renderAllHistory() {
+      const container = document.getElementById('all-history-content');
+      if (!container) return;
+
+      const appData = getAppData();
+      let html = '<ul style="font-size:13px; padding-left:18px; line-height:1.8;">';
+      html += `<li>Analisis Keuangan: ${appData.finances.length} catatan</li>`;
+      html += `<li>Strategi Sosial: ${appData.social.length} catatan</li>`;
+      html += `<li>Evaluasi Kemandirian: ${appData.independence.length} catatan</li>`;
+      html += `<li>Panduan Karier: ${appData.career.length} catatan</li>`;
+      html += '</ul>';
+
+      container.innerHTML = html;
+    }
+
+    function updateDashboardStatus() {
+      const appData = getAppData();
+      const updateIcon = (id, hasData) => {
+        const el = document.getElementById(id);
+        if (el) {
+          el.innerHTML = hasData 
+            ? '<i class="fa-solid fa-circle-check" style="color:var(--mint-dark)"></i>' 
+            : '<i class="fa-regular fa-circle" style="color:var(--text-muted)"></i>';
+        }
+      };
+
+      updateIcon('dash-status-finances', appData.finances.length > 0);
+      updateIcon('dash-status-social', appData.social.length > 0);
+      updateIcon('dash-status-independence', appData.independence.length > 0);
+      updateIcon('dash-status-career', appData.career.length > 0);
+      updateIcon('dash-status-loneliness', appData.loneliness.length > 0);
+    }
+
+    function updateLifeMap() {
+      const appData = getAppData();
+      
+      const finEl = document.getElementById('map-fin-status');
+      if (finEl && appData.finances.length > 0) {
+        const last = appData.finances[0];
+        finEl.innerHTML = `Rasio Tabungan: <strong>${last.savingsRate}%</strong> (${last.date})`;
+      }
+
+      const socEl = document.getElementById('map-soc-status');
+      if (socEl && appData.social.length > 0) {
+        const last = appData.social[0];
+        socEl.innerHTML = `Fokus: <strong>${last.fear}</strong> (${last.date})`;
+      }
+
+      const indEl = document.getElementById('map-ind-status');
+      if (indEl && appData.independence.length > 0) {
+        const last = appData.independence[0];
+        indEl.innerHTML = `Skor Kemandirian: <strong>${last.score}/5</strong> (${last.date})`;
+      }
+
+      const carEl = document.getElementById('map-car-status');
+      if (carEl && appData.career.length > 0) {
+        const last = appData.career[0];
+        carEl.innerHTML = `Tantangan: <strong>${last.challenge}</strong> (${last.date})`;
+      }
+    }
+
+    // Initialization on Page Load
+    document.addEventListener('DOMContentLoaded', () => {
+      // Bind Sidebar Clicks
+      document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+          e.preventDefault();
+          const target = item.getAttribute('data-target');
+          if (target) switchTab(target);
+        });
+      });
+
+      // Mobile Menu Controls
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+      if (menuToggle) menuToggle.addEventListener('click', toggleSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
+
+      // Initial Data Render
+      renderLocalHistory('finances');
+      renderLocalHistory('social');
+      updateDashboardStatus();
+      updateLifeMap();
+      renderAllHistory();
+    });
+  </script>
+</body>
+</html>

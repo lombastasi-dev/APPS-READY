@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fair Home — Household Labor & Mental Load Toolkit</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slateBlue: '#457B9D',
+                        slateBlueDark: '#1D3557',
+                        warmOrange: '#F4A261',
+                        warmOrangeHover: '#E76F51',
+                        softBg: '#F8F9FA',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .nav-item.active {
+            background-color: #1D3557;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .nav-item.active i {
+            color: #F4A261;
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F8F9FA;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94A3B8;
+        }
+    </style>
+</head>
+<body class="bg-softBg font-sans text-gray-800 antialiased min-h-screen flex flex-col md:flex-row">
+
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 ease-in-out bg-slateBlueDark text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 pointer-events-none">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-warmOrange"></i>
+        <span id="toast-message" class="text-sm font-medium">Notification message</span>
+    </div>
+
+    <div class="md:hidden bg-slateBlueDark text-white p-4 flex justify-between items-center sticky top-0 z-40 shadow-md">
+        <div class="flex items-center space-x-2">
+            <i class="fa-solid fa-house-chimney-window text-warmOrange text-xl"></i>
+            <span class="font-bold text-lg tracking-wide">FAIR HOME™</span>
+        </div>
+        <button id="mobile-menu-btn" onclick="toggleMobileSidebar()" class="text-white hover:text-warmOrange focus:outline-none p-1">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </div>
+
+    <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-black/50 z-40 hidden md:hidden transition-opacity"></div>
+
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out h-screen md:h-auto overflow-y-auto">
+        <div class="p-6 border-b border-gray-100 flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-xl bg-slateBlueDark text-warmOrange flex items-center justify-center text-xl shadow-sm">
+                <i class="fa-solid fa-house-chimney-window"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-slateBlueDark text-lg tracking-tight leading-none">FAIR HOME™</h1>
+                <p class="text-xs text-gray-500 mt-1 font-medium">Operating System for Couples</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1">
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2">Getting Started</div>
+            
+            <a href="javascript:void(0)" onclick="switchTab('start-here')" id="nav-start-here" class="nav-item active flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-shield-halved w-5 text-center text-gray-400"></i>
+                <span>Start Here / Safety</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-gauge-high w-5 text-center text-gray-400"></i>
+                <span>Dashboard / Overview</span>
+            </a>
+
+            <div class="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mt-6 mb-2">The Toolkit</div>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool1')" id="nav-tool1" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-list-check w-5 text-center text-gray-400"></i>
+                <span>01 — Chore Audit</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool2')" id="nav-tool2" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-brain w-5 text-center text-gray-400"></i>
+                <span>02 — Invisible Work</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool3')" id="nav-tool3" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-handshake-simple w-5 text-center text-gray-400"></i>
+                <span>03 — The Handoff</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool4')" id="nav-tool4" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-sliders w-5 text-center text-gray-400"></i>
+                <span>04 — Standard Setter</span>
+            </a>
+
+            <a href="javascript:void(0)" onclick="switchTab('tool5')" id="nav-tool5" class="nav-item flex items-center space-x-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-100 transition-colors">
+                <i class="fa-solid fa-chart-line w-5 text-center text-gray-400"></i>
+                <span>05 — Weekly Review</span>
+            </a>
+        </nav>
+
+        <div class="p-4 border-t border-gray-100 bg-gray-50/50 text-xs text-gray-500 space-y-1">
+            <p class="font-semibold text-slateBlueDark">FAIR HOME™ v2.0</p>
+            <p>See the work. Share ownership. Reduce resentment.</p>
+        </div>
+    </aside>
+
+    <main class="flex-1 overflow-y-auto min-h-screen p-4 sm:p-6 lg:p-10 max-w-6xl mx-auto w-full">
+
+        <section id="start-here" class="space-y-8">
+            <div class="border-b border-gray-200 pb-5">
+                <div class="flex items-center space-x-3 text-slateBlue dark:text-slateBlue font-semibold text-sm uppercase tracking-wider">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Orientation & Foundation</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Start Here / Privacy & Safety</h1>
+                <p class="text-gray-600 mt-2 text-sm sm:text-base leading-relaxed max-w-3xl">
+                    Important context before beginning your household reflection journey. A quick guide to what Fair Home does, how your information is handled, and how to use the toolkit safely.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-amber-400 border border-gray-100 shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">🔒 Private by Design</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Fair Home is designed so your household reflections and saved histories stay in your browser's local storage. The current toolkit does not require an account or send your answers to a Fair Home database.
+                    </p>
+                    <p class="text-[11px] text-gray-400 italic">
+                        Note: Technical assets (fonts & CSS icons) may load from standard CDN libraries separately from your data.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-slateBlue border border-gray-100 shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">❤️ Non-Clinical Reflection Tool</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        Fair Home is a self-guided household reflection and communication tool. It is not therapy, diagnosis, crisis intervention, or a substitute for qualified professional medical care.
+                    </p>
+                    <p class="text-[11px] text-gray-500 font-medium">
+                        Scores & ratios are conversation aids, not psychological evaluations.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border-l-4 border-red-500 border border-gray-100 shadow-sm space-y-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-50 text-red-500 flex items-center justify-center text-lg font-bold">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-base">⚠️ Safety Notice</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">
+                        If your relationship involves abuse, threats, coercive control, serious addiction, or immediate danger where direct confrontation could put someone at risk, do not use Fair Home tools as a substitute for professional safety support.
+                    </p>
+                    <p class="text-[11px] text-red-600 font-semibold">
+                        Prioritize personal safety first.
+                    </p>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 sm:p-8 border border-gray-200/80 shadow-sm space-y-6">
+                <div>
+                    <h2 class="text-lg font-bold text-slateBlueDark">What Fair Home Can Help You See</h2>
+                    <p class="text-xs text-gray-500 mt-1">Household conflict is rarely about who is "lazy." It is usually about invisible work and unclear ownership.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">01 — CLARITY</span>
+                        <p class="text-xs text-gray-700">See real household workload instead of relying on memory.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">02 — LANGUAGE</span>
+                        <p class="text-xs text-gray-700">Put words around planning, anticipating, and mental load.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">03 — OWNERSHIP</span>
+                        <p class="text-xs text-gray-700">Move from "helping" toward total responsibility.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">04 — AGREEMENT</span>
+                        <p class="text-xs text-gray-700">Create shared definitions of what "done" actually means.</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-bold text-slateBlue">05 — REVIEW</span>
+                        <p class="text-xs text-gray-700">Check weekly whether a new arrangement is working.</p>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50/60 rounded-xl border border-amber-200/60 text-xs text-amber-800 leading-relaxed flex items-start space-x-3">
+                    <i class="fa-solid fa-scale-balanced text-warmOrange text-base mt-0.5"></i>
+                    <div>
+                        <strong class="font-semibold text-amber-900">Fairness Philosophy:</strong> Fair does not always mean 50/50. A fair household considers paid work hours, schedules, energy levels, and mental capacity. Fair Home helps you examine the system rather than tally points.
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <h2 class="text-lg font-bold text-slateBlueDark">The 5-Step System</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+                    <div onclick="switchTab('tool1')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Step 1</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Chore Audit</h3>
+                        <p class="text-xs text-gray-500">Map 16 foundational physical and admin tasks.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool2')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Step 2</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Invisible Work</h3>
+                        <p class="text-xs text-gray-500">Identify cognitive load and emotional tracking.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool3')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Step 3</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">The Handoff</h3>
+                        <p class="text-xs text-gray-500">Structure task swaps and generate scripts.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool4')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Step 4</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Standard Setter</h3>
+                        <p class="text-xs text-gray-500">Agree on Minimum Viable Home standards.</p>
+                    </div>
+
+                    <div onclick="switchTab('tool5')" class="cursor-pointer bg-white p-5 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-2 group">
+                        <div class="text-warmOrange font-bold text-xs uppercase tracking-wider">Step 5</div>
+                        <h3 class="font-bold text-gray-800 group-hover:text-slateBlue text-sm">Weekly Review</h3>
+                        <p class="text-xs text-gray-500">Run a 5-slider weekly pulse check.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-4 flex flex-col sm:flex-row items-center justify-between bg-slateBlueDark text-white p-6 rounded-2xl shadow-md gap-4">
+                <div>
+                    <h3 class="font-bold text-base">Ready to make the system visible?</h3>
+                    <p class="text-xs text-gray-300 mt-0.5">Start with Tool 01 or jump straight to the dashboard overview.</p>
+                </div>
+                <div class="flex space-x-3 w-full sm:w-auto">
+                    <button onclick="switchTab('dashboard')" class="flex-1 sm:flex-none px-5 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl font-medium text-xs transition-colors text-center">
+                        Go to Dashboard
+                    </button>
+                    <button onclick="switchTab('tool1')" class="flex-1 sm:flex-none px-6 py-2.5 bg-warmOrange hover:bg-warmOrangeHover text-slateBlueDark font-bold rounded-xl text-xs transition-colors shadow text-center">
+                        Begin Chore Audit <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <section id="dashboard" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5">
+                <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark">FAIR HOME™ Operating System</h1>
+                <p class="text-gray-600 mt-1 text-sm sm:text-base">See the work. Share the ownership. Reduce the resentment.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 shadow-sm space-y-4 md:col-span-2">
+                    <div class="inline-flex items-center space-x-2 px-3 py-1 bg-amber-50 text-amber-700 rounded-full text-xs font-semibold">
+                        <i class="fa-solid fa-lightbulb text-warmOrange"></i>
+                        <span>Core Product Principle</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-slateBlueDark">Make the Invisible Visible</h2>
+                    <p class="text-sm text-gray-600 leading-relaxed max-w-3xl">
+                        Resentment builds when one partner quietly assumes the mental and physical burden of managing a household. Fair Home provides concrete, non-judgmental frameworks to name tasks, negotiate transfers, set standards, and recalibrate weekly.
+                    </p>
+                </div>
+
+                <div onclick="switchTab('tool1')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Tool 01</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Chore Audit</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Map 16 foundational tasks across Partner A and Partner B. Calculate task split gaps and identify invisible task concentration.</p>
+                </div>
+
+                <div onclick="switchTab('tool2')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Tool 02</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Invisible Work Map</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Uncover cognitive burden across 6 domains: inventory, social planning, admin, family health, and emotional atmosphere.</p>
+                </div>
+
+                <div onclick="switchTab('tool3')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Tool 03</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">The Handoff</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Negotiate clean ownership transfers (Notice + Plan + Execute) and generate low-friction conversation scripts.</p>
+                </div>
+
+                <div onclick="switchTab('tool4')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Tool 04</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Standard Setter</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Reconcile cleanliness mismatches. Agree on a Minimum Viable Home (MVH) baseline to eliminate perfectionism battles.</p>
+                </div>
+
+                <div onclick="switchTab('tool5')" class="cursor-pointer bg-white p-6 rounded-2xl border border-gray-200 hover:border-slateBlue hover:shadow-md transition-all space-y-3 group md:col-span-2">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-warmOrange uppercase tracking-wider">Tool 05</span>
+                        <i class="fa-solid fa-arrow-right text-gray-400 group-hover:text-slateBlue group-hover:translate-x-1 transition-all"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slateBlueDark">Weekly Pulse Review</h3>
+                    <p class="text-xs text-gray-600 leading-relaxed">Rate 5 key metrics weekly (Fairness, Appreciation, Follow-through, Energy, Stress). Detect system drift before it turns into resentment.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="tool1" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Tool 01 — Diagnostic</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Chore Audit</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Map 16 foundational physical and administrative household tasks.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool1')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Load Sample Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool1" onsubmit="event.preventDefault(); calculateTool1();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+                    <h3 class="font-bold text-slateBlueDark text-base border-b border-gray-100 pb-3">16 Household Responsibilities</h3>
+                    <div id="tool1-task-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Calculate Task Ownership</span>
+                </button>
+            </form>
+
+            <div id="output-tool1" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool2" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Tool 02 — Mental Load</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Invisible Work Map</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Determine who carries the mental burden of planning, noticing, and anticipating.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool2')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Load Sample Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool2" onsubmit="event.preventDefault(); calculateTool2();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slateBlueDark text-base border-b border-gray-100 pb-3">6 Cognitive Domains</h3>
+                    <div id="tool2-questions-container" class="space-y-6">
+                        </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-brain"></i>
+                    <span>Generate Mental Load Map</span>
+                </button>
+            </form>
+
+            <div id="output-tool2" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool3" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Tool 03 — Action Plan</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">The Handoff</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Swap complete ownership (Notice + Plan + Execute) with a 14-day trial script.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool3')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Load Sample Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool3" onsubmit="event.preventDefault(); calculateTool3();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-b border-gray-100 pb-6">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Partner A Paid Work Hours / Wk</label>
+                            <input type="number" id="t3-hours-a" value="40" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Partner B Paid Work Hours / Wk</label>
+                            <input type="number" id="t3-hours-b" value="40" min="0" max="100" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Task Partner A Wants to Give Away</label>
+                            <select id="t3-give-a" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none"></select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Task Partner B Is Willing to Take</label>
+                            <select id="t3-take-b" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none"></select>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-handshake-simple"></i>
+                    <span>Generate Handoff Agreement & Script</span>
+                </button>
+            </form>
+
+            <div id="output-tool3" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool4" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Tool 04 — Alignment</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Standard Setter</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">Reconcile household expectations and define a "Minimum Viable Home" baseline.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool4')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Load Sample Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool4" onsubmit="event.preventDefault(); calculateTool4();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Kitchen Standard</label>
+                            <select id="t4-kitchen" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                                <option value="Clean as you go">Clean as you go (Spotless counters)</option>
+                                <option value="Clean before bed">Clean before bed (Dishes cleared daily)</option>
+                                <option value="Clean when full">Clean when sink is full</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Laundry Rhythm</label>
+                            <select id="t4-laundry" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                                <option value="Fold & put away same day">Fold & put away same day</option>
+                                <option value="Wash on set days, fold later">Wash on set days, fold later</option>
+                                <option value="Wash when clothes run out">Wash when clothes run out</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Common Areas</label>
+                            <select id="t4-common" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                                <option value="Tidy & clutter-free daily">Tidy & clutter-free daily</option>
+                                <option value="Reset on weekends">Reset on weekends</option>
+                                <option value="Lived-in / Functional mess ok">Lived-in / Functional mess ok</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-gray-100">
+                        <label class="block text-xs font-bold text-slateBlueDark uppercase tracking-wider">Biggest Single Friction Point / Pet Peeve</label>
+                        <input type="text" id="t4-peeve" placeholder="e.g., Leaving clean laundry in baskets for a week, or dirty coffee mugs in desk" class="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-slateBlue focus:outline-none">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Establish Household Standard Baseline</span>
+                </button>
+            </form>
+
+            <div id="output-tool4" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+        <section id="tool5" class="space-y-8 hidden">
+            <div class="border-b border-gray-200 pb-5 flex flex-col sm:flex-row justify-between sm:items-end gap-4">
+                <div>
+                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider">Tool 05 — Recalibration</span>
+                    <h1 class="text-2xl sm:text-3xl font-bold text-slateBlueDark mt-1">Weekly Pulse Review</h1>
+                    <p class="text-xs sm:text-sm text-gray-600 mt-1">A 5-slider check-in to monitor system health and catch drift early.</p>
+                </div>
+                <button onclick="loadSampleScenario('tool5')" class="px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl font-semibold text-xs hover:bg-amber-100 transition-colors flex items-center space-x-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-warmOrange"></i>
+                    <span>Load Sample Data</span>
+                </button>
+            </div>
+
+            <form id="form-tool5" onsubmit="event.preventDefault(); calculateTool5();" class="space-y-6">
+                <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-6">
+                    <h3 class="font-bold text-slateBlueDark text-base border-b border-gray-100 pb-3">Weekly System Pulse (Scale 1 to 10)</h3>
+                    
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>1. Fairness Perception</span>
+                            <span id="v-s1" class="text-slateBlue font-bold text-sm">7 / 10</span>
+                        </div>
+                        <input type="range" id="s1" min="1" max="10" value="7" oninput="document.getElementById('v-s1').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>2. Felt Appreciation</span>
+                            <span id="v-s2" class="text-slateBlue font-bold text-sm">5 / 10</span>
+                        </div>
+                        <input type="range" id="s2" min="1" max="10" value="5" oninput="document.getElementById('v-s2').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>3. Handoff Follow-Through</span>
+                            <span id="v-s3" class="text-slateBlue font-bold text-sm">8 / 10</span>
+                        </div>
+                        <input type="range" id="s3" min="1" max="10" value="8" oninput="document.getElementById('v-s3').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>4. Personal Rest & Energy</span>
+                            <span id="v-s4" class="text-slateBlue font-bold text-sm">6 / 10</span>
+                        </div>
+                        <input type="range" id="s4" min="1" max="10" value="6" oninput="document.getElementById('v-s4').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-xs font-bold text-gray-700">
+                            <span>5. Household Stress Management</span>
+                            <span id="v-s5" class="text-slateBlue font-bold text-sm">6 / 10</span>
+                        </div>
+                        <input type="range" id="s5" min="1" max="10" value="6" oninput="document.getElementById('v-s5').innerText = this.value + ' / 10'" class="w-full accent-slateBlue">
+                    </div>
+                </div>
+
+                <button type="submit" class="w-full py-3.5 bg-slateBlueDark hover:bg-slateBlue text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>Calculate Weekly Pulse Score</span>
+                </button>
+            </form>
+
+            <div id="output-tool5" class="hidden bg-white rounded-2xl border border-gray-200 p-6 sm:p-8 shadow-sm space-y-6">
+                </div>
+        </section>
+
+    </main>
+
+    <script>
+        // DATA CONSTANTS
+        const TOOL1_TASKS = [
+            "Cooking & Meal Prep",
+            "Grocery Shopping",
+            "Meal Planning",
+            "Daily Household Cleaning",
+            "Deep Cleaning & Bathrooms",
+            "Laundry & Folding",
+            "Dishes & Kitchen Reset",
+            "Bill Paying & Budgeting",
+            "Appointment Scheduling",
+            "Home Maintenance & Repairs",
+            "Car Maintenance & Fuel",
+            "Pet Care & Vet Visits",
+            "Childcare Transport & Logistics",
+            "School Homework & Forms",
+            "Social Calendar & Gifts",
+            "Family Emotional Check-ins"
+        ];
+
+        const INVISIBLE_TASK_KEYS = [
+            "Meal Planning",
+            "Bill Paying & Budgeting",
+            "Appointment Scheduling",
+            "Social Calendar & Gifts",
+            "Family Emotional Check-ins"
+        ];
+
+        const TOOL2_QUESTIONS = [
+            { id: "inv1", title: "Social & Family Calendar", desc: "Remembering birthdays, buying gifts, RSVPing, scheduling family visits." },
+            { id: "inv2", title: "Household Inventory & Supplies", desc: "Noticing when toilet paper, detergent, or staples are low before they run out." },
+            { id: "inv3", title: "Meal & Schedule Anticipation", desc: "Deciding what's for dinner, accounting for busy evenings and dietary preferences." },
+            { id: "inv4", title: "Admin & Health Tracking", desc: "Booking dentist checkups, tracking prescriptions, organizing tax/insurance files." },
+            { id: "inv5", title: "Emotional Climate", desc: "Noticing stress levels, planning recovery time, maintaining family harmony." },
+            { id: "inv6", title: "Vendor & Repair Research", desc: "Finding contractors, comparing quotes, coordinating service arrival times." }
+        ];
+
+        // UTILITY FUNCTIONS
+        function showToast(message, iconClass = "fa-circle-check") {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMessage.innerText = message;
+            toastIcon.className = `fa-solid ${iconClass} text-warmOrange`;
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            const isHidden = sidebar.classList.contains('-translate-x-full');
+
+            if (isHidden) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        }
+
+        function switchTab(tabId) {
+            // Hide all tab sections
+            const sections = ['start-here', 'dashboard', 'tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            sections.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+
+            // Deactivate all nav items
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => item.classList.remove('active'));
+
+            // Show selected section
+            const targetSection = document.getElementById(tabId);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            // Activate nav item
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if (activeNav) activeNav.classList.add('active');
+
+            // Close mobile sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                toggleMobileSidebar();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function saveHistory(toolKey, data) {
+            try {
+                const storageKey = `fairhome_history_${toolKey}`;
+                let history = JSON.parse(localStorage.getItem(storageKey) || '[]');
+                history.unshift({ timestamp: new Date().toISOString(), ...data });
+                if (history.length > 30) history = history.slice(0, 30);
+                localStorage.setItem(storageKey, JSON.stringify(history));
+            } catch (e) {
+                console.error("LocalStorage save error:", e);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Script copied to clipboard!", "fa-copy");
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            showToast("Script copied to clipboard!", "fa-copy");
+        }
+
+        // INITIALIZE DYNAMIC FORMS
+        function initForms() {
+            // Tool 1 Tasks
+            const t1Container = document.getElementById('tool1-task-container');
+            if (t1Container) {
+                t1Container.innerHTML = TOOL1_TASKS.map((task, idx) => `
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100 flex flex-col justify-between space-y-2">
+                        <span class="text-xs font-semibold text-gray-800">${task}</span>
+                        <select id="t1-select-${idx}" class="w-full text-xs p-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-slateBlue focus:outline-none bg-white">
+                            <option value="Partner A">Partner A</option>
+                            <option value="Partner B">Partner B</option>
+                            <option value="Both" selected>Both Shared</option>
+                            <option value="Nobody">Nobody / Neglected</option>
+                            <option value="Outsourced">Outsourced</option>
+                        </select>
+                    </div>
+                `).join('');
+            }
+
+            // Tool 2 Questions
+            const t2Container = document.getElementById('tool2-questions-container');
+            if (t2Container) {
+                t2Container.innerHTML = TOOL2_QUESTIONS.map((q) => `
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-2">
+                        <div>
+                            <h4 class="text-sm font-bold text-slateBlueDark">${q.title}</h4>
+                            <p class="text-xs text-gray-500">${q.desc}</p>
+                        </div>
+                        <div class="pt-1">
+                            <select id="${q.id}" class="w-full text-xs p-2 border border-gray-300 rounded-lg focus:ring-1 focus:ring-slateBlue focus:outline-none bg-white">
+                                <option value="Partner A">Partner A Primarily</option>
+                                <option value="Partner B">Partner B Primarily</option>
+                                <option value="Both" selected>Shared Equally</option>
+                                <option value="Nobody">Nobody / Frequent Friction</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            // Tool 3 Task Selectors
+            const giveSelect = document.getElementById('t3-give-a');
+            const takeSelect = document.getElementById('t3-take-b');
+            if (giveSelect && takeSelect) {
+                const optionsHTML = TOOL1_TASKS.map(task => `<option value="${task}">${task}</option>`).join('');
+                giveSelect.innerHTML = optionsHTML;
+                takeSelect.innerHTML = optionsHTML;
+                if (TOOL1_TASKS.length > 1) takeSelect.selectedIndex = 1;
+            }
+        }
+
+        // SAMPLE SCENARIOS
+        function loadSampleScenario(toolKey) {
+            if (toolKey === 'tool1') {
+                // Partner A heavy split (12 A, 2 B, 2 Both)
+                TOOL1_TASKS.forEach((_, idx) => {
+                    const sel = document.getElementById(`t1-select-${idx}`);
+                    if (sel) {
+                        if (idx < 12) sel.value = 'Partner A';
+                        else if (idx < 14) sel.value = 'Partner B';
+                        else sel.value = 'Both';
+                    }
+                });
+                showToast("Tool 1 Sample loaded: High Asymmetry Split", "fa-wand-magic-sparkles");
+                calculateTool1();
+            } else if (toolKey === 'tool2') {
+                // Partner A carries all 6 mental load domains
+                TOOL2_QUESTIONS.forEach((q) => {
+                    const sel = document.getElementById(q.id);
+                    if (sel) sel.value = 'Partner A';
+                });
+                showToast("Tool 2 Sample loaded: Partner A Mental Load", "fa-wand-magic-sparkles");
+                calculateTool2();
+            } else if (toolKey === 'tool3') {
+                document.getElementById('t3-hours-a').value = 40;
+                document.getElementById('t3-hours-b').value = 55;
+                document.getElementById('t3-give-a').value = "Meal Planning";
+                document.getElementById('t3-take-b').value = "Grocery Shopping";
+                showToast("Tool 3 Sample loaded: Work Hours & Swap", "fa-wand-magic-sparkles");
+                calculateTool3();
+            } else if (toolKey === 'tool4') {
+                document.getElementById('t4-kitchen').value = "Clean as you go";
+                document.getElementById('t4-laundry').value = "Wash when clothes run out";
+                document.getElementById('t4-common').value = "Tidy & clutter-free daily";
+                document.getElementById('t4-peeve').value = "Leaving clean laundry un-folded in baskets for days";
+                showToast("Tool 4 Sample loaded: Standard Mismatch", "fa-wand-magic-sparkles");
+                calculateTool4();
+            } else if (toolKey === 'tool5') {
+                document.getElementById('s1').value = 7;
+                document.getElementById('s2').value = 3;
+                document.getElementById('s3').value = 8;
+                document.getElementById('s4').value = 4;
+                document.getElementById('s5').value = 5;
+
+                document.getElementById('v-s1').innerText = "7 / 10";
+                document.getElementById('v-s2').innerText = "3 / 10";
+                document.getElementById('v-s3').innerText = "8 / 10";
+                document.getElementById('v-s4').innerText = "4 / 10";
+                document.getElementById('v-s5').innerText = "5 / 10";
+
+                showToast("Tool 5 Sample loaded: Low Appreciation Pulse", "fa-wand-magic-sparkles");
+                calculateTool5();
+            }
+        }
+
+        // TOOL 1 LOGIC: CHORE AUDIT
+        function calculateTool1() {
+            let countA = 0, countB = 0, countBoth = 0, countNobody = 0, countOutsourced = 0;
+            let invisibleA = 0, invisibleB = 0;
+
+            TOOL1_TASKS.forEach((task, idx) => {
+                const val = document.getElementById(`t1-select-${idx}`).value;
+                const isInvisible = INVISIBLE_TASK_KEYS.includes(task);
+
+                if (val === 'Partner A') {
+                    countA++;
+                    if (isInvisible) invisibleA++;
+                } else if (val === 'Partner B') {
+                    countB++;
+                    if (isInvisible) invisibleB++;
+                } else if (val === 'Both') {
+                    countBoth++;
+                } else if (val === 'Nobody') {
+                    countNobody++;
+                } else if (val === 'Outsourced') {
+                    countOutsourced++;
+                }
+            });
+
+            const pctA = Math.round((countA / 16) * 100);
+            const pctB = Math.round((countB / 16) * 100);
+            const pctShared = Math.round(((countBoth + countNobody + countOutsourced) / 16) * 100);
+            const gap = Math.abs(countA - countB);
+
+            let statusBadge = "";
+            let statusDesc = "";
+            if (gap <= 2) {
+                statusBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">BALANCED SPLIT</span>`;
+                statusDesc = "Household ownership is evenly distributed across partners.";
+            } else if (gap <= 5) {
+                statusBadge = `<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">MODERATE TILT</span>`;
+                statusDesc = "One partner carries a noticeably higher share of physical and admin work.";
+            } else {
+                statusBadge = `<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">HIGH ASYMMETRY</span>`;
+                statusDesc = "Significant imbalance detected. The primary owner is at risk of burnout.";
+            }
+
+            const outputEl = document.getElementById('output-tool1');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <h3 class="text-xl font-bold text-slateBlueDark">Chore Audit Diagnosis</h3>
+                        <p class="text-xs text-gray-500">Task Split Ratio & System Asymmetry</p>
+                    </div>
+                    <div>${statusBadge}</div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Partner A Primary</span>
+                        <div class="text-2xl font-bold text-slateBlueDark">${countA} <span class="text-xs font-normal text-gray-500">(${pctA}%)</span></div>
+                        <p class="text-[11px] text-gray-500">${invisibleA} invisible tasks owned</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Partner B Primary</span>
+                        <div class="text-2xl font-bold text-slateBlueDark">${countB} <span class="text-xs font-normal text-gray-500">(${pctB}%)</span></div>
+                        <p class="text-[11px] text-gray-500">${invisibleB} invisible tasks owned</p>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Shared / Other</span>
+                        <div class="text-2xl font-bold text-slateBlueDark">${countBoth + countNobody + countOutsourced} <span class="text-xs font-normal text-gray-500">(${pctShared}%)</span></div>
+                        <p class="text-[11px] text-gray-500">${countNobody} neglected, ${countOutsourced} outsourced</p>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <div class="flex justify-between text-xs font-semibold text-gray-600">
+                        <span>Partner A (${pctA}%)</span>
+                        <span>Shared (${pctShared}%)</span>
+                        <span>Partner B (${pctB}%)</span>
+                    </div>
+                    <div class="w-full h-3 bg-gray-200 rounded-full overflow-hidden flex">
+                        <div class="bg-slateBlue h-full" style="width: ${pctA}%"></div>
+                        <div class="bg-warmOrange h-full" style="width: ${pctShared}%"></div>
+                        <div class="bg-slateBlueDark h-full" style="width: ${pctB}%"></div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 space-y-2 text-xs text-gray-700 leading-relaxed">
+                    <h4 class="font-bold text-slateBlue uppercase tracking-wider text-[11px]">System Interpretation</h4>
+                    <p>${statusDesc}</p>
+                    <p><strong>Fairness Context:</strong> Remember that a 50/50 split is not strictly mandatory for a healthy household if paid work hours or physical capacities differ. However, if one partner holds high physical task volume alongside high invisible work, resentment is likely.</p>
+                </div>
+            `;
+
+            saveHistory('tool1', {
+                summary: `Split: A=${countA}, B=${countB}, Shared=${countBoth+countNobody+countOutsourced} — Gap: ${gap}`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 2 LOGIC: INVISIBLE WORK
+        function calculateTool2() {
+            let loadA = 0, loadB = 0, loadBoth = 0, loadNobody = 0;
+            const results = [];
+
+            TOOL2_QUESTIONS.forEach((q) => {
+                const val = document.getElementById(q.id).value;
+                results.push({ domain: q.title, owner: val });
+                if (val === 'Partner A') loadA++;
+                else if (val === 'Partner B') loadB++;
+                else if (val === 'Both') loadBoth++;
+                else if (val === 'Nobody') loadNobody++;
+            });
+
+            let primaryCarrier = "Balanced Burden";
+            if (loadA >= 4) primaryCarrier = "Partner A (High Cognitive Strain)";
+            else if (loadB >= 4) primaryCarrier = "Partner B (High Cognitive Strain)";
+
+            const outputEl = document.getElementById('output-tool2');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4">
+                    <h3 class="text-xl font-bold text-slateBlueDark">Invisible Work Map</h3>
+                    <p class="text-xs text-gray-500">Cognitive Load & Mental Ownership Profile</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Primary Mental Load Carrier</span>
+                        <div class="text-lg font-bold text-slateBlueDark">${primaryCarrier}</div>
+                    </div>
+                    <div class="p-4 bg-softBg rounded-xl border border-gray-100 space-y-1">
+                        <span class="text-xs font-semibold text-gray-500 uppercase">Shared Cognitive Domains</span>
+                        <div class="text-lg font-bold text-slateBlueDark">${loadBoth} of 6 Domains Shared</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h4 class="text-xs font-bold text-slateBlueDark uppercase tracking-wider">Domain Ownership Breakdown</h4>
+                    <div class="space-y-1.5">
+                        ${results.map(r => `
+                            <div class="p-3 bg-gray-50 rounded-xl flex justify-between items-center text-xs">
+                                <span class="font-medium text-gray-800">${r.domain}</span>
+                                <span class="font-bold ${r.owner === 'Partner A' ? 'text-slateBlue' : r.owner === 'Partner B' ? 'text-slateBlueDark' : 'text-warmOrange'}">${r.owner}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200/60 text-xs text-gray-700 leading-relaxed space-y-2">
+                    <h4 class="font-bold text-amber-900 uppercase tracking-wider text-[11px]">System Recommendation</h4>
+                    <p>Mental load causes fatigue because it never "turns off." To relieve the primary carrier, transfer full domain ownership using <strong>Tool 03: The Handoff</strong> rather than merely asking for periodic help.</p>
+                </div>
+            `;
+
+            saveHistory('tool2', {
+                summary: `Mental Load: A=${loadA}, B=${loadB}, Both=${loadBoth}`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 3 LOGIC: THE HANDOFF
+        function calculateTool3() {
+            const hoursA = parseInt(document.getElementById('t3-hours-a').value) || 0;
+            const hoursB = parseInt(document.getElementById('t3-hours-b').value) || 0;
+            const giveA = document.getElementById('t3-give-a').value;
+            const takeB = document.getElementById('t3-take-b').value;
+
+            const scriptText = `Hey! I've been reflecting on how we manage our household system. Right now, you work ${hoursB} hrs/wk and I work ${hoursA} hrs/wk. I'd love to try a 14-day experiment where I hand off complete ownership (Notice + Plan + Execute) of "${giveA}", while taking over or aligning on "${takeB}". Let's test this for two weeks and have a quick 10-minute check-in afterwards. How does that sound?`;
+
+            const outputEl = document.getElementById('output-tool3');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4">
+                    <h3 class="text-xl font-bold text-slateBlueDark">The Handoff Agreement</h3>
+                    <p class="text-xs text-gray-500">Full Ownership Transfer Protocol (14-Day Trial)</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 space-y-1">
+                        <span class="text-xs font-semibold text-slateBlue uppercase">Partner A Transfers Away</span>
+                        <div class="text-base font-bold text-slateBlueDark">${giveA}</div>
+                    </div>
+                    <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-100 space-y-1">
+                        <span class="text-xs font-semibold text-amber-800 uppercase">Partner B Assumes Ownership</span>
+                        <div class="text-base font-bold text-slateBlueDark">${takeB}</div>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-softBg rounded-xl border border-gray-200 text-xs text-gray-700 space-y-2">
+                    <h4 class="font-bold text-slateBlueDark uppercase tracking-wider text-[11px]">Full Ownership Definition</h4>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="p-2 bg-white rounded-lg border border-gray-100"><strong class="block text-slateBlue">1. NOTICE</strong> Spotting when it's needed</div>
+                        <div class="p-2 bg-white rounded-lg border border-gray-100"><strong class="block text-slateBlue">2. PLAN</strong> Timing & prep</div>
+                        <div class="p-2 bg-white rounded-lg border border-gray-100"><strong class="block text-slateBlue">3. EXECUTE</strong> Doing it completely</div>
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                        <h4 class="text-xs font-bold text-slateBlueDark uppercase tracking-wider">Low-Friction Conversation Script</h4>
+                        <button onclick="copyToClipboard(\`${scriptText.replace(/'/g, "\\'")}\`)" class="px-3 py-1 bg-warmOrange hover:bg-warmOrangeHover text-slateBlueDark font-bold rounded-lg text-xs transition-colors shadow-sm flex items-center space-x-1">
+                            <i class="fa-solid fa-copy"></i>
+                            <span>Copy Script</span>
+                        </button>
+                    </div>
+                    <div class="p-4 bg-slateBlueDark text-gray-100 rounded-xl text-xs leading-relaxed font-mono">
+                        "${scriptText}"
+                    </div>
+                </div>
+            `;
+
+            saveHistory('tool3', {
+                summary: `Handoff: Transferred "${giveA}" for "${takeB}"`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 4 LOGIC: STANDARD SETTER
+        function calculateTool4() {
+            const kitchen = document.getElementById('t4-kitchen').value;
+            const laundry = document.getElementById('t4-laundry').value;
+            const common = document.getElementById('t4-common').value;
+            const peeve = document.getElementById('t4-peeve').value || "None specified";
+
+            const outputEl = document.getElementById('output-tool4');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4">
+                    <h3 class="text-xl font-bold text-slateBlueDark">Minimum Viable Home (MVH) Charter</h3>
+                    <p class="text-xs text-gray-500">Agreed Baseline Household Standards</p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="p-3.5 bg-softBg rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-700">Kitchen Target:</span>
+                        <span class="font-semibold text-slateBlue">${kitchen}</span>
+                    </div>
+                    <div class="p-3.5 bg-softBg rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-700">Laundry Rhythm:</span>
+                        <span class="font-semibold text-slateBlue">${laundry}</span>
+                    </div>
+                    <div class="p-3.5 bg-softBg rounded-xl border border-gray-200 flex justify-between items-center text-xs">
+                        <span class="font-bold text-gray-700">Common Areas:</span>
+                        <span class="font-semibold text-slateBlue">${common}</span>
+                    </div>
+                </div>
+
+                <div class="p-4 bg-amber-50/50 rounded-xl border border-amber-200/60 space-y-1 text-xs">
+                    <h4 class="font-bold text-amber-900 uppercase tracking-wider text-[11px]">Primary Friction Point Addressed</h4>
+                    <p class="text-gray-800 font-medium">"${peeve}"</p>
+                    <p class="text-[11px] text-gray-500 mt-1">Rule: The partner with higher standards can opt to take full ownership of that specific task, or negotiate a compromise at the MVH baseline.</p>
+                </div>
+            `;
+
+            saveHistory('tool4', {
+                summary: `Standards: Kitchen=${kitchen}, Laundry=${laundry}`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // TOOL 5 LOGIC: WEEKLY REVIEW
+        function calculateTool5() {
+            const s1 = parseInt(document.getElementById('s1').value);
+            const s2 = parseInt(document.getElementById('s2').value);
+            const s3 = parseInt(document.getElementById('s3').value);
+            const s4 = parseInt(document.getElementById('s4').value);
+            const s5 = parseInt(document.getElementById('s5').value);
+
+            const avgScore = ((s1 + s2 + s3 + s4 + s5) / 5).toFixed(1);
+
+            let pulseBadge = "";
+            let actionText = "";
+            let adjustmentText = "";
+
+            if (avgScore >= 7.5) {
+                pulseBadge = `<span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-bold">OPTIMAL PULSE (${avgScore}/10)</span>`;
+                actionText = "Your household system is balanced. Express gratitude for specific small efforts this week.";
+                adjustmentText = "Maintain current routines. No major task swaps needed.";
+            } else if (avgScore >= 5.0) {
+                pulseBadge = `<span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-xs font-bold">MODERATE DRIFT (${avgScore}/10)</span>`;
+                actionText = "Friction is beginning to build. Schedule a 10-minute check-in to discuss felt appreciation.";
+                adjustmentText = "Identify 1 small task to hand off or lower standards on temporarily.";
+            } else {
+                pulseBadge = `<span class="px-3 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">SYSTEM STRAIN (${avgScore}/10)</span>`;
+                actionText = "High stress or perceived unfairness detected. Avoid accusatory language and review Tool 01 Chore Audit together.";
+                adjustmentText = "Perform an immediate reset: pause non-essential chores and establish a Minimum Viable Home baseline.";
+            }
+
+            const outputEl = document.getElementById('output-tool5');
+            outputEl.classList.remove('hidden');
+            outputEl.innerHTML = `
+                <div class="border-b border-gray-100 pb-4 flex flex-col sm:flex-row justify-between sm:items-center gap-2">
+                    <div>
+                        <h3 class="text-xl font-bold text-slateBlueDark">Weekly Household Pulse</h3>
+                        <p class="text-xs text-gray-500">5-Metric System Evaluation</p>
+                    </div>
+                    <div>${pulseBadge}</div>
+                </div>
+
+                <div class="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Fairness</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s1}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Appreciation</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s2}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Handoffs</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s3}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Energy</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s4}/10</span>
+                    </div>
+                    <div class="p-3 bg-softBg rounded-xl border border-gray-100 col-span-2 sm:col-span-1">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase block">Stress Mgmt</span>
+                        <span class="text-lg font-bold text-slateBlueDark">${s5}/10</span>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-3.5 bg-amber-50/50 rounded-xl border border-amber-100 space-y-2">
+                        <h4 class="text-xs font-bold text-amber-900 uppercase tracking-wider">ONE APPRECIATION ACTION</h4>
+                        <p class="text-xs text-gray-700 leading-relaxed">${actionText}</p>
+                    </div>
+                    <div class="p-3.5 bg-blue-50/50 rounded-xl border border-blue-100 space-y-2">
+                        <h4 class="text-xs font-bold text-slateBlue uppercase tracking-wider">ONE ADJUSTMENT</h4>
+                        <p class="text-xs text-gray-700 leading-relaxed">${adjustmentText}</p>
+                    </div>
+                </div>
+
+                <div class="p-3.5 bg-gray-50 rounded-xl border border-gray-200 text-xs text-gray-600 leading-relaxed flex items-center space-x-3">
+                    <i class="fa-solid fa-rotate-left text-slateBlue text-lg"></i>
+                    <div>
+                        <strong class="text-gray-800">THE RESET:</strong> Household systems are dynamic. It is completely normal to recalibrate every week as work demands, health, and family needs shift.
+                    </div>
+                </div>
+            `;
+
+            saveHistory('tool5', {
+                summary: `Weekly Pulse Score: ${avgScore}/10 — Appreciation: ${s2}/10, Fairness: ${s1}/10`
+            });
+
+            outputEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Initialize on DOM Load
+        document.addEventListener('DOMContentLoaded', () => {
+            initForms();
+        });
+    </script>
+</body>
+</html>

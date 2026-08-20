@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Emergency Money Navigator™</title>
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  
+  <style>
+    :root {
+      --primary-red: #DC2626;
+      --primary-red-hover: #B91C1C;
+      --bg-red-light: #FEF2F2;
+      --slate-dark: #1E293B;
+      --slate-body: #475569;
+      --slate-light: #F8FAFC;
+      --slate-border: #E2E8F0;
+      --slate-muted: #94A3B8;
+      --emerald: #059669;
+      --amber: #D97706;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --radius-xl: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #FEF2F2 0%, #F8FAFC 100%);
+      color: var(--slate-body);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* Layout Components */
+    .app-container {
+      display: flex;
+      flex: 1;
+      min-height: 100vh;
+    }
+
+    /* Mobile Nav Header */
+    .mobile-header {
+      display: none;
+      background: #ffffff;
+      border-bottom: 1px solid var(--slate-border);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .mobile-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--primary-red);
+      font-size: 1.1rem;
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: var(--slate-dark);
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* Fixed Left Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #ffffff;
+      border-right: 1px solid var(--slate-border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 50;
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 20px 16px 16px;
+      border-bottom: 1px solid var(--slate-border);
+    }
+
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--primary-red);
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .sidebar-nav {
+      padding: 12px 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--slate-body);
+      font-weight: 500;
+      font-size: 0.875rem;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .nav-btn:hover {
+      background: var(--slate-light);
+      color: var(--slate-dark);
+    }
+
+    .nav-btn.active {
+      background: var(--bg-red-light);
+      color: var(--primary-red);
+      font-weight: 600;
+    }
+
+    .nav-btn i {
+      width: 18px;
+      text-align: center;
+    }
+
+    .nav-divider {
+      height: 1px;
+      background: var(--slate-border);
+      margin: 8px 4px;
+    }
+
+    /* Main Content Wrapper */
+    .content-wrapper {
+      flex: 1;
+      margin-left: 250px;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      width: calc(100% - 250px);
+    }
+
+    .main-body {
+      max-width: 840px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+      flex: 1;
+    }
+
+    /* Footer */
+    .app-footer {
+      background: #ffffff;
+      border-top: 1px solid var(--slate-border);
+      padding: 16px 24px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--slate-muted);
+      margin-top: auto;
+    }
+
+    /* Cards & Containers */
+    .card {
+      background: #ffffff;
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 24px;
+      border: 1px solid var(--slate-border);
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, #ffffff 0%, #FEF2F2 100%);
+      border-left: 4px solid var(--primary-red);
+    }
+
+    .hero-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--slate-dark);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .hero-subtitle {
+      font-size: 1rem;
+      color: var(--slate-body);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .problem-box {
+      background: var(--bg-red-light);
+      border-left: 3px solid var(--primary-red);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      font-size: 0.95rem;
+      color: #991B1B;
+      font-style: italic;
+    }
+
+    .orientation-box {
+      background: #F0F9FF;
+      border-left: 3px solid #0284C7;
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 20px;
+      font-size: 0.9rem;
+      color: #075985;
+    }
+
+    /* Dashboard Grid */
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .tool-grid-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-border);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tool-grid-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: #FCA5A5;
+    }
+
+    .tool-icon-wrap {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: var(--bg-red-light);
+      color: var(--primary-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .tool-grid-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+    }
+
+    .tool-grid-card p {
+      font-size: 0.85rem;
+      color: var(--slate-body);
+      line-height: 1.4;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--slate-dark);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--slate-dark);
+      background-color: #ffffff;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--primary-red);
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
+    }
+
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .radio-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .radio-option:hover {
+      background: var(--slate-light);
+    }
+
+    .radio-option input[type="radio"] {
+      accent-color: var(--primary-red);
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Buttons */
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 24px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--primary-red);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-red-hover);
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--slate-dark);
+      border: 1px solid var(--slate-border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--slate-light);
+    }
+
+    .btn-copy {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      background: var(--slate-light);
+      border: 1px solid var(--slate-border);
+      color: var(--slate-dark);
+      border-radius: 6px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-copy:hover {
+      background: #E2E8F0;
+    }
+
+    /* Output Results Styling */
+    .results-panel {
+      margin-top: 28px;
+      border-top: 2px dashed var(--slate-border);
+      padding-top: 24px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .badge-critical {
+      background: #FEE2E2;
+      color: #991B1B;
+      border: 1px solid #FCA5A5;
+    }
+
+    .badge-warning {
+      background: #FEF3C7;
+      color: #92400E;
+      border: 1px solid #FCD34D;
+    }
+
+    .badge-success {
+      background: #D1FAE5;
+      color: #065F46;
+      border: 1px solid #6EE7B7;
+    }
+
+    .badge-info {
+      background: #E0F2FE;
+      color: #075985;
+      border: 1px solid #7DD3FC;
+    }
+
+    .stat-callout {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--slate-light);
+      padding: 16px 20px;
+      border-radius: 10px;
+      margin: 16px 0;
+      border: 1px solid var(--slate-border);
+    }
+
+    .stat-amount {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--primary-red);
+    }
+
+    .script-box {
+      background: #F8FAFC;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      padding: 16px;
+      font-family: monospace;
+      font-size: 0.875rem;
+      color: var(--slate-dark);
+      white-space: pre-wrap;
+      position: relative;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .script-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .script-header h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+    }
+
+    .warning-box {
+      background: #FFFBEB;
+      border-left: 4px solid #D97706;
+      padding: 16px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 0.9rem;
+      color: #78350F;
+    }
+
+    .warning-box h4 {
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      margin-bottom: 10px;
+    }
+
+    .step-card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      color: var(--slate-dark);
+      margin-bottom: 4px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary-red);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .history-section {
+      margin-top: 32px;
+      border-top: 1px solid var(--slate-border);
+      padding-top: 20px;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      padding: 8px 0;
+    }
+
+    .history-header h4 {
+      font-size: 0.95rem;
+      color: var(--slate-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      background: #ffffff;
+      border: 1px solid var(--slate-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .recommendation-card {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-radius: var(--radius-xl);
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .day-step-card {
+      background: #ffffff;
+      border-left: 4px solid var(--primary-red);
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--slate-dark);
+      color: white;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-md);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .mobile-header, .btn-row, .btn-copy, .hamburger-btn, .history-section, .toast, .nav-btn {
+        display: none !important;
+      }
+      .content-wrapper {
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+      .main-body {
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #000 !important;
+        page-break-inside: avoid;
+      }
+      body {
+        background: #fff !important;
+        color: #000 !important;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .mobile-header {
+        display: flex;
+      }
+      .sidebar {
+        transform: translateX(-100%);
+        width: 260px;
+      }
+      .sidebar.open {
+        transform: translateX(0);
+      }
+      .content-wrapper {
+        margin-left: 0;
+        width: 100%;
+      }
+      .main-body {
+        padding: 20px 14px 32px;
+      }
+      .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.4);
+        z-index: 45;
+        display: none;
+      }
+      .sidebar-overlay.open {
+        display: block;
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+    .text-red { color: var(--primary-red); }
+    .text-slate { color: var(--slate-body); }
+    .font-bold { font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <!-- Header Seluler -->
+  <header class="mobile-header">
+    <div class="mobile-brand">
+      <i class="fa-solid fa-shield-halved"></i>
+      <span>Emergency Money</span>
+    </div>
+    <button class="hamburger-btn" id="sidebarToggle" aria-label="Alihkan Menu" aria-expanded="false">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- Sidebar Kiri Tetap -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <a href="#" class="sidebar-brand" onclick="navTo('dashboard')">
+          <i class="fa-solid fa-shield-halved"></i>
+          <span>Money Navigator™</span>
+        </a>
+      </div>
+      <nav class="sidebar-nav">
+        <button class="nav-btn active" data-tool="dashboard" onclick="navTo('dashboard')">
+          <i class="fa-solid fa-chart-pie"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-btn" data-tool="tool1" onclick="navTo('tool1')">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <span>1. Triage Finansial</span>
+        </button>
+        <button class="nav-btn" data-tool="tool2" onclick="navTo('tool2')">
+          <i class="fa-solid fa-layer-group"></i>
+          <span>2. Matriks Pembayaran</span>
+        </button>
+        <button class="nav-btn" data-tool="tool3" onclick="navTo('tool3')">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>3. Negosiator Tagihan</span>
+        </button>
+        <button class="nav-btn" data-tool="tool4" onclick="navTo('tool4')">
+          <i class="fa-solid fa-hands-holding-child"></i>
+          <span>4. Skrip Permintaan Bantuan</span>
+        </button>
+        <button class="nav-btn" data-tool="tool5" onclick="navTo('tool5')">
+          <i class="fa-solid fa-heart-pulse"></i>
+          <span>5. Peta Pemulihan</span>
+        </button>
+
+        <div class="nav-divider"></div>
+
+        <button class="nav-btn" data-tool="reset7day" onclick="navTo('reset7day')">
+          <i class="fa-solid fa-calendar-week"></i>
+          <span>Se_kuens Reset 7 Hari</span>
+        </button>
+        <button class="nav-btn" data-tool="plan" onclick="navTo('plan')">
+          <i class="fa-solid fa-print"></i>
+          <span>Rencana Cetak</span>
+        </button>
+        <button class="nav-btn" data-tool="history" onclick="navTo('history')">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          <span>Riwayat Tersimpan</span>
+        </button>
+        <button class="nav-btn" data-tool="privacy" onclick="navTo('privacy')">
+          <i class="fa-solid fa-user-shield"></i>
+          <span>Privasi & Keamanan</span>
+        </button>
+      </nav>
+    </aside>
+
+    <!-- Area Konten Utama -->
+    <div class="content-wrapper">
+      <main class="main-body">
+
+        <!-- TAMPILAN DASHBOARD -->
+        <section id="view-dashboard" class="view-section">
+          <div class="card hero-card">
+            <h1 class="hero-title">
+              <i class="fa-solid fa-shield-halved text-red"></i>
+              Emergency Money Navigator™
+            </h1>
+            <p class="hero-subtitle">Atasi guncangan finansial mendadak tanpa merusak keamanan jangka panjang Anda.</p>
+          </div>
+
+          <div class="orientation-box">
+            <strong><i class="fa-solid fa-compass"></i> Prinsip Orientasi Darurat:</strong>
+            <ul style="margin-left: 18px; margin-top: 6px; line-height: 1.5;">
+              <li>Guncangan finansial adalah masalah urutan (sekuens) sebelum menjadi masalah anggaran.</li>
+              <li>Lindungi terlebih dahulu kebutuhan tempat tinggal, makanan, transportasi kerja, dan kewajiban kesehatan esensial.</li>
+              <li>Jelajahi rencana pembayaran non-utang dan negosiasi sebelum mengambil pinjaman berbiaya tinggi.</li>
+            </ul>
+          </div>
+
+          <!-- Kalkulator Triage Cepat -->
+          <div class="card">
+            <h2 class="section-title">
+              <i class="fa-solid fa-bolt text-red"></i>
+              Kalkulator Kekurangan Cepat
+            </h2>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;">
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="dash-bill">Total Tagihan Darurat (Rp)</label>
+                <input type="number" id="dash-bill" class="form-control" placeholder="cth. 15000000" min="0" oninput="calcQuickTriage()">
+              </div>
+              <div class="form-group" style="margin-bottom:0;">
+                <label class="form-label" for="dash-cash">Dana Likuid Tersedia (Rp)</label>
+                <input type="number" id="dash-cash" class="form-control" placeholder="cth. 4000000" min="0" oninput="calcQuickTriage()">
+              </div>
+            </div>
+
+            <div id="dash-triage-output" class="stat-callout hidden" style="margin-top:20px;">
+              <div>
+                <span style="font-size:0.85rem; text-transform:uppercase; font-weight:700; color:var(--slate-muted);">Kekurangan Dihitung</span>
+                <div id="dash-gap-val" class="stat-amount">Rp0</div>
+              </div>
+              <div id="dash-gap-status" style="text-align:right;">
+                <span class="badge badge-critical">Butuh Rencana Pendanaan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ringkasan Snapshot Gabungan -->
+          <div id="dashboard-snapshot-container"></div>
+
+          <!-- Grid 5 Alat -->
+          <h2 class="section-title">Toolkit Aksi</h2>
+          <div class="tools-grid">
+            <div class="tool-grid-card" onclick="navTo('tool1')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-triangle-exclamation"></i></div>
+              <h3>1. Triage Guncangan Finansial</h3>
+              <p>Nilai urgensi tagihan vs kas di tangan dan bentuk rencana alokasi langsung.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool2')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-layer-group"></i></div>
+              <h3>2. Matriks Metode Pembayaran</h3>
+              <p>Peringkat pilihan pendanaan berdasarkan biaya finansial & risiko emosional.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool3')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-file-signature"></i></div>
+              <h3>3. Negosiator Kesulitan & Tagihan</h3>
+              <p>Hasilkan skrip audit, panggilan diskon, dan surat permohonan kesulitan tertulis.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool4')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-hands-holding-child"></i></div>
+              <h3>4. Penulis Skrip Permintaan Bantuan</h3>
+              <p>Skrip bermartabat untuk meminta bantuan teman, keluarga, atau komunitas dengan batasan jelas.</p>
+            </div>
+            <div class="tool-grid-card" onclick="navTo('tool5')">
+              <div class="tool-icon-wrap"><i class="fa-solid fa-heart-pulse"></i></div>
+              <h3>5. Peta Jalan Pemulihan</h3>
+              <p>Rencana pasca-krisis untuk melunasi utang, memotong anggaran sementara, dan mereset tingkat stres.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN ALAT 1 -->
+        <section id="view-tool1" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-triangle-exclamation text-red"></i> Triage Guncangan Finansial</h2>
+            <div class="problem-box">
+              "Saya baru saja mendapat tagihan tak terduga dan saya tidak tahu bagaimana cara membayarnya."
+            </div>
+
+            <form id="form-tool1" onsubmit="runTool1(event)">
+              <div class="form-group">
+                <label class="form-label" for="t1-type">Jenis darurat:</label>
+                <select id="t1-type" class="form-control" required>
+                  <option value="Perbaikan Mobil">Perbaikan Mobil</option>
+                  <option value="Tagihan Medis">Tagihan Medis</option>
+                  <option value="Perbaikan Rumah Mendesak">Perbaikan Rumah Mendesak</option>
+                  <option value="Biaya Hukum/Pemerintah">Biaya Hukum/Pemerintah</option>
+                  <option value="Darurat Lainnya">Darurat Lainnya</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-amount">Total jumlah tagihan (Rp):</label>
+                <input type="number" id="t1-amount" class="form-control" placeholder="14000000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-due">Tanggal jatuh tempo / Batas waktu:</label>
+                <select id="t1-due" class="form-control" required>
+                  <option value="Immediate">Langsung (Jatuh tempo hari ini / Dibutuhkan sekarang)</option>
+                  <option value="7 Days">7 Hari</option>
+                  <option value="30 Days">30 Hari</option>
+                  <option value="60+ Days">60+ Hari</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-cash">Kas/tabungan tersedia saat ini (Rp):</label>
+                <input type="number" id="t1-cash" class="form-control" placeholder="3000000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t1-reserve">Penyangga Kas Minimum yang Disimpan (Rp):</label>
+                <input type="number" id="t1-reserve" class="form-control" value="1000000" min="0" step="any" required />
+                <span style="font-size: 0.75rem; color: var(--slate-muted);">Cadangan yang disimpan untuk makanan esensial, bahan bakar, atau obat-obatan.</span>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Apakah tagihan ini penting untuk kelangsungan hidup dasar atau kemampuan bekerja?</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="t1-survival" value="Yes" checked>
+                    <span><strong>Ya</strong> (Dibutuhkan untuk transportasi kerja, kesehatan esensial, atau tempat tinggal layak)</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t1-survival" value="No">
+                    <span><strong>Tidak</strong> (Dapat ditunda tanpa kehilangan tempat tinggal, pekerjaan, atau keselamatan fisik secara langsung)</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Jalankan Analisis Triage</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool1')"><i class="fa-solid fa-rotate-left"></i> Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="t1-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool1')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat (<span id="t1-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t1-hist-icon"></i>
+              </div>
+              <div id="t1-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN ALAT 2 -->
+        <section id="view-tool2" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-layer-group text-red"></i> Matriks Perankingan Metode Pembayaran</h2>
+            <div class="problem-box">
+              "Haruskah saya menggunakan kartu kredit, meminjam dari keluarga, mengambil rencana pembayaran, atau menjual barang?"
+            </div>
+
+            <form id="form-tool2" onsubmit="runTool2(event)">
+              <div class="form-group">
+                <label class="form-label" for="t2-shortfall">Jumlah kekurangan yang dibutuhkan (Rp):</label>
+                <input type="number" id="t2-shortfall" class="form-control" placeholder="10000000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t2-credit">Saldo kartu kredit & tingkat bunga yang tersedia:</label>
+                <input type="text" id="t2-credit" class="form-control" placeholder="cth. Limit Rp15.000.000 tersedia dengan bunga 22% APR" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Ketersediaan pinjaman Keluarga / Teman:</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="t2-family" value="low" checked>
+                    <span>Tersedia dengan sedikit ketegangan relasional</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-family" value="high">
+                    <span>Tersedia dengan ketegangan / tekanan relasional yang tinggi</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-family" value="none">
+                    <span>Bukan pilihan / Tidak tersedia</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Opsi rencana pembayaran pemberi pinjaman:</label>
+                <div class="radio-group">
+                  <label class="radio-option">
+                    <input type="radio" name="t2-plan" value="zero" checked>
+                    <span>Rencana pembayaran Bunga 0% tersedia</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-plan" value="fee">
+                    <span>Rencana pembayaran berbasis biaya atau berbunga</span>
+                  </label>
+                  <label class="radio-option">
+                    <input type="radio" name="t2-plan" value="none">
+                    <span>Tidak ada rencana pembayaran yang ditawarkan</span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t2-items">Barang pribadi yang tersedia untuk dijual cepat:</label>
+                <select id="t2-items" class="form-control" required>
+                  <option value="High">Nilai tinggi (Elektronik, perlengkapan non-esensial - cepat Rp5.000.000+)</option>
+                  <option value="Moderate">Nilai moderat (Alat, barang koleksi - Rp1.000.000 - Rp4.000.000)</option>
+                  <option value="None">Tidak ada yang tersedia</option>
+                </select>
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-ranking-star"></i> Peringkat Jalur Pembayaran</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool2')"><i class="fa-solid fa-rotate-left"></i> Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="t2-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool2')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat (<span id="t2-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t2-hist-icon"></i>
+              </div>
+              <div id="t2-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN ALAT 3 -->
+        <section id="view-tool3" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-file-signature text-red"></i> Negosiator Kesulitan & Tagihan</h2>
+            <div class="problem-box">
+              "Saya perlu meminta penyedia layanan untuk menurunkan tagihan ini atau memberi saya waktu perpanjangan."
+            </div>
+
+            <form id="form-tool3" onsubmit="runTool3(event)">
+              <div class="form-group">
+                <label class="form-label" for="t3-provider">Jenis penyedia layanan:</label>
+                <select id="t3-provider" class="form-control" required>
+                  <option value="Rumah Sakit / Tagihan Medis">Rumah Sakit / Tagihan Medis</option>
+                  <option value="Utilitas (Listrik/Air/Internet)">Utilitas (Listrik/Air/Internet)</option>
+                  <option value="Pemberi Pinjaman / Kartu Kredit">Pemberi Pinjaman / Kartu Kredit</option>
+                  <option value="Pemilik Rumah / Sewa">Pemilik Rumah / Sewa</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3-amount">Jumlah yang jatuh tempo (Rp):</label>
+                <input type="number" id="t3-amount" class="form-control" placeholder="5000000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3-goal">Tujuan negosiasi utama:</label>
+                <select id="t3-goal" class="form-control" required>
+                  <option value="Diskon Penyelesaian Tunai">Diskon penyelesaian tunai (potongan harga untuk bayar langsung)</option>
+                  <option value="Rencana Cicilan Bebas Bunga">Rencana cicilan bebas bunga (diangsur beberapa bulan)</option>
+                  <option value="Penangguhan / Penundaan Jatuh Tempo">Penangguhan / Penundaan tanggal jatuh tempo (tunda 30-60 hari)</option>
+                  <option value="Pengampunan Bunga / Penghapusan Denda">Pengampunan bunga / Penghapusan denda keterlambatan</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t3-reason">Alasan kesulitan utama:</label>
+                <input type="text" id="t3-reason" class="form-control" placeholder="cth. Kehilangan pekerjaan sementara / Pengurangan jam kerja" required />
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-phone-volume"></i> Buat Skrip Negosiasi & Surat</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool3')"><i class="fa-solid fa-rotate-left"></i> Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="t3-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool3')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat (<span id="t3-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t3-hist-icon"></i>
+              </div>
+              <div id="t3-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN ALAT 4 -->
+        <section id="view-tool4" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-hands-holding-child text-red"></i> Penulis Skrip Permintaan Bantuan</h2>
+            <div class="problem-box">
+              "Saya harus meminta tolong kepada seseorang yang saya kenal, tetapi saya merasa malu dan tidak ingin merusak hubungan kami."
+            </div>
+
+            <form id="form-tool4" onsubmit="runTool4(event)">
+              <div class="form-group">
+                <label class="form-label" for="t4-target">Kepada siapa Anda meminta bantuan?</label>
+                <select id="t4-target" class="form-control" required>
+                  <option value="Anggota Keluarga Dekat">Anggota Keluarga Dekat (Orang Tua / Saudara)</option>
+                  <option value="Teman Dekat">Teman Dekat</option>
+                  <option value="Mentor / Jaringan Profesional">Mentor / Jaringan Profesional</option>
+                  <option value="Organisasi Komunitas / Amal">Organisasi Komunitas / Amal</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4-amount">Jumlah yang diminta (Rp):</label>
+                <input type="number" id="t4-amount" class="form-control" placeholder="2500000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t4-repay">Rencana pengembalian / komitmen:</label>
+                <input type="text" id="t4-repay" class="form-control" placeholder="cth. Dilunasi dalam 3 cicisan bulanan mulai tanggal 1 depan" required />
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-envelope-open-text"></i> Buat Pesan Bermartabat</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool4')"><i class="fa-solid fa-rotate-left"></i> Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="t4-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool4')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat (<span id="t4-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t4-hist-icon"></i>
+              </div>
+              <div id="t4-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN ALAT 5 -->
+        <section id="view-tool5" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-heart-pulse text-red"></i> Peta Jalan Pemulihan Pasca-Krisis</h2>
+            <div class="problem-box">
+              "Krisisnya sudah mereda. Bagaimana cara saya menyusun kembali keuangan agar hal ini tidak terulang?"
+            </div>
+
+            <form id="form-tool5" onsubmit="runTool5(event)">
+              <div class="form-group">
+                <label class="form-label" for="t5-debt">Total utang baru/darurat yang tercipta selama krisis (Rp):</label>
+                <input type="number" id="t5-debt" class="form-control" placeholder="5000000" min="0" step="any" required />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="t5-cut">Penghematan pengeluaran bulanan yang dapat dipertahankan (Rp/bulan):</label>
+                <input type="number" id="t5-cut" class="form-control" placeholder="1000000" min="0" step="any" required />
+              </div>
+
+              <div class="btn-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-map-location-dot"></i> Buat Peta Jalan Pemulihan</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Contoh Skenario</button>
+                <button type="button" class="btn btn-secondary" onclick="resetTool('tool5')"><i class="fa-solid fa-rotate-left"></i> Atur Ulang</button>
+              </div>
+            </form>
+
+            <div id="t5-results" class="results-panel hidden"></div>
+
+            <div class="history-section">
+              <div class="history-header" onclick="toggleHistory('tool5')">
+                <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat (<span id="t5-hist-count">0</span>)</h4>
+                <i class="fa-solid fa-chevron-down" id="t5-hist-icon"></i>
+              </div>
+              <div id="t5-hist-list" class="history-list hidden"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN SEKUEN RESET 7 HARI -->
+        <section id="view-reset7day" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-calendar-week text-red"></i> Sekuens Reset Krisis 7 Hari</h2>
+            <p class="hero-subtitle" style="margin-bottom: 20px;">Panduan langkah demi langkah untuk mengendalikan situasi dalam seminggu pertama setelah kejutan finansial.</p>
+            
+            <div id="7day-content">
+              <!-- Diisi oleh JavaScript -->
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN RENCANA CETAK -->
+        <section id="view-plan" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-print text-red"></i> Ringkasan Rencana Darurat (Siap Cetak)</h2>
+            <p class="hero-subtitle" style="margin-bottom: 20px;">Semua data analisis dan hasil alat Anda yang tersimpan digabungkan dalam satu dokumen ringkas.</p>
+            
+            <div id="printable-plan-content">
+              <!-- Diisi oleh JavaScript -->
+            </div>
+
+            <div class="btn-row" style="margin-top: 24px;">
+              <button type="button" class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Simpan ke PDF</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN RIWAYAT TERSIMPAN -->
+        <section id="view-history" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left text-red"></i> Semua Riwayat Sesi Tersimpan</h2>
+            <p class="hero-subtitle" style="margin-bottom: 20px;">Kelola dan tinjau seluruh perhitungan yang pernah Anda jalankan.</p>
+            
+            <div id="all-history-container">
+              <!-- Diisi oleh JavaScript -->
+            </div>
+
+            <div class="btn-row" style="margin-top: 24px;">
+              <button type="button" class="btn btn-secondary" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN PRIVASI & KEMANAN -->
+        <section id="view-privacy" class="view-section hidden">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-user-shield text-red"></i> Privasi & Keamanan Data</h2>
+            <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 16px; font-size: 0.95rem; line-height: 1.6;">
+              <p><strong>100% Berbasis Peramban (Client-Side):</strong> Aplikasi Emergency Money Navigator™ berjalan sepenuhnya di dalam peramban web lokal Anda. Tidak ada data keuangan, angka tagihan, atau skrip pribadi yang pernah dikirim ke server luar.</p>
+              <p><strong>Penyimpanan Lokal (LocalStorage):</strong> Riwayat disimpan secara eksklusif di dalam memori penyimpanan lokal browser Anda. Anda memiliki kendali penuh untuk menghapusnya kapan saja melalui menu Riwayat atau tombol pembersihan.</p>
+              <p><strong>Keamanan Emosional:</strong> Kami merancang alat ini untuk mengurangi beban psikologis saat menghadapi krisis, memastikan Anda tetap memegang kendali penuh atas keputusan keuangan Anda.</p>
+            </div>
+          </div>
+        </section>
+
+      </main>
+
+      <!-- Footer -->
+      <footer class="app-footer">
+        Emergency Money Navigator™ &copy; 2026. Dirancang untuk ketahanan finansial di saat krisis.
+      </footer>
+    </div>
+  </div>
+
+  <!-- Elemen Toast Notifikasi -->
+  <div class="toast" id="toastNotification">
+    <i class="fa-solid fa-circle-check" style="color: #34D399;"></i>
+    <span id="toastText">Berhasil disalin ke papan klip!</span>
+  </div>
+
+  <!-- Skrip Logika Aplikasi -->
+  <script>
+    // Manajemen State & Penyimpanan Lokal
+    const STORAGE_KEY = 'emg_navigator_history_id_v1';
+    
+    function getHistory(toolId) {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY + '_' + toolId);
+        return data ? JSON.parse(data) : [];
+      } catch(e) {
+        return [];
+      }
+    }
+
+    function saveHistory(toolId, item) {
+      try {
+        const history = getHistory(toolId);
+        item.timestamp = new Date().toLocaleString('id-ID');
+        history.unshift(item);
+        // Batasi maksimal 10 riwayat per alat
+        if (history.length > 10) history.pop();
+        localStorage.setItem(STORAGE_KEY + '_' + toolId, JSON.stringify(history));
+        updateHistoryUI(toolId);
+        updateDashboardSnapshot();
+      } catch(e) {
+        console.error("Gagal menyimpan riwayat", e);
+      }
+    }
+
+    function clearToolHistory(toolId) {
+      localStorage.removeItem(STORAGE_KEY + '_' + toolId);
+      updateHistoryUI(toolId);
+      updateDashboardSnapshot();
+      showToast("Riwayat dibersihkan.");
+    }
+
+    function clearAllHistory() {
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+        localStorage.removeItem(STORAGE_KEY + '_' + t);
+      });
+      initAllHistories();
+      updateDashboardSnapshot();
+      showToast("Semua riwayat berhasil dihapus.");
+    }
+
+    // Navigasi Antar Tampilan
+    function navTo(toolId) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.sidebar-nav .nav-btn').forEach(el => el.classList.remove('active'));
+
+      const targetView = document.getElementById('view-' + toolId);
+      if (targetView) targetView.classList.remove('hidden');
+
+      const targetBtn = document.querySelector(`.sidebar-nav .nav-btn[data-tool="${toolId}"]`);
+      if (targetBtn) targetBtn.classList.add('active');
+
+      // Tutup menu seluler jika terbuka
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+
+      window.scrollTo(0, 0);
+
+      if (toolId === 'dashboard') {
+        updateDashboardSnapshot();
+      } else if (toolId === 'reset7day') {
+        render7DayReset();
+      } else if (toolId === 'plan') {
+        renderPrintablePlan();
+      } else if (toolId === 'history') {
+        renderAllHistoryView();
+      }
+    }
+
+    // Toggle menu hamburger seluler
+    document.getElementById('sidebarToggle').addEventListener('click', () => {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    });
+
+    document.getElementById('sidebarOverlay').addEventListener('click', () => {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+    });
+
+    // Toast Notifikasi
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastText').innerText = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    function copyToClipboard(elementId) {
+      const text = document.getElementById(elementId).innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Berhasil disalin ke papan klip!");
+      }).catch(err => {
+        showToast("Gagal menyalin teks.");
+      });
+    }
+
+    // Format Mata Uang Rupiah
+    function formatIDR(num) {
+      return 'Rp ' + Number(num).toLocaleString('id-ID');
+    }
+
+    // Kalkulator Cepat Dashboard
+    function calcQuickTriage() {
+      const bill = parseFloat(document.getElementById('dash-bill').value) || 0;
+      const cash = parseFloat(document.getElementById('dash-cash').value) || 0;
+      const output = document.getElementById('dash-triage-output');
+      const gapVal = document.getElementById('dash-gap-val');
+      const statusDiv = document.getElementById('dash-gap-status');
+
+      if (bill > 0 || cash > 0) {
+        output.classList.remove('hidden');
+        const gap = bill - cash;
+        if (gap <= 0) {
+          gapVal.innerText = 'Rp 0 (Aman)';
+          statusDiv.innerHTML = '<span class="badge badge-success">Dana Cukup</span>';
+        } else {
+          gapVal.innerText = formatIDR(gap);
+          statusDiv.innerHTML = '<span class="badge badge-critical">Butuh Rencana Pendanaan</span>';
+        }
+      } else {
+        output.classList.add('hidden');
+      }
+    }
+
+    // --- ALAT 1: Triage Guncangan Finansial ---
+    function loadSampleTool1() {
+      document.getElementById('t1-type').value = 'Perbaikan Mobil';
+      document.getElementById('t1-amount').value = '4500000';
+      document.getElementById('t1-due').value = 'Immediate';
+      document.getElementById('t1-cash').value = '1000000';
+      document.getElementById('t1-reserve').value = '500000';
+      document.querySelector('input[name="t1-survival"][value="Yes"]').checked = true;
+    }
+
+    function runTool1(e) {
+      e.preventDefault();
+      const type = document.getElementById('t1-type').value;
+      const amount = parseFloat(document.getElementById('t1-amount').value) || 0;
+      const due = document.getElementById('t1-due').value;
+      const cash = parseFloat(document.getElementById('t1-cash').value) || 0;
+      const reserve = parseFloat(document.getElementById('t1-reserve').value) || 0;
+      const survival = document.querySelector('input[name="t1-survival"]:checked').value;
+
+      const usableCash = Math.max(0, cash - reserve);
+      const shortfall = Math.max(0, amount - usableCash);
+
+      let urgencyBadge = '<span class="badge badge-critical">Kritis - Tindakan Segera</span>';
+      if (due === '30 Days' || due === '60+ Days') {
+        urgencyBadge = '<span class="badge badge-warning">Peringatan - Ada Waktu Negosiasi</span>';
+      }
+
+      let html = `
+        <h3 class="section-title"><i class="fa-solid fa-clipboard-check text-red"></i> Hasil Analisis Triage</h3>
+        <div class="stat-callout">
+          <div>
+            <span style="font-size:0.85rem; text-transform:uppercase; font-weight:700; color:var(--slate-muted);">Kekurangan Bersih (Shortfall)</span>
+            <div class="stat-amount">${formatIDR(shortfall)}</div>
+          </div>
+          <div style="text-align:right;">
+            ${urgencyBadge}
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 16px;">
+          <div class="step-card">
+            <div class="step-card-header"><div class="step-num">1</div> Alokasi Kas Aman</div>
+            <p style="font-size: 0.9rem; margin-left: 34px;">Sisihkan ${formatIDR(reserve)} sebagai cadangan mutlak makanan/obat. Anda dapat menggunakan ${formatIDR(usableCash)} dari kas saat ini untuk membayar sebagian tagihan.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-card-header"><div class="step-num">2</div> Langkah Prioritas Survival</div>
+            <p style="font-size: 0.9rem; margin-left: 34px;">${survival === 'Yes' ? 'Karena tagihan ini esensial untuk bekerja/hidup, prioritaskan pelunasan atau hubungi penyedia untuk cicilan darurat.' : 'Karena tagihan ini tidak mendesak untuk kelangsungan hidup dasar, tunda pembayarannya demi mengamankan kebutuhan pangan.'}</p>
+          </div>
+        </div>
+      `;
+
+      const resultsDiv = document.getElementById('t1-results');
+      resultsDiv.innerHTML = html;
+      resultsDiv.classList.remove('hidden');
+
+      saveHistory('tool1', { type, amount, shortfall, due });
+    }
+
+    // --- ALAT 2: Matriks Pembayaran ---
+    function loadSampleTool2() {
+      document.getElementById('t2-shortfall').value = '5000000';
+      document.getElementById('t2-credit').value = 'Limit Rp7.000.000 tersedia di 24% APR';
+      document.querySelector('input[name="t2-family"][value="low"]').checked = true;
+      document.querySelector('input[name="t2-plan"][value="zero"]').checked = true;
+      document.getElementById('t2-items').value = 'Moderate';
+    }
+
+    function runTool2(e) {
+      e.preventDefault();
+      const shortfall = parseFloat(document.getElementById('t2-shortfall').value) || 0;
+      
+      let html = `
+        <h3 class="section-title"><i class="fa-solid fa-ranking-star text-red"></i> Peringkat Rekomendasi Jalur Pembayaran</h3>
+        <p style="font-size: 0.9rem; margin-bottom: 16px;">Diurutkan dari biaya finansial terendah dan risiko emosional paling aman untuk menutupi kekurangan sebesar ${formatIDR(shortfall)}:</p>
+        
+        <div style="display: flex; flex-direction: column; gap: 12px;">
+          <div class="step-card" style="border-left: 4px solid var(--emerald);">
+            <div class="step-card-header"><span class="step-num" style="background: var(--emerald);">1</span> Rencana Cicilan Penyedia (0% Bunga / Negosiasi)</div>
+            <p style="font-size: 0.9rem; margin-left: 34px;">Pilihan teraman tanpa biaya bunga tambahan. Hubungi penyedia tagihan untuk membagi pembayaran.</p>
+          </div>
+          <div class="step-card" style="border-left: 4px solid var(--amber);">
+            <div class="step-card-header"><span class="step-num" style="background: var(--amber);">2</span> Penjualan Aset Cepat / Jual Barang Non-Esensial</div>
+            <p style="font-size: 0.9rem; margin-left: 34px;">Menghasilkan kas instan tanpa menimbulkan utang baru atau beban bunga.</p>
+          </div>
+          <div class="step-card" style="border-left: 4px solid var(--primary-red);">
+            <div class="step-card-header"><span class="step-num">3</span> Kartu Kredit / Pinjaman Berbunga</div>
+            <p style="font-size: 0.9rem; margin-left: 34px;">Gunakan hanya sebagai jalan terakhir jika batas waktu sangat mendesak, lalu buat rencana pelunasan cepat.</p>
+          </div>
+        </div>
+      `;
+
+      const resultsDiv = document.getElementById('t2-results');
+      resultsDiv.innerHTML = html;
+      resultsDiv.classList.remove('hidden');
+
+      saveHistory('tool2', { shortfall });
+    }
+
+    // --- ALAT 3: Negosiator Tagihan ---
+    function loadSampleTool3() {
+      document.getElementById('t3-provider').value = 'Rumah Sakit / Tagihan Medis';
+      document.getElementById('t3-amount').value = '7500000';
+      document.getElementById('t3-goal').value = 'Diskon Penyelesaian Tunai';
+      document.getElementById('t3-reason').value = 'Pengurangan jam kerja mendadak';
+    }
+
+    function runTool3(e) {
+      e.preventDefault();
+      const provider = document.getElementById('t3-provider').value;
+      const amount = parseFloat(document.getElementById('t3-amount').value) || 0;
+      const goal = document.getElementById('t3-goal').value;
+      const reason = document.getElementById('t3-reason').value;
+
+      const scriptText = `Halo, nama saya [Nama Anda]. Saya menelepon terkait tagihan senilai ${formatIDR(amount)} dengan nomor akun [Nomor Akun]. 
+Saat ini saya sedang mengalami kesulitan keuangan sementara karena ${reason}. 
+Saya sangat ingin melunasi kewajiban ini, tetapi kemampuan finansial saya sangat terbatas saat ini. 
+Apakah ada opsi ${goal}, seperti potongan diskon pelunasan langsung atau program keringanan kesulitan bagi pelanggan dalam kondisi seperti saya?`;
+
+      let html = `
+        <h3 class="section-title"><i class="fa-solid fa-file-signature text-red"></i> Hasil Skrip & Panduan Negosiasi</h3>
+        <div class="script-header">
+          <h4>Skrip Percakapan / Telepon:</h4>
+          <button type="button" class="btn-copy" onclick="copyToClipboard('t3-script-box')"><i class="fa-solid fa-copy"></i> Salin Skrip</button>
+        </div>
+        <div class="script-box" id="t3-script-box">${scriptText}</div>
+      `;
+
+      const resultsDiv = document.getElementById('t3-results');
+      resultsDiv.innerHTML = html;
+      resultsDiv.classList.remove('hidden');
+
+      saveHistory('tool3', { provider, amount, goal });
+    }
+
+    // --- ALAT 4: Skrip Permintaan Bantuan ---
+    function loadSampleTool4() {
+      document.getElementById('t4-target').value = 'Anggota Keluarga Dekat';
+      document.getElementById('t4-amount').value = '3000000';
+      document.getElementById('t4-repay').value = 'Dicicil 3 kali setiap tanggal 1';
+    }
+
+    function runTool4(e) {
+      e.preventDefault();
+      const target = document.getElementById('t4-target').value;
+      const amount = parseFloat(document.getElementById('t4-amount').value) || 0;
+      const repay = document.getElementById('t4-repay').value;
+
+      const msgText = `Halo [Nama], saya menghubungi Anda secara terbuka mengenai situasi yang cukup sulit. Saya sedang menghadapi kendala keuangan mendesak dan kekurangan dana sebesar ${formatIDR(amount)}. 
+Apakah memungkinkan bagi Anda untuk meminjamkan dana sejumlah tersebut dengan komitmen pengembalian: ${repay}? 
+Jika Anda tidak dapat membantu, saya sangat memahami dan tidak ada ketegangan di antara kita. Terima kasih banyak sebelumnya.`;
+
+      let html = `
+        <h3 class="section-title"><i class="fa-solid fa-hands-holding-child text-red"></i> Hasil Skrip Permintaan Bantuan</h3>
+        <div class="script-header">
+          <h4>Pesan Bermartabat:</h4>
+          <button type="button" class="btn-copy" onclick="copyToClipboard('t4-msg-box')"><i class="fa-solid fa-copy"></i> Salin Pesan</button>
+        </div>
+        <div class="script-box" id="t4-msg-box">${msgText}</div>
+      `;
+
+      const resultsDiv = document.getElementById('t4-results');
+      resultsDiv.innerHTML = html;
+      resultsDiv.classList.remove('hidden');
+
+      saveHistory('tool4', { target, amount });
+    }
+
+    // --- ALAT 5: Peta Pemulihan ---
+    function loadSampleTool5() {
+      document.getElementById('t5-debt').value = '4000000';
+      document.getElementById('t5-cut').value = '1500000';
+    }
+
+    function runTool5(e) {
+      e.preventDefault();
+      const debt = parseFloat(document.getElementById('t5-debt').value) || 0;
+      const cut = parseFloat(document.getElementById('t5-cut').value) || 1;
+      const months = Math.ceil(debt / cut);
+
+      let html = `
+        <h3 class="section-title"><i class="fa-solid fa-heart-pulse text-red"></i> Peta Pemulihan Finansial Anda</h3>
+        <div class="stat-callout">
+          <div>
+            <span style="font-size:0.85rem; text-transform:uppercase; font-weight:700; color:var(--slate-muted);">Estimasi Waktu Pelunasan Utang Krisis</span>
+            <div class="stat-amount">${months} Bulan</div>
+          </div>
+          <div style="text-align:right;">
+            <span class="badge badge-success">Pemulihan Terstruktur</span>
+          </div>
+        </div>
+        <p style="font-size: 0.9rem; margin-top: 12px;">Dengan memangkas pengeluaran sebesar ${formatIDR(cut)} per bulan, Anda dapat melunasi utang darurat sebesar ${formatIDR(debt)} secara bertahap tanpa stres berlebihan.</p>
+      `;
+
+      const resultsDiv = document.getElementById('t5-results');
+      resultsDiv.innerHTML = html;
+      resultsDiv.classList.remove('hidden');
+
+      saveHistory('tool5', { debt, months });
+    }
+
+    // --- SEKUEN RESET 7 HARI ---
+    function render7DayReset() {
+      const days = [
+        { d: "Hari 1", title: "Kumpulkan & Bekukan", desc: "Berhenti semua pengeluaran non-esensial dan kumpulkan data seluruh tagihan darurat." },
+        { d: "Hari 2", title: "Triage & Alokasi Kas", desc: "Gunakan Alat 1 untuk memisahkan dana cadangan bertahan hidup." },
+        { d: "Hari 3", title: "Hubungi Penyedia / Negosiasi", desc: "Gunakan Alat 3 untuk meminta perpanjangan atau diskon tagihan." },
+        { d: "Hari 4", title: "Jelajahi Pilihan Pendanaan Aman", desc: "Tinjau Matriks Pembayaran (Alat 2) untuk memilih opsi biaya terendah." },
+        { d: "Hari 5", title: "Komunikasi Bersih Jika Perlu", desc: "Hubungi keluarga/kerabat menggunakan skrip bermartabat (Alat 4) jika diperlukan." },
+        { d: "Hari 6", title: "Pangkas Anggaran Sementara", desc: "Terapkan pemotongan pengeluaran gaya hidup secara temporer." },
+        { d: "Hari 7", title: "Rencana Jangka Panjang", desc: "Mulai susun peta jalan pemulihan pasca-krisis (Alat 5)." }
+      ];
+
+      let html = '';
+      days.forEach(item => {
+        html += `
+          <div class="day-step-card">
+            <h4 style="font-weight: 700; color: var(--slate-dark); margin-bottom: 4px;">${item.d}: ${item.title}</h4>
+            <p style="font-size: 0.9rem; color: var(--slate-body);">${item.desc}</p>
+          </div>
+        `;
+      });
+      document.getElementById('7day-content').innerHTML = html;
+    }
+
+    // --- RENCANA CETAK ---
+    function renderPrintablePlan() {
+      let html = '<div style="display: flex; flex-direction: column; gap: 16px;">';
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+        const hist = getHistory(toolId);
+        if (hist.length > 0) {
+          html += `<div class="step-card"><h4 style="font-weight:700; margin-bottom:6px; text-transform:uppercase; font-size:0.85rem; color:var(--primary-red);">${toolId} Terakhir (${hist[0].timestamp})</h4>`;
+          html += `<p style="font-size:0.9rem;">Data tersimpan: ${JSON.stringify(hist[0])}</p></div>`;
+        }
+      });
+      html += '</div>';
+      if(html === '<div style="display: flex; flex-direction: column; gap: 16px;"></div>') {
+        html = '<p style="font-style: italic; color: var(--slate-muted);">Belum ada data analisis yang dijalankan. Silakan gunakan salah satu alat terlebih dahulu.</p>';
+      }
+      document.getElementById('printable-plan-content').innerHTML = html;
+    }
+
+    // --- RIWAYAT TERSIMPAN ---
+    function renderAllHistoryView() {
+      let html = '';
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+        const hist = getHistory(toolId);
+        if (hist.length > 0) {
+          html += `<h3 style="font-size: 1rem; font-weight: 700; margin: 16px 0 8px; color: var(--slate-dark);">Riwayat ${toolId}</h3>`;
+          hist.forEach(item => {
+            html += `<div class="history-item"><span>${JSON.stringify(item)}</span><span style="color:var(--slate-muted); font-size:0.75rem;">${item.timestamp}</span></div>`;
+          });
+        }
+      });
+      if(html === '') {
+        html = '<p style="font-style: italic; color: var(--slate-muted);">Belum ada riwayat tersimpan.</p>';
+      }
+      document.getElementById('all-history-container').innerHTML = html;
+    }
+
+    function updateHistoryUI(toolId) {
+      const hist = getHistory(toolId);
+      const countEl = document.getElementById(toolId + '-hist-count');
+      const listEl = document.getElementById(toolId + '-hist-list');
+      if (countEl) countEl.innerText = hist.length;
+      if (listEl) {
+        let html = '';
+        hist.forEach(item => {
+          html += `<div class="history-item"><span>${JSON.stringify(item)}</span><span style="color:var(--slate-muted); font-size:0.75rem;">${item.timestamp}</span></div>`;
+        });
+        if(hist.length === 0) html = '<div style="font-size:0.85rem; color:var(--slate-muted); font-style:italic;">Belum ada riwayat.</div>';
+        listEl.innerHTML = html;
+      }
+    }
+
+    function toggleHistory(toolId) {
+      const listEl = document.getElementById(toolId + '-hist-list');
+      const iconEl = document.getElementById(toolId + '-hist-icon');
+      if (listEl) {
+        listEl.classList.toggle('hidden');
+        iconEl.classList.toggle('fa-chevron-down');
+        iconEl.classList.toggle('fa-chevron-up');
+      }
+    }
+
+    function resetTool(toolId) {
+      const form = document.getElementById('form-' + toolId);
+      if (form) form.reset();
+      const res = document.getElementById(toolId.replace('tool', 't') + '-results') || document.getElementById(toolId + '-results');
+      if (res) res.classList.add('hidden');
+      showToolNotification(toolId, "Formulir diatur ulang.");
+    }
+
+    function showToolNotification(toolId, msg) {
+      showToast(msg);
+    }
+
+    function updateDashboardSnapshot() {
+      const container = document.getElementById('dashboard-snapshot-container');
+      let totalItems = 0;
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+        totalItems += getHistory(t).length;
+      });
+      if(totalItems > 0) {
+        container.innerHTML = `
+          <div class="card" style="background: var(--slate-light);">
+            <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 6px;"><i class="fa-solid fa-circle-info text-red"></i> Status Sesi Aktif</h3>
+            <p style="font-size: 0.9rem;">Anda memiliki total <strong>${totalItems}</strong> catatan analisis tersimpan di perangkat ini. Anda dapat melihatnya melalui menu Riwayat atau mencetak rencana Anda.</p>
+          </div>
+        `;
+      } else {
+        container.innerHTML = '';
+      }
+    }
+
+    // Inisialisasi awal saat halaman dimuat
+    window.addEventListener('DOMContentLoaded', () => {
+      ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+        updateHistoryUI(t);
+      });
+      updateDashboardSnapshot();
+    });
+  </script>
+</body>
+</html>

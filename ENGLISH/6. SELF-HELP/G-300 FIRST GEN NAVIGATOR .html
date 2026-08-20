@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FirstGen Navigator™ — Commercial V2 University Guidance Toolkit</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #DDD6FE;
+            --primary-dark: #6D28D9;
+            --teal: #0D9488;
+            --teal-light: #CCFBF1;
+            --teal-dark: #0F766E;
+            --bg-gradient: linear-gradient(135deg, #F5F3FF 0%, #F0FDFA 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* App Container Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.2;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            padding: 8px 16px 4px 16px;
+            margin-top: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 90;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* UI Cards & Elements */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            margin-bottom: 24px;
+        }
+
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #F9FAFB;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: #F9FAFB;
+            border-color: #D1D5DB;
+        }
+
+        /* Output & Result Boxes */
+        .output-box {
+            background: #FAFAFA;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            margin-top: 16px;
+        }
+
+        .output-box.teal {
+            border-left-color: var(--teal);
+        }
+
+        .output-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .output-box.teal .output-title {
+            color: var(--teal-dark);
+        }
+
+        .script-box {
+            background: #1E293B;
+            color: #F8FAFC;
+            padding: 16px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            position: relative;
+            margin-top: 8px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.15);
+            color: #FFFFFF;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Accordion / History */
+        .history-section {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+
+        .accordion-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #FFFFFF;
+        }
+
+        .accordion-header {
+            padding: 14px 18px;
+            background: #F9FAFB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .accordion-content {
+            padding: 18px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10B981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid rgba(229, 231, 235, 0.5);
+            width: 100%;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .overlay.open {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--teal-light);
+            color: var(--teal-dark);
+            margin-bottom: 8px;
+        }
+
+        /* Print styles for synthesized plan */
+        @media print {
+            .sidebar, .mobile-header, .btn-group, .nav-links, footer, .copy-btn, .history-section, form {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-compass" style="color: var(--primary); font-size: 20px;"></i>
+            <span style="font-weight: 700; color: var(--primary-dark);">FirstGen Navigator™</span>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Toggle navigation menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Overlay for mobile sidebar -->
+    <div class="overlay" id="overlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-compass"></i>
+                <h1>FirstGen Navigator™<br><span style="font-size: 11px; font-weight: 500; color: var(--text-muted);">Commercial V2 OS</span></h1>
+            </div>
+            <ul class="nav-links">
+                <div class="nav-section-title">Core Toolkit</div>
+                <li>
+                    <a class="nav-item active" data-tool="dashboard">
+                        <i class="fa-solid fa-house"></i>
+                        Dashboard & Milestones
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool1">
+                        <i class="fa-solid fa-book-open"></i>
+                        Academic Decoder
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool2">
+                        <i class="fa-solid fa-shield-heart"></i>
+                        Imposter Reset
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool3">
+                        <i class="fa-solid fa-people-roof"></i>
+                        Family Translator
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool4">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        Resource Finder
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool5">
+                        <i class="fa-solid fa-briefcase"></i>
+                        Major-to-Career Bridge
+                    </a>
+                </li>
+
+                <div class="nav-section-title">Navigation Packages</div>
+                <li>
+                    <a class="nav-item" data-tool="view7day">
+                        <i class="fa-solid fa-calendar-week"></i>
+                        7-Day Navigator
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="viewPlan">
+                        <i class="fa-solid fa-file-contract"></i>
+                        My First-Gen Plan
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="viewHistory">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        My History
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="viewPrivacy">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Privacy & About
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content View -->
+        <main class="main-content">
+            <div class="content-container">
+
+                <!-- DASHBOARD VIEW -->
+                <section id="dashboard" class="tool-view">
+                    <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--teal-dark) 100%); color: white;">
+                        <span class="tag" style="background: rgba(255,255,255,0.2); color: white;">Toolkit Home</span>
+                        <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px;">First-Gen Navigator™</h2>
+                        <p style="font-size: 16px; opacity: 0.9; max-width: 600px; margin-bottom: 16px;">
+                            Master college culture, overcome imposter feelings, and map your path without family precedent.
+                        </p>
+                        <div style="font-size: 13.5px; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 10px; border-left: 3px solid #FFF;">
+                            <strong>Core Insight:</strong> Unfamiliarity with college culture is an information gap, not an ability gap. Start with the tool addressing your immediate friction.
+                        </div>
+                    </div>
+
+                    <!-- Milestones Tracker -->
+                    <div class="card">
+                        <h3 style="font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-list-check" style="color: var(--teal);"></i> First-Gen Milestone Tracker
+                        </h3>
+                        <div id="milestonesList" style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Dynamically loaded milestones -->
+                        </div>
+                    </div>
+
+                    <!-- Tool Quick Links Grid -->
+                    <div class="grid-responsive">
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool1')">
+                            <i class="fa-solid fa-book-open" style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Academic Decoder</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Translate college jargon, syllabi, and office hours protocols.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool2')">
+                            <i class="fa-solid fa-shield-heart" style="font-size: 24px; color: var(--teal); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Imposter Reset</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Reframe self-doubt into recognized strategic strengths.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool3')">
+                            <i class="fa-solid fa-people-roof" style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Family Translator</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Communicate academic demands lovingly to family.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool4')">
+                            <i class="fa-solid fa-map-location-dot" style="font-size: 24px; color: var(--teal); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Resource Finder</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Locate and access campus emergency & support offices.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool5')">
+                            <i class="fa-solid fa-briefcase" style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Major-to-Career</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Connect your academic major to high-value career pathways.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer; background: var(--primary-light); border-color: var(--primary);" onclick="switchTool('view7day')">
+                            <i class="fa-solid fa-calendar-week" style="font-size: 24px; color: var(--primary-dark); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px; color: var(--primary-dark);">7-Day Navigator</h4>
+                            <p style="font-size: 13px; color: var(--text-main);">Follow a structured guided sequence through all core modules.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: ACADEMIC DECODER -->
+                <section id="tool1" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Tool 1</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Unwritten Academic Decoder</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Decode implicit higher-education rules, terminology, and unspoken rules for success.
+                        </p>
+                        <form id="form1">
+                            <div class="form-group">
+                                <label for="t1_term">Term or situation causing confusion:</label>
+                                <select id="t1_term" class="form-control" required>
+                                    <option value="Office Hours">Office Hours</option>
+                                    <option value="Syllabus">Syllabus</option>
+                                    <option value="Add-Drop">Add-Drop Period</option>
+                                    <option value="Prerequisites">Prerequisites</option>
+                                    <option value="TA vs Professor">TA vs Professor</option>
+                                    <option value="FAFSA Verification">FAFSA Verification</option>
+                                    <option value="Credit Hours">Credit Hours</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_year">Current academic year:</label>
+                                <select id="t1_year" class="form-control" required>
+                                    <option value="Freshman">Freshman</option>
+                                    <option value="Sophomore">Sophomore</option>
+                                    <option value="Junior">Junior</option>
+                                    <option value="Senior">Senior</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Decode Term</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(1)"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output1" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Decoded Guidance</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-lightbulb"></i> Translation & Reality Check</div>
+                            <div id="t1_res_trans" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-list-check"></i> Action Protocol</div>
+                            <div id="t1_res_action" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-envelope"></i> Professor Outreach Script</div>
+                            <div class="script-box" id="t1_res_script"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool2')">Next: Imposter Reset <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Saved Decodings History</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool1')">Clear History</button>
+                        </div>
+                        <div id="history1"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: IMPOSTER SYNDROME RESET -->
+                <section id="tool2" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Tool 2</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Imposter Syndrome Reset</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Audit negative self-talk and convert first-gen background into distinct strategic advantages.
+                        </p>
+                        <form id="form2">
+                            <div class="form-group">
+                                <label for="t2_trigger">Trigger situation:</label>
+                                <select id="t2_trigger" class="form-control" required>
+                                    <option value="Class discussion">Class discussion</option>
+                                    <option value="Receiving a low grade">Receiving a low grade</option>
+                                    <option value="Hearing peers talk about internships">Hearing peers talk about internships</option>
+                                    <option value="Social events">Social events</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_thought">Negative thought loop:</label>
+                                <textarea id="t2_thought" class="form-control" placeholder="e.g., I don't belong here, everyone else already knows this stuff." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_strengths">Personal background strengths:</label>
+                                <textarea id="t2_strengths" class="form-control" placeholder="e.g., Strong work ethic, self-reliance, adaptability, community roots." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-rotate-right"></i> Reset Perspective</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(2)"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output2" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Reframed Mindset Analysis</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-magnifying-glass"></i> Evidence-Based Reality Audit</div>
+                            <div id="t2_res_audit" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-gem"></i> Advantage Reframe</div>
+                            <div id="t2_res_reframe" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-anchor"></i> 3 Grounding Statements</div>
+                            <div id="t2_res_statements" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool3')">Next: Family Translator <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Saved Reset History</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool2')">Clear History</button>
+                        </div>
+                        <div id="history2"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: FAMILY EXPECTATION TRANSLATOR -->
+                <section id="tool3" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Tool 3</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Family Expectation Translator</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Bridge the communication gap between family love/worry and rigorous academic commitments.
+                        </p>
+                        <form id="form3">
+                            <div class="form-group">
+                                <label for="t3_friction">Family friction point:</label>
+                                <select id="t3_friction" class="form-control" required>
+                                    <option value="Time commitment">Time commitment / Studying late</option>
+                                    <option value="Major choice">Major choice / Career direction</option>
+                                    <option value="Cost & money">Cost & money concerns</option>
+                                    <option value="Distance from home">Distance from home / Not visiting</option>
+                                    <option value="Unrealistic job expectations">Unrealistic immediate job expectations</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_asking">What family is asking/saying:</label>
+                                <textarea id="t3_asking" class="form-control" placeholder="e.g., Why can't you come home this weekend? School isn't everything." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_reality">What academic reality requires:</label>
+                                <textarea id="t3_reality" class="form-control" placeholder="e.g., Need 15 hours to study for Organic Chemistry midterms." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Translate & Script</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(3)"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output3" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Communication Strategy</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-heart"></i> Empathic Reframe</div>
+                            <div id="t3_res_reframe" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-comment-dots"></i> Family Conversation Script</div>
+                            <div class="script-box" id="t3_res_script"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-shield"></i> Boundary Setting Guide</div>
+                            <div id="t3_res_boundary" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool4')">Next: Resource Finder <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Saved Family Scripts History</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool3')">Clear History</button>
+                        </div>
+                        <div id="history3"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: CAMPUS RESOURCE FINDER -->
+                <section id="tool4" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Tool 4</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Campus Resource Finder</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Identify exact campus departments for support and get in-person self-advocacy scripts.
+                        </p>
+                        <form id="form4">
+                            <div class="form-group">
+                                <label for="t4_need">Primary area of need:</label>
+                                <select id="t4_need" class="form-control" required>
+                                    <option value="Financial emergency">Financial emergency / Textbooks</option>
+                                    <option value="Academic tutoring">Academic tutoring / Writing help</option>
+                                    <option value="Mental health">Mental health & stress</option>
+                                    <option value="Career & Resume">Career & Resume / Internships</option>
+                                    <option value="Housing & Food insecurity">Housing & Food insecurity</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_urgency">Urgency level:</label>
+                                <select id="t4_urgency" class="form-control" required>
+                                    <option value="Emergency">Emergency (Immediate)</option>
+                                    <option value="High">High (Within this week)</option>
+                                    <option value="Moderate">Moderate (General planning)</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Find Resources</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(4)"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output4" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Navigational Action Plan</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-building"></i> Target Campus Department</div>
+                            <div id="t4_res_dept" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-clipboard-user"></i> Walk-In Advocacy Script</div>
+                            <div class="script-box" id="t4_res_script"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-folder-open"></i> Checklist of Documents to Bring</div>
+                            <div id="t4_res_docs" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool5')">Next: Major-to-Career Bridge <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Saved Resource Queries</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool4')">Clear History</button>
+                        </div>
+                        <div id="history4"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: MAJOR-TO-CAREER BRIDGE PLANNER -->
+                <section id="tool5" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Tool 5</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Major-to-Career Bridge Planner</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Translate academic majors into tangible market skills and early career networking steps.
+                        </p>
+                        <form id="form5">
+                            <div class="form-group">
+                                <label for="t5_major">Current major:</label>
+                                <input type="text" id="t5_major" class="form-control" placeholder="e.g., Psychology, Sociology, Biology, English" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_goal">Primary career goal:</label>
+                                <select id="t5_goal" class="form-control" required>
+                                    <option value="High income">High income / Financial security</option>
+                                    <option value="Helping community">Helping community / Social impact</option>
+                                    <option value="Job stability">Job stability / Low volatility</option>
+                                    <option value="Creative autonomy">Creative autonomy / Flexibility</option>
+                                    <option value="Not sure">Not sure / Exploring options</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_exp">Work or volunteer experience so far:</label>
+                                <textarea id="t5_exp" class="form-control" placeholder="e.g., Campus library desk worker, retail cashier, high school tutoring." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-map"></i> Build Career Bridge</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(5)"><i class="fa-solid fa-flask"></i> Load Sample Scenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output5" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Career Pathway Roadmap</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-route"></i> Career Pathway Map</div>
+                            <div id="t5_res_map" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Resume Skill Translator</div>
+                            <div id="t5_res_skills" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-network-wired"></i> First Network Sprint</div>
+                            <div id="t5_res_sprint" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-primary" onclick="switchTool('viewPlan')">View Full First-Gen Plan <i class="fa-solid fa-file-contract"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Saved Career Plans</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool5')">Clear History</button>
+                        </div>
+                        <div id="history5"></div>
+                    </div>
+                </section>
+
+                <!-- VIEW: 7-DAY FIRST-GEN NAVIGATOR -->
+                <section id="view7day" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Guided Sequence</span>
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">First-Gen 7-Day Navigator</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                            A structured, step-by-step sequence through university navigation without cognitive overload. Follow one day at a time.
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-1"></i> Day 1: Decode the University</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Use the <strong>Academic Decoder</strong> to understand office hours or syllabi protocols. Unlearn the myth that asking questions means you don't belong.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool1')">Open Academic Decoder</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--teal);">
+                                <div class="output-title"><i class="fa-solid fa-2"></i> Day 2: Strengthen Academic Confidence</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Use the <strong>Imposter Reset</strong> to reframe self-doubt during class discussions or grading feedback into recognized strategic strengths.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool2')">Open Imposter Reset</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-3"></i> Day 3: Communicate with Family</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Use the <strong>Family Translator</strong> to bridge family love and study time commitments with a compassionate boundary script.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool3')">Open Family Translator</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--teal);">
+                                <div class="output-title"><i class="fa-solid fa-4"></i> Day 4: Find Your Campus Support System</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Use the <strong>Resource Finder</strong> to identify emergency micro-grants, tutoring centers, or student success offices.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool4')">Open Resource Finder</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-5"></i> Day 5: Build Your Career Bridge</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Use <strong>Major-to-Career</strong> to translate your major and past work experience into professional skill terminology and alumni networking.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool5')">Open Major-to-Career</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--teal);">
+                                <div class="output-title"><i class="fa-solid fa-6"></i> Day 6: Review Milestones & Snapshot</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Check off completed foundational actions on the Dashboard milestone tracker and review your synthesized plan.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('dashboard')">View Dashboard Milestones</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-7"></i> Day 7: Create Your 30-Day Action Plan</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Compile your insights into <strong>My First-Gen Plan</strong>, print your checklist, and establish your 30-day review point.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('viewPlan')">View My First-Gen Plan</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: MY FIRST-GEN PLAN -->
+                <section id="viewPlan" class="tool-view hidden">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <span class="tag">Synthesized Plan</span>
+                                <h2 style="font-size: 24px; font-weight: 700;">My First-Gen Navigator Plan</h2>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save PDF Plan</button>
+                        </div>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                            This synthesized view aggregates your recent navigation outputs, milestone progress, and immediate priorities into a clean printable format.
+                        </p>
+
+                        <div id="synthesizedPlanContent" style="display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Populated dynamically via JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: MY HISTORY -->
+                <section id="viewHistory" class="tool-view hidden">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <span class="tag">Audit Trail</span>
+                                <h2 style="font-size: 24px; font-weight: 700;">All Saved Analyses</h2>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="clearAllHistories()">Clear All History</button>
+                        </div>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Review all saved decodings, resets, scripts, and career plans stored securely in your browser's local storage.
+                        </p>
+
+                        <div id="unifiedHistoryContainer">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: PRIVACY & ABOUT -->
+                <section id="viewPrivacy" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Privacy & Security</span>
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">About FirstGen Navigator™</h2>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 16px;">
+                            FirstGen Navigator™ is built as a local-first student navigation operating system. It translates institutional opacity into clear, actionable steps for first-generation university students.
+                        </p>
+                        
+                        <h3 style="font-size: 16px; margin-top: 20px; margin-bottom: 8px; color: var(--primary-dark);">Local Storage & Privacy Guarantee</h3>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted); margin-bottom: 16px;">
+                            All history items, milestone checkboxes, and preferences are stored exclusively within your browser's <code>localStorage</code>. No personal data, questionnaire inputs, or generated scripts are ever transmitted to any external server or third party.
+                        </p>
+
+                        <h3 style="font-size: 16px; margin-top: 20px; margin-bottom: 8px; color: var(--primary-dark);">Educational Guidance Disclaimer</h3>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted); margin-bottom: 16px;">
+                            For educational guidance and personal development only. Not formal academic advisement, psychological therapy, legal counsel, or financial aid adjudication. Always verify institution-specific policies with your university registrar, academic advisor, or student success office.
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Standardized Footer -->
+            <footer>
+                For educational guidance and personal development only. Not formal academic advisement. FirstGen Navigator™ Commercial V2.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Copied to clipboard!</span>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script>
+        // Global Navigation & UI Logic with Robust Security and State Management
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initMilestones();
+            loadAllHistories();
+            setupFormListeners();
+        });
+
+        // Toggle Sidebar Mobile
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        if (mobileToggle) mobileToggle.addEventListener('click', toggleMobileMenu);
+        if (overlay) overlay.addEventListener('click', toggleMobileMenu);
+
+        // Security Helper: Escape HTML to prevent XSS
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Switch active tool views
+        function switchTool(toolId) {
+            document.querySelectorAll('.tool-view').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            const targetView = document.getElementById(toolId);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const activeNav = document.querySelector(`.nav-item[data-tool="${toolId}"]`);
+            if (activeNav) activeNav.classList.add('active');
+
+            if (toolId === 'viewPlan') {
+                renderSynthesizedPlan();
+            } else if (toolId === 'viewHistory') {
+                renderUnifiedHistory();
+            }
+
+            if (sidebar.classList.contains('open')) {
+                toggleMobileMenu();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const tool = e.currentTarget.getAttribute('data-tool');
+                    switchTool(tool);
+                });
+            });
+        }
+
+        // Toast functionality
+        function showToast(message = "Copied to clipboard!") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            if (toast && toastMsg) {
+                toastMsg.innerText = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Copied script to clipboard!");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied script to clipboard!");
+            } catch (err) {
+                showToast("Unable to copy automatically.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Dashboard Milestones State with Versioned Storage & Legacy Migration
+        const defaultMilestones = [
+            { id: 1, text: "Attended first Professor Office Hours", completed: false },
+            { id: 2, text: "Located Campus Food Pantry & Emergency Services", completed: false },
+            { id: 3, text: "Decoded course syllabi and key academic dates", completed: false },
+            { id: 4, text: "Had structured boundary talk with family", completed: false },
+            { id: 5, text: "Connected with a First-Gen Alumni on LinkedIn", completed: false }
+        ];
+
+        function initMilestones() {
+            try {
+                let saved = JSON.parse(localStorage.getItem('firstgen_v2_milestones'));
+                if (!saved) {
+                    // Check legacy key
+                    const legacy = JSON.parse(localStorage.getItem('firstgen_milestones'));
+                    saved = legacy || defaultMilestones;
+                    localStorage.setItem('firstgen_v2_milestones', JSON.stringify(saved));
+                }
+                renderMilestones(saved);
+            } catch (e) {
+                renderMilestones(defaultMilestones);
+            }
+        }
+
+        function renderMilestones(milestones) {
+            const container = document.getElementById('milestonesList');
+            if (!container) return;
+            container.innerHTML = '';
+            milestones.forEach(m => {
+                const item = document.createElement('div');
+                item.style.display = 'flex';
+                item.style.alignItems = 'center';
+                item.style.gap = '10px';
+                item.style.fontSize = '14px';
+                
+                const safeText = escapeHTML(m.text);
+                item.innerHTML = `
+                    <input type="checkbox" id="m_${m.id}" ${m.completed ? 'checked' : ''} onchange="toggleMilestone(${m.id})" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;" aria-label="${safeText}">
+                    <label for="m_${m.id}" style="cursor: pointer; ${m.completed ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${safeText}</label>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleMilestone(id) {
+            try {
+                let saved = JSON.parse(localStorage.getItem('firstgen_v2_milestones')) || defaultMilestones;
+                saved = saved.map(m => m.id === id ? { ...m, completed: !m.completed } : m);
+                localStorage.setItem('firstgen_v2_milestones', JSON.stringify(saved));
+                renderMilestones(saved);
+            } catch (e) {
+                console.error("Milestone toggle error", e);
+            }
+        }
+
+        // LocalStorage History Helpers (Versioned & Unified)
+        function saveHistory(toolId, data) {
+            try {
+                const key = `firstgen_v2_history_${toolId}`;
+                let history = JSON.parse(localStorage.getItem(key)) || [];
+                history.unshift({ timestamp: new Date().toLocaleString(), data });
+                if (history.length > 30) history = history.slice(0, 30);
+                localStorage.setItem(key, JSON.stringify(history));
+                renderHistory(toolId);
+            } catch (e) {
+                console.error("Save history error", e);
+            }
+        }
+
+        function clearHistory(toolId) {
+            try {
+                const key = `firstgen_v2_history_${toolId}`;
+                localStorage.removeItem(key);
+                // Also clear legacy key if exists
+                localStorage.removeItem(`firstgen_history_${toolId}`);
+                renderHistory(toolId);
+                showToast("History cleared");
+            } catch (e) {
+                console.error("Clear history error", e);
+            }
+        }
+
+        function clearAllHistories() {
+            if (confirm("Are you sure you want to clear all saved history items across all tools?")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                    localStorage.removeItem(`firstgen_v2_history_${t}`);
+                    localStorage.removeItem(`firstgen_history_${t}`);
+                });
+                loadAllHistories();
+                renderUnifiedHistory();
+                showToast("All history cleared");
+            }
+        }
+
+        function renderHistory(toolId) {
+            const num = toolId.replace('tool', '');
+            const container = document.getElementById(`history${num}`);
+            if (!container) return;
+            
+            try {
+                const key = `firstgen_v2_history_${toolId}`;
+                let history = JSON.parse(localStorage.getItem(key));
+                if (!history) {
+                    history = JSON.parse(localStorage.getItem(`firstgen_history_${toolId}`)) || [];
+                }
+
+                if (history.length === 0) {
+                    container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">No saved items yet.</p>`;
+                    return;
+                }
+
+                container.innerHTML = history.map((item, index) => {
+                    const title = escapeHTML(item.data.summaryTitle || 'Saved Scenario');
+                    const time = escapeHTML(item.timestamp);
+                    const htmlContent = item.data.renderedHTML || ''; // Already contains sanitized structured HTML or raw text
+                    return `
+                        <div class="accordion-item">
+                            <div class="accordion-header" onclick="toggleAccordion('${toolId}_${index}')">
+                                <span>${title}</span>
+                                <span style="font-size: 12px; color: var(--text-muted);">${time}</span>
+                            </div>
+                            <div class="accordion-content" id="${toolId}_${index}">
+                                ${htmlContent}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Error loading history items.</p>`;
+            }
+        }
+
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = el.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        function loadAllHistories() {
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryContainer');
+            if (!container) return;
+
+            let allItems = [];
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+                try {
+                    const key = `firstgen_v2_history_${toolId}`;
+                    let history = JSON.parse(localStorage.getItem(key)) || JSON.parse(localStorage.getItem(`firstgen_history_${toolId}`)) || [];
+                    history.forEach(item => {
+                        allItems.push({ toolId, ...item });
+                    });
+                } catch (e) {}
+            });
+
+            if (allItems.length === 0) {
+                container.innerHTML = `<p style="font-size: 14px; color: var(--text-muted);">No saved items found across any tool.</p>`;
+                return;
+            }
+
+            container.innerHTML = allItems.map((item, index) => {
+                const title = escapeHTML(item.data.summaryTitle || 'Saved Item');
+                const time = escapeHTML(item.timestamp);
+                const toolName = escapeHTML(item.toolId.toUpperCase());
+                return `
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion('uni_${index}')">
+                            <div>
+                                <span class="tag" style="margin-bottom: 0; margin-right: 8px; font-size: 10px;">${toolName}</span>
+                                <span>${title}</span>
+                            </div>
+                            <span style="font-size: 12px; color: var(--text-muted);">${time}</span>
+                        </div>
+                        <div class="accordion-content" id="uni_${index}">
+                            ${item.data.renderedHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSynthesizedPlan() {
+            const container = document.getElementById('synthesizedPlanContent');
+            if (!container) return;
+
+            let summaryHTML = '';
+            const tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            let hasData = false;
+
+            tools.forEach(toolId => {
+                try {
+                    const key = `firstgen_v2_history_${toolId}`;
+                    let history = JSON.parse(localStorage.getItem(key)) || JSON.parse(localStorage.getItem(`firstgen_history_${toolId}`)) || [];
+                    if (history.length > 0) {
+                        hasData = true;
+                        const latest = history[0];
+                        summaryHTML += `
+                            <div class="output-box">
+                                <div class="output-title"><i class="fa-solid fa-check-circle"></i> ${escapeHTML(toolId.toUpperCase())} — ${escapeHTML(latest.data.summaryTitle || 'Latest Result')}</div>
+                                <div style="font-size: 14px; line-height: 1.6; margin-top: 8px;">
+                                    ${latest.data.renderedHTML}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (e) {}
+            });
+
+            if (!hasData) {
+                summaryHTML = `<p style="font-size: 14px; color: var(--text-muted);">No completed tool analyses found yet. Complete at least one tool (Academic Decoder, Imposter Reset, etc.) to populate your synthesized plan.</p>`;
+            }
+
+            container.innerHTML = summaryHTML;
+        }
+
+        // Sample Loader Logic
+        function loadSample(toolNum) {
+            if (toolNum === 1) {
+                document.getElementById('t1_term').value = 'Office Hours';
+                document.getElementById('t1_year').value = 'Freshman';
+            } else if (toolNum === 2) {
+                document.getElementById('t2_trigger').value = 'Class discussion';
+                document.getElementById('t2_thought').value = "Everyone else uses big academic words and seems to have read all the background material years ago. I feel like an admissions mistake.";
+                document.getElementById('t2_strengths').value = "Worked 20 hrs/week in high school, highly adaptable, strong problem-solving skills, deeply resilient under pressure.";
+            } else if (toolNum === 3) {
+                document.getElementById('t3_friction').value = 'Time commitment';
+                document.getElementById('t3_asking').value = "Why can't you come home for the weekend family dinner? You care more about books than your family.";
+                document.getElementById('t3_reality').value = "Midterm exams are next week. I need 12 uninterrupted study hours and campus library access to pass Chemistry.";
+            } else if (toolNum === 4) {
+                document.getElementById('t4_need').value = 'Financial emergency';
+                document.getElementById('t4_urgency').value = 'High';
+            } else if (toolNum === 5) {
+                document.getElementById('t5_major').value = 'Sociology';
+                document.getElementById('t5_goal').value = 'Job stability';
+                document.getElementById('t5_exp').value = 'Customer service associate, high school peer mentor, managing family administrative paperwork.';
+            }
+            showToast("Sample scenario loaded!");
+        }
+
+        // Form Submission Listeners and Rule-Based Logic Engines with Input Escaping
+        function setupFormListeners() {
+            // TOOL 1
+            const form1 = document.getElementById('form1');
+            if (form1) {
+                form1.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const term = escapeHTML(document.getElementById('t1_term').value);
+                    const year = escapeHTML(document.getElementById('t1_year').value);
+
+                    let trans = "", action = "", script = "";
+
+                    if (term === "Office Hours") {
+                        trans = "<strong>Hidden Rule:</strong> Office hours are NOT for when you are in trouble. They are dedicated, pre-paid drop-in times for you to ask questions, clarify lectures, or discuss career advice.";
+                        action = "1. Pick a 15-minute slot during listed hours.<br>2. Bring 1-2 specific questions or your lecture notes.<br>3. Introduce yourself as a " + year + " in their course.";
+                        script = `Subject: Office Hours Question - [Course Name] - [Your Name]
+
+Dear Professor [Last Name],
+
+I am a ${year} in your [Course Name] class. I am working through the recent lecture material on [Topic] and had a quick question regarding [Specific Concept]. 
+
+I plan to drop by your office hours on [Day] at [Time]. I look forward to connecting!
+
+Best regards,
+[Your Name]`;
+                    } else if (term === "Syllabus") {
+                        trans = "<strong>Hidden Rule:</strong> The syllabus is a legally binding academic contract for the course. It contains every deadline, grading policy, and attendance expectation.";
+                        action = "1. Download and read it completely during Week 1.<br>2. Transfer all exam and essay dates into your personal calendar immediately.<br>3. Check the syllabus BEFORE asking the professor 'what did I miss?'";
+                        script = `Subject: Clarification on Syllabus Policy - [Course Name]
+
+Dear Professor [Last Name],
+
+I am reviewing the syllabus for [Course Name] and wanted to confirm a detail regarding the submission guidelines for [Assignment Name]. 
+
+Could you clarify if [Specific Detail, e.g., PDF format] is preferred? Thank you for your time.
+
+Best,
+[Your Name]`;
+                    } else {
+                        trans = `<strong>Hidden Rule:</strong> ${term} is a standard university process designed to organize academic progress, but procedures vary by department.`;
+                        action = "1. Consult the university registrar page.<br>2. Verify key academic calendar deadlines.<br>3. Speak with your assigned academic advisor.";
+                        script = `Subject: Inquiry regarding ${term} - [Your Name]
+
+Dear Academic Advising Team,
+
+I am currently a ${year} seeking guidance on the procedure for ${term}. Could you direct me to the correct steps or form required?
+
+Thank you,
+[Your Name]`;
+                    }
+
+                    document.getElementById('t1_res_trans').innerHTML = trans;
+                    document.getElementById('t1_res_action').innerHTML = action;
+                    const safeScript = escapeHTML(script);
+                    document.getElementById('t1_res_script').innerHTML = `${safeScript} <br><button class="copy-btn" onclick="copyToClipboard(decodeURIComponent(\`${encodeURIComponent(script)}\`))"><i class="fa-regular fa-copy"></i> Copy</button>`;
+                    
+                    document.getElementById('output1').classList.remove('hidden');
+
+                    saveHistory('tool1', {
+                        summaryTitle: `Decoded: ${term} (${year})`,
+                        renderedHTML: trans + "<br><br>" + action
+                    });
+                });
+            }
+
+            // TOOL 2
+            const form2 = document.getElementById('form2');
+            if (form2) {
+                form2.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const trigger = escapeHTML(document.getElementById('t2_trigger').value);
+                    const thought = escapeHTML(document.getElementById('t2_thought').value);
+                    const strengths = escapeHTML(document.getElementById('t2_strengths').value);
+
+                    const audit = `Your thought ("${thought}") is a natural psychological reaction during <strong>${trigger}</strong>. Imposter feelings peak when navigating unfamiliar environments. However, your place at university is evidence that you have already met rigorous admissions standards; unfamiliarity does not mean you do not belong.`;
+                    
+                    const reframe = `While legacy students may have institutional familiarity, your background has built: <strong>${strengths}</strong>. In professional and academic environments, grit, self-reliance, and resourcefulness out-perform passive privilege over time.`;
+
+                    const statements = `1. "I earned my seat in this room through proven capability."<br>
+2. "Unfamiliarity with college culture is an information gap, not an intelligence gap."<br>
+3. "My unique background provides me with unmatched problem-solving resilience."`;
+
+                    document.getElementById('t2_res_audit').innerHTML = audit;
+                    document.getElementById('t2_res_reframe').innerHTML = reframe;
+                    document.getElementById('t2_res_statements').innerHTML = statements;
+
+                    document.getElementById('output2').classList.remove('hidden');
+
+                    saveHistory('tool2', {
+                        summaryTitle: `Reset: ${trigger}`,
+                        renderedHTML: `<strong>Audit:</strong> ${audit}<br><br><strong>Reframe:</strong> ${reframe}`
+                    });
+                });
+            }
+
+            // TOOL 3
+            const form3 = document.getElementById('form3');
+            if (form3) {
+                form3.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const friction = escapeHTML(document.getElementById('t3_friction').value);
+                    const asking = escapeHTML(document.getElementById('t3_asking').value);
+                    const reality = escapeHTML(document.getElementById('t3_reality').value);
+
+                    const reframe = `Your family's request ("${asking}") comes from a place of deep care and fear of losing connection. They may not understand that college requires independent study beyond scheduled class time.`;
+
+                    const scriptText = `Hey family, I love you and appreciate everything you do for me. I know you want me to spend time together. Right now, university requires ${reality}. If I don't focus on this today, it risks my grades and my degree. Let's schedule a dedicated phone call on [Specific Day/Time] when I finish!`;
+
+                    const boundary = `1. Validate their love first before saying no.<br>2. Give a specific date/time when you will be fully available.<br>3. Keep explanation simple without using heavy academic jargon.`;
+
+                    document.getElementById('t3_res_reframe').innerHTML = reframe;
+                    const safeScript3 = escapeHTML(scriptText);
+                    document.getElementById('t3_res_script').innerHTML = `${safeScript3} <br><button class="copy-btn" onclick="copyToClipboard(decodeURIComponent(\`${encodeURIComponent(scriptText)}\`))"><i class="fa-regular fa-copy"></i> Copy</button>`;
+                    document.getElementById('t3_res_boundary').innerHTML = boundary;
+
+                    document.getElementById('output3').classList.remove('hidden');
+
+                    saveHistory('tool3', {
+                        summaryTitle: `Family Script: ${friction}`,
+                        renderedHTML: `<strong>Reframe:</strong> ${reframe}<br><br><strong>Script:</strong> ${scriptText}`
+                    });
+                });
+            }
+
+            // TOOL 4
+            const form4 = document.getElementById('form4');
+            if (form4) {
+                form4.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const need = escapeHTML(document.getElementById('t4_need').value);
+                    const urgency = escapeHTML(document.getElementById('t4_urgency').value);
+
+                    let dept = "", script = "", docs = "";
+
+                    if (need === "Financial emergency") {
+                        dept = "<strong>Dean of Students Office</strong> or <strong>TRIO / Student Success Center</strong>. Search your campus website for 'Emergency Micro-Grant' or 'Student Financial Relief'.";
+                        script = `"Hello, I am a first-generation student experiencing an unforeseen financial difficulty regarding textbooks or living expenses. I was told your office manages emergency student assistance funds."`;
+                        docs = "• Student ID Card<br>• Proof of unexpected expense (receipt, invoice, syllabus required text)<br>• Current Financial Aid Summary award letter";
+                    } else if (need === "Academic tutoring") {
+                        dept = "<strong>University Learning Center</strong> or <strong>Writing Center</strong>. Usually located in the main library.";
+                        script = `"Hi, I would like to schedule peer tutoring for my courses. I want to build stronger study habits before upcoming exams."`;
+                        docs = "• Course Syllabus<br>• Assignment Prompts<br>• Drafts or recent graded quizzes";
+                    } else {
+                        dept = "<strong>Student Affairs Office</strong>, <strong>Counseling Center</strong>, or <strong>Career Services Center</strong>.";
+                        script = `"Hi, I am looking to connect with a coordinator regarding guidance and support services for ${need}."`;
+                        docs = "• Student ID Card<br>• List of primary questions or current goals";
+                    }
+
+                    document.getElementById('t4_res_dept').innerHTML = `<strong>Priority Level (${urgency}):</strong> ${dept}`;
+                    const safeScript4 = escapeHTML(script);
+                    document.getElementById('t4_res_script').innerHTML = `${safeScript4} <br><button class="copy-btn" onclick="copyToClipboard(decodeURIComponent(\`${encodeURIComponent(script)}\`))"><i class="fa-regular fa-copy"></i> Copy</button>`;
+                    document.getElementById('t4_res_docs').innerHTML = docs;
+
+                    document.getElementById('output4').classList.remove('hidden');
+
+                    saveHistory('tool4', {
+                        summaryTitle: `Resource: ${need}`,
+                        renderedHTML: `<strong>Department:</strong> ${dept}<br><br><strong>Script:</strong> ${script}`
+                    });
+                });
+            }
+
+            // TOOL 5
+            const form5 = document.getElementById('form5');
+            if (form5) {
+                form5.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const major = escapeHTML(document.getElementById('t5_major').value);
+                    const goal = escapeHTML(document.getElementById('t5_goal').value);
+                    const exp = escapeHTML(document.getElementById('t5_exp').value);
+
+                    const map = `Based on your major in <strong>${major}</strong> and goal of <strong>${goal}</strong>, consider these 3 pathways:<br>
+1. <strong>Project / Operations Support:</strong> Translating research and analytical thinking into business workflow management.<br>
+2. <strong>Community Program Coordination:</strong> Managing public or non-profit outreach programs.<br>
+3. <strong>Data & People Analytics:</strong> Leveraging human behavior coursework for corporate HR, market research, or UX research.`;
+
+                    const skills = `Reframe your past experience ("${exp}") on your resume using strong action verbs:<br>
+• <strong>Stakeholder Communication:</strong> Translated complex information clearly for diverse groups.<br>
+• <strong>Resource Management:</strong> Maintained high accuracy and problem-solving under fast-paced constraints.<br>
+• <strong>Analytical Thinking:</strong> Applied structural analysis from ${major} coursework to practical real-world challenges.`;
+
+                    const sprint = `1. Search LinkedIn for alumni from your university with the filter <em>"First-Gen"</em> or <em>"${major}"</em>.<br>
+2. Send a short note: <em>"Hi [Name], I'm a current first-gen student at [School] studying ${major}. I saw your career path and would love to ask 2 questions about your transition to industry."</em><br>
+3. Visit Career Services to get your resume reviewed before applying.`;
+
+                    document.getElementById('t5_res_map').innerHTML = map;
+                    document.getElementById('t5_res_skills').innerHTML = skills;
+                    document.getElementById('t5_res_sprint').innerHTML = sprint;
+
+                    document.getElementById('output5').classList.remove('hidden');
+
+                    saveHistory('tool5', {
+                        summaryTitle: `Career Plan: ${major}`,
+                        renderedHTML: map + "<br><br>" + skills
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>

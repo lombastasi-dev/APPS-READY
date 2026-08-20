@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<!DOCTYPE html>
+
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Teen Connection - Toolkit untuk Orang Tua</title>
+<style>
+        :root {
+            --slate: #3D5A80;
+            --coral: #EE6C4D;
+            --light-blue: #E0FBFC;
+            --dark-slate: #293241;
+            --bg-start: #F0F4F8;
+            --bg-end: #FEF1F0;
+            --card-bg: #FFFFFF;
+            --text-main: #2D3748;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
+            --sidebar-width: 250px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-start), var(--bg-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-brand {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--slate);
+            font-weight: 700;
+            font-size: 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-brand i {
+            color: var(--coral);
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button:hover {
+            background-color: #F8FAFC;
+            color: var(--slate);
+        }
+
+        .nav-item button.active {
+            background-color: var(--slate);
+            color: #FFFFFF;
+        }
+
+        .nav-item button i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            position: sticky;
+            top: 0;
+            background: #FFFFFF;
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--slate);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .view-container {
+            width: 100%;
+            max-width: 800px;
+            display: none;
+        }
+
+        .view-container.active {
+            display: block;
+        }
+
+        /* Common Components */
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: var(--dark-slate);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        h2 {
+            font-size: 1.35rem;
+            color: var(--slate);
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 24px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--dark-slate);
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], select, textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background: #FAFAFA;
+            transition: border 0.2s;
+        }
+
+        input[type="text"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--slate);
+            background: #FFFFFF;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 10px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 400;
+            font-size: 0.9rem;
+            cursor: pointer;
+            background: #F8FAFC;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-label input {
+            accent-color: var(--coral);
+        }
+
+        .slider-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .slider-header {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .slider-header span.val {
+            color: var(--coral);
+            font-weight: 700;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--coral);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--coral);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #e05a39;
+        }
+
+        .btn-secondary {
+            background-color: #EDF2F7;
+            color: var(--dark-slate);
+        }
+
+        .btn-secondary:hover {
+            background-color: #E2E8F0;
+        }
+
+        .btn-copy {
+            background: var(--light-blue);
+            color: var(--slate);
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .btn-copy:hover {
+            background: #cbf7fa;
+        }
+
+        /* Output Formatting */
+        .results-container {
+            margin-top: 32px;
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+        }
+
+        .output-section {
+            border-left: 4px solid var(--slate);
+            padding-left: 16px;
+            margin-bottom: 24px;
+        }
+
+        .output-section.accent {
+            border-left-color: var(--coral);
+        }
+
+        .output-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .output-content {
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--dark-slate);
+        }
+
+        .script-box {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Dashboard Specifics */
+        .hero-card {
+            background: linear-gradient(135deg, var(--slate), var(--dark-slate));
+            color: white;
+            border: none;
+        }
+
+        .hero-card h1 {
+            color: white;
+        }
+
+        .hero-card p {
+            color: var(--light-blue);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .dash-card {
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+        }
+
+        .dash-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background: var(--bg-start);
+            color: var(--coral);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+        }
+
+        /* Parent Check-In Meters */
+        .meter-group {
+            margin-bottom: 12px;
+        }
+
+        .meter-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .meter-bar {
+            height: 10px;
+            background: #E2E8F0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .meter-fill {
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .bg-red { background-color: #E53E3E; }
+        .bg-yellow { background-color: #DD6B20; }
+        .bg-green { background-color: #38A169; }
+
+        /* Accordion / History */
+        .history-section {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .history-list {
+            display: none;
+            margin-top: 16px;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        .history-list.open {
+            display: flex;
+        }
+
+        .history-item {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--dark-slate);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            z-index: 200;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            background: #FFFFFF;
+            border-top: 1px solid var(--border-color);
+            padding: 20px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 20px 16px;
+            }
+        }
+
+        .dash-card[role="button"]{cursor:pointer}.dash-card[role="button"]:focus{outline:3px solid rgba(238,108,77,.35);outline-offset:2px}.icon-dot{display:inline-flex;width:1.25rem;justify-content:center;color:var(--coral);font-weight:800}.orientation-card{border-left:4px solid var(--coral)}.eyebrow{font-size:.72rem;letter-spacing:.12em;font-weight:800;color:var(--coral);margin-bottom:8px}.notice-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.notice-chip{padding:7px 10px;border-radius:999px;background:#f3f7fa;border:1px solid var(--border-color);font-size:.78rem;font-weight:700}.safety-mini{margin-top:14px;padding:12px 14px;border-radius:10px;background:#fff8f5;border:1px solid #f3d4c8;font-size:.82rem}.snapshot-card{min-height:80px}.snapshot-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}.snapshot-tile{padding:12px;border:1px solid var(--border-color);border-radius:12px;background:#fff}.snapshot-tile strong{display:block;font-size:.78rem;color:var(--text-muted);margin-bottom:5px}.snapshot-tile span{font-weight:700;font-size:.9rem}.reset-list{display:grid;gap:12px}.reset-day{display:flex;gap:14px;align-items:flex-start;padding:15px;border:1px solid var(--border-color);border-radius:12px}.reset-day .day{font-weight:800;color:var(--coral);min-width:52px}.reset-day.done{background:#f6fbfa}.history-tools{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0}.history-tools select{max-width:260px}.unified-item{padding:14px;border:1px solid var(--border-color);border-radius:12px;margin-bottom:10px;background:#fff}.unified-meta{font-size:.76rem;color:var(--text-muted);margin-bottom:5px}.sample-badge{display:inline-block;margin-left:8px;padding:2px 7px;border-radius:999px;background:#eef3f7;font-size:.7rem;font-weight:700}.plan-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.plan-card{border:1px solid var(--border-color);border-radius:12px;padding:14px}.plan-card h3{font-size:.9rem;margin-bottom:7px}.plan-card p{font-size:.88rem;line-height:1.55}.safety-block{padding:15px;border:1px solid var(--border-color);border-radius:12px;margin:12px 0}.safety-block h3{margin-bottom:7px}.script-box{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:12px;border:1px solid var(--border-color);border-radius:10px;margin:8px 0;background:#fff}.script-box span{font-weight:600;line-height:1.5}.btn-copy{flex:0 0 auto}.result-next{margin-top:18px;padding:16px;border-radius:12px;background:#f4f8fb;border:1px solid var(--border-color)}@media(max-width:900px){.snapshot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.plan-grid{grid-template-columns:1fr}}@media(max-width:520px){.snapshot-grid{grid-template-columns:1fr}.script-box{align-items:flex-start;flex-direction:column}.script-box .btn{width:100%}}@media print{.sidebar,.mobile-header,.sidebar-overlay,.btn-group,.history-section,.history-tools,.toast,footer,.nav-list{display:none!important}.main-content{margin:0!important;width:100%!important}.view-container{display:none!important}.view-container#view-plan{display:block!important}.card{box-shadow:none!important;border:0!important}.plan-card{break-inside:avoid}}
+    </style>
+</head>
+<body>
+ Bilah Atas Seluler 
+<div class="mobile-header">
+<div class="sidebar-brand" style="padding:0; border:none;">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>TeenConnection</span>
+</div>
+<button aria-label="Toggle Menu" class="mobile-toggle" id="mobileToggle">
+<span aria-hidden="true" class="icon-dot">•</span>
+</button>
+</div>
+ Lapisan Sidebar Seluler 
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-container">
+ Sidebar Tetap 
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-brand">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>TeenConnection</span>
+</div>
+<ul class="nav-list">
+<li class="nav-item">
+<button class="nav-btn active" data-view="dashboard">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>Dasbor</span>
+</button>
+</li>
+<li class="nav-item">
+<button class="nav-btn" data-view="tool1">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>Dekoder Jarak</span>
+</button>
+</li>
+<li class="nav-item">
+<button class="nav-btn" data-view="tool2">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>Skrip Masuk Kembali</span>
+</button>
+</li>
+<li class="nav-item">
+<button class="nav-btn" data-view="tool3">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>Batasan vs Kebebasan</span>
+</button>
+</li>
+<li class="nav-item">
+<button class="nav-btn" data-view="tool4">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>Aturan Mobil</span>
+</button>
+</li>
+<li class="nav-item">
+<button class="nav-btn" data-view="tool5">
+<span aria-hidden="true" class="icon-dot">•</span>
+<span>Pemeriksaan Orang Tua</span>
+</button>
+</li>
+<li class="nav-item"><button class="nav-btn" data-view="reset7"><span aria-hidden="true" class="icon-dot">•</span><span>Reset Teen Connection 7 Hari</span></button></li>
+<li class="nav-item"><button class="nav-btn" data-view="plan"><span aria-hidden="true" class="icon-dot">•</span><span>Rencana Teen Connection Saya</span></button></li>
+<li class="nav-item"><button class="nav-btn" data-view="history"><span aria-hidden="true" class="icon-dot">•</span><span>Riwayat Saya</span></button></li>
+<li class="nav-item"><button class="nav-btn" data-view="safety"><span aria-hidden="true" class="icon-dot">•</span><span>Keamanan / Privasi</span></button></li>
+</ul>
+</nav>
+ Area Konten Utama 
+<main class="main-content">
+ TAMPILAN: DASBOR 
+<div class="view-container active" id="view-dashboard">
+<div class="card hero-card">
+<h1>Teen Connection</h1>
+<p class="subtitle" style="margin-bottom:0;">Mereka membutuhkan ruang. Anda membutuhkan koneksi. Temukan keseimbangannya.</p>
+</div>
+<div class="card orientation-card">
+<div class="eyebrow">MULAI DI SINI</div>
+<h2>Ruang dan koneksi dapat berjalan berdampingan.</h2>
+<p>Mulailah dari gesekan yang sedang Anda lihat sekarang. Anggap setiap hasil sebagai bahan percakapan—bukan putusan. Anak remaja Anda boleh menolak percakapan kecuali keselamatan langsung membutuhkan intervensi.</p>
+<div class="notice-row"><span class="notice-chip">Amati</span><span class="notice-chip">Kurangi tekanan</span><span class="notice-chip">Perjelas keselamatan</span><span class="notice-chip">Atur diri Anda</span></div>
+<div class="safety-mini">Jika ada bahaya langsung, niat menyakiti diri, kekerasan, anak remaja hilang, atau masalah keselamatan mendesak lainnya, gunakan dukungan darurat atau profesional yang sesuai, bukan mengandalkan perangkat ini.</div>
+</div>
+<div class="card snapshot-card" id="dashboard-snapshot"></div>
+<div class="dashboard-grid">
+<div class="card dash-card">
+<div class="dash-icon"><span aria-hidden="true" class="icon-dot">•</span></div>
+<h3>Dekoder Jarak</h3>
+<p style="font-size: 0.85rem; color: var(--text-muted);">Bedakan peningkatan kemandirian dari pola yang mungkin memerlukan perhatian lebih.</p>
+</div>
+<div class="card dash-card">
+<div class="dash-icon"><span aria-hidden="true" class="icon-dot">•</span></div>
+<h3>Skrip Masuk Kembali</h3>
+<p style="font-size: 0.85rem; color: var(--text-muted);">Ubah pola interogasi menjadi percakapan yang tidak mengancam.</p>
+</div>
+<div class="card dash-card">
+<div class="dash-icon"><span aria-hidden="true" class="icon-dot">•</span></div>
+<h3>Batasan vs Kebebasan</h3>
+<p style="font-size: 0.85rem; color: var(--text-muted);">Pisahkan aturan keselamatan inti dari pilihan kemandirian yang dapat dinegosiasikan.</p>
+</div>
+<div class="card dash-card">
+<div class="dash-icon"><span aria-hidden="true" class="icon-dot">•</span></div>
+<h3>Aturan Mobil</h3>
+<p style="font-size: 0.85rem; color: var(--text-muted);">Manfaatkan suasana berdampingan yang minim tekanan untuk berdialog.</p>
+</div>
+<div class="card dash-card">
+<div class="dash-icon"><span aria-hidden="true" class="icon-dot">•</span></div>
+<h3>Pemeriksaan Orang Tua</h3>
+<p style="font-size: 0.85rem; color: var(--text-muted);">Nilai keadaan emosional Anda sendiri agar tidak terdorong oleh kecemasan atau perilaku mengontrol.</p>
+</div>
+</div>
+</div>
+ TAMPILAN: ALAT 1 - DEKODER JARAK 
+<div class="view-container" id="view-tool1">
+<div class="card">
+<h2>Dekoder Jarak</h2>
+<p class="subtitle">Analisis apakah ruang yang diambil anak remaja merupakan perkembangan kemandirian yang wajar atau tanda adanya kesulitan.</p>
+<form id="form-tool1">
+<div class="form-group">
+<label for="t1-age">Usia Anak Remaja</label>
+<select id="t1-age" required="">
+<option value="13">13</option>
+<option value="14">14</option>
+<option selected="" value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+</select>
+</div>
+<div class="form-group">
+<label for="t1-onset">Kapan jarak mulai terasa</label>
+<select id="t1-onset" required="">
+<option value="Gradual over months">Bertahap selama beberapa bulan</option>
+<option value="Sudden">Mendadak</option>
+<option value="After a specific event">Setelah peristiwa tertentu</option>
+<option value="Since starting high school">Sejak mulai SMA</option>
+<option value="Always been somewhat distant">Selalu agak menjaga jarak</option>
+</select>
+</div>
+<div class="form-group">
+<label>Perubahan yang diamati</label>
+<div class="checkbox-grid">
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Less talking"/> Lebih sedikit berbicara</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Door always closed"/> Pintu selalu tertutup</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Avoids family meals"/> Menghindari makan bersama keluarga</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="New friend group"/> Kelompok teman baru</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Grades dropped"/> Nilai menurun</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Sleep changes"/> Perubahan tidur</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Phone secrecy"/> Kerahasiaan ponsel</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="Mood swings"/> Perubahan suasana hati</label>
+<label class="checkbox-label"><input name="t1-changes" type="checkbox" value="No change in mood, just less present"/> Tidak ada perubahan suasana hati, hanya lebih tidak hadir secara emosional</label>
+</div>
+</div>
+<div class="form-group">
+<label for="t1-engage">Hal-hal yang masih mereka lakukan (hobi, olahraga, berkirim pesan dengan teman, camilan larut malam):</label>
+<textarea id="t1-engage" placeholder="e.g., Playing soccer, gaming with friends online, coming down for late night snacks..."></textarea>
+</div>
+<div class="form-group">
+<label for="t1-fear">Kekhawatiran terbesar Anda:</label>
+<select id="t1-fear" required="">
+<option value="Depression">Depresi</option>
+<option value="Drugs">Narkoba atau penggunaan zat</option>
+<option value="Bad influence">Pengaruh buruk / bergaul dengan kelompok yang salah</option>
+<option value="They hate me">Mereka tidak menyukai atau menyimpan rasa kesal kepada saya</option>
+<option value="Normal but I miss them">Pemisahan yang wajar, tetapi saya merindukan mereka</option>
+<option value="Something happened they won't tell me">Sesuatu terjadi tetapi mereka tidak mau menceritakannya</option>
+</select>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" type="submit"><span aria-hidden="true" class="icon-dot">•</span> Analisis Pola</button>
+<button class="btn btn-secondary" type="button">Muat Skenario Contoh</button>
+<button class="btn btn-secondary js-start-over" data-tool="tool1" type="button">Mulai Lagi</button><button class="btn btn-secondary js-clear-history" data-tool="tool1" type="button">Hapus Riwayat Tersimpan</button></div>
+</form>
+<div class="results-container" id="results-tool1">
+<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
+<h2>Analisis Dekoder</h2>
+<div class="output-section">
+<div class="output-title">Yang Wajar vs. Yang Perlu Diperhatikan</div>
+<div class="output-content" id="t1-out-normal"></div>
+</div>
+<div class="output-section accent">
+<div class="output-title">Jenis Pola</div>
+<div class="output-content" id="t1-out-pattern"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Yang Masih Berjalan Baik</div>
+<div class="output-content" id="t1-out-working"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Daftar Pengamatan</div>
+<div class="output-content" id="t1-out-watch"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Pemantik Percakapan</div>
+<div class="output-content" id="t1-out-prompt"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Saran Dukungan Profesional</div>
+<div class="output-content" id="t1-out-pro"></div>
+</div>
+</div>
+ Bagian Riwayat 
+<div class="history-section">
+<div class="history-header">
+<span style="font-weight: 600; font-size: 0.9rem;"><span aria-hidden="true" class="icon-dot">•</span> Analisis Tersimpan</span>
+<i class="fa-solid fa-chevron-down" id="hist-icon-tool1"></i>
+</div>
+<div class="history-list" id="hist-list-tool1"></div>
+</div>
+</div>
+</div>
+ TAMPILAN: ALAT 2 - SKRIP MASUK KEMBALI 
+<div class="view-container" id="view-tool2">
+<div class="card">
+<h2>Pembuat Skrip Masuk Kembali</h2>
+<p class="subtitle">Susun pembuka yang tidak mengusik, mengurangi sikap defensif, dan mengundang koneksi yang tulus.</p>
+<form id="form-tool2">
+<div class="form-group">
+<label for="t2-opening">Kalimat pembuka Anda biasanya:</label>
+<textarea id="t2-opening" placeholder="e.g., How was your day? What did you do today?"></textarea>
+</div>
+<div class="form-group">
+<label for="t2-response">Respons mereka biasanya:</label>
+<select id="t2-response" required="">
+<option value="One word">Satu kata ("Baik", "Bagus", "Tidak ada apa-apa")</option>
+<option value="Eye roll">Memutar mata / Menghela napas</option>
+<option value="Leave room">Pergi / Meninggalkan ruangan</option>
+<option value="Defensive">Defensif ("Mengapa Anda bertanya?")</option>
+<option value="Honest but brief">Jujur tetapi sangat singkat</option>
+<option value="Accusatory">Menuduh ("Anda selalu mengomel kepada saya")</option>
+</select>
+</div>
+<div class="form-group">
+<label for="t2-want-know">Apa yang sebenarnya ingin Anda ketahui:</label>
+<textarea id="t2-want-know" placeholder="e.g., Are you feeling stressed about school? Is anyone picking on you?"></textarea>
+</div>
+<div class="form-group">
+<label for="t2-think-want">Apa yang menurut Anda MEREKA KIRA Anda inginkan:</label>
+<textarea id="t2-think-want" placeholder="e.g., They think I'm auditing their performance or trying to control them."></textarea>
+</div>
+<div class="form-group">
+<label for="t2-best-conv">Percakapan terbaik belakangan ini (opsional):</label>
+<textarea id="t2-best-conv" placeholder="e.g., Talking about a movie in the car last Friday."></textarea>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" type="submit"><span aria-hidden="true" class="icon-dot">•</span> Buat Skrip</button>
+<button class="btn btn-secondary" type="button">Muat Skenario Contoh</button>
+<button class="btn btn-secondary js-start-over" data-tool="tool2" type="button">Mulai Lagi</button><button class="btn btn-secondary js-clear-history" data-tool="tool2" type="button">Hapus Riwayat Tersimpan</button></div>
+</form>
+<div class="results-container" id="results-tool2">
+<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
+<h2>Strategi Masuk Kembali</h2>
+<div class="output-section">
+<div class="output-title">Pemeriksaan Interogasi</div>
+<div class="output-content" id="t2-out-check"></div>
+</div>
+<div class="output-section accent">
+<div class="output-title">Skrip Masuk Kembali</div>
+<div id="t2-out-scripts"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Aturan Berdampingan</div>
+<div class="output-content" id="t2-out-rule"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Prinsip Mendengarkan</div>
+<div class="output-content" id="t2-out-mandate"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Strategi Tindak Lanjut</div>
+<div class="output-content" id="t2-out-followup"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Sinyal Memberi Ruang</div>
+<div class="output-content" id="t2-out-backoff"></div>
+</div>
+</div>
+ Bagian Riwayat 
+<div class="history-section">
+<div class="history-header">
+<span style="font-weight: 600; font-size: 0.9rem;"><span aria-hidden="true" class="icon-dot">•</span> Skrip Tersimpan</span>
+<i class="fa-solid fa-chevron-down" id="hist-icon-tool2"></i>
+</div>
+<div class="history-list" id="hist-list-tool2"></div>
+</div>
+</div>
+</div>
+ TAMPILAN: ALAT 3 - BATASAN VS KEBEBASAN 
+<div class="view-container" id="view-tool3">
+<div class="card">
+<h2>Pemetaan Batasan vs Kebebasan</h2>
+<p class="subtitle">Perjelas batas keselamatan yang tidak dapat dinegosiasikan dibanding area di mana pemberian ruang membangun kepercayaan jangka panjang.</p>
+<form id="form-tool3">
+<div class="form-group">
+<label>Area konflik saat ini:</label>
+<div class="checkbox-grid">
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Curfew"/> Jam malam</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Phone use"/> Penggunaan ponsel</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Grades"/> Nilai</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Chores"/> Pekerjaan rumah</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Friends"/> Teman</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Dating"/> Pacaran</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Appearance"/> Penampilan / Pakaian</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Language"/> Bahasa / Nada bicara</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Privacy"/> Privasi kamar tidur</label>
+<label class="checkbox-label"><input name="t3-conflict" type="checkbox" value="Money"/> Uang / Pengeluaran</label>
+</div>
+</div>
+<div class="form-group">
+<label for="t3-nonneg">Hal inti yang tidak dapat dinegosiasikan (keselamatan/nilai moral):</label>
+<textarea id="t3-nonneg" placeholder="e.g., Location sharing when out late, no drinking and driving, maintaining C average..."></textarea>
+</div>
+<div class="form-group">
+<label for="t3-loosened">Hal yang sudah Anda longgarkan:</label>
+<textarea id="t3-loosened" placeholder="e.g., Bedtime on weekends, clothing choices, room cleanliness..."></textarea>
+</div>
+<div class="form-group">
+<label for="t3-wantfree">Hal yang mereka inginkan lebih banyak kebebasan:</label>
+<textarea id="t3-wantfree" placeholder="e.g., Staying out until midnight with friends, fewer phone checks..."></textarea>
+</div>
+<div class="form-group">
+<label for="t3-fear">Kekhawatiran Anda jika mengatakan "Ya":</label>
+<textarea id="t3-fear" placeholder="e.g., They will get into dangerous situations or make bad choices without supervision."></textarea>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" type="submit"><span aria-hidden="true" class="icon-dot">•</span> Petakan Batasan</button>
+<button class="btn btn-secondary" type="button">Muat Skenario Contoh</button>
+<button class="btn btn-secondary js-start-over" data-tool="tool3" type="button">Mulai Lagi</button><button class="btn btn-secondary js-clear-history" data-tool="tool3" type="button">Hapus Riwayat Tersimpan</button></div>
+</form>
+<div class="results-container" id="results-tool3">
+<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
+<h2>Analisis Batasan</h2>
+<div class="output-section">
+<div class="output-title">Peta Batasan</div>
+<div class="output-content" id="t3-out-map"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Daftar yang Dapat Dinegosiasikan</div>
+<div class="output-content" id="t3-out-negotiable"></div>
+</div>
+<div class="output-section accent">
+<div class="output-title">Daftar yang Tidak Dapat Dinegosiasikan</div>
+<div class="output-content" id="t3-out-nonnegotiable"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Rencana Kebebasan Bertahap</div>
+<div class="output-content" id="t3-out-graduated"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Setoran Kepercayaan</div>
+<div class="output-content" id="t3-out-deposit"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Kejelasan Konsekuensi</div>
+<div class="output-content" id="t3-out-consequence"></div>
+</div>
+</div>
+ Bagian Riwayat 
+<div class="history-section">
+<div class="history-header">
+<span style="font-weight: 600; font-size: 0.9rem;"><span aria-hidden="true" class="icon-dot">•</span> Peta Tersimpan</span>
+<i class="fa-solid fa-chevron-down" id="hist-icon-tool3"></i>
+</div>
+<div class="history-list" id="hist-list-tool3"></div>
+</div>
+</div>
+</div>
+ TAMPILAN: ALAT 4 - ATURAN MOBIL 
+<div class="view-container" id="view-tool4">
+<div class="card">
+<h2>Aturan Mobil &amp; Perencana Berdampingan</h2>
+<p class="subtitle">Rancang suasana tidak langsung dan minim tekanan agar remaja dapat berbagi secara alami.</p>
+<form id="form-tool4">
+<div class="form-group">
+<label for="t4-easiest">Di mana percakapan paling mudah terjadi:</label>
+<select id="t4-easiest" required="">
+<option value="Car">Berkendara dengan mobil</option>
+<option value="Walks">Berjalan di luar / alam</option>
+<option value="Meals">Makan bersama</option>
+<option value="Before bed">Larut malam / sebelum tidur</option>
+<option value="While doing activity">Saat memasak atau melakukan pekerjaan rumah bersama</option>
+<option value="Text">Berkirim pesan / mengirim meme</option>
+<option value="They don't">Saat ini tidak terjadi di mana pun</option>
+</select>
+</div>
+<div class="form-group">
+<label for="t4-shutdown">Di mana mereka paling sering menutup diri:</label>
+<select id="t4-shutdown" required="">
+<option value="Meals">Makan bersama secara formal</option>
+<option value="Car">Berkendara dengan mobil</option>
+<option value="Walks">Berjalan</option>
+<option value="Before bed">Sebelum tidur</option>
+<option value="Living room">Konfrontasi di ruang keluarga</option>
+<option value="Text">Pesan teks</option>
+</select>
+</div>
+<div class="form-group">
+<label for="t4-interests">Minat &amp; hobi anak remaja Anda:</label>
+<textarea id="t4-interests" placeholder="e.g., Hip hop music, video games, thrifting, basketball..."></textarea>
+</div>
+<div class="form-group">
+<label for="t4-voluntary">Topik yang mereka bicarakan secara sukarela:</label>
+<textarea id="t4-voluntary" placeholder="e.g., Funny videos, clothes they want, friend drama, sports stats..."></textarea>
+</div>
+<div class="form-group">
+<label for="t4-offlimit">Topik yang langsung membuat mereka menutup diri:</label>
+<textarea id="t4-offlimit" placeholder="e.g., College applications, bad grades, messy room, family events..."></textarea>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" type="submit"><span aria-hidden="true" class="icon-dot">•</span> Bangun Rencana Keterlibatan</button>
+<button class="btn btn-secondary" type="button">Muat Skenario Contoh</button>
+<button class="btn btn-secondary js-start-over" data-tool="tool4" type="button">Mulai Lagi</button><button class="btn btn-secondary js-clear-history" data-tool="tool4" type="button">Hapus Riwayat Tersimpan</button></div>
+</form>
+<div class="results-container" id="results-tool4">
+<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
+<h2>Rencana Lingkungan &amp; Komunikasi</h2>
+<div class="output-section">
+<div class="output-title">Mekanisme Zona Aman</div>
+<div class="output-content" id="t4-out-zone"></div>
+</div>
+<div class="output-section accent">
+<div class="output-title">Skrip Berkendara / Berdampingan</div>
+<div id="t4-out-scripts"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Protokol Berjalan / Aktivitas</div>
+<div class="output-content" id="t4-out-protocol"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Jembatan Aktivitas Bersama</div>
+<div class="output-content" id="t4-out-bridge"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Strategi Pesan Teks</div>
+<div class="output-content" id="t4-out-text"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Daftar yang Dihindari</div>
+<div class="output-content" id="t4-out-avoid"></div>
+</div>
+</div>
+ Bagian Riwayat 
+<div class="history-section">
+<div class="history-header">
+<span style="font-weight: 600; font-size: 0.9rem;"><span aria-hidden="true" class="icon-dot">•</span> Rencana Tersimpan</span>
+<i class="fa-solid fa-chevron-down" id="hist-icon-tool4"></i>
+</div>
+<div class="history-list" id="hist-list-tool4"></div>
+</div>
+</div>
+</div>
+ TAMPILAN: ALAT 5 - PEMERIKSAAN ORANG TUA 
+<div class="view-container" id="view-tool5">
+<div class="card">
+<h2>Pemeriksaan Diri Orang Tua</h2>
+<p class="subtitle">Nilai kapasitas emosional Anda dan pastikan kecemasan tidak mengendalikan pilihan pengasuhan Anda.</p>
+<form id="form-tool5">
+<div class="slider-group">
+<div class="slider-header">
+<span>1. Saya mempercayai anak remaja saya untuk membuat pilihan yang baik:</span>
+<span class="val" id="val-t5-s1">5</span>
+</div>
+<input id="t5-s1" max="10" min="1" type="range" value="5"/>
+</div>
+<div class="slider-group">
+<div class="slider-header">
+<span>2. Saya merasa terhubung dengan anak remaja saya:</span>
+<span class="val" id="val-t5-s2">5</span>
+</div>
+<input id="t5-s2" max="10" min="1" type="range" value="5"/>
+</div>
+<div class="slider-group">
+<div class="slider-header">
+<span>3. Kekhawatiran saya tentang anak remaja saya dapat saya kelola:</span>
+<span class="val" id="val-t5-s3">5</span>
+</div>
+<input id="t5-s3" max="10" min="1" type="range" value="5"/>
+</div>
+<div class="slider-group">
+<div class="slider-header">
+<span>4. Saya dapat membiarkan mereka gagal tanpa langsung menyelamatkan mereka:</span>
+<span class="val" id="val-t5-s4">5</span>
+</div>
+<input id="t5-s4" max="10" min="1" type="range" value="5"/>
+</div>
+<div class="slider-group">
+<div class="slider-header">
+<span>5. Saya memiliki kehidupan sendiri di luar peran sebagai orang tua:</span>
+<span class="val" id="val-t5-s5">5</span>
+</div>
+<input id="t5-s5" max="10" min="1" type="range" value="5"/>
+</div>
+<div class="slider-group">
+<div class="slider-header">
+<span>6. Saya merasa menjalankan peran sebagai orang tua dengan baik:</span>
+<span class="val" id="val-t5-s6">5</span>
+</div>
+<input id="t5-s6" max="10" min="1" type="range" value="5"/>
+</div>
+<div class="btn-group">
+<button class="btn btn-primary" type="submit"><span aria-hidden="true" class="icon-dot">•</span> Evaluasi Kondisi</button>
+<button class="btn btn-secondary" type="button">Muat Skenario Contoh</button>
+<button class="btn btn-secondary js-start-over" data-tool="tool5" type="button">Mulai Lagi</button><button class="btn btn-secondary js-clear-history" data-tool="tool5" type="button">Hapus Riwayat Tersimpan</button></div>
+</form>
+<div class="results-container" id="results-tool5">
+<hr style="margin: 24px 0; border: 0; border-top: 1px solid var(--border-color);"/>
+<h2>Dasbor Kesejahteraan &amp; Pola Pikir Orang Tua</h2>
+<div class="output-section">
+<div class="output-title">Meter Penilaian Diri Orang Tua</div>
+<div id="t5-meters"></div>
+</div>
+<div class="output-section accent">
+<div class="output-title">Sumber Kecemasan</div>
+<div class="output-content" id="t5-out-anxiety"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Pemeriksaan Pola Mengontrol Berlebihan</div>
+<div class="output-content" id="t5-out-helicopter"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Satu Tindakan untuk Melepas</div>
+<div class="output-content" id="t5-out-lettinggo"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Satu Tindakan Perawatan Diri</div>
+<div class="output-content" id="t5-out-selfcare"></div>
+</div>
+<div class="output-section">
+<div class="output-title">Satu Tindakan Koneksi</div>
+<div class="output-content" id="t5-out-connection"></div>
+</div>
+</div>
+ Bagian Riwayat 
+<div class="history-section">
+<div class="history-header">
+<span style="font-weight: 600; font-size: 0.9rem;"><span aria-hidden="true" class="icon-dot">•</span> Pemeriksaan Tersimpan</span>
+<i class="fa-solid fa-chevron-down" id="hist-icon-tool5"></i>
+</div>
+<div class="history-list" id="hist-list-tool5"></div>
+</div>
+</div>
+</div>
+<div class="view-container" id="view-reset7">
+<div class="card"><div class="eyebrow">PENGALAMAN TERPANDU</div><h2>Reset Teen Connection 7 Hari</h2><p class="subtitle">Satu langkah kecil per hari menggunakan lima alat yang sudah Anda miliki.</p><div class="reset-list" id="reset7-list"></div></div>
+</div>
+<div class="view-container" id="view-plan">
+<div class="card"><div class="eyebrow">SINTESIS ANDA</div><h2>Rencana Teen Connection Saya</h2><p class="subtitle">Rencana ringkas yang disusun dari alat yang telah diselesaikan. Tanpa diagnosis dan tanpa skor risiko.</p><div id="plan-content"></div><div class="btn-group"><button class="btn btn-primary" id="print-plan" type="button">Cetak Rencana</button><button class="btn btn-secondary" id="copy-plan" type="button">Salin Rencana</button></div></div>
+</div>
+<div class="view-container" id="view-history">
+<div class="card"><div class="eyebrow">RIWAYAT LOKAL</div><h2>Riwayat Saya</h2><p class="subtitle">Disimpan secara lokal di peramban Anda. Skenario contoh diberi tanda jelas dan bukan hasil pribadi.</p><div class="history-tools"><select id="history-filter"><option value="all">Semua alat</option><option value="tool1">Dekoder Jarak</option><option value="tool2">Skrip Masuk Kembali</option><option value="tool3">Batasan vs Kebebasan</option><option value="tool4">Aturan Mobil</option><option value="tool5">Pemeriksaan Orang Tua</option></select><button class="btn btn-secondary" id="clear-all-history">Hapus Semua Riwayat</button></div><div id="unified-history"></div></div>
+</div>
+<div class="view-container" id="view-safety">
+<div class="card"><div class="eyebrow">KEAMANAN &amp; PRIVASI</div><h2>Gunakan perangkat ini sebagai sarana refleksi dan perencanaan.</h2><div class="safety-block"><h3>Keselamatan segera</h3><p>Jika remaja menyatakan niat menyakiti diri, berada dalam bahaya langsung, hilang, mengalami kekerasan, atau terdapat masalah keselamatan mendesak lainnya, carilah bantuan darurat/profesional yang sesuai. Jangan menunggu hasil dari perangkat ini.</p></div><div class="safety-block"><h3>Privasi</h3><p>Versi ini menggunakan localStorage peramban berversi untuk menyimpan data utama dan riwayat. Versi ini tidak memerlukan akun, backend, atau analitik. Perilaku penyimpanan peramban dapat berbeda, jadi jangan menganggap ini sebagai jaminan bahwa informasi tidak pernah dapat keluar dari perangkat Anda.</p></div><div class="safety-block"><h3>Apa yang tidak dilakukan aplikasi ini</h3><p>Aplikasi ini tidak mendiagnosis depresi, kecemasan, penggunaan zat, trauma, masalah keterikatan, atau kualitas pengasuhan. Aplikasi ini tidak menentukan apa yang dirasakan remaja Anda dan tidak merekomendasikan pengawasan diam-diam, penghinaan, ancaman, atau kontrol yang menghukum.</p></div><button class="btn btn-secondary" id="clear-all-data">Hapus Semua Data Tersimpan</button></div>
+</div>
+</main>
+</div>
+ Komponen Notifikasi 
+<div class="toast" id="toast">Tersalin ke papan klip!</div>
+ Footer yang Wajib Ada di Setiap Layar 
+<footer>
+<div class="footer-content">
+            Hanya untuk tujuan hiburan dan refleksi. Bukan terapi atau nasihat profesional. Jika Anda khawatir tentang depresi, menyakiti diri, atau penyalahgunaan zat, hubungi profesional kesehatan mental atau dokter anak Anda.
+        </div>
+</footer>
+ Skrip Aplikasi 
+<script id="teen-connection-v2">
+(function(){
+'use strict';
+const PRODUCT_MODE='complete', STATE_KEY='teenconnection_v2_state', HISTORY_KEY='teenconnection_v2_history', PREF_KEY='teenconnection_v2_preferences';
+const TOOL_NAMES={tool1:'Distance Decoder',tool2:'Re-Entry Script',tool3:'Boundary vs Freedom',tool4:'The Car Rule',tool5:'Parent Check-In'};
+const DAYS=[['Hari 1','Dekode jarak','tool1'],['Hari 2','Masuk kembali tanpa interogasi','tool2'],['Hari 3','Pisahkan keselamatan dari preferensi','tool3'],['Hari 4','Ciptakan lingkungan koneksi yang minim tekanan','tool4'],['Hari 5','Periksa kondisi orang tua sendiri','tool5'],['Hari 6','Tinjau Sintesis Teen Connection','plan'],['Hari 7','Buat rencana koneksi 30 hari','plan']];
+let state=defaultState(); let history=[]; const sampleLoaded={tool1:false,tool2:false,tool3:false,tool4:false,tool5:false};
+function defaultState(){return{version:2,completedTools:[],toolResults:{},currentInputs:{},historyMeta:{},recommendations:[],currentPlan:{},preferences:{},lastUpdated:null};}
+function esc(v){return String(v??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));}
+function safeJSON(key,fallback){try{const v=localStorage.getItem(key);return v?JSON.parse(v):fallback}catch(e){return fallback}}
+function saveState(){try{state.lastUpdated=new Date().toISOString();localStorage.setItem(STATE_KEY,JSON.stringify(state))}catch(e){}}
+function loadState(){const s=safeJSON(STATE_KEY,null);if(s&&s.version===2){state=Object.assign(defaultState(),s);return}state=defaultState();}
+function loadHistory(){const h=safeJSON(HISTORY_KEY,[]);history=Array.isArray(h)?h.filter(x=>x&&typeof x==='object').slice(0,150):[]}
+function saveHistory(toolId,inputs,summary,isSample=false){history.unshift({id:crypto.randomUUID?crypto.randomUUID():String(Date.now()+Math.random()),timestamp:new Date().toISOString(),toolId,tool:TOOL_NAMES[toolId],summary:String(summary||''),inputs:JSON.parse(JSON.stringify(inputs||{})),sample:!!isSample});history=history.slice(0,150);try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){}renderUnifiedHistory();renderToolHistories();}
+
+const DISPLAY_MAP={
+'One word':'Satu kata','Eye roll/Sigh':'Memutar mata / Menghela napas','Leaves room':'Meninggalkan ruangan','Accusatory':'Menuduh','Not specified':'Tidak ditentukan','Car':'Berkendara dengan mobil','Meals':'Makan bersama','Gradual over months':'Bertahap selama beberapa bulan','Sudden':'Mendadak','Depression':'Depresi','Drugs':'Narkoba atau penggunaan zat','Curfew':'Jam malam','Phone use':'Penggunaan ponsel','Friends':'Teman','Sample':'Contoh','Completed':'Selesai','Day 1':'Hari 1','Day 2':'Hari 2','Day 3':'Hari 3','Day 4':'Hari 4','Day 5':'Hari 5','Day 6':'Hari 6','Day 7':'Hari 7',
+'Distance Decoder':'Dekoder Jarak','Re-Entry Script':'Skrip Masuk Kembali','Boundary vs Freedom':'Batasan vs Kebebasan','The Car Rule':'Aturan Mobil','Parent Check-In':'Pemeriksaan Orang Tua',
+'Broader concern signals':'Sinyal kekhawatiran yang lebih luas','Mostly private':'Sebagian besar bersifat privasi','Mixed':'Campuran','Defensive':'Defensif','Brief / Open':'Singkat / Terbuka','Major conflict / safety tension':'Konflik besar / ketegangan keselamatan','Mixed / needs graduated plan':'Campuran / membutuhkan rencana bertahap','Clearer boundary map':'Peta batasan lebih jelas','Identified':'Teridentifikasi','High worry':'Kekhawatiran tinggi','Low connection':'Koneksi rendah','Steady / mixed':'Stabil / campuran','Not completed':'Belum selesai','Not specified':'Tidak ditentukan','None selected':'Tidak ada yang dipilih','Not entered':'Belum diisi','None':'Tidak ada','One reviewable autonomy experiment around one low-stakes preference area':'Satu eksperimen kemandirian yang dapat ditinjau pada satu area preferensi berisiko rendah','Self-regulation before additional control.':'Pengaturan diri sebelum menambah kontrol.','One low-pressure connection action without sacrificing self-care.':'Satu tindakan koneksi minim tekanan tanpa mengorbankan perawatan diri.','One small action that supports connection or autonomy.':'Satu tindakan kecil yang mendukung koneksi atau kemandirian.'};
+function displayText(v){let s=String(v??'');if(DISPLAY_MAP[s])return DISPLAY_MAP[s];if(/^Age /.test(s))return s.replace(/^Age /,'Usia ');if(/^Response: /.test(s))return s.replace(/^Response: /,'Respons: ');if(/^Conflicts: /.test(s))return s.replace(/^Conflicts: /,'Konflik: ');if(/^Easiest: /.test(s))return s.replace(/^Easiest: /,'Yang paling mudah: ');if(/^Reflection index: /.test(s))return s.replace(/^Reflection index: /,'Indeks refleksi: ').replace(' (not a parenting-quality score)',' (bukan skor kualitas pengasuhan)');return s;}
+
+function clearToolHistory(toolId){if(!confirm('Hapus riwayat tersimpan untuk '+displayText(TOOL_NAMES[toolId])+'?'))return;history=history.filter(x=>x.toolId!==toolId);persistHistory();renderUnifiedHistory();renderToolHistories();showToast('Riwayat dihapus');}
+function clearAll(){if(!confirm('Hapus semua data Teen Connection yang tersimpan dari peramban ini? Tindakan ini tidak dapat dibatalkan.'))return;try{localStorage.removeItem(STATE_KEY);localStorage.removeItem(HISTORY_KEY);localStorage.removeItem(PREF_KEY)}catch(e){}state=defaultState();history=[];renderAll();showToast('Data tersimpan dihapus');}
+function persistHistory(){try{localStorage.setItem(HISTORY_KEY,JSON.stringify(history))}catch(e){}}
+function showToast(msg){const t=document.getElementById('toast');if(!t)return;t.textContent=msg;t.classList.add('show');clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.classList.remove('show'),2200)}
+function copyText(text){const fallback=()=>{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.focus();ta.select();try{document.execCommand('copy');showToast('Tersalin ke papan klip!')}catch(e){showToast('Penyalinan tidak tersedia — pilih teks secara manual.')}ta.remove()};if(navigator.clipboard&&window.isSecureContext){navigator.clipboard.writeText(text).then(()=>showToast('Tersalin ke papan klip!')).catch(fallback)}else fallback()}
+function switchView(view){document.querySelectorAll('.view-container').forEach(x=>x.classList.toggle('active',x.id==='view-'+view));document.querySelectorAll('.nav-btn').forEach(x=>x.classList.toggle('active',x.dataset.view===view));if(window.innerWidth<800)closeMobileSidebar();if(view==='history')renderUnifiedHistory();if(view==='plan')renderPlan();if(view==='reset7')renderReset();if(view==='dashboard')renderDashboard()}
+function openMobileSidebar(){document.getElementById('sidebar')?.classList.add('mobile-open');document.getElementById('sidebarOverlay')?.classList.add('active')}
+function closeMobileSidebar(){document.getElementById('sidebar')?.classList.remove('mobile-open');document.getElementById('sidebarOverlay')?.classList.remove('active')}
+function setOut(id,html){const el=document.getElementById(id);if(el)el.innerHTML=html}
+function markComplete(toolId,inputs,result,summary){state.completedTools=[...new Set([...state.completedTools,toolId])];state.currentInputs[toolId]=inputs;state.toolResults[toolId]=result;state.recommendations=buildRecommendations();state.currentPlan=buildPlan();saveState();saveHistory(toolId,inputs,summary,!!sampleLoaded[toolId]); sampleLoaded[toolId]=false;renderDashboard()}
+function nextStep(toolId){const rec=state.recommendations[0]||{priority:'Gunakan satu langkah kecil berikutnya yang minim tekanan.',action:'Pilih satu tindakan koneksi minggu ini dan beri ruang agar anak remaja Anda merespons dengan waktunya sendiri.'};return `<div class="result-next"><div class="eyebrow">LANGKAH BERIKUTNYA SUDAH TERSEDIA.</div><strong>SATU PRIORITAS ANDA</strong><p>${esc(rec.priority)}</p><strong>COBA MINGGU INI</strong><p>${esc(rec.action)}</p><strong>JELAJAHI ALAT LAIN</strong><p>${esc(recommendTool(toolId))}</p></div>`}
+function recommendTool(toolId){const map={tool1:'Skrip Masuk Kembali atau Aturan Mobil',tool2:'Aturan Mobil / Perencana Berdampingan',tool3:'Tinjauan Batasan vs Kebebasan atau Pemeriksaan Orang Tua',tool4:'Skrip Masuk Kembali',tool5:'Batasan vs Kebebasan atau ritual koneksi yang minim tekanan'};return map[toolId]||'Gunakan alat yang tersisa untuk menyusun rencana yang lebih lengkap.'}
+function buildRecommendations(){const r=[];const a=state.toolResults.tool1,b=state.toolResults.tool2,c=state.toolResults.tool3,d=state.toolResults.tool4,e=state.toolResults.tool5;if(a?.broaderConcern)r.push({priority:'Amati perubahan yang lebih luas tanpa mengasumsikan penyebab.',action:'Pantau perubahan bermakna pada sekolah, tidur, suasana hati, keterlibatan sosial, atau keselamatan dan cari dukungan profesional yang sesuai jika kekhawatiran signifikan.'});else if(a?.parentPrivacy)r.push({priority:'Lindungi privasi sambil menjaga pintu koneksi tetap terbuka.',action:'Coba pembuka yang minim tekanan atau aktivitas bersama alih-alih meningkatkan pemantauan.'});if(b?.defensive)r.push({priority:'Kurangi tekanan sebelum mengajukan pertanyaan yang lebih penting.',action:'Gunakan satu pengamatan, satu ajakan, lalu beri jeda untuk mendengarkan.'});if(c?.tension)r.push({priority:'Pisahkan kebutuhan keselamatan yang nyata dari preferensi.',action:'Pilih satu area kemandirian untuk eksperimen kecil yang dapat ditinjau dengan kondisi yang jelas.'});if(d?.environment)r.push({priority:'Ubah lingkungan yang cocok menjadi ritual koneksi yang berulang.',action:'Jadwalkan aktivitas bersama singkat tanpa kewajiban untuk membuka diri.'});if(e?.highWorryLowTrust)r.push({priority:'Atur kecemasan sebelum menambah kontrol.',action:'Pilih satu eksperimen kemandirian kecil dan satu tindakan mengatur diri minggu ini.'});if(e?.lowConnectionStrongSelfCare)r.push({priority:'Tambahkan koneksi tanpa mengorbankan kehidupan Anda sendiri.',action:'Ciptakan satu titik kontak minim tekanan dan pertahankan perawatan diri yang sudah berjalan.'});if(state.completedTools.length>=2&&!r.length)r.push({priority:'Gabungkan pembelajaran menjadi satu eksperimen kecil mingguan.',action:'Pilih satu pengamatan, satu skrip, dan satu ritual koneksi; tinjau kembali dalam 7 hari.'});return r.slice(0,3)}
+function buildPlan(){const r=state.toolResults;return{observation:r.tool1?.watch||'Gunakan Dekoder Jarak untuk memilih satu pengamatan yang perlu diperhatikan.',script:r.tool2?.script||r.tool4?.script||'Gunakan pembuka berupa pengamatan ringan + ajakan.',boundary:r.tool3?.autonomy||'Pilih satu area preferensi untuk eksperimen kemandirian yang dapat ditinjau.',environment:r.tool4?.environment||'Identifikasi suasana berdampingan yang terasa nyaman bagi Anda berdua.',parent:r.tool5?.focus||'Pilih satu tindakan pengaturan diri bagi orang tua.',connection:r.tool4?.ritual||'Buat satu ritual koneksi kecil yang dilakukan secara berkala.',review:'Tinjau rencana ini dalam 7 hari dan sesuaikan berdasarkan apa yang benar-benar terjadi.'}}
+function renderPlan(){const p=buildPlan();setOut('plan-content',`<div class="plan-grid"><div class="plan-card"><h3>Jarak / Pengamatan</h3><p>${esc(p.observation)}</p></div><div class="plan-card"><h3>Skrip Masuk Kembali Terbaik</h3><p>${esc(p.script)}</p></div><div class="plan-card"><h3>Jangkar Keselamatan / Area Kemandirian</h3><p>${esc(p.boundary)}</p></div><div class="plan-card"><h3>Lingkungan Berdampingan Terbaik</h3><p>${esc(p.environment)}</p></div><div class="plan-card"><h3>Fokus Pemeriksaan Orang Tua</h3><p>${esc(p.parent)}</p></div><div class="plan-card"><h3>Satu Tindakan Koneksi</h3><p>${esc(p.connection)}</p></div><div class="plan-card"><h3>Tanggal Tinjauan</h3><p>${esc(p.review)}</p></div></div>`)}
+function renderDashboard(){const r=state.toolResults;const vals=[['Pola Jarak',r.tool1?.label||'Belum selesai'],['Akses Percakapan',r.tool2?.label||'Belum selesai'],['Peta Kemandirian',r.tool3?.label||'Belum selesai'],['Lingkungan Koneksi',r.tool4?.label||'Belum selesai'],['Kondisi Orang Tua',r.tool5?.label||'Belum selesai']];setOut('dashboard-snapshot',`<div class="eyebrow">SINTESIS TEEN CONNECTION</div><div class="snapshot-grid">${vals.map(v=>`<div class="snapshot-tile"><strong>${esc(v[0])}</strong><span>${esc(displayText(v[1]))}</span></div>`).join('')}</div>`)}
+function renderReset(){const done=state.completedTools;setOut('reset7-list',DAYS.map((d,i)=>`<div class="reset-day ${done.includes(d[2])?'done':''}"><div class="day">${d[0]}</div><div><strong>${esc(d[1])}</strong><p>${done.includes(d[2])?'Selesai atau tersedia dari pekerjaan Anda saat ini.':'Gunakan '+esc(d[2]==='plan'?'sintesis/rencana gabungan Anda':displayText(TOOL_NAMES[d[2]]))+' sebagai fokus hari ini.'}</p>${d[2].startsWith('tool')?`<button class="btn btn-secondary reset-open" data-tool="${d[2]}">Buka Alat</button>`:''}</div></div>`).join(''));document.querySelectorAll('.reset-open').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.tool)))}
+function renderUnifiedHistory(){const filter=document.getElementById('history-filter')?.value||'all';const items=filter==='all'?history:history.filter(x=>x.toolId===filter);const box=document.getElementById('unified-history');if(!box)return;if(!items.length){box.innerHTML='<div class="unified-item">Belum ada item tersimpan.</div>';return}box.innerHTML=items.map(x=>`<div class="unified-item"><div class="unified-meta">${esc(new Date(x.timestamp).toLocaleString())} · ${esc(displayText(x.tool))} ${x.sample?'<span class="sample-badge">CONTOH</span>':''}</div><strong>${esc(displayText(x.summary))}</strong><div style="margin-top:10px"><button class="btn btn-secondary hist-del" data-id="${esc(x.id)}">Hapus</button></div></div>`).join('');document.querySelectorAll('.hist-del').forEach(b=>b.addEventListener('click',()=>{if(!confirm('Hapus item tersimpan ini?'))return;history=history.filter(x=>x.id!==b.dataset.id);persistHistory();renderUnifiedHistory();renderToolHistories()}))}
+function renderToolHistories(){for(let n=1;n<=5;n++){const id='tool'+n,box=document.getElementById('hist-list-'+id);if(!box)continue;const arr=history.filter(x=>x.toolId===id);box.innerHTML=arr.length?arr.slice(0,30).map(x=>`<div class="history-item"><span>${esc(new Date(x.timestamp).toLocaleString())} — ${esc(displayText(x.summary))} ${x.sample?'<span class="sample-badge">CONTOH</span>':''}</span></div>`).join(''):`<div class="history-item" style="color:var(--text-muted)">Belum ada item tersimpan.</div>`}}
+function attachCopy(container,text){const b=document.createElement('button');b.type='button';b.className='btn btn-copy';b.textContent='Salin';b.addEventListener('click',()=>copyText(text));container.appendChild(b)}
+function safeRun(fn){try{fn();const m=String(fn.name||'').match(/^analyze([1-5])$/);if(m){const box=document.getElementById('results-tool'+m[1]);if(box){box.classList.add('active');requestAnimationFrame(()=>box.scrollIntoView({behavior:'smooth',block:'start'}));}}}catch(e){console.error(e);showToast('Ada bagian yang tidak dapat dihitung dengan benar. Jawaban Anda tetap tersimpan di sini. Silakan coba lagi.')}}
+function sample1(){sampleLoaded.tool1=true;document.getElementById('t1-age').value='15';document.getElementById('t1-onset').value='Gradual over months';document.querySelectorAll('[name="t1-changes"]').forEach(x=>x.checked=['Less talking','Door always closed','Avoids family meals'].includes(x.value));document.getElementById('t1-engage').value='High school soccer team, online gaming with school friends, coming down for midnight snacks.';document.getElementById('t1-fear').value='Depression';showToast('Skenario contoh dimuat — menghasilkan hasil');safeRun(analyze1)}
+function sample2(){sampleLoaded.tool2=true;document.getElementById('t2-opening').value='How was school today? What did you do?';document.getElementById('t2-response').value='One word';document.getElementById('t2-want-know').value='I worry they are being bullied or left out at lunch because they seem stressed.';document.getElementById('t2-think-want').value='They think I am checking up on their grades or trying to control their schedule.';document.getElementById('t2-best-conv').value='Talking about funny TikTok videos in the car on the way to soccer.';showToast('Skenario contoh dimuat — menghasilkan hasil');safeRun(analyze2)}
+function sample3(){sampleLoaded.tool3=true;document.querySelectorAll('[name="t3-conflict"]').forEach(x=>x.checked=['Curfew','Phone use','Friends'].includes(x.value));document.getElementById('t3-nonneg').value='Location sharing when out late; no drinking or drugs; a clear check-in plan.';document.getElementById('t3-loosened').value='Weekend bedtime and room-cleanliness expectations.';document.getElementById('t3-wantfree').value='Out-of-town sleepovers with friends.';document.getElementById('t3-fear').value='They will end up at an unsafe party or make a choice I cannot undo.';showToast('Skenario contoh dimuat — menghasilkan hasil');safeRun(analyze3)}
+function sample4(){sampleLoaded.tool4=true;document.getElementById('t4-easiest').value='Car';document.getElementById('t4-shutdown').value='Meals';document.getElementById('t4-interests').value='Indie rock music, thrifting, playing guitar, sneaker collecting.';document.getElementById('t4-voluntary').value='Funny videos, new album drops, gossip about musicians.';document.getElementById('t4-offlimit').value='Math grades, college prep, messy bedroom.';showToast('Skenario contoh dimuat — menghasilkan hasil');safeRun(analyze4)}
+function sample5(){sampleLoaded.tool5=true;[3,3,2,4,2,4].forEach((v,i)=>{const el=document.getElementById('t5-s'+(i+1));el.value=v;document.getElementById('val-t5-s'+(i+1)).textContent=v});showToast('Skenario contoh dimuat — menghasilkan hasil');safeRun(analyze5)}
+function analyze1(){const age=document.getElementById('t1-age').value,onset=document.getElementById('t1-onset').value,changes=[...document.querySelectorAll('[name="t1-changes"]:checked')].map(x=>x.value),engage=document.getElementById('t1-engage').value,fear=document.getElementById('t1-fear').value;const broader=changes.some(x=>['Grades dropped','Sleep changes','Mood swings'].includes(x))||onset==='Sudden'||fear==='Depression'||fear==='Drugs';const parentPrivacy=!broader&&changes.some(x=>['Door always closed','Less talking','Avoids family meals'].includes(x))&&!!engage;const label=broader?'Sinyal kekhawatiran yang lebih luas':parentPrivacy?'Sebagian besar bersifat privasi':'Campuran';setOut('t1-out-normal',`Pada usia ${esc(age)}, meningkatnya privasi dan orientasi pada teman dapat menjadi bagian dari perkembangan remaja, tetapi setiap pola berbeda. Alat ini tidak dapat menentukan penyebab jarak tersebut.`);setOut('t1-out-pattern',`<strong>Konteks yang mungkin:</strong> ${broader?'Beberapa perubahan layak diamati lebih dekat di lebih dari satu area kehidupan.':'Polanya mungkin lebih sesuai dengan meningkatnya privasi atau kemandirian, terutama jika keterlibatan bermakna lainnya masih ada.'}`);setOut('t1-out-working',engage?`Mereka masih terlibat dalam: <em>“${esc(engage)}”</em>. Perlakukan hal-hal ini sebagai jangkar koneksi, bukan kesempatan untuk menginterogasi.`:'Belum ada jangkar keterlibatan yang jelas. Carilah titik kontak kecil yang tidak menuntut banyak hal.');setOut('t1-out-watch',`<ul><li>Perhatikan perubahan bermakna pada sekolah, tidur, suasana hati, nafsu makan, keterlibatan sosial, atau aktivitas yang sebelumnya disukai.</li><li>Perhatikan apakah menarik diri terutama terjadi terhadap orang tua atau meluas juga ke teman dan aktivitas.</li><li>Utamakan kekhawatiran keselamatan yang langsung, bukan mencoba menebak penyebab hanya dari privasi.</li></ul>`);setOut('t1-out-prompt',`<strong>Pemantik percakapan:</strong> “Saya melihat akhir-akhir ini kamu lebih banyak menyendiri. Kamu tidak harus membicarakannya sekarang. Saya ada di sini kalau kamu ingin ditemani atau ingin saya mendengarkan.”`);setOut('t1-out-pro',broader?`Jika perubahan cukup besar, menetap, atau memengaruhi fungsi sehari-hari, pertimbangkan berbicara dengan tenaga kesehatan atau profesional sekolah yang sesuai. Jika ada bahaya langsung atau niat menyakiti diri, cari bantuan segera dan jangan mengandalkan alat ini.`:`Mulailah dengan pengamatan dan koneksi minim tekanan. Jika kekhawatiran bermakna meningkat atau fungsi sehari-hari berubah secara signifikan, pertimbangkan dukungan profesional yang sesuai.`);setOut('results-tool1',document.getElementById('results-tool1').innerHTML+nextStep('tool1'));markComplete('tool1',{age,onset,changes,engage,fear},{label,broaderConcern:broader,parentPrivacy,watch:'Amati perubahan bermakna pada sekolah, tidur, suasana hati, keterlibatan sosial, dan keselamatan.',engagement:engage},`Usia ${age}; ${label}`)}
+function analyze2(){const opening=document.getElementById('t2-opening').value,response=document.getElementById('t2-response').value,want=document.getElementById('t2-want-know').value,think=document.getElementById('t2-think-want').value,best=document.getElementById('t2-best-conv').value;const defensive=['One word','Eye roll/Sigh','Leaves room','Defensive','Accusatory'].includes(response);setOut('t2-out-check',`Kalimat pembuka Anda mungkin terasa biasa bagi Anda, tetapi dapat terasa seperti permintaan laporan ketika remaja mengira mereka sedang dinilai atau dikontrol. Tujuannya bukan berhenti bertanya; tujuannya mengurangi tekanan.`);const scripts=[`“Saya melihat ${want||'akhir-akhir ini ada sesuatu yang terasa berbeda'}. Kamu tidak perlu menjelaskannya sekarang—saya hanya ingin kamu tahu bahwa saya siap mendengarkan.”`,`“Saya ingin tahu apa yang kamu pikirkan, dan saya akan berusaha tidak langsung memperbaikinya. Mau cerita, atau lebih baik kita tinggalkan dulu?”`,`“Kita tidak perlu melakukan percakapan besar. Kita bisa santai saja, dan kalau kamu ingin bicara, saya akan mendengarkan.”`];const box=document.getElementById('t2-out-scripts');box.innerHTML='';scripts.forEach(t=>{const d=document.createElement('div');d.className='script-box';const s=document.createElement('span');s.textContent=t;d.appendChild(s);attachCopy(d,t);box.appendChild(d)});setOut('t2-out-rule',`Coba aktivitas berdampingan atau kegiatan bersama biasa jika terasa nyaman bagi Anda berdua. Suasananya mungkin terasa kurang intens dibanding percakapan tatap muka formal, tetapi ini bukan jaminan bahwa remaja akan terbuka.`);setOut('t2-out-mandate',`Dengarkan makna sebelum mencari solusi. Ulangi inti yang Anda dengar, beri jeda, lalu tanyakan apakah mereka ingin ide atau hanya ditemani.`);setOut('t2-out-followup',`Jika jawabannya singkat, ucapkan terima kasih dan biarkan pintu tetap terbuka. Anda dapat kembali nanti daripada menumpuk pertanyaan.`);setOut('t2-out-backoff',`Jika mereka jelas meminta ruang dan tidak ada masalah keselamatan langsung: “Oke. Saya beri kamu ruang. Saya ada di sini kalau kamu ingin.”`);setOut('results-tool2',document.getElementById('results-tool2').innerHTML+nextStep('tool2'));markComplete('tool2',{opening,response,wantKnow:want,thinkWant:think,bestConversation:best},{label:defensive?'Defensif':'Singkat / Terbuka',defensive,script:scripts[0]},`Respons: ${response||'Tidak ditentukan'}`)}
+function analyze3(){const conflicts=[...document.querySelectorAll('[name="t3-conflict"]:checked')].map(x=>x.value),nonneg=document.getElementById('t3-nonneg').value,loosened=document.getElementById('t3-loosened').value,want=document.getElementById('t3-wantfree').value,fear=document.getElementById('t3-fear').value;const safetyWords=/safety|late|driv|drink|drug|violence|abuse|missing|danger/i.test(nonneg+' '+fear);const tension=!!want&&!!fear;setOut('t3-out-map',`Mulailah dengan memisahkan kebutuhan keselamatan langsung dari preferensi rumah tangga. Area konflik saat ini: <strong>${esc(conflicts.join(', ')||'Tidak ada yang dipilih')}</strong>. Batasan lebih mudah dijelaskan ketika alasan, harapan, dan kondisi peninjauannya jelas.`);setOut('t3-out-negotiable',`Area negosiasi yang mungkin mencakup preferensi seperti pakaian, gaya kamar, pilihan sosial sehari-hari, dan beberapa rincian jadwal—bergantung pada usia, kematangan, konteks, dan risiko nyata. Yang sudah dilonggarkan: <em>${esc(loosened||'Belum diisi')}</em>.`);setOut('t3-out-nonnegotiable',`Jangkar keselamatan yang perlu dibahas secara jelas: <em>${esc(nonneg||'Belum diisi')}</em>. Hindari mengubah preferensi menjadi klaim keselamatan hanya karena hal itu mengurangi kecemasan orang tua.`);setOut('t3-out-graduated',`Untuk <em>${esc(want||'kebebasan yang diminta')}</em>, coba “ya” kecil yang dapat ditinjau dengan kondisi jelas, metode check-in yang sebanding dengan risiko nyata, dan tanggal untuk menilai apakah rencana tersebut berhasil.`);setOut('t3-out-deposit',`Eksperimen kemandirian kecil dapat membangun kepercayaan ketika harapan jelas dan kedua pihak tahu apa yang dapat membuat rencana disesuaikan.`);setOut('t3-out-consequence',`Gunakan konsekuensi yang dapat diprediksi dan proporsional terhadap kesepakatan, bukan penghinaan, ancaman, atau hukuman luas. Jika masalah benar-benar terkait keselamatan, utamakan keselamatan daripada eksperimen.`);setOut('results-tool3',document.getElementById('results-tool3').innerHTML+nextStep('tool3'));markComplete('tool3',{conflicts,nonneg,loosened,wantfree:want,fear},{label:tension?(safetyWords?'Konflik besar / ketegangan keselamatan':'Campuran / membutuhkan rencana bertahap'):'Peta batasan lebih jelas',tension,safetyWords,autonomy:`Satu eksperimen kemandirian yang dapat ditinjau di sekitar ${want||'satu area preferensi berisiko rendah'}.`},`Konflik: ${conflicts.slice(0,3).join(', ')||'Tidak ada yang dipilih'}`)}
+function analyze4(){const easiest=document.getElementById('t4-easiest').value,shutdown=document.getElementById('t4-shutdown').value,interests=document.getElementById('t4-interests').value,voluntary=document.getElementById('t4-voluntary').value,offlimit=document.getElementById('t4-offlimit').value;const env=easiest||'aktivitas bersama';const s1=`“Mau memutar sesuatu yang kamu suka saat kita ${easiest==='Car'?'berkendara':'melakukan ini bersama'}? Saya hanya akan menemani.”`,s2=`“Akhir-akhir ini kamu sering menyebut ${interests||'minatmu'}. Apa yang kamu sukai dari itu?”`,s3=`“Tidak perlu percakapan besar. Saya senang menghabiskan waktu bersama kamu.”`;setOut('t4-out-zone',`Suasana yang cocok adalah <strong>${esc(env)}</strong>. Suasana ini dapat memberi fokus bersama yang alami dan jalan keluar yang lebih mudah dibanding percakapan formal. Hindari <strong>${esc(shutdown)}</strong> untuk topik yang lebih berat jika di situlah remaja Anda cenderung menutup diri.`);const box=document.getElementById('t4-out-scripts');box.innerHTML='';[s1,s2,s3].forEach(t=>{const d=document.createElement('div');d.className='script-box';const sp=document.createElement('span');sp.textContent=t;d.appendChild(sp);attachCopy(d,t);box.appendChild(d)});setOut('t4-out-protocol',`Biarkan aktivitas bersama menjadi hal utama. Diam diperbolehkan. Jangan gunakan suasana ini untuk mengabaikan permintaan privasi yang jelas.`);setOut('t4-out-bridge',`Jembatani melalui sesuatu yang konkret: musik, makanan, gim, urusan harian, olahraga, hewan peliharaan, memasak, proyek, atau minat lain yang dapat Anda berdua toleransi. Topik sukarela yang dimasukkan: <em>${esc(voluntary||'Belum diisi')}</em>.`);setOut('t4-out-text',`Pesan teks dapat menjadi bentuk koneksi ringan—meme, tautan, foto, atau “saya melihat ini dan teringat kamu”—tanpa mewajibkan balasan atau mengubah pesan menjadi pemantauan.`);setOut('t4-out-avoid',`Jika memungkinkan, pisahkan waktu koneksi dari topik administratif. Topik yang dimasukkan sebagai pemicu penutupan diri: <em>${esc(offlimit||'Belum diisi')}</em>.`);setOut('results-tool4',document.getElementById('results-tool4').innerHTML+nextStep('tool4'));markComplete('tool4',{easiest,shutdown,interests,voluntary,offlimit},{label:'Teridentifikasi',environment:env,ritual:`Ritual koneksi singkat ${env.toLowerCase()} yang dilakukan berkala tanpa kewajiban untuk membuka diri.`,script:s1},`Yang paling mudah: ${easiest||'Tidak ditentukan'}`)}
+function analyze5(){const vals=[1,2,3,4,5,6].map(i=>Number(document.getElementById('t5-s'+i).value));const labels=['Kepercayaan pada Pilihan Remaja','Rasa Koneksi','Pengelolaan Kekhawatiran','Kemampuan Membiarkan Mereka Gagal','Identitas Pribadi di Luar Pengasuhan','Kepercayaan Diri sebagai Orang Tua'];const avg=(vals.reduce((a,b)=>a+b,0)/6).toFixed(1);const box=document.getElementById('t5-meters');box.innerHTML=`<div class="safety-mini">Indeks refleksi: <strong>${avg}/10</strong>. Ini hanya untuk refleksi diri; bukan ukuran kualitas pengasuhan atau kesejahteraan remaja.</div>`+vals.map((v,i)=>`<div class="meter-group"><div class="meter-label"><span>${esc(labels[i])}</span><span>${v}/10</span></div><div class="meter-bar"><div class="meter-fill" style="width:${v*10}%"></div></div></div>`).join('');const highWorryLowTrust=vals[2]<=4&&vals[0]<=4;const lowConnectionStrongSelfCare=vals[1]<=4&&vals[4]>=7;setOut('t5-out-anxiety',vals[2]<=4?'Nilai kekhawatiran Anda menunjukkan area yang mungkin perlu direfleksikan sebelum mengambil tindakan yang lebih mengontrol. Coba berhenti sejenak, sebutkan ketakutannya, dan pilih satu respons yang proporsional.':'Nilai kekhawatiran Anda menunjukkan kapasitas yang lebih mudah dikelola saat ini. Tetap perhatikan kapan kecemasan meningkat agar tidak otomatis berubah menjadi kontrol.');setOut('t5-out-helicopter',(vals[0]<=4||vals[3]<=4)?'Kepercayaan yang lebih rendah atau kesulitan melepas kendali dapat menjadi sinyal yang berguna untuk refleksi. Ini bukan diagnosis “pola pengasuhan helikopter” dan bukan berarti Anda orang tua yang buruk.':'Jawaban Anda menunjukkan lebih banyak ruang untuk kemandirian saat ini. Lanjutkan meninjau batasan seiring perubahan konteks remaja Anda.');const letgo='Pilih satu area kecil dan berisiko rendah di mana remaja Anda dapat menangani tugas atau keputusan tanpa pesan pengingat.';const self=vals[4]<=4?'Lindungi satu blok waktu kecil untuk hobi, hubungan, istirahat, atau aktivitas yang tidak berkaitan dengan pengasuhan.':'Pertahankan satu bagian kehidupan Anda yang tetap ada secara mandiri di luar peran sebagai orang tua.';const conn='Tawarkan satu titik kontak minim tekanan—camilan, aktivitas bersama singkat, meme, berjalan, atau urusan harian—tanpa mewajibkan percakapan.';setOut('t5-out-lettinggo',letgo);setOut('t5-out-selfcare',self);setOut('t5-out-connection',conn);setOut('results-tool5',document.getElementById('results-tool5').innerHTML+nextStep('tool5'));markComplete('tool5',{scores:vals},{label:vals[2]<=3?'Kekhawatiran tinggi':vals[1]<=3?'Koneksi rendah':'Stabil / campuran',highWorryLowTrust,lowConnectionStrongSelfCare,focus:highWorryLowTrust?'Pengaturan diri sebelum menambah kontrol.':lowConnectionStrongSelfCare?'Satu tindakan koneksi minim tekanan tanpa mengorbankan perawatan diri.':'Satu tindakan kecil yang mendukung koneksi atau kemandirian.'},`Indeks refleksi: ${avg}/10 (bukan skor kualitas pengasuhan)`)}
+function resetTool(toolId){const form=document.getElementById('form-'+toolId);form?.reset();document.querySelectorAll('#form-'+toolId+' input[type=checkbox]').forEach(x=>x.checked=false);document.querySelectorAll('#form-'+toolId+' input[type=range]').forEach(x=>{x.value=5;const v=document.getElementById('val-'+x.id);if(v)v.textContent='5'});const result=document.getElementById('results-'+toolId);if(result)result.classList.remove('active');sampleLoaded[toolId]=false;showToast('Alat direset');}
+function renderAll(){renderDashboard();renderUnifiedHistory();renderToolHistories();renderPlan();renderReset()}
+// Bind navigation
+function bind(){document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>switchView(b.dataset.view)));document.querySelectorAll('.dash-card').forEach((b,i)=>b.setAttribute('role','button'));const cards=[...document.querySelectorAll('.dash-card')];cards.forEach((c,i)=>c.addEventListener('click',()=>switchView('tool'+(i+1))));document.getElementById('mobileToggle')?.addEventListener('click',()=>document.getElementById('sidebar')?.classList.contains('mobile-open')?closeMobileSidebar():openMobileSidebar());document.getElementById('sidebarOverlay')?.addEventListener('click',closeMobileSidebar);document.getElementById('form-tool1')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze1)});document.getElementById('form-tool2')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze2)});document.getElementById('form-tool3')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze3)});document.getElementById('form-tool4')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze4)});document.getElementById('form-tool5')?.addEventListener('submit',e=>{e.preventDefault();safeRun(analyze5)});document.querySelectorAll('input[type=range]').forEach(sl=>{const v=document.getElementById('val-'+sl.id);const sync=()=>{if(v)v.textContent=sl.value};sl.addEventListener('input',sync);sync()});const sampleFns={tool1:sample1,tool2:sample2,tool3:sample3,tool4:sample4,tool5:sample5};for(const [tool,fn] of Object.entries(sampleFns)){const form=document.getElementById('form-'+tool);form?.querySelectorAll('button[type=button]').forEach(b=>{if(b.textContent.toLowerCase().includes('sample'))b.addEventListener('click',fn)})}document.getElementById('history-filter')?.addEventListener('change',renderUnifiedHistory);document.getElementById('clear-all-history')?.addEventListener('click',()=>{if(!confirm('Clear all saved Teen Connection history?'))return;history=[];persistHistory();renderUnifiedHistory();renderToolHistories();showToast('Riwayat dihapus')});document.getElementById('clear-all-data')?.addEventListener('click',clearAll);document.getElementById('copy-plan')?.addEventListener('click',()=>{const p=buildPlan();copyText(Object.entries(p).map(([k,v])=>k+': '+v).join('\n\n'))});document.getElementById('print-plan')?.addEventListener('click',()=>{switchView('plan');setTimeout(()=>window.print(),50)});document.querySelectorAll('.js-start-over').forEach(b=>b.addEventListener('click',()=>resetTool(b.dataset.tool)));document.querySelectorAll('.js-clear-history').forEach(b=>b.addEventListener('click',()=>clearToolHistory(b.dataset.tool)));document.querySelectorAll('.dash-card[role=button]').forEach(c=>{c.tabIndex=0;c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();c.click()}})});document.querySelectorAll('.history-header').forEach(h=>h.addEventListener('click',()=>{const list=h.nextElementSibling;if(!list)return;list.classList.toggle('open');h.setAttribute('aria-expanded',list.classList.contains('open'))}));}
+loadState();loadHistory();bind();renderAll();
+})();
+</script>
+</body>
+</html>

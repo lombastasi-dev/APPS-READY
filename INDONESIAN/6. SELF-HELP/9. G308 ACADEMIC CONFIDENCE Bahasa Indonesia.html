@@ -1,0 +1,1990 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACADEMIC CONFIDENCE™ — Sistem Operasi Anti-Komparasi & Efikasi Diri</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary-cyan: #06B6D4;
+            --primary-indigo: #3730A3;
+            --indigo-light: #4F46E5;
+            --bg-gradient-start: #ECFEFF;
+            --bg-gradient-end: #EEF2FF;
+            --sidebar-width: 260px;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --accent-green: #10B981;
+            --accent-amber: #F59E0B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* Layout Architecture */
+        #app-wrapper {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Styling */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 40;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid #F1F5F9;
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--primary-cyan);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary-indigo);
+            line-height: 1.2;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 1rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover, .nav-item:focus-visible {
+            background-color: #F8FAFC;
+            color: var(--primary-indigo);
+            outline: 2px solid var(--primary-cyan);
+        }
+
+        .nav-item.active {
+            background-color: #ECFEFF;
+            color: var(--primary-indigo);
+            border-left: 4px solid var(--primary-cyan);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background-color: #F1F5F9;
+            margin: 0.5rem 0;
+        }
+
+        /* Mobile Header */
+        #mobile-header {
+            display: none;
+            background: #FFFFFF;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--primary-indigo);
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Main Content Container */
+        #main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .container {
+            width: 100%;
+            max-width: 840px;
+        }
+
+        /* Reusable Card Styling */
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+            border: 1px solid #F1F5F9;
+        }
+
+        /* UI Utilities & Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-indigo);
+            color: white;
+        }
+
+        .btn-primary:hover, .btn-primary:focus-visible {
+            background-color: var(--indigo-light);
+            outline: 2px solid var(--primary-cyan);
+        }
+
+        .btn-secondary {
+            background-color: #F1F5F9;
+            color: var(--text-main);
+            border-color: #E2E8F0;
+        }
+
+        .btn-secondary:hover, .btn-secondary:focus-visible {
+            background-color: #E2E8F0;
+            outline: 2px solid var(--primary-cyan);
+        }
+
+        .btn-danger {
+            background-color: #FEF2F2;
+            color: #DC2626;
+            border-color: #FCA5A5;
+        }
+
+        .btn-danger:hover {
+            background-color: #FEE2E2;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #334155;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.625rem 0.875rem;
+            border-radius: 0.375rem;
+            border: 1px solid #CBD5E1;
+            font-size: 0.875rem;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s ease;
+            background-color: #FFFFFF;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-cyan);
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 0.5rem;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: normal;
+            cursor: pointer;
+            color: #475569;
+        }
+
+        .form-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .tool-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--primary-indigo);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Unified Results Architecture & Output Hierarchy */
+        .output-container {
+            margin-top: 1.5rem;
+            display: none;
+            border-top: 2px dashed #E2E8F0;
+            padding-top: 1.5rem;
+        }
+
+        .output-section-header {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-indigo);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .output-box {
+            background-color: #F8FAFC;
+            border-left: 4px solid var(--primary-cyan);
+            padding: 1.25rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+        }
+
+        .output-box.accent-indigo {
+            border-left-color: var(--primary-indigo);
+        }
+
+        .output-box.accent-green {
+            border-left-color: var(--accent-green);
+        }
+
+        .output-box h4 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary-indigo);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .output-box p, .output-box ul, .output-box ol {
+            font-size: 0.875rem;
+            color: #334155;
+            line-height: 1.6;
+        }
+
+        .output-box ul, .output-box ol {
+            padding-left: 1.25rem;
+        }
+
+        /* Dashboard Specifics */
+        .hero-banner {
+            background: linear-gradient(135deg, var(--primary-indigo), var(--indigo-light));
+            color: white;
+            border: none;
+        }
+
+        .hero-banner h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-banner p {
+            opacity: 0.95;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .dashboard-tool-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.25rem;
+            border: 1px solid #F1F5F9;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dashboard-tool-card:hover, .dashboard-tool-card:focus-visible {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            outline: 2px solid var(--primary-cyan);
+        }
+
+        .dashboard-tool-card i {
+            font-size: 1.5rem;
+            color: var(--primary-cyan);
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard-tool-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-indigo);
+            margin-bottom: 0.25rem;
+        }
+
+        .dashboard-tool-card p {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        .card-status {
+            margin-top: 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .card-status.completed {
+            color: var(--accent-green);
+        }
+
+        /* Coverage Widget */
+        .score-widget {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .score-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: conic-gradient(var(--primary-cyan) 0%, #E2E8F0 0%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .score-circle-inner {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: var(--primary-indigo);
+            font-size: 1.1rem;
+        }
+
+        /* Recommendation Engine Banner */
+        .rec-box {
+            background-color: #ECFEFF;
+            border: 1px solid #A5F3FC;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .rec-box i {
+            color: var(--primary-cyan);
+            font-size: 1.25rem;
+            margin-top: 0.1rem;
+        }
+
+        .rec-box p {
+            font-size: 0.85rem;
+            color: #164E63;
+            margin: 0;
+        }
+
+        /* Accordion / History */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 1.5rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-item {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .history-item-header {
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            background: #F1F5F9;
+            color: var(--text-main);
+        }
+
+        .history-item-header:hover {
+            background: #E2E8F0;
+        }
+
+        .history-item-body {
+            padding: 1rem;
+            font-size: 0.85rem;
+            display: none;
+            border-top: 1px solid #E2E8F0;
+            background: #FFFFFF;
+        }
+
+        /* Callout Banners */
+        .notice-banner {
+            background-color: #FFFBEB;
+            border-left: 4px solid var(--accent-amber);
+            padding: 0.875rem 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.8rem;
+            color: #92400E;
+            margin-bottom: 1.25rem;
+            line-height: 1.5;
+        }
+
+        /* Toast Notification */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--primary-indigo);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+            z-index: 100;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Safety Footer */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            border-top: 1px solid #E2E8F0;
+            background: rgba(255, 255, 255, 0.7);
+            width: 100%;
+            line-height: 1.5;
+        }
+
+        /* Printable Academic Confidence Plan Styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            #sidebar, #mobile-header, footer, .btn, .history-section, .nav-links, .btn-group, #toast {
+                display: none !important;
+            }
+            #main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+            }
+            .card {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+            .output-container {
+                display: block !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+        }
+
+        .print-only {
+            display: none;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+            #sidebar.open {
+                transform: translateX(0);
+            }
+            #mobile-header {
+                display: flex;
+            }
+            #main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 35;
+            }
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <header id="mobile-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-graduation-cap" style="color: var(--primary-cyan);"></i>
+            <span style="font-weight: 700; color: var(--primary-indigo);">Kepercayaan Akademik™</span>
+        </div>
+        <button class="hamburger-btn" id="hamburger-btn" aria-label="Buka menu navigasi">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+    <div id="app-wrapper">
+        <!-- Sidebar Navigation -->
+        <nav id="sidebar" aria-label="Navigasi Utama">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <h1>Kepercayaan<br>Akademik™</h1>
+            </div>
+            <ul class="nav-links">
+                <li>
+                    <button class="nav-item active" data-target="view-dashboard">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Dasbor</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-tool-1">
+                        <i class="fa-solid fa-scale-unbalanced"></i>
+                        <span>De-Eskalator Komparasi</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-tool-2">
+                        <i class="fa-solid fa-bullseye"></i>
+                        <span>Diagnostik Keterampilan</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-tool-3">
+                        <i class="fa-solid fa-chart-line"></i>
+                        <span>Bukti Pertumbuhan</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-tool-4">
+                        <i class="fa-solid fa-heart-pulse"></i>
+                        <span>Reset Kecemasan</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-tool-5">
+                        <i class="fa-solid fa-sliders"></i>
+                        <span>Penyusun Sistem Belajar</span>
+                    </button>
+                </li>
+                <li class="nav-divider"></li>
+                <li>
+                    <button class="nav-item" data-target="view-reset-sequence">
+                        <i class="fa-solid fa-calendar-check"></i>
+                        <span>Reset 7 Hari</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-plan">
+                        <i class="fa-solid fa-file-invoice"></i>
+                        <span>Rencana Akademik</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-history">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        <span>Riwayat Terpadu</span>
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item" data-target="view-privacy">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        <span>Privasi & Kontrol</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main id="main-content">
+            <div class="container">
+
+                <!-- DASHBOARD VIEW -->
+                <section id="view-dashboard" class="view-section">
+                    <div class="card hero-banner">
+                        <h2>Sistem Operasi Kepercayaan Akademik™</h2>
+                        <p>Kurangi dorongan untuk membandingkan diri, isolasi hambatan keterampilan nyata, dokumentasikan kemajuan nyata, atasi tekanan ujian, dan bangun sistem latihan berulang.</p>
+                    </div>
+
+                    <div class="notice-banner">
+                        <i class="fa-solid fa-circle-info"></i> <strong>Prinsip Utama:</strong> Perkuliah/pelajaran yang sulit atau momen perbandingan adalah titik data situasional—bukan keputusan akhir atas kecerdasan atau nilai akademik Anda.
+                    </div>
+
+                    <!-- Coverage Widget -->
+                    <div class="card">
+                        <h3 style="font-size: 1rem; color: var(--primary-indigo); margin-bottom: 1rem;">Pelacak Cakupan Alat Kerja</h3>
+                        <div class="score-widget">
+                            <div class="score-circle" id="coverage-circle" aria-label="Skor cakupan perangkat alat">
+                                <div class="score-circle-inner" id="coverage-text">0%</div>
+                            </div>
+                            <div>
+                                <p style="font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem;" id="coverage-label">0 dari 5 Alat Dieksplorasi</p>
+                                <p style="font-size: 0.8rem; color: var(--text-muted);" id="coverage-desc">Selesaikan latihan diagnostik di 5 alat utama untuk memetakan garis dasar akademik Anda.</p>
+                                <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem;" id="session-count-text">Total Sesi Tersimpan: 0</p>
+                            </div>
+                        </div>
+
+                        <!-- Deterministic Recommendation Box -->
+                        <div id="dashboard-rec-box" class="rec-box" style="display: none;">
+                            <i class="fa-solid fa-compass"></i>
+                            <div>
+                                <strong style="font-size: 0.85rem; color: var(--primary-indigo);">Langkah Selanjutnya yang Disarankan:</strong>
+                                <p id="dashboard-rec-text"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tools Grid -->
+                    <div class="tools-grid">
+                        <div class="dashboard-tool-card" onclick="switchView('view-tool-1')" tabindex="0" role="button">
+                            <i class="fa-solid fa-scale-unbalanced"></i>
+                            <h3>De-Eskalator Komparasi</h3>
+                            <p>Pisahkan sorotan keberhasilan rekan dari garis dasar pribadi Anda.</p>
+                            <div class="card-status" id="status-tool1"><i class="fa-regular fa-circle"></i> Belum dimulai</div>
+                        </div>
+                        <div class="dashboard-tool-card" onclick="switchView('view-tool-2')" tabindex="0" role="button">
+                            <i class="fa-solid fa-bullseye"></i>
+                            <h3>Diagnostik Keterampilan Nyata</h3>
+                            <p>Isolasi hambatan tugas tertentu dari ketidakpercayaan diri pada mata pelajaran.</p>
+                            <div class="card-status" id="status-tool2"><i class="fa-regular fa-circle"></i> Belum dimulai</div>
+                        </div>
+                        <div class="dashboard-tool-card" onclick="switchView('view-tool-3')" tabindex="0" role="button">
+                            <i class="fa-solid fa-chart-line"></i>
+                            <h3>Pelacak Bukti Pertumbuhan</h3>
+                            <p>Audit pencapaian akademik tak terlihat dan lacak kemajuan objektif.</p>
+                            <div class="card-status" id="status-tool3"><i class="fa-regular fa-circle"></i> Belum dimulai</div>
+                        </div>
+                        <div class="dashboard-tool-card" onclick="switchView('view-tool-4')" tabindex="0" role="button">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                            <h3>Reset Kecemasan Pra-Ujian</h3>
+                            <p>Terapkan penenang pikiran seketika dan protokol 5 menit pertama ujian.</p>
+                            <div class="card-status" id="status-tool4"><i class="fa-regular fa-circle"></i> Belum dimulai</div>
+                        </div>
+                        <div class="dashboard-tool-card" onclick="switchView('view-tool-5')" tabindex="0" role="button">
+                            <i class="fa-solid fa-sliders"></i>
+                            <h3>Sistem Belajar Kustom</h3>
+                            <p>Sesuaikan metode mengingat aktif dengan titik hambatan belajar Anda.</p>
+                            <div class="card-status" id="status-tool5"><i class="fa-regular fa-circle"></i> Belum dimulai</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: COMPARISON DE-ESCALATOR -->
+                <section id="view-tool-1" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-scale-unbalanced"></i> De-Eskalator Komparasi</h2>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample(1)">
+                                    <i class="fa-solid fa-flask"></i> Muat Contoh
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="resetTool(1)">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Bedakan performa rekan yang terlihat dari variabel yang tidak terlihat dan kembalikan fokus pada perkembangan pribadi Anda.</p>
+                        
+                        <form id="form-tool-1" onsubmit="processTool1(event)">
+                            <div class="form-group">
+                                <label for="t1-subject">Mata pelajaran/kuliah yang memicu rasa tidak percaya diri:</label>
+                                <input type="text" id="t1-subject" class="form-control" placeholder="Contoh: Fisika Dasar I, Makroekonomi" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1-peer-behavior">Perilaku teman yang memicu perbandingan diri:</label>
+                                <textarea id="t1-peer-behavior" class="form-control" placeholder="Contoh: Mengaku tidak belajar tapi dapat nilai 95, menyelesaikan ujian dalam 20 menit" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1-effort">Tingkat usaha Anda saat ini:</label>
+                                <select id="t1-effort" class="form-control" required>
+                                    <option value="Tinggi">Tinggi (Belajar konsisten berjam-jam)</option>
+                                    <option value="Sedang">Sedang (Tugas rutin + sedikit persiapan)</option>
+                                    <option value="Rendah">Rendah (Menunda-nunda karena cemas)</option>
+                                    <option value="Tidak Konsisten">Tidak Konsisten (Belajar intensif mendadak sebelum ujian)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Variabel tak terlihat yang mungkin bias dalam perbandingan (Pilih yang relevan):</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="t1-unseen" value="Bimbingan belajar atau bantuan luar tak terlihat"> Les privat / bantuan luar tak terlihat</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t1-unseen" value="Pengetahuan dasar atau pengalaman kelas sebelumnya"> Pengalaman / kelas sebelumnya</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t1-unseen" value="Mengorbankan waktu tidur atau kesehatan"> Mengorbankan kesehatan / waktu tidur</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t1-unseen" value="Teknik belajar kilat berfokus tinggi"> Teknik belajar sistem sks hiper-fokus</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-gears"></i> De-Eskalasi Komparasi</button>
+                        </form>
+
+                        <div id="output-tool-1" class="output-container">
+                            <div class="output-section-header">
+                                <span><i class="fa-solid fa-sliders"></i> Hasil Analisis</span>
+                                <button class="btn btn-secondary btn-sm" onclick="copyToolOutput('output-tool-1')"><i class="fa-solid fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-box">
+                                <h4><i class="fa-solid fa-eye-slash"></i> Ringkasan Perbandingan Anda</h4>
+                                <p id="t1-out-audit"></p>
+                            </div>
+                            <div class="output-box accent-indigo">
+                                <h4><i class="fa-solid fa-compass"></i> Bingkai Ulang Garis Dasar Pribadi</h4>
+                                <p id="t1-out-reframe"></p>
+                            </div>
+                            <div class="output-box accent-green">
+                                <h4><i class="fa-solid fa-shield-halved"></i> Eksperimen Batasan Sosial</h4>
+                                <ul id="t1-out-rules"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size: 0.95rem; color: var(--primary-indigo);">Sesi Alat Ini</h3>
+                            <button class="btn btn-danger btn-sm" onclick="clearHistory('tool1')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="history-tool1"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: REAL SKILL DIAGNOSTIC -->
+                <section id="view-tool-2" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-bullseye"></i> Diagnostik Keterampilan Nyata</h2>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample(2)">
+                                    <i class="fa-solid fa-flask"></i> Muat Contoh
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="resetTool(2)">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Isolasi keterampilan spesifik yang menjadi hambatan alih-alih menganggap seluruh mata pelajaran sebagai kegagalan.</p>
+
+                        <form id="form-tool-2" onsubmit="processTool2(event)">
+                            <div class="form-group">
+                                <label for="t2-subject">Mata pelajaran/kuliah target:</label>
+                                <input type="text" id="t2-subject" class="form-control" placeholder="Contoh: Sastra Inggris, Kimia Organik" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2-task">Tugas spesifik yang menjadi hambatan:</label>
+                                <select id="t2-task" class="form-control" required>
+                                    <option value="Ujian pilihan ganda">Ujian pilihan ganda</option>
+                                    <option value="Penulisan esai">Penulisan esai / karya ilmiah</option>
+                                    <option value="Pemecahan masalah">Pemecahan masalah / Perhitungan berlapis</option>
+                                    <option value="Hafalan istilah">Hafalan / Istilah teknis</option>
+                                    <option value="Presentasi publik">Presentasi publik / Ujian lisan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2-mastered">Topik atau keterampilan masa lalu dalam pelajaran ini yang SUDAH Anda kuasai:</label>
+                                <textarea id="t2-mastered" class="form-control" placeholder="Contoh: Menganalisis tema, diskusi kelompok, definisi dasar" required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-stethoscope"></i> Diagnosis Sub-Keterampilan</button>
+                        </form>
+
+                        <div id="output-tool-2" class="output-container">
+                            <div class="output-section-header">
+                                <span><i class="fa-solid fa-sliders"></i> Hasil Diagnostik</span>
+                                <button class="btn btn-secondary btn-sm" onclick="copyToolOutput('output-tool-2')"><i class="fa-solid fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-box">
+                                <h4><i class="fa-solid fa-filter"></i> Analisis Pemisahan Keterampilan</h4>
+                                <p id="t2-out-breakdown"></p>
+                            </div>
+                            <div class="output-box accent-indigo">
+                                <h4><i class="fa-solid fa-wrench"></i> Rencana Perbaikan Terarah</h4>
+                                <ul id="t2-out-repair"></ul>
+                            </div>
+                            <div class="output-box accent-green">
+                                <h4><i class="fa-solid fa-circle-check"></i> Bukti Kompetensi Terkonfirmasi</h4>
+                                <p id="t2-out-evidence"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size: 0.95rem; color: var(--primary-indigo);">Sesi Alat Ini</h3>
+                            <button class="btn btn-danger btn-sm" onclick="clearHistory('tool2')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="history-tool2"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: GROWTH EVIDENCE TRACKER -->
+                <section id="view-tool-3" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-chart-line"></i> Pelacak Bukti Pertumbuhan</h2>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample(3)">
+                                    <i class="fa-solid fa-flask"></i> Muat Contoh
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="resetTool(3)">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Audit kemajuan yang terlihat maupun tidak terlihat dalam kurun waktu tertentu untuk mendokumentasikan perkembangan pribadi Anda.</p>
+
+                        <form id="form-tool-3" onsubmit="processTool3(event)">
+                            <div class="form-group">
+                                <label for="t3-baseline">Nilai/Skor ujian awal (Garis dasar, misal: 65 atau C):</label>
+                                <input type="text" id="t3-baseline" class="form-control" placeholder="Contoh: 65 atau C" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3-current">Nilai/Skor ujian saat ini (Misal: 74 atau B-):</label>
+                                <input type="text" id="t3-current" class="form-control" placeholder="Contoh: 74 atau B-" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3-techniques">Teknik belajar baru yang dicoba selama periode ini:</label>
+                                <textarea id="t3-techniques" class="form-control" placeholder="Contoh: Mengingat aktif, latihan soal, sesi fokus 25 menit" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3-hours">Estimasi jam yang diinvestasikan (4 minggu terakhir):</label>
+                                <input type="number" id="t3-hours" class="form-control" placeholder="Contoh: 18" min="1" max="300" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass-chart"></i> Analisis Perkembangan</button>
+                        </form>
+
+                        <div id="output-tool-3" class="output-container">
+                            <div class="output-section-header">
+                                <span><i class="fa-solid fa-sliders"></i> Hasil Perkembangan</span>
+                                <button class="btn btn-secondary btn-sm" onclick="copyToolOutput('output-tool-3')"><i class="fa-solid fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-box">
+                                <h4><i class="fa-solid fa-arrow-trend-up"></i> Analisis Trajektori</h4>
+                                <p id="t3-out-trajectory"></p>
+                            </div>
+                            <div class="output-box accent-indigo">
+                                <h4><i class="fa-solid fa-gem"></i> Audit Kemenangan Tersembunyi</h4>
+                                <ul id="t3-out-wins"></ul>
+                            </div>
+                            <div class="output-box accent-green">
+                                <h4><i class="fa-solid fa-flag"></i> Target Selanjutnya & Fokus Latihan</h4>
+                                <p id="t3-out-target"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size: 0.95rem; color: var(--primary-indigo);">Sesi Alat Ini</h3>
+                            <button class="btn btn-danger btn-sm" onclick="clearHistory('tool3')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="history-tool3"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: PRE-TEST ANXIETY RESET -->
+                <section id="view-tool-4" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-heart-pulse"></i> Reset Kecemasan Pra-Ujian</h2>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample(4)">
+                                    <i class="fa-solid fa-flask"></i> Muat Contoh
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="resetTool(4)">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Jalankan rutinitas penenang praktis dan protokol taktis 5 menit pertama ujian saat tekanan meningkat.</p>
+
+                        <div class="notice-banner">
+                            <i class="fa-solid fa-shield-halved"></i> <strong>Alat Non-Klinis:</strong> Protokol ini menyediakan panduan praktis belajar dan ujian. Jika gejala fisik sangat parah atau berkepanjangan, konsultasikan dengan profesional medis atau konselor.
+                        </div>
+
+                        <form id="form-tool-4" onsubmit="processTool4(event)">
+                            <div class="form-group">
+                                <label for="t4-time">Waktu tersisa sebelum ujian:</label>
+                                <select id="t4-time" class="form-control" required>
+                                    <option value="kurang-dari-1-jam">&lt; 1 jam (Persiapan mendesak)</option>
+                                    <option value="malam-ini">Malam ini (Malam sebelum ujian)</option>
+                                    <option value="1-2-hari">1 - 2 hari lagi</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4-symptom">Respon fisik utama yang dirasakan:</label>
+                                <select id="t4-symptom" class="form-control" required>
+                                    <option value="Jantung berdebar">Jantung berdebar / Napas cepat</option>
+                                    <option value="Pikiran mendadak kosong">Pikiran kosong / Hilang fokus</option>
+                                    <option value="Mual">Mual / Ketidaknyamanan perut</option>
+                                    <option value="Gemetar">Gemetar / Gelisah secara fisik</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4-thought">Pikiran negatif utama yang melintas:</label>
+                                <textarea id="t4-thought" class="form-control" placeholder="Contoh: Jika saya mendadak lupa saat ujian ini, IPK saya akan turun dan merusak rencana saya." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Buat Protokol Darurat</button>
+                        </form>
+
+                        <div id="output-tool-4" class="output-container">
+                            <div class="output-section-header">
+                                <span><i class="fa-solid fa-sliders"></i> Hasil Protokol Reset</span>
+                                <button class="btn btn-secondary btn-sm" onclick="copyToolOutput('output-tool-4')"><i class="fa-solid fa-copy"></i> Salin</button>
+                            </div>
+                            <div class="output-box">
+                                <h4><i class="fa-solid fa-lungs"></i> Protokol Reset Fisik 3 Menit</h4>
+                                <p id="t4-out-physical"></p>
+                            </div>
+                            <div class="output-box accent-indigo">
+                                <h4><i class="fa-solid fa-brain"></i> Pernyataan Bingkai Ulang Kognitif</h4>
+                                <p id="t4-out-cognitive" style="font-weight: 600; color: var(--primary-indigo);"></p>
+                            </div>
+                            <div class="output-box accent-green">
+                                <h4><i class="fa-solid fa-stopwatch"></i> Strategi 5 Menit Pertama Ujian</h4>
+                                <ol id="t4-out-strategy"></ol>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size: 0.95rem; color: var(--primary-indigo);">Sesi Alat Ini</h3>
+                            <button class="btn btn-danger btn-sm" onclick="clearHistory('tool4')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="history-tool4"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: CUSTOM STUDY SYSTEM BUILDER -->
+                <section id="view-tool-5" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-sliders"></i> Penyusun Sistem Belajar Kustom</h2>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="loadSample(5)">
+                                    <i class="fa-solid fa-flask"></i> Muat Contoh
+                                </button>
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="resetTool(5)">
+                                    <i class="fa-solid fa-rotate-left"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Ubah gaya belajar pilihan dan titik kegagalan menjadi rutinitas latihan harian 20 menit yang aktif.</p>
+
+                        <form id="form-tool-5" onsubmit="processTool5(event)">
+                            <div class="form-group">
+                                <label for="t5-preference">Gaya belajar paling nyaman bagi Anda:</label>
+                                <select id="t5-preference" class="form-control" required>
+                                    <option value="Diagram visual">Diagram visual & peta konsep</option>
+                                    <option value="Diskusi audio">Diskusi audio & menjelaskan secara lisan</option>
+                                    <option value="Latihan praktik langsung">Latihan praktik langsung & kumpulan soal</option>
+                                    <option value="Sesi fokus singkat">Sesi fokus singkat berintensitas tinggi</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5-failure">Hambatan utama saat belajar:</label>
+                                <select id="t5-failure" class="form-control" required>
+                                    <option value="Membaca tanpa menyerap">Membaca materi pasif tanpa menyerap isi</option>
+                                    <option value="Lupa setelah 2 hari">Lupa materi pelajaran setelah 48 jam</option>
+                                    <option value="Cepat merasa bosan">Cepat merasa jenuh atau kewalahan</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Susun Sistem Belajar</button>
+                        </form>
+
+                        <div id="output-tool-5" class="output-container">
+                            <div class="output-section-header">
+                                <span><i class="fa-solid fa-sliders"></i> Hasil Sistem Kustom</span>
+                                <button class="btn btn-secondary btn-sm" onclick="copySystem()"><i class="fa-solid fa-copy"></i> Salin Sistem</button>
+                            </div>
+                            <div class="output-box">
+                                <h4><i class="fa-solid fa-cubes"></i> Metodologi Terencana</h4>
+                                <p id="t5-out-method"></p>
+                            </div>
+                            <div class="output-box accent-indigo">
+                                <h4><i class="fa-solid fa-calendar-day"></i> Rutinitas Latihan 20 Menit Harian</h4>
+                                <ol id="t5-out-routine"></ol>
+                            </div>
+                            <div class="output-box accent-green">
+                                <h4><i class="fa-solid fa-repeat"></i> Jadwal Pengulangan Berkala</h4>
+                                <p id="t5-out-retention"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header">
+                            <h3 style="font-size: 0.95rem; color: var(--primary-indigo);">Sesi Alat Ini</h3>
+                            <button class="btn btn-danger btn-sm" onclick="clearHistory('tool5')">Hapus Riwayat Alat Ini</button>
+                        </div>
+                        <div id="history-tool5"></div>
+                    </div>
+                </section>
+
+                <!-- 7-DAY RESET SEQUENCE VIEW -->
+                <section id="view-reset-sequence" class="view-section" style="display: none;">
+                    <div class="card">
+                        <h2 class="tool-title" style="margin-bottom: 0.5rem;"><i class="fa-solid fa-calendar-check"></i> Reset Kepercayaan Akademik 7 Hari</h2>
+                        <p style="font-size: 0.875rem; color: var(--text-muted); margin-bottom: 1.5rem;">Alur terstruktur langkah demi langkah menggunakan alat utama untuk membangun kembali efikasi diri akademik dalam seminggu.</p>
+
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="output-box" style="margin:0;">
+                                <h4>Hari 1: De-Eskalasi Komparasi Teman</h4>
+                                <p>Jalankan Alat 1 untuk memisahkan tindakan teman yang terlihat dari faktor yang tak terlihat serta menetapkan garis dasar Anda.</p>
+                                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('view-tool-1')">Buka Alat 1</button>
+                            </div>
+                            <div class="output-box" style="margin:0;">
+                                <h4>Hari 2: Isolasi Hambatan Keterampilan</h4>
+                                <p>Jalankan Alat 2 untuk menunjuk dengan tepat sub-keterampilan yang menjadi hambatan alih-alih cemas pada seluruh pelajaran.</p>
+                                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('view-tool-2')">Buka Alat 2</button>
+                            </div>
+                            <div class="output-box" style="margin:0;">
+                                <h4>Hari 3: Buat Alur Latihan 20 Menit</h4>
+                                <p>Jalankan Alat 5 untuk mengubah titik hambatan keterampilan Anda menjadi rutinitas mengingat aktif.</p>
+                                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('view-tool-5')">Buka Alat 5</button>
+                            </div>
+                            <div class="output-box" style="margin:0;">
+                                <h4>Hari 4: Audit Bukti Pertumbuhan Anda</h4>
+                                <p>Jalankan Alat 3 untuk mencatat nilai awal vs nilai saat ini dan mengidentifikasi pencapaian dalam 30 hari terakhir.</p>
+                                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('view-tool-3')">Buka Alat 3</button>
+                            </div>
+                            <div class="output-box" style="margin:0;">
+                                <h4>Hari 5: Latih Protokol Pra-Ujian Anda</h4>
+                                <p>Jalankan Alat 4 untuk merancang reset fisik, bingkai ulang kognitif, dan strategi 5 menit pertama ujian Anda.</p>
+                                <button class="btn btn-secondary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('view-tool-4')">Buka Alat 4</button>
+                            </div>
+                            <div class="output-box" style="margin:0;">
+                                <h4>Hari 6: Jalankan Sesi Belajar Berfokus</h4>
+                                <p>Lakukan satu sesi belajar intensif 20 menit menggunakan rencana Hari ke-3 dan catat hasilnya.</p>
+                            </div>
+                            <div class="output-box accent-green" style="margin:0;">
+                                <h4>Hari 7: Konsolidasikan Rencana Akademik Anda</h4>
+                                <p>Tinjau Rencana Kepercayaan Akademik Anda, tetapkan satu prioritas utama, dan tentukan target peninjauan 30 hari ke depan.</p>
+                                <button class="btn btn-primary btn-sm" style="margin-top: 0.5rem;" onclick="switchView('view-plan')">Lihat Rencana Akademik</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UNIFIED ACADEMIC PLAN VIEW -->
+                <section id="view-plan" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-file-invoice"></i> Rencana Kepercayaan Akademik Saya</h2>
+                            <div class="btn-group">
+                                <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
+                                <button class="btn btn-secondary btn-sm" onclick="copyAcademicPlan()"><i class="fa-solid fa-copy"></i> Salin Rencana</button>
+                            </div>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Sintesis diagnostik, rutinitas aktif, dan langkah lanjutan yang dikumpulkan dari seluruh sesi alat yang telah diselesaikan.</p>
+
+                        <div id="plan-content">
+                            <!-- Diisi secara dinamis melalui renderAcademicPlan() -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- UNIFIED HISTORY VIEW -->
+                <section id="view-history" class="view-section" style="display: none;">
+                    <div class="card">
+                        <div class="form-header">
+                            <h2 class="tool-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Sesi Alat Terpadu</h2>
+                            <button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat</button>
+                        </div>
+                        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Akses dan tinjau kembali seluruh sesi diagnostik yang tersimpan dari semua alat.</p>
+
+                        <div id="unified-history-container">
+                            <!-- Diisi secara dinamis -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PRIVACY & CONTROL VIEW -->
+                <section id="view-privacy" class="view-section" style="display: none;">
+                    <div class="card">
+                        <h2 class="tool-title" style="margin-bottom: 1rem;"><i class="fa-solid fa-shield-halved"></i> Privasi, Penyimpanan Lokal & Kontrol Pengguna</h2>
+                        
+                        <div style="font-size: 0.875rem; color: #334155; line-height: 1.6; display: flex; flex-direction: column; gap: 1rem;">
+                            <p><strong>100% Kontrol Data Lokal:</strong> KEPERCAYAAN AKADEMIK™ dirancang dengan memprioritaskan privasi Anda. Semua masukan, kalkulasi, dan riwayat sesi yang tersimpan tetap berada secara eksklusif di penyimpanan peramban lokal Anda (<code>localStorage</code>).</p>
+                            
+                            <p><strong>Tanpa Server Luar:</strong> Tidak ada rincian belajar, nama mata kuliah, atau nilai ujian yang dikirimkan ke server luar maupun database pihak ketiga.</p>
+
+                            <p><strong>Kontrol Pengelolaan Data:</strong> Anda memegang kendali penuh untuk menghapus riwayat alat secara individu atau mereset seluruh data tersimpan kapan saja.</p>
+
+                            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #E2E8F0;">
+                                <button class="btn btn-danger" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Hapus Seluruh Penyimpanan Aplikasi Lokal</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" role="status" aria-live="polite">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">Tersalin ke papan klip!</span>
+    </div>
+
+    <!-- Safety Footer -->
+    <footer>
+        <div class="container">
+            Sistem Operasi KEPERCAYAAN AKADEMIK™ — Dirancang untuk evaluasi mandiri, refleksi, dan perencanaan sistem belajar.<br>
+            Bukan bentuk perawatan kesehatan mental, terapi klinis kecemasan, maupun evaluasi medis.
+        </div>
+    </footer>
+
+    <script>
+        /* Global State & Configuration */
+        const STORAGE_KEY_STATE = 'acadconf_v2_state';
+        const STORAGE_KEY_PREFIX_HIST = 'acadconf_history_';
+        const MAX_HISTORY = 30;
+
+        let appState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        /* Initialization */
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            setupNavigation();
+            setupMobileMenu();
+            updateDashboard();
+            loadAllHistories();
+        });
+
+        /* Utility: Escape HTML to Prevent XSS */
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        /* Utility: Safe LocalStorage Wrapper */
+        function safeStorageGet(key) {
+            try {
+                return localStorage.getItem(key);
+            } catch (e) {
+                console.warn('Akses LocalStorage dibatasi:', e);
+                return null;
+            }
+        }
+
+        function safeStorageSet(key, value) {
+            try {
+                localStorage.setItem(key, value);
+            } catch (e) {
+                console.warn('Penyimpanan LocalStorage gagal:', e);
+            }
+        }
+
+        /* App State Management */
+        function loadState() {
+            const raw = safeStorageGet(STORAGE_KEY_STATE);
+            if (raw) {
+                try {
+                    appState = JSON.parse(raw);
+                } catch (e) {
+                    console.error('Gagal membaca data aplikasi:', e);
+                }
+            }
+        }
+
+        function saveState() {
+            appState.lastUpdated = new Date().toISOString();
+            safeStorageSet(STORAGE_KEY_STATE, JSON.stringify(appState));
+            updateDashboard();
+        }
+
+        /* Navigation Logic */
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetView = item.getAttribute('data-target');
+                    switchView(targetView);
+                    
+                    // Close mobile sidebar
+                    document.getElementById('sidebar').classList.remove('open');
+                    document.getElementById('sidebar-overlay').classList.remove('active');
+                });
+            });
+        }
+
+        function switchView(viewId) {
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                if(nav.getAttribute('data-target') === viewId) {
+                    nav.classList.add('active');
+                } else {
+                    nav.classList.remove('active');
+                }
+            });
+
+            document.querySelectorAll('.view-section').forEach(view => {
+                view.style.display = view.id === viewId ? 'block' : 'none';
+            });
+
+            if (viewId === 'view-plan') {
+                renderAcademicPlan();
+            } else if (viewId === 'view-history') {
+                renderUnifiedHistory();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setupMobileMenu() {
+            const btn = document.getElementById('hamburger-btn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            btn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+        }
+
+        /* Toast Notification */
+        function showToast(message = "Tersalin ke papan klip!") {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.style.display = 'flex';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
+        /* Storage Utilities for History */
+        function getHistory(toolId) {
+            const key = `${STORAGE_KEY_PREFIX_HIST}${toolId}`;
+            const raw = safeStorageGet(key);
+            if (!raw) return [];
+            try {
+                return JSON.parse(raw);
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveHistoryEntry(toolId, entry) {
+            const history = getHistory(toolId);
+            history.unshift(entry);
+            if(history.length > MAX_HISTORY) history.pop();
+            safeStorageSet(`${STORAGE_KEY_PREFIX_HIST}${toolId}`, JSON.stringify(history));
+            
+            if (!appState.completedTools.includes(toolId)) {
+                appState.completedTools.push(toolId);
+            }
+            appState.toolResults[toolId] = entry;
+            saveState();
+
+            renderHistory(toolId);
+        }
+
+        function clearHistory(toolId) {
+            if (confirm(`Hapus riwayat sesi untuk alat ini?`)) {
+                try {
+                    localStorage.removeItem(`${STORAGE_KEY_PREFIX_HIST}${toolId}`);
+                } catch(e){}
+                appState.completedTools = appState.completedTools.filter(t => t !== toolId);
+                delete appState.toolResults[toolId];
+                saveState();
+                renderHistory(toolId);
+                showToast("Riwayat alat berhasil dihapus.");
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Hapus SELURUH sesi tersimpan dan data aplikasi di peramban ini?")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                    try { localStorage.removeItem(`${STORAGE_KEY_PREFIX_HIST}${t}`); } catch(e){}
+                });
+                try { localStorage.removeItem(STORAGE_KEY_STATE); } catch(e){}
+                appState = { completedTools: [], toolResults: {}, lastUpdated: null };
+                updateDashboard();
+                loadAllHistories();
+                showToast("Seluruh data lokal berhasil dibersihkan.");
+            }
+        }
+
+        function loadAllHistories() {
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+        }
+
+        function renderHistory(toolId) {
+            const container = document.getElementById(`history-${toolId}`);
+            if(!container) return;
+            const history = getHistory(toolId);
+
+            if(history.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.8rem; color: var(--text-muted); font-style: italic;">Belum ada sesi yang dicatat.</p>`;
+                return;
+            }
+
+            container.innerHTML = history.map((item, index) => `
+                <div class="history-item">
+                    <div class="history-item-header" onclick="toggleHistoryItem('${toolId}', ${index})">
+                        <span>${escapeHTML(item.title || 'Sesi Tersimpan')} (${escapeHTML(item.date)})</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="history-item-body" id="hist-${toolId}-${index}">
+                        ${item.contentHTML}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleHistoryItem(toolId, index) {
+            const body = document.getElementById(`hist-${toolId}-${index}`);
+            if (body) {
+                body.style.display = body.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        /* Dashboard Coverage & Deterministic Recommendation Engine */
+        function updateDashboard() {
+            let totalEntries = 0;
+            const tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            let toolsCompletedCount = 0;
+
+            tools.forEach((t, idx) => {
+                const count = getHistory(t).length;
+                totalEntries += count;
+                const isCompleted = appState.completedTools.includes(t) || count > 0;
+                if(isCompleted) toolsCompletedCount++;
+
+                // Update Status Badges
+                const badge = document.getElementById(`status-tool${idx+1}`);
+                if (badge) {
+                    if (isCompleted) {
+                        badge.className = "card-status completed";
+                        badge.innerHTML = `<i class="fa-solid fa-circle-check"></i> Selesai (${count} sesi)`;
+                    } else {
+                        badge.className = "card-status";
+                        badge.innerHTML = `<i class="fa-regular fa-circle"></i> Belum dimulai`;
+                    }
+                }
+            });
+
+            // Toolkit Coverage calculation (20% per unique tool)
+            const coveragePercent = toolsCompletedCount * 20;
+
+            const circle = document.getElementById('coverage-circle');
+            const scoreText = document.getElementById('coverage-text');
+            const desc = document.getElementById('coverage-desc');
+            const label = document.getElementById('coverage-label');
+            const sessionText = document.getElementById('session-count-text');
+
+            if(circle && scoreText) {
+                circle.style.background = `conic-gradient(var(--primary-cyan) ${coveragePercent}%, #E2E8F0 ${coveragePercent}%)`;
+                scoreText.innerText = `${coveragePercent}%`;
+            }
+
+            if (label) label.innerText = `${toolsCompletedCount} dari 5 Alat Dieksplorasi`;
+            if (sessionText) sessionText.innerText = `Total Sesi Tersimpan: ${totalEntries}`;
+
+            if(desc) {
+                if(coveragePercent === 0) {
+                    desc.innerText = "Selesaikan latihan diagnostik di 5 alat utama untuk memetakan garis dasar akademik Anda.";
+                } else if(coveragePercent < 60) {
+                    desc.innerText = "Cakupan awal yang baik. Jelajahi alat tersisa untuk melengkapi sistem operasi akademik Anda.";
+                } else {
+                    desc.innerText = "Cakupan alat yang tinggi telah dicapai. Tinjau Rencana Akademik Anda yang telah disintesis.";
+                }
+            }
+
+            // Deterministic Cross-Module Recommendation Rules
+            const recBox = document.getElementById('dashboard-rec-box');
+            const recText = document.getElementById('dashboard-rec-text');
+
+            if (recBox && recText) {
+                const hasTool1 = appState.completedTools.includes('tool1');
+                const hasTool2 = appState.completedTools.includes('tool2');
+                const hasTool3 = appState.completedTools.includes('tool3');
+                const hasTool4 = appState.completedTools.includes('tool4');
+                const hasTool5 = appState.completedTools.includes('tool5');
+
+                if (hasTool2 && hasTool3 && !hasTool5) {
+                    recBox.style.display = 'flex';
+                    recText.innerText = "Anda telah mengisolasi hambatan keterampilan dan mencatat bukti pertumbuhan. Lanjutkan langsung ke Alat 5 (Penyusun Sistem Belajar Kustom) untuk membuat alur latihan harian 20 menit.";
+                } else if (hasTool1 && !hasTool3) {
+                    recBox.style.display = 'flex';
+                    recText.innerText = "Anda telah meredakan komparasi dengan teman. Selanjutnya, jalankan Alat 3 (Pelacak Bukti Pertumbuhan) untuk menautkan rasa percaya diri pada trajektori nilai objektif 30 hari Anda.";
+                } else if (hasTool3 && !hasTool4) {
+                    recBox.style.display = 'flex';
+                    recText.innerText = "Anda memiliki bukti pertumbuhan nyata yang tersimpan. Bersiaplah menghadapi tekanan ujian dengan menyelesaikan Alat 4 (Reset Kecemasan Pra-Ujian).";
+                } else if (toolsCompletedCount === 5) {
+                    recBox.style.display = 'flex';
+                    recText.innerText = "Seluruh perangkat alat telah dieksplorasi penuh! Buka 'Rencana Akademik Saya' untuk melihat ringkasan strategi belajar Anda dan mencetaknya.";
+                } else if (toolsCompletedCount > 0) {
+                    recBox.style.display = 'flex';
+                    recText.innerText = "Lanjutkan mengeksplorasi alat-alat tersisa untuk melengkapi profil efikasi diri Anda secara utuh.";
+                } else {
+                    recBox.style.display = 'none';
+                }
+            }
+        }
+
+        /* Tool Sample Loaders */
+        function loadSample(toolNum) {
+            if(toolNum === 1) {
+                document.getElementById('t1-subject').value = "Fisika Dasar I";
+                document.getElementById('t1-peer-behavior').value = "Teman membual dapat nilai 95 padahal mengaku hanya belajar 10 menit sebelum masuk kelas.";
+                document.getElementById('t1-effort').value = "Tinggi";
+                const checkboxes = document.querySelectorAll('input[name="t1-unseen"]');
+                if (checkboxes.length >= 2) {
+                    checkboxes[0].checked = true;
+                    checkboxes[1].checked = true;
+                }
+            } else if(toolNum === 2) {
+                document.getElementById('t2-subject').value = "Sastra Inggris";
+                document.getElementById('t2-task').value = "Penulisan esai";
+                document.getElementById('t2-mastered').value = "Menganalisis tema puisi, diskusi lisan kelompok, pemahaman bacaan.";
+            } else if(toolNum === 3) {
+                document.getElementById('t3-baseline').value = "65";
+                document.getElementById('t3-current').value = "74";
+                document.getElementById('t3-techniques').value = "Beralih ke latihan soal berwaktu dan menjelaskan konsep secara lisan.";
+                document.getElementById('t3-hours').value = "18";
+            } else if(toolNum === 4) {
+                document.getElementById('t4-time').value = "kurang-dari-1-jam";
+                document.getElementById('t4-symptom').value = "Pikiran mendadak kosong";
+                document.getElementById('t4-thought').value = "Saya akan mendadak lupa saat ujian tengah semester ini, IPK saya akan turun dan merusak rencana saya.";
+            } else if(toolNum === 5) {
+                document.getElementById('t5-preference').value = "Diagram visual";
+                document.getElementById('t5-failure').value = "Membaca tanpa menyerap";
+            }
+            showToast("Contoh skenario berhasil dimuat.");
+        }
+
+        function resetTool(toolNum) {
+            const form = document.getElementById(`form-tool-${toolNum}`);
+            if (form) form.reset();
+            const output = document.getElementById(`output-tool-${toolNum}`);
+            if (output) output.style.display = 'none';
+            showToast("Masukan direset.");
+        }
+
+        /* TOOL 1 LOGIC: Comparison De-Escalator */
+        function processTool1(e) {
+            e.preventDefault();
+            const subject = document.getElementById('t1-subject').value;
+            const behavior = document.getElementById('t1-peer-behavior').value;
+            const effort = document.getElementById('t1-effort').value;
+            const unseen = Array.from(document.querySelectorAll('input[name="t1-unseen"]:checked')).map(cb => cb.value);
+
+            const auditText = `Anda sedang mengevaluasi usaha internal (Tingkat: ${effort}) pada mata pelajaran ${escapeHTML(subject)} dengan hasil publik yang ditampilkan orang lain. Ketika teman menunjukkan perilaku seperti "${escapeHTML(behavior)}", Anda hanya melihat hasil akhir, bukan beban kognitif atau persiapan asli mereka. ${unseen.length > 0 ? 'Variabel tak terlihat yang mungkin membiaskan perbandingan Anda meliputi: ' + unseen.map(escapeHTML).join(', ') + '.' : 'Faktor tak terlihat seperti pemahaman awal atau persiapan tersembunyi sangat membiaskan persepsi.'}`;
+
+            const reframeText = `Ubah tolok ukur Anda: Usaha Anda saat ini (${effort}) pada mata pelajaran ${escapeHTML(subject)} mewakili proses belajar yang disengaja. Performa yang tampak cepat sering kali menunjukkan kebiasaan/pemahaman lama, bukan tingkat kecerdasan yang lebih tinggi. Ukur kompetensi Anda dibandingkan posisi awal Anda bulan lalu, bukan fase perkembangan orang lain.`;
+
+            const rules = [
+                "<strong>Respon Netral:</strong> Tanggapi bualan nilai dengan kalimat singkat dan netral ('Baguslah kalau metode itu berhasil untukmu') lalu alihkan topik.",
+                "<strong>Jeda Pembatas:</strong> Saat teman membahas nilai, berhentilah selama 5 detik dan ingatkan diri sendiri: 'Hasil mereka sama sekali tidak mempengaruhi kurva belajar pribadi saya.'",
+                "<strong>Partisipasi Selektif:</strong> Hindari diskusi usai ujian yang berfokus membandingkan jawaban salah, yang sering kali hanya memperbesar kecemasan."
+            ];
+
+            document.getElementById('t1-out-audit').innerHTML = auditText;
+            document.getElementById('t1-out-reframe').innerHTML = reframeText;
+            document.getElementById('t1-out-rules').innerHTML = rules.map(r => `<li>${r}</li>`).join('');
+
+            document.getElementById('output-tool-1').style.display = 'block';
+
+            const contentHTML = `
+                <p><strong>Mata Pelajaran:</strong> ${escapeHTML(subject)}</p>
+                <p><strong>Audit Komparasi:</strong> ${auditText}</p>
+                <p><strong>Bingkai Ulang:</strong> ${reframeText}</p>
+            `;
+            saveHistoryEntry('tool1', {
+                title: `De-Eskalasi: ${subject}`,
+                date: new Date().toLocaleDateString('id-ID'),
+                subject: subject,
+                contentHTML: contentHTML
+            });
+        }
+
+        /* TOOL 2 LOGIC: Real Skill Diagnostic */
+        function processTool2(e) {
+            e.preventDefault();
+            const subject = document.getElementById('t2-subject').value;
+            const task = document.getElementById('t2-task').value;
+            const mastered = document.getElementById('t2-mastered').value;
+
+            const breakdownText = `Terdeteksi anggapan umum ("Saya gagal di pelajaran ${escapeHTML(subject)}"). Isolasi diagnostik mengonfirmasi bahwa Anda tidak gagal secara umum pada ${escapeHTML(subject)}; hambatan Anda secara spesifik terlokalisasi pada sub-keterampilan **${escapeHTML(task)}**.`;
+
+            let repairSteps = [];
+            if(task === "Penulisan esai") {
+                repairSteps = [
+                    "Terapkan batasan kerangka 15 menit: Tulis tesis dan kalimat topik utama sebelum menyusun paragraf utuh.",
+                    "Pisahkan tahap perencanaan dari penulisan—perlakukan pembuatan kerangka dan penyempurnaan gaya bahasa sebagai langkah terpisah."
+                ];
+            } else if(task === "Ujian pilihan ganda") {
+                repairSteps = [
+                    "Lakukan teknik 'Menjawab Tanpa Melihat': Tutup pilihan jawaban, tulis 1 kalimat jawaban Anda sendiri, baru evaluasi pilihan yang ada.",
+                    "Buat Catatan Kesalahan yang mengelompokkan soal salah menjadi 'Kurang Paham Konsep' vs 'Terkecoh Kalimat Soal'."
+                ];
+            } else if(task === "Pemecahan masalah") {
+                repairSteps = [
+                    "Uraikan soal berderet menjadi langkah-langkah rumus tunggal yang jelas.",
+                    "Pelajari 3 contoh soal yang sudah terselesaikan sebelum mencoba mengerjakan soal latihan tanpa bantuan."
+                ];
+            } else {
+                repairSteps = [
+                    "Gunakan sesi latihan mengingat singkat: 5 menit menuliskan apa yang diingat di kertas kosong setiap hari.",
+                    "Ubah catatan perkuliahan yang pasif menjadi kartu kilat (flashcard) pertanyaan dengan satu konsep kunci per kartu."
+                ];
+            }
+
+            const evidenceText = `Penguasaan yang terbukti pada ${escapeHTML(subject)}: "${escapeHTML(mastered)}". Anda memiliki kemampuan dasar pada disiplin ilmu ini; hambatan saat ini hanya terletak pada eksekusi struktural di ${escapeHTML(task)}.`;
+
+            document.getElementById('t2-out-breakdown').innerHTML = breakdownText;
+            document.getElementById('t2-out-repair').innerHTML = repairSteps.map(s => `<li>${s}</li>`).join('');
+            document.getElementById('t2-out-evidence').innerHTML = evidenceText;
+
+            document.getElementById('output-tool-2').style.display = 'block';
+
+            const contentHTML = `
+                <p><strong>Mata Pelajaran:</strong> ${escapeHTML(subject)} (${escapeHTML(task)})</p>
+                <p><strong>Hambatan Terlokalisasi:</strong> ${escapeHTML(task)}</p>
+                <p><strong>Bukti Penguasaan:</strong> ${escapeHTML(mastered)}</p>
+            `;
+            saveHistoryEntry('tool2', {
+                title: `Diagnostik: ${subject}`,
+                date: new Date().toLocaleDateString('id-ID'),
+                subject: subject,
+                task: task,
+                contentHTML: contentHTML
+            });
+        }
+
+        /* TOOL 3 LOGIC: Growth Evidence Tracker */
+        function processTool3(e) {
+            e.preventDefault();
+            const baseline = document.getElementById('t3-baseline').value;
+            const current = document.getElementById('t3-current').value;
+            const techniques = document.getElementById('t3-techniques').value;
+            const hours = document.getElementById('t3-hours').value;
+
+            let trajectoryText = "";
+            const numBase = parseFloat(baseline);
+            const numCurr = parseFloat(current);
+
+            if (!isNaN(numBase) && !isNaN(numCurr)) {
+                const diff = (numCurr - numBase).toFixed(1);
+                const sign = diff >= 0 ? '+' : '';
+                trajectoryText = `Perubahan dari ${escapeHTML(baseline)} ke ${escapeHTML(current)} (Pergeseran ${sign}${diff} poin) dalam 30 hari mencerminkan pergerakan nilai yang terdokumentasi dari investasi ${escapeHTML(hours)} jam usaha menggunakan metode: "${escapeHTML(techniques)}".`;
+            } else {
+                trajectoryText = `Perubahan dari kondisi awal (${escapeHTML(baseline)}) ke kondisi saat ini (${escapeHTML(current)}) mencerminkan pergerakan kualitatif yang dicatat selama ${escapeHTML(hours)} jam usaha menggunakan teknik: "${escapeHTML(techniques)}".`;
+            }
+
+            const wins = [
+                "<strong>Adaptasi Proses:</strong> Mencoba metode aktif ('" + escapeHTML(techniques) + "') membuktikan kemampuan pemecahan masalah yang fleksibel.",
+                "<strong>Akumulasi Usaha:</strong> Menginvestasikan " + escapeHTML(hours) + " jam terstruktur menciptakan bukti nyata komitmen belajar Anda.",
+                "<strong>Ketahanan Tugas:</strong> Tetap tekun mempelajari materi yang sulit membangun daya tahan akademik yang praktis."
+            ];
+
+            const targetText = `Berdasarkan siklus belajar ${escapeHTML(hours)} jam Anda, tetapkan target bertahap yang realistis untuk peninjauan 30 hari ke depan. Fokuslah pada konsistensi proses alih-alih lonjakan drastis jangka pendek.`;
+
+            document.getElementById('t3-out-trajectory').innerHTML = trajectoryText;
+            document.getElementById('t3-out-wins').innerHTML = wins.map(w => `<li>${w}</li>`).join('');
+            document.getElementById('t3-out-target').innerHTML = targetText;
+
+            document.getElementById('output-tool-3').style.display = 'block';
+
+            const contentHTML = `
+                <p><strong>Trajektori Nilai:</strong> ${escapeHTML(baseline)} ➔ ${escapeHTML(current)}</p>
+                <p><strong>Total Jam Belajar:</strong> ${escapeHTML(hours)} jam</p>
+                <p><strong>Teknik yang Dicoba:</strong> ${escapeHTML(techniques)}</p>
+            `;
+            saveHistoryEntry('tool3', {
+                title: `Pertumbuhan: ${baseline} ke ${current}`,
+                date: new Date().toLocaleDateString('id-ID'),
+                baseline: baseline,
+                current: current,
+                contentHTML: contentHTML
+            });
+        }
+
+        /* TOOL 4 LOGIC: Pre-Test Anxiety Reset */
+        function processTool4(e) {
+            e.preventDefault();
+            const time = document.getElementById('t4-time').value;
+            const symptom = document.getElementById('t4-symptom').value;
+            const thought = document.getElementById('t4-thought').value;
+
+            let physicalReset = "";
+            if(symptom.includes("Jantung berdebar") || symptom.includes("Gemetar")) {
+                physicalReset = "<strong>Protokol Hembusan Napas Perlahan:</strong> Hirup napas perlahan 2 kali lewat hidung, lalu hembuskan 1 kali secara panjang dan perlahan lewat mulut. Ulangi selama 3 menit untuk menenangkan reaksi fisik tubuh.";
+            } else if(symptom.includes("Pikiran mendadak kosong")) {
+                physicalReset = "<strong>Penstabilan Sensorik Grounding (5-4-3-2-1):</strong> Sebutkan 5 benda di sekitar Anda, 4 tekstur yang Anda rasakan, 3 suara, 2 aroma, dan tarik 1 napas dalam untuk mengembalikan fokus ke ruangan ujian.";
+            } else {
+                physicalReset = "<strong>Pelepasan Ketegangan Otot:</strong> Kepalkan tangan perlahan selama 5 detik, lalu lepaskan sepenuhnya saat menghembuskan napas. Ulangi 4 kali untuk mengendurkan ketegangan otot.";
+            }
+
+            const cognitiveReframing = `Bingkai Ulang: "${escapeHTML(thought)}" ➔ "Reaksi fisik ini adalah bentuk tubuh menyiapkan energi fokus untuk ujian. Ujian ini hanyalah pengukuran terbatas atas ingatan saat ini dalam batas waktu, bukan penilaian akhir atas kecerdasan saya."`;
+
+            const strategySteps = [
+                "<strong>Menit 0-2 (Catatan Cepat):</strong> Di kertas buram (jika diizinkan), tuliskan rumus, tanggal penting, atau singkatan hafalan sebelum membaca Soal Nomor 1.",
+                "<strong>Menit 2-3 (Pemindaian Awal):</strong> Pindai lembar ujian dan kerjakan 20% soal termudah terlebih dahulu untuk membangun momentum percaya diri.",
+                "<strong>Menit 3-5 (Pengaturan Waktu):</strong> Bagi sisa waktu ujian berdasarkan kelompok soal. Jika terhenti pada soal sulit >2 menit, tandai dan lanjutkan ke soal berikutnya."
+            ];
+
+            document.getElementById('t4-out-physical').innerHTML = physicalReset;
+            document.getElementById('t4-out-cognitive').innerHTML = cognitiveReframing;
+            document.getElementById('t4-out-strategy').innerHTML = strategySteps.map(s => `<li>${s}</li>`).join('');
+
+            document.getElementById('output-tool-4').style.display = 'block';
+
+            const contentHTML = `
+                <p><strong>Rentang Waktu:</strong> ${escapeHTML(time)}</p>
+                <p><strong>Respon Fisik:</strong> ${escapeHTML(symptom)}</p>
+                <p><strong>Bingkai Ulang:</strong> ${cognitiveReframing}</p>
+            `;
+            saveHistoryEntry('tool4', {
+                title: `Reset Pra-Ujian (${symptom})`,
+                date: new Date().toLocaleDateString('id-ID'),
+                contentHTML: contentHTML
+            });
+        }
+
+        /* TOOL 5 LOGIC: Custom Study System Builder */
+        function processTool5(e) {
+            e.preventDefault();
+            const preference = document.getElementById('t5-preference').value;
+            const failure = document.getElementById('t5-failure').value;
+
+            let methodText = "";
+            if(preference === "Diagram visual") {
+                methodText = "<strong>Peta Konsep & Mengingat Visual:</strong> Ubah teks linier menjadi bagan alur, peta pikiran berwarna, atau diagram bergambar. Uji ingatan dengan menggambar ulang struktur tersebut dari ingatan tanpa melihat catatan.";
+            } else if(preference === "Diskusi audio") {
+                methodText = "<strong>Teknik Penjelasan Feynman:</strong> Rekam suara Anda saat menjelaskan konsep sulit menggunakan bahasa sederhana seolah mengajarkan teman sekelas. Dengarkan kembali untuk menemukan bagian yang belum dipahami.";
+            } else {
+                methodText = "<strong>Mengingat Aktif & Variasi Soal Latihan:</strong> Uji ingatan secara terus-menerus menggunakan kumpulan soal atau kartu hafalan alih-alih membaca pasif. Campur berbagai jenis soal dalam satu sesi belajar.";
+            }
+
+            const routineSteps = [
+                "<strong>Menit 0-5 (Aktivasi):</strong> Tinjau 5 kartu pertanyaan mengingat aktif atau kerjakan 1 soal pemanasan dari ingatan.",
+                "<strong>Menit 5-15 (Inti Belajar):</strong> Pelajari materi target menggunakan metode " + escapeHTML(preference) + " (membuat diagram, menjelaskan lisan, atau menyelesaikan soal). Hindari membaca pasif.",
+                "<strong>Menit 15-20 (Konsolidasi):</strong> Tutup catatan dan tuliskan 3 poin utama dari materi yang berhasil Anda ingat."
+            ];
+
+            const retentionText = "<strong>Jadwal Pengulangan Berkala:</strong> Pelajari kembali materi ini pada interval Hari ke-1, Hari ke-3, Hari ke-7, dan Hari ke-14 untuk memperkuat daya ingat jangka panjang.";
+
+            document.getElementById('t5-out-method').innerHTML = methodText;
+            document.getElementById('t5-out-routine').innerHTML = routineSteps.map(r => `<li>${r}</li>`).join('');
+            document.getElementById('t5-out-retention').innerHTML = retentionText;
+
+            document.getElementById('output-tool-5').style.display = 'block';
+
+            const contentHTML = `
+                <p><strong>Gaya Pilihan:</strong> ${escapeHTML(preference)}</p>
+                <p><strong>Metodologi:</strong> ${methodText}</p>
+            `;
+            saveHistoryEntry('tool5', {
+                title: `Sistem Belajar: ${preference}`,
+                date: new Date().toLocaleDateString('id-ID'),
+                preference: preference,
+                contentHTML: contentHTML
+            });
+        }
+
+        /* Copy Utilities */
+        function copyToolOutput(outputElemId) {
+            const elem = document.getElementById(outputElemId);
+            if (!elem) return;
+            const textToCopy = elem.innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast("Hasil berhasil disalin ke papan klip!");
+            }).catch(() => {
+                showToast("Gagal menyalin.");
+            });
+        }
+
+        function copySystem() {
+            const method = document.getElementById('t5-out-method').innerText;
+            const routine = document.getElementById('t5-out-routine').innerText;
+            const retention = document.getElementById('t5-out-retention').innerText;
+
+            const textToCopy = `=== SISTEM BELAJAR KUSTOM ===\n\n[METODOLOGI]\n${method}\n\n[RUTINITAS HARIAN]\n${routine}\n\n[PROTOKOL PENGULANGAN]\n${retention}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                showToast("Sistem belajar berhasil disalin!");
+            });
+        }
+
+        /* Render Synthesized Academic Confidence Plan */
+        function renderAcademicPlan() {
+            const container = document.getElementById('plan-content');
+            if (!container) return;
+
+            const res1 = appState.toolResults['tool1'];
+            const res2 = appState.toolResults['tool2'];
+            const res3 = appState.toolResults['tool3'];
+            const res4 = appState.toolResults['tool4'];
+            const res5 = appState.toolResults['tool5'];
+
+            if (!res1 && !res2 && !res3 && !res4 && !res5) {
+                container.innerHTML = `<p style="font-size: 0.9rem; color: var(--text-muted); font-style: italic;">Belum ada sesi tersimpan. Selesaikan latihan pada alat-alat utama untuk menghasilkan Rencana Kepercayaan Akademik terpadu Anda.</p>`;
+                return;
+            }
+
+            let html = `<div style="display: flex; flex-direction: column; gap: 1rem;">`;
+
+            if (res1) {
+                html += `
+                    <div class="output-box">
+                        <h4><i class="fa-solid fa-scale-unbalanced"></i> Garis Dasar Komparasi (${escapeHTML(res1.date)})</h4>
+                        <p><strong>Mata Pelajaran Target:</strong> ${escapeHTML(res1.subject || 'N/A')}</p>
+                        <div>${res1.contentHTML}</div>
+                    </div>
+                `;
+            }
+
+            if (res2) {
+                html += `
+                    <div class="output-box accent-indigo">
+                        <h4><i class="fa-solid fa-bullseye"></i> Hambatan Keterampilan Terisolasi (${escapeHTML(res2.date)})</h4>
+                        <p><strong>Mata Pelajaran Target:</strong> ${escapeHTML(res2.subject || 'N/A')}</p>
+                        <p><strong>Tugas Terlokalisasi:</strong> ${escapeHTML(res2.task || 'N/A')}</p>
+                        <div>${res2.contentHTML}</div>
+                    </div>
+                `;
+            }
+
+            if (res3) {
+                html += `
+                    <div class="output-box accent-green">
+                        <h4><i class="fa-solid fa-chart-line"></i> Bukti Trajektori Pertumbuhan (${escapeHTML(res3.date)})</h4>
+                        <div>${res3.contentHTML}</div>
+                    </div>
+                `;
+            }
+
+            if (res5) {
+                html += `
+                    <div class="output-box">
+                        <h4><i class="fa-solid fa-sliders"></i> Sistem Belajar Aktif (${escapeHTML(res5.date)})</h4>
+                        <div>${res5.contentHTML}</div>
+                    </div>
+                `;
+            }
+
+            if (res4) {
+                html += `
+                    <div class="output-box accent-indigo">
+                        <h4><i class="fa-solid fa-heart-pulse"></i> Protokol Ujian Pra-Tes (${escapeHTML(res4.date)})</h4>
+                        <div>${res4.contentHTML}</div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function copyAcademicPlan() {
+            const planElem = document.getElementById('plan-content');
+            if (!planElem) return;
+            navigator.clipboard.writeText(planElem.innerText).then(() => {
+                showToast("Rencana Akademik berhasil disalin!");
+            });
+        }
+
+        /* Render Unified History View */
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unified-history-container');
+            if (!container) return;
+
+            const tools = [
+                { id: 'tool1', name: 'De-Eskalator Komparasi' },
+                { id: 'tool2', name: 'Diagnostik Keterampilan Nyata' },
+                { id: 'tool3', name: 'Pelacak Bukti Pertumbuhan' },
+                { id: 'tool4', name: 'Reset Kecemasan Pra-Ujian' },
+                { id: 'tool5', name: 'Sistem Belajar Kustom' }
+            ];
+
+            let allEntries = [];
+            tools.forEach(t => {
+                const hist = getHistory(t.id);
+                hist.forEach(item => {
+                    allEntries.push({ ...item, toolId: t.id, toolName: t.name });
+                });
+            });
+
+            if (allEntries.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Belum ada sesi tersimpan di semua alat.</p>`;
+                return;
+            }
+
+            container.innerHTML = allEntries.map((item, idx) => `
+                <div class="history-item">
+                    <div class="history-item-header" onclick="toggleUnifiedHist(${idx})">
+                        <span><strong>[${escapeHTML(item.toolName)}]</strong> ${escapeHTML(item.title || 'Sesi')} (${escapeHTML(item.date)})</span>
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </div>
+                    <div class="history-item-body" id="unihist-${idx}">
+                        ${item.contentHTML}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleUnifiedHist(idx) {
+            const elem = document.getElementById(`unihist-${idx}`);
+            if (elem) {
+                elem.style.display = elem.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+    </script>
+</body>
+</html>

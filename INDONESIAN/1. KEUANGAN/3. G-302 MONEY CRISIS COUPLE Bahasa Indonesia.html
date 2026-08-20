@@ -1,0 +1,2494 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Crisis Couple™ - Sistem Operasi Krisis Rumah Tangga</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --burgundy: #7B2D3E;
+            --burgundy-hover: #632331;
+            --sand: #D4A373;
+            --sand-light: #FAEDCD;
+            --bg-gradient: linear-gradient(135deg, #FEF1F0 0%, #FDF6EC 100%);
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --white: #FFFFFF;
+            --border-color: #E9ECEF;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(123, 45, 62, 0.08);
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+            
+            --status-immediate: #C92A2A;
+            --status-immediate-bg: #FFE3E3;
+            --status-urgent: #E67700;
+            --status-urgent-bg: #FFF3BF;
+            --status-stressed: #1864AB;
+            --status-stressed-bg: #E7F5FF;
+            --status-stabilizing: #0CA678;
+            --status-stabilizing-bg: #E6FCF5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Layout Architecture */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background: var(--white);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            color: var(--burgundy);
+            font-size: 1.5rem;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            line-height: 1.2;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            font-size: 0.9rem;
+        }
+
+        .nav-item:hover {
+            background-color: #FDF6EC;
+            color: var(--burgundy);
+        }
+
+        .nav-item.active {
+            background-color: #FEF1F0;
+            color: var(--burgundy);
+            border-left-color: var(--burgundy);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-category {
+            padding: 0.75rem 1.25rem 0.25rem 1.25rem;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            font-weight: 700;
+        }
+
+        /* Mobile Header & Hamburger */
+        .mobile-header {
+            display: none;
+            background: var(--white);
+            padding: 1rem 1.5rem;
+            box-shadow: var(--shadow-sm);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        .hamburger {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--burgundy);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Main Content Workspace */
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 2.5rem 1.5rem 4rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: calc(100% - 260px);
+        }
+
+        .content-wrapper {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        /* Tool Cards & Components */
+        .card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            border: 1px solid rgba(212, 163, 115, 0.2);
+        }
+
+        .view-section {
+            display: none;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        /* Dashboard Styles */
+        .dashboard-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-hero h2 {
+            font-size: 2.2rem;
+            color: var(--burgundy);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .dashboard-hero p {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .dash-card {
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 1.25rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--sand);
+        }
+
+        .dash-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-lg);
+            background: #FEF1F0;
+            color: var(--burgundy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-bottom: 0.85rem;
+        }
+
+        .dash-card h3 {
+            font-size: 1.05rem;
+            color: var(--burgundy);
+            margin-bottom: 0.3rem;
+        }
+
+        .dash-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .dash-card .badge-status {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 0.7rem;
+        }
+
+        /* Orientation & Snapshot Banner */
+        .orientation-card {
+            background: #FFF;
+            border-left: 4px solid var(--burgundy);
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .orientation-card h3 {
+            color: var(--burgundy);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .orientation-card p {
+            font-size: 0.875rem;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
+
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .snapshot-item {
+            background: #FAFAFA;
+            padding: 0.75rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .snapshot-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .snapshot-val {
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-top: 0.2rem;
+        }
+
+        /* Tool Headers & Forms */
+        .tool-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-header h2 {
+            font-size: 1.6rem;
+            color: var(--burgundy);
+            margin-bottom: 0.4rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .problem-statement {
+            background-color: var(--sand-light);
+            border-left: 4px solid var(--sand);
+            padding: 0.85rem 1.25rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            font-style: italic;
+            color: #5A4328;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .form-action-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-sample, .btn-reset {
+            background: transparent;
+            border: 1px dashed var(--sand);
+            color: var(--burgundy);
+            padding: 0.4rem 0.85rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-sample:hover, .btn-reset:hover {
+            background-color: var(--sand-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.4rem;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+            background-color: #FAFAFA;
+        }
+
+        .form-control:focus {
+            border-color: var(--burgundy);
+            background-color: var(--white);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        .checkbox-grid, .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 0.75rem;
+            margin-top: 0.4rem;
+        }
+
+        .checkbox-item, .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            cursor: pointer;
+            background: #FAFAFA;
+            padding: 0.6rem 0.8rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .checkbox-item input, .radio-item input {
+            accent-color: var(--burgundy);
+            width: 16px;
+            height: 16px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            padding: 0.9rem;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-submit:hover {
+            background: var(--burgundy-hover);
+        }
+
+        /* Results Output Styling */
+        .results-container {
+            margin-top: 2rem;
+            display: none;
+            border-top: 2px solid var(--border-color);
+            padding-top: 2rem;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results-header {
+            font-size: 1.3rem;
+            color: var(--burgundy);
+            margin-bottom: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .result-box {
+            background: #FAFAFA;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            border: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        .result-box-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--burgundy);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .result-box-content {
+            font-size: 0.95rem;
+            line-height: 1.55;
+            color: var(--text-main);
+        }
+
+        .badge {
+            padding: 0.25rem 0.6rem;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-immediate { background: var(--status-immediate-bg); color: var(--status-immediate); }
+        .badge-urgent { background: var(--status-urgent-bg); color: var(--status-urgent); }
+        .badge-stressed { background: var(--status-stressed-bg); color: var(--status-stressed); }
+        .badge-stabilizing { background: var(--status-stabilizing-bg); color: var(--status-stabilizing); }
+
+        .btn-copy {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            transition: all 0.2s;
+        }
+
+        .btn-copy:hover {
+            border-color: var(--burgundy);
+            color: var(--burgundy);
+            background: #FEF1F0;
+        }
+
+        .script-text {
+            background: var(--white);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-family: inherit;
+            white-space: pre-wrap;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* Next Tool Routing Box */
+        .next-tool-card {
+            background: var(--sand-light);
+            border: 1px solid var(--sand);
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+        }
+
+        .next-tool-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .next-tool-info i {
+            font-size: 1.25rem;
+            color: var(--burgundy);
+        }
+
+        .btn-next-tool {
+            background: var(--burgundy);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-next-tool:hover {
+            background: var(--burgundy-hover);
+        }
+
+        /* History Accordion */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-clear-history {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .btn-clear-history:hover {
+            color: var(--burgundy);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            background: var(--white);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 0.75rem 1rem;
+            background: #FAFAFA;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .history-header:hover {
+            background: #F0F0F0;
+        }
+
+        .history-body {
+            padding: 1rem;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.85rem;
+            background: var(--white);
+        }
+
+        .history-item.open .history-body {
+            display: block;
+        }
+
+        /* Universal Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--burgundy);
+            color: var(--white);
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Printable View Styles */
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .form-action-bar, .btn-submit, .btn-copy, .history-section, .app-footer, .next-tool-card {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                width: 100% !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .results-container {
+                display: block !important;
+                border: none !important;
+            }
+        }
+
+        /* Custom Table Styling for Budget/Plan */
+        .budget-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .budget-table th, .budget-table td {
+            padding: 0.6rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .budget-table th {
+            background: #FAFAFA;
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .app-footer {
+            margin-top: auto;
+            width: 100%;
+            background: var(--white);
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        /* Responsive Breakdown */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.open {
+                display: block;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1.5rem 1rem;
+            }
+
+            .card {
+                padding: 1.25rem;
+            }
+
+            .checkbox-grid, .radio-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Seluler -->
+    <header class="mobile-header">
+        <div class="mobile-brand">
+            <i class="fa-solid fa-hand-holding-heart"></i>
+            <span>Money Crisis Couple™</span>
+        </div>
+        <button class="hamburger" id="hamburgerBtn" aria-label="Buka Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Overlay Navigasi Sidebar -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-hand-holding-heart"></i>
+                <h1>Money Crisis<br>Couple™</h1>
+            </div>
+            <ul class="sidebar-nav">
+                <li class="nav-item active" data-view="dashboard">
+                    <i class="fa-solid fa-table-cells-large"></i> Dasbor
+                </li>
+                
+                <div class="nav-category">Panduan Penataan</div>
+                <li class="nav-item" data-view="reset7day">
+                    <i class="fa-solid fa-calendar-week"></i> Penataan Krisis 7-Hari
+                </li>
+
+                <div class="nav-category">Modul Krisis</div>
+                <li class="nav-item" data-view="tool1">
+                    <i class="fa-solid fa-kit-medical"></i> Triase Krisis
+                </li>
+                <li class="nav-item" data-view="tool2">
+                    <i class="fa-solid fa-calculator"></i> Anggaran Bertahan Hidup
+                </li>
+                <li class="nav-item" data-view="tool3">
+                    <i class="fa-solid fa-phone-volume"></i> Skrip Kreditur
+                </li>
+                <li class="nav-item" data-view="tool4">
+                    <i class="fa-solid fa-shield-halved"></i> Hentikan Saling Menyalahkan
+                </li>
+                <li class="nav-item" data-view="tool5">
+                    <i class="fa-solid fa-flag"></i> Target Pemulihan
+                </li>
+
+                <div class="nav-category">Sintesis & Informasi</div>
+                <li class="nav-item" data-view="myplan">
+                    <i class="fa-solid fa-file-invoice"></i> Rencana Rumah Tangga Saya
+                </li>
+                <li class="nav-item" data-view="historyView">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya
+                </li>
+                <li class="nav-item" data-view="privacyView">
+                    <i class="fa-solid fa-user-shield"></i> Privasi & Keamanan
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Area Konten Utama -->
+        <main class="main-content">
+            <div class="content-wrapper">
+
+                <!-- TAMPILAN DASBOR -->
+                <section id="dashboard" class="view-section active">
+                    <div class="dashboard-hero">
+                        <h2>Money Crisis Couple™</h2>
+                        <p>Hentikan krisis. Bangkit kembali bersama.</p>
+                    </div>
+
+                    <div class="orientation-card">
+                        <h3><i class="fa-solid fa-compass"></i> Prinsip Stabilisasi</h3>
+                        <p>Dalam kondisi krisis keuangan, pasangan membutuhkan dua bentuk stabilisasi secara bersamaan: <strong>Stabilisasi Keuangan</strong> (melindungi tempat tinggal, makanan, dan kebutuhan pokok) serta <strong>Koordinasi Hubungan</strong> (menghentikan saling menyalahkan dan bekerja sebagai tim). Aplikasi ini membantu Anda menavigasi keduanya secara aman tanpa kepanikan atau rasa malu.</p>
+                    </div>
+
+                    <!-- Ringkasan Kualitatif Rumah Tangga -->
+                    <div class="card" style="padding: 1.25rem; margin-bottom: 1.5rem;">
+                        <div class="result-box-title" style="margin-bottom: 0.75rem;">
+                            <span><i class="fa-solid fa-chart-pie"></i> Gambaran Krisis Rumah Tangga</span>
+                            <span id="dashSnapshotState" class="badge badge-stressed">Belum Dinilai</span>
+                        </div>
+                        <div class="snapshot-grid">
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Defisit Arus Kas</div>
+                                <div class="snapshot-val" id="snapGap">--</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Daya Tahan Dana Tunai</div>
+                                <div class="snapshot-val" id="snapRunway">--</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Batas Kebutuhan Pokok</div>
+                                <div class="snapshot-val" id="snapBudget">--</div>
+                            </div>
+                            <div class="snapshot-item">
+                                <div class="snapshot-label">Kekompakan Tim</div>
+                                <div class="snapshot-val" id="snapCoord">--</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dash-card" data-target="tool1">
+                            <div class="dash-card-icon"><i class="fa-solid fa-kit-medical"></i></div>
+                            <h3>Triase Krisis</h3>
+                            <p>Uji tingkat keparahan saat ini, hitung daya tahan dana tunai, dan pisahkan kewajiban mendesak yang menunggak.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool2">
+                            <div class="dash-card-icon"><i class="fa-solid fa-calculator"></i></div>
+                            <h3>Anggaran Bertahan Hidup</h3>
+                            <p>Buat rencana pengeluaran paling mendasar untuk memastikan kebutuhan makan dan tempat tinggal tetap aman.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool3">
+                            <div class="dash-card-icon"><i class="fa-solid fa-phone-volume"></i></div>
+                            <h3>Skrip Kreditur</h3>
+                            <p>Siapkan skrip negosiasi dan templat email proaktif yang berbasis fakta untuk disampaikan kepada pemberi pinjaman.</p>
+                        </div>
+                        <div class="dash-card" data-target="tool4">
+                            <div class="dash-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h3>Hentikan Menyalahkan</h3>
+                            <p>Ubah pola saling tuduh menjadi tindakan bersatu: "Kita Bersama Melawan Masalah".</p>
+                        </div>
+                        <div class="dash-card" data-target="tool5">
+                            <div class="dash-card-icon"><i class="fa-solid fa-flag"></i></div>
+                            <h3>Target Pemulihan</h3>
+                            <p>Susun tolok ukur berbasis kondisi 30-60-90 hari untuk menstabilkan kemajuan rumah tangga secara bertahap.</p>
+                        </div>
+                        <div class="dash-card" data-target="reset7day" style="border-color: var(--sand); background: #FFFDF9;">
+                            <div class="dash-card-icon" style="background: var(--sand-light);"><i class="fa-solid fa-calendar-week"></i></div>
+                            <h3>Penataan Krisis 7-Hari</h3>
+                            <p>Ikuti urutan langkah demi langkah yang terstruktur menggunakan seluruh alat untuk membangun rencana penataan total.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN PANDUAN PENATAAN 7-HARI -->
+                <section id="reset7day" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-calendar-week"></i> Penataan Krisis Keuangan 7-Hari</h2>
+                        </div>
+                        <p class="problem-statement">
+                            Ikuti urutan langkah demi langkah harian ini untuk beranjak dari kekacauan menuju rencana rumah tangga yang stabil sepenuhnya.
+                        </p>
+                        <div style="display: flex; flex-direction: column; gap: 1rem;">
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Hari 1: Hadapi Angka Kerugian</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Jalankan Triase Krisis untuk menentukan daya tahan dana tunai dan kewajiban menunggak yang mendesak.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool1')">Mulai Hari 1</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Hari 2: Buat Anggaran Bertahan Hidup</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Pisahkan biaya tempat tinggal/makanan yang penting dari pengeluaran yang dapat ditunda untuk menemukan batas pengeluaran dasar.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool2')">Mulai Hari 2</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Hari 3: Siapkan Panggilan ke Kreditur</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Hasilkan skrip kustom untuk mengajukan opsi keringanan kepada pemilik kontrakan, bank, atau penyedia layanan umum.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool3')">Mulai Hari 3</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Hari 4: Hentikan Lingkaran Saling Menyalahkan</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Selaraskan tanggung jawab tanpa saling merendahkan dan jadwalkan evaluasi harian yang terstruktur.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool4')">Mulai Hari 4</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Hari 5: Tetapkan Target Pemulihan</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Susun target berbasis kondisi 30-60-90 hari untuk pendapatan dan dana cadangan tabungan.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('tool5')">Mulai Hari 5</button>
+                            </div>
+                            <div class="result-box" style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
+                                <div>
+                                    <strong>Hari 6 & 7: Sintesis & Tinjauan</strong>
+                                    <p style="font-size: 0.85rem; color: var(--text-muted);">Konsolidasikan seluruh hasil menjadi Rencana Krisis Rumah Tangga yang dapat dicetak.</p>
+                                </div>
+                                <button class="btn-copy" onclick="switchView('myplan')">Lihat Rencana Lengkap</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: TRIASE KRISIS -->
+                <section id="tool1" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-kit-medical"></i> Triase Krisis</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "Kami tidak tahu seberapa buruk kondisinya karena kami terlalu takut untuk melihatnya."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool1()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool1')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Formulir
+                            </button>
+                        </div>
+                        <form id="formTool1">
+                            <div class="form-group">
+                                <label for="t1_income_before">Pendapatan bulanan rumah tangga sebelum krisis (Rp):</label>
+                                <input type="number" id="t1_income_before" class="form-control" placeholder="5000000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_income_now">Pendapatan bulanan rumah tangga yang pasti saat ini (Rp):</label>
+                                <input type="number" id="t1_income_now" class="form-control" placeholder="1200000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_savings">Total tabungan dana tunai yang tersedia (Rp):</label>
+                                <input type="number" id="t1_savings" class="form-control" placeholder="400000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_essential_cost">Estimasi pengeluaran bulanan pokok (Tempat Tinggal, Makanan, Tagihan) (Rp) [Opsional]:</label>
+                                <input type="number" id="t1_essential_cost" class="form-control" placeholder="contoh: 2800000" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_months_cover">Estimasi berapa bulan pengeluaran pokok yang bisa ditutup:</label>
+                                <select id="t1_months_cover" class="form-control" required>
+                                    <option value="0">0 bulan / Tidak sanggup membayar bulan ini</option>
+                                    <option value="less_1">&lt; 1 bulan</option>
+                                    <option value="1_2">1 - 2 bulan</option>
+                                    <option value="3_6">3 - 6 bulan</option>
+                                    <option value="6_plus">6+ bulan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_crisis_type">Penyebab utama krisis:</label>
+                                <select id="t1_crisis_type" class="form-control" required>
+                                    <option value="job_loss_one">Kehilangan pekerjaan (satu pasangan)</option>
+                                    <option value="job_loss_both">Kehilangan pekerjaan (kedua pasangan)</option>
+                                    <option value="business_failure">Usaha bangkrut / pendapatan anjlok</option>
+                                    <option value="medical_debt">Darurat medis / utang berobat</option>
+                                    <option value="legal_issue">Masalah hukum / liabilitas tak terduga</option>
+                                    <option value="sudden_expense">Pengeluaran mendadak dalam jumlah besar</option>
+                                    <option value="income_cut">Pemotongan gaji / penurunan pendapatan</option>
+                                    <option value="other">Guncangan keuangan mendadak lainnya</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Kewajiban prioritas yang sudah menunggak atau berisiko langsung:</label>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Sewa/KPR"> Sewa / KPR</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Tagihan Listrik/Air"> Tagihan Listrik / Air</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Kartu Kredit"> Kartu Kredit / Pinjaman Tanpa Agunan</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Cicilan Kendaraan"> Cicilan Kendaraan / Transportasi Kerja</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Pinjaman Pendidikan"> Pinjaman Pendidikan</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t1_behind" value="Tagihan Medis"> Tagihan Medis</label>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-chart-line"></i> Hitung Penilaian Triase</button>
+                        </form>
+
+                        <div id="resultsTool1" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Analisis Triase Krisis</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Cetak Penilaian</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">STATUS KRISIS SAAT INI <span id="t1_res_score_badge" class="badge">--</span></div>
+                                <div class="result-box-content" id="t1_res_score"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">DAYA TAHAN DANA TUNAI</div>
+                                <div class="result-box-content" id="t1_res_runway"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">DEFISIT PENDAPATAN BULANAN</div>
+                                <div class="result-box-content" id="t1_res_gap"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">KEWAJIBAN PRIORITAS BERISIKO</div>
+                                <div class="result-box-content" id="t1_res_bleeding"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">PENGHENTIAN & PENUNDAAN SEGERA</div>
+                                <div class="result-box-content" id="t1_res_stops"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">DAFTAR TUGAS 48 JAM PERTAMA</div>
+                                <div class="result-box-content" id="t1_res_48hours"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Langkah Selanjutnya yang Disarankan</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Tentukan batas pasti pengeluaran pokok Anda.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool2')">Buka Anggaran Bertahan Hidup</button>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Riwayat -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Penilaian Triase Sebelumnya</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool1')">Hapus Riwayat</button>
+                            </div>
+                            <div class="history-list" id="historyTool1"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: ANGGARAN BERTAHAN HIDUP -->
+                <section id="tool2" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-calculator"></i> Anggaran Bertahan Hidup</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "Kami membutuhkan anggaran paling mendasar agar tetap bisa makan dan memiliki tempat tinggal."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool2()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool2')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Formulir
+                            </button>
+                        </div>
+                        <form id="formTool2">
+                            <div class="form-group">
+                                <label for="t2_rent">Tempat Tinggal (Sewa / KPR) (Rp):</label>
+                                <input type="number" id="t2_rent" class="form-control" placeholder="1800000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_food">Bahan Makanan Pokok Rumah Tangga (Rp):</label>
+                                <input type="number" id="t2_food" class="form-control" placeholder="450000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_utilities">Tagihan Wajib (Listrik, Air, Gas, Pulsa Dasar) (Rp):</label>
+                                <input type="number" id="t2_utilities" class="form-control" placeholder="250000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_transport">Transportasi Pokok (Transportasi Bekerja, BBM) (Rp):</label>
+                                <input type="number" id="t2_transport" class="form-control" placeholder="180000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_insurance">Asuransi Penting (Kesehatan, Kendaraan) (Rp):</label>
+                                <input type="number" id="t2_insurance" class="form-control" placeholder="280000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_debt">Pembayaran Minimum Utang Wajib (Rp):</label>
+                                <input type="number" id="t2_debt" class="form-control" placeholder="400000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_childcare">Kebutuhan Anak / Medis / Pendidikan Wajib (Rp):</label>
+                                <input type="number" id="t2_childcare" class="form-control" placeholder="0" min="0">
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_nonessential">Pengeluaran Bulanan Opsional / Bisa Ditunda (Rp):</label>
+                                <input type="number" id="t2_nonessential" class="form-control" placeholder="650000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_morale_cost">Item Penjaga Ketenangan / Kebahagiaan Pilihan (Rp) [Opsional]:</label>
+                                <input type="number" id="t2_morale_cost" class="form-control" placeholder="15000" min="0">
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-file-invoice-dollar"></i> Buat Rencana Anggaran Bertahan Hidup</button>
+                        </form>
+
+                        <div id="resultsTool2" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Rencana Anggaran Bertahan Hidup</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Cetak Anggaran</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">BATAS PENGELUARAN MINIMUM BULANAN</div>
+                                <div class="result-box-content" id="t2_res_budget"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">PENGELUARAN OPSIONAL TERBESAR YANG BISA DIPotong</div>
+                                <div class="result-box-content" id="t2_res_cutlist"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">RENCANA PANGAN & KEBUTUHAN POKOK</div>
+                                <div class="result-box-content" id="t2_res_foodplan"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">ANALISIS BIAYA TEMPAT TINGGAL</div>
+                                <div class="result-box-content" id="t2_res_housing"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">KEBERLANJUTAN & PENJAGA KETENANGAN</div>
+                                <div class="result-box-content" id="t2_res_luxury"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">METODE KONTROL PENGELUARAN MINGGUAN</div>
+                                <div class="result-box-content" id="t2_res_cashsystem"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Langkah Selanjutnya yang Disarankan</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Siapkan komunikasi berbasis fakta kepada pemberi pinjaman untuk akun yang tidak dapat dibayar penuh.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool3')">Buka Skrip Kreditur</button>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Riwayat -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Rencana Anggaran Sebelumnya</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool2')">Hapus Riwayat</button>
+                            </div>
+                            <div class="history-list" id="historyTool2"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: SKRIP KREDITUR -->
+                <section id="tool3" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-phone-volume"></i> Panduan Komunikasi Kreditur</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "Kami tidak tahu harus mengatakan apa kepada pemilik kontrakan, bank, atau perusahaan kartu kredit."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool3()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool3')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Formulir
+                            </button>
+                        </div>
+                        <form id="formTool3">
+                            <div class="form-group">
+                                <label>Penyedia Layanan / Kreditur yang perlu dihubungi:</label>
+                                <div class="checkbox-grid">
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Pemilik Kontrakan / Pengelola"> Pemilik Kontrakan / Pengelola</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Pengelola KPR"> Pengelola KPR</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Penerbit Kartu Kredit"> Penerbit Kartu Kredit</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Perusahaan Listrik/Air"> Perusahaan Listrik / Air</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Penyedia Leasing Kendaraan"> Leasing Kendaraan</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Penyedia Pinjaman Pendidikan"> Pinjaman Pendidikan</label>
+                                    <label class="checkbox-item"><input type="checkbox" name="t3_creditors" value="Penyedia Layanan Kesehatan"> Penyedia Layanan Kesehatan</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_payment_ability">Kemampuan bayar Anda saat ini:</label>
+                                <select id="t3_payment_ability" class="form-control" required>
+                                    <option value="Tidak bisa membayar sama sekali saat ini">Tidak bisa membayar sama sekali saat ini (Rp0)</option>
+                                    <option value="Pembayaran sebagian kecil">Pembayaran sebagian kecil (Sejumlah RpXX)</option>
+                                    <option value="Pembayaran minimum penuh, memohon keringanan bunga">Pembayaran minimum penuh, memohon keringanan bunga/denda</option>
+                                    <option value="Bisa membayar sebagian akun saja">Bisa membayar sebagian akun pokok, tapi tidak untuk akun ini</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Riwayat pembayaran sebelumnya pada akun ini:</label>
+                                <div class="radio-group">
+                                    <label class="radio-item"><input type="radio" name="t3_history" value="Pertama kali mengalami kesulitan" checked> Pertama kali mengalami kesulitan</label>
+                                    <label class="radio-item"><input type="radio" name="t3_history" value="Pernah menunggak sebelumnya"> Pernah menunggak sebelumnya</label>
+                                    <label class="radio-item"><input type="radio" name="t3_history" value="Saat ini lancar"> Saat ini lancar</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Metode komunikasi yang dipilih:</label>
+                                <div class="radio-group">
+                                    <label class="radio-item"><input type="radio" name="t3_method" value="Panggilan Telepon" checked> Panggilan Telepon</label>
+                                    <label class="radio-item"><input type="radio" name="t3_method" value="Email / Pesan Portal"> Email / Portal Resmi</label>
+                                    <label class="radio-item"><input type="radio" name="t3_method" value="Surat Resmi Tertulis"> Surat Resmi</label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_fear">Kekhawatiran utama Anda sebelum menghubungi:</label>
+                                <textarea id="t3_fear" class="form-control" placeholder="contoh: Saya khawatir mereka menolak pembayaran sebagian dan langsung mengenakan denda atau merusak catatan kredit."></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-comments"></i> Buat Paket Negosiasi</button>
+                        </form>
+
+                        <div id="resultsTool3" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Panduan Komunikasi Kreditur</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Cetak Paket</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">SKRIP PERCAKAPAN TELEPON</div>
+                                <div class="result-box-content" id="t3_res_script"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">TEMPLAT EMAIL / PESAN PORTAL</div>
+                                <div class="result-box-content" id="t3_res_email"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">DAFTAR DOKUMEN PENDUKUNG</div>
+                                <div class="result-box-content" id="t3_res_docs"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">HAL YANG HARUS DITANYAKAN & DIPASTIKAN SEBELUM SEPAKAT</div>
+                                <div class="result-box-content" id="t3_res_ask"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">CATATAN KONFIRMASI TERTULIS</div>
+                                <div class="result-box-content" id="t3_res_followup"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">JIKA MEREKA MENOLAK / LENGKAPKAN ESCALATION</div>
+                                <div class="result-box-content" id="t3_res_ifno"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Langkah Selanjutnya yang Disarankan</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Redakan ketegangan keuangan dan berkoordinasi kembali sebagai satu tim.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool4')">Buka Hentikan Menyalahkan</button>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Riwayat -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Skrip Komunikasi Sebelumnya</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool3')">Hapus Riwayat</button>
+                            </div>
+                            <div class="history-list" id="historyTool3"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: HENTIKAN MENYALAHKAN -->
+                <section id="tool4" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-shield-halved"></i> Hentikan Menyalahkan</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "Kami saling menyalahkan atau menyalahkan diri sendiri, dan tidak ada satupun yang membantu."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool4()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool4')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Formulir
+                            </button>
+                        </div>
+                        <form id="formTool4">
+                            <div class="form-group">
+                                <label for="t4_target_a">Fokus utama tuduhan Pasangan A:</label>
+                                <select id="t4_target_a" class="form-control" required>
+                                    <option value="Diri Sendiri">Diri Sendiri (Rasa salah internal)</option>
+                                    <option value="Pasangan">Pasangan (Tuduhan eksternal)</option>
+                                    <option value="Kondisi Ekonomi">Kondisi Ekonomi / Pasar Eksternal</option>
+                                    <option value="Nasib Buruk">Keadaan / Nasib Buruk</option>
+                                    <option value="Keputusan Masa Lalu">Keputusan Masa Lalu / Pilihan Bersama</option>
+                                    <option value="Fokus Masa Depan">Tidak Ada (Murni fokus pada masa depan)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_target_b">Fokus utama tuduhan Pasangan B:</label>
+                                <select id="t4_target_b" class="form-control" required>
+                                    <option value="Diri Sendiri">Diri Sendiri (Rasa salah internal)</option>
+                                    <option value="Pasangan">Pasangan (Tuduhan eksternal)</option>
+                                    <option value="Kondisi Ekonomi">Kondisi Ekonomi / Pasar Eksternal</option>
+                                    <option value="Nasib Buruk">Keadaan / Nasib Buruk</option>
+                                    <option value="Keputusan Masa Lalu">Keputusan Masa Lalu / Pilihan Bersama</option>
+                                    <option value="Fokus Masa Depan">Tidak Ada (Murni fokus pada masa depan)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_pattern">Pola konflik saat ini:</label>
+                                <select id="t4_pattern" class="form-control" required>
+                                    <option value="Kekesalan Terpendam">Saling diam / Menjauh secara emosional</option>
+                                    <option value="Pertengkaran Terbuka">Pertengkaran terbuka dan sering adu mulut</option>
+                                    <option value="Pola Menarik Diri/Menyerang">Satu menarik diri / Satu menyerang</option>
+                                    <option value="Sama-sama Depresi">Kedua pasangan merasa lelah dan cemas</option>
+                                    <option value="Bersatu">Bersatu melawan masalah, tetapi sangat stres</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_needs_a">Hal yang dibutuhkan Pasangan A untuk merasa aman:</label>
+                                <textarea id="t4_needs_a" class="form-control" placeholder="contoh: Membutuhkan kepastian bahwa kita menyelesaikan ini sebagai tim dan kesalahan masa lalu bukan berarti kegagalan berlanjut."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_needs_b">Hal yang dibutuhkan Pasangan B untuk merasa aman:</label>
+                                <textarea id="t4_needs_b" class="form-control" placeholder="contoh: Membutuhkan pembaharuan informasi berbasis fakta yang jelas tanpa emosi yang meluap-luap."></textarea>
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-heart-circle-check"></i> Buat Strategi Penyelarasan</button>
+                        </form>
+
+                        <div id="resultsTool4" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Penyelarasan Hubungan</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Cetak Strategi</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">ANALISIS POLA SALING MENYALAHKAN</div>
+                                <div class="result-box-content" id="t4_res_blamemap"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">BINGKAI ULANG "MUSUH BERSAMA"</div>
+                                <div class="result-box-content" id="t4_res_reframe"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">TANGGUNG JAWAB TANPA SALING MERENDAHKAN</div>
+                                <div class="result-box-content" id="t4_res_apology"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">JALUR TANGGUNG JAWAB & PEMULIHAN</div>
+                                <div class="result-box-content" id="t4_res_forgiveness"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">RITUAL EVALUASI MALAM 5-MENIT TERSTRUKTUR</div>
+                                <div class="result-box-content" id="t4_res_checkin"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">SARAN BANTUAN DARI LUAR</div>
+                                <div class="result-box-content" id="t4_res_therapy"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Langkah Selanjutnya yang Disarankan</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Tetapkan target pemulihan berbasis kondisi untuk membangun harapan yang nyata.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('tool5')">Buka Target Pemulihan</button>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Riwayat -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Penyelarasan Hubungan Sebelumnya</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool4')">Hapus Riwayat</button>
+                            </div>
+                            <div class="history-list" id="historyTool4"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: TARGET PEMULIHAN -->
+                <section id="tool5" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-flag"></i> Target Pemulihan</h2>
+                        </div>
+                        <div class="problem-statement">
+                            "Kami membutuhkan peta jalan untuk keluar dari kondisi ini agar tidak merasa putus asa."
+                        </div>
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="loadSampleTool5()">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh
+                            </button>
+                            <button class="btn-reset" onclick="resetForm('formTool5')">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Formulir
+                            </button>
+                        </div>
+                        <form id="formTool5">
+                            <div class="form-group">
+                                <label for="t5_target_income">Target pendapatan bulanan rumah tangga untuk pemulihan penuh (Rp):</label>
+                                <input type="number" id="t5_target_income" class="form-control" placeholder="5000000" min="0" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_timeline">Jangka waktu perencanaan menuju target pemulihan:</label>
+                                <select id="t5_timeline" class="form-control" required>
+                                    <option value="1_month">1 bulan</option>
+                                    <option value="3_months">3 bulan</option>
+                                    <option value="6_months">6 bulan</option>
+                                    <option value="1_year">1 tahun</option>
+                                    <option value="unclear">Belum jelas / Jangka waktu fleksibel</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_plan_a">Rencana penghasilan tambahan Pasangan A:</label>
+                                <textarea id="t5_plan_a" class="form-control" placeholder="contoh: Mengirim 10 lamaran kerja setiap minggu, menghubungi relasi kerja lama." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_plan_b">Rencana penghasilan tambahan Pasangan B:</label>
+                                <textarea id="t5_plan_b" class="form-control" placeholder="contoh: Mengambil pekerjaan lepas (freelance) dan pekerjaan sampingan akhir pekan." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_win">Satu keberhasilan keuangan yang sudah dicapai (opsional):</label>
+                                <input type="text" id="t5_win" class="form-control" placeholder="contoh: Membatalkan langganan opsional, menghemat Rp120.000/bulan.">
+                            </div>
+                            <button type="submit" class="btn-submit"><i class="fa-solid fa-route"></i> Buat Peta Jalan Pemulihan</button>
+                        </form>
+
+                        <div id="resultsTool5" class="results-container">
+                            <div class="results-header">
+                                <span><i class="fa-solid fa-clipboard-check"></i> Peta Jalan Pemulihan</span>
+                                <button class="btn-copy" onclick="printPage()"><i class="fa-solid fa-print"></i> Cetak Peta Jalan</button>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">TARGET 0–30 HARI: HENTIKAN PENURUNAN</div>
+                                <div class="result-box-content" id="t5_res_30day"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">TARGET 31–60 HARI: STABILISASI</div>
+                                <div class="result-box-content" id="t5_res_60day"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">TARGET 61–90 HARI: PERKUAT KEUANGAN</div>
+                                <div class="result-box-content" id="t5_res_90day"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">RENCANA PENGHASILAN TAMBAHAN</div>
+                                <div class="result-box-content" id="t5_res_bridge"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">MERAYAKAN KEMAJUAN SECAKA AMAN</div>
+                                <div class="result-box-content" id="t5_res_celebration"></div>
+                            </div>
+                            <div class="result-box">
+                                <div class="result-box-title">KONTEKS JANGKA WAKTU PEMULIHAN</div>
+                                <div class="result-box-content" id="t5_res_timeline"></div>
+                            </div>
+
+                            <div class="next-tool-card">
+                                <div class="next-tool-info">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                    <div>
+                                        <strong>Lihat Rencana Rumah Tangga Lengkap</strong>
+                                        <p style="font-size: 0.8rem; color: var(--text-muted);">Lihat seluruh hasil modul yang telah diselesaikan dalam satu tampilan ringkas.</p>
+                                    </div>
+                                </div>
+                                <button class="btn-next-tool" onclick="switchView('myplan')">Lihat Rencana Utama</button>
+                            </div>
+                        </div>
+
+                        <!-- Bagian Riwayat -->
+                        <div class="history-section">
+                            <div class="history-title">
+                                <span><i class="fa-solid fa-clock-rotate-left"></i> Peta Jalan Pemulihan Sebelumnya</span>
+                                <button class="btn-clear-history" onclick="clearToolHistory('tool5')">Hapus Riwayat</button>
+                            </div>
+                            <div class="history-list" id="historyTool5"></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN SINTESIS RENCANA SAYA -->
+                <section id="myplan" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-file-invoice"></i> Rencana Stabilisasi Rumah Tangga Saya</h2>
+                        </div>
+                        <p class="problem-statement">
+                            Sintesis satu halaman ini menggabungkan penilaian terbaru Anda dari seluruh modul menjadi satu kesepakatan rumah tangga yang dapat dijalankan.
+                        </p>
+
+                        <div class="form-action-bar">
+                            <button class="btn-sample" onclick="printPage()"><i class="fa-solid fa-print"></i> Cetak Rencana Lengkap</button>
+                        </div>
+
+                        <div id="planSynthesisContent">
+                            <!-- Diisi secara dinamis melalui JS -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN KONSOLIDASI RIWAYAT -->
+                <section id="historyView" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Penilaian Utama</h2>
+                        </div>
+                        <p class="problem-statement">Tinjau, pulihkan, atau hapus entri yang tersimpan di seluruh modul perangkat ini.</p>
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 1rem;">
+                            <button class="btn-clear-history" onclick="clearAllHistory()"><i class="fa-solid fa-trash-can"></i> Hapus Semua Riwayat</button>
+                        </div>
+                        <div id="masterHistoryList" class="history-list"></div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN PRIVASI & KEAMANAN -->
+                <section id="privacyView" class="view-section">
+                    <div class="card">
+                        <div class="tool-header">
+                            <h2><i class="fa-solid fa-user-shield"></i> Pemberitahuan Privasi & Keamanan</h2>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-box-title">PENYIMPANAN LOKAL & PRIVASI DATA</div>
+                            <div class="result-box-content">
+                                • Seluruh data yang dimasukkan ke Money Crisis Couple™ disimpan sepenuhnya di dalam penyimpanan lokal (localStorage) peramban web Anda sendiri.<br>
+                                • Tidak ada perhitungan keuangan, nama, utang, atau catatan yang dikirimkan ke server atau basis data eksternal apa pun.<br>
+                                • Anda dapat menghapus entri yang tersimpan kapan saja menggunakan opsi "Hapus Riwayat" di setiap modul atau di tampilan Riwayat Utama.
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-box-title">KEAMANAN HUBUNGAN & PEMAKSAAN KEUANGAN</div>
+                            <div class="result-box-content">
+                                • Perencanaan keuangan bersama membutuhkan rasa aman dan rasa saling percaya. Jika Anda mengalami kekerasan finansial, kontrol paksa, atau mengkhawatirkan keselamatan fisik Anda, perencanaan bersama mungkin tidak tepat atau tidak aman.<br>
+                                • Jika Anda membutuhkan bantuan, pertimbangkan untuk menghubungi kelompok pendamping masyarakat lokal atau layanan hukum/konseling profesional secara aman.
+                            </div>
+                        </div>
+                        <div class="result-box">
+                            <div class="result-box-title">PENAFIAN PROFESIONAL</div>
+                            <div class="result-box-content">
+                                Aplikasi ini adalah perangkat pendukung keputusan dan komunikasi terstruktur untuk tujuan perencanaan rumah tangga saja. Aplikasi ini bukan merupakan nasihat hukum, pajak, restrukturisasi utang resmi, penasihat keuangan, atau terapi hubungan. Untuk nasihat hukum khusus, berkonsultasilah dengan ahli hukum yang berlisensi.
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Catatan Kaki Penafian Umum -->
+    <footer class="app-footer">
+        Money Crisis Couple™ — Alat pendukung keputusan dan perencanaan praktis. Bukan nasihat hukum, keuangan, atau terapi. Semua data tetap tersimpan aman di peramban Anda.
+    </footer>
+
+    <!-- Kontainer Notifikasi Toast Umum -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Tersalin!</span>
+    </div>
+
+    <!-- Script Mesin Aplikasi -->
+    <script>
+        /* -------------------------------------------------------------------
+           MESIN UTAMA & KONSTANTA
+           ------------------------------------------------------------------- */
+        const APP_VERSION = "2.0";
+        const STORAGE_KEY_STATE = "moneycrisis_v2_state";
+        const STORAGE_KEY_HISTORY = "moneycrisis_v2_history";
+
+        // Arsitektur Status Global
+        let moneyCrisisState = {
+            completedTools: [],
+            toolResults: {},
+            currentInputs: {},
+            crisisSnapshot: {
+                cashFlowDeficit: 0,
+                liquidRunway: "Belum Dinilai",
+                essentialBaseline: 0,
+                teamAlignment: "Belum Dinilai",
+                stateLabel: "Belum Dinilai"
+            },
+            schemaVersion: 2,
+            lastUpdated: null
+        };
+
+        // Elemen DOM
+        const sidebar = document.getElementById('sidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const navItems = document.querySelectorAll('.nav-item');
+        const viewSections = document.querySelectorAll('.view-section');
+        const dashCards = document.querySelectorAll('.dash-card');
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toastMsg');
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', () => {
+            setupNavigation();
+            setupMobileMenu();
+            setupFormListeners();
+            loadState();
+            loadAllHistories();
+            renderDashboardSnapshot();
+            renderMasterPlan();
+        });
+
+        // Utilitas Keamanan: Pengamanan Karakter HTML (Escaping)
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return str;
+            return str
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Pembantu Toast
+        function showToast(message) {
+            toastMsg.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        // Pembantu Salin (Copy)
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Tersalin ke papan klip!");
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Tersalin ke papan klip!");
+            } catch (err) {
+                showToast("Gagal menyalin secara otomatis.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function printPage() {
+            window.print();
+        }
+
+        // Penanganan Navigasi
+        function setupNavigation() {
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetView = item.getAttribute('data-view');
+                    switchView(targetView);
+                    closeMobileMenu();
+                });
+            });
+
+            dashCards.forEach(card => {
+                card.addEventListener('click', () => {
+                    const targetView = card.getAttribute('data-target');
+                    switchView(targetView);
+                });
+            });
+        }
+
+        function switchView(viewId) {
+            navItems.forEach(item => {
+                if (item.getAttribute('data-view') === viewId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            viewSections.forEach(section => {
+                if (section.id === viewId) {
+                    section.classList.add('active');
+                } else {
+                    section.classList.remove('active');
+                }
+            });
+
+            if (viewId === 'myplan') renderMasterPlan();
+            if (viewId === 'historyView') renderMasterHistory();
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Pengaturan Menu Seluler
+        function setupMobileMenu() {
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                sidebarOverlay.classList.toggle('open');
+            });
+
+            sidebarOverlay.addEventListener('click', closeMobileMenu);
+        }
+
+        function closeMobileMenu() {
+            sidebar.classList.remove('open');
+            sidebarOverlay.classList.remove('open');
+        }
+
+        function resetForm(formId) {
+            if (confirm("Reset bidang formulir ini?")) {
+                document.getElementById(formId).reset();
+                showToast("Formulir direset");
+            }
+        }
+
+        /* -------------------------------------------------------------------
+           MESIN STATUS & PENYIMPANAN LOKAL
+           ------------------------------------------------------------------- */
+        function saveState() {
+            moneyCrisisState.lastUpdated = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(moneyCrisisState));
+            renderDashboardSnapshot();
+        }
+
+        function loadState() {
+            const raw = localStorage.getItem(STORAGE_KEY_STATE);
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.schemaVersion === 2) {
+                        moneyCrisisState = parsed;
+                    }
+                } catch(e) {
+                    console.warn("Gagal membaca data tersimpan:", e);
+                }
+            }
+        }
+
+        function saveToHistory(toolId, inputSummary, structuredData) {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            
+            const newEntry = {
+                id: Date.now(),
+                toolId: toolId,
+                timestamp: new Date().toLocaleString('id-ID'),
+                summary: escapeHTML(inputSummary),
+                data: structuredData
+            };
+
+            history.unshift(newEntry);
+            if (history.length > 30) history = history.slice(0, 30);
+
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            renderHistory(toolId);
+        }
+
+        function loadAllHistories() {
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+        }
+
+        function renderHistory(toolId) {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            const toolHistory = history.filter(item => item.toolId === toolId);
+            const container = document.getElementById(`history${toolId.charAt(0).toUpperCase() + toolId.slice(1)}`);
+            
+            if (!container) return;
+
+            if (toolHistory.length === 0) {
+                container.innerHTML = '<div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Belum ada entri terstruktur yang tersimpan.</div>';
+                return;
+            }
+
+            container.innerHTML = toolHistory.map(item => `
+                <div class="history-item" id="hist_${item.id}">
+                    <div class="history-header" onclick="toggleHistoryItem('hist_${item.id}')">
+                        <span>${item.summary}</span>
+                        <span style="font-weight: 400; color: var(--text-muted);">${item.timestamp}</span>
+                    </div>
+                    <div class="history-body">
+                        ${renderStructuredHistoryContent(item.data)}
+                        <div style="margin-top: 0.75rem; text-align: right;">
+                            <button class="btn-clear-history" onclick="deleteHistoryItem(${item.id})">Hapus Entri</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderStructuredHistoryContent(data) {
+            if (typeof data === 'string') return data;
+            let html = '<div style="display:flex; flex-direction:column; gap:0.5rem;">';
+            for (const [key, val] of Object.entries(data)) {
+                html += `<div><strong>${escapeHTML(key)}:</strong> ${escapeHTML(val)}</div>`;
+            }
+            html += '</div>';
+            return html;
+        }
+
+        function toggleHistoryItem(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.toggle('open');
+        }
+
+        function deleteHistoryItem(id) {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            history = history.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+            loadAllHistories();
+            renderMasterHistory();
+            showToast("Entri dihapus");
+        }
+
+        function clearToolHistory(toolId) {
+            if (confirm("Hapus seluruh riwayat untuk modul ini?")) {
+                let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+                history = history.filter(item => item.toolId !== toolId);
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+                renderHistory(toolId);
+                renderMasterHistory();
+                showToast("Riwayat modul dihapus");
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Apakah Anda yakin ingin menghapus SEMUA entri tersimpan di seluruh modul?")) {
+                localStorage.removeItem(STORAGE_KEY_HISTORY);
+                loadAllHistories();
+                renderMasterHistory();
+                showToast("Semua riwayat dihapus");
+            }
+        }
+
+        function renderMasterHistory() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            const container = document.getElementById('masterHistoryList');
+            if (!container) return;
+
+            if (history.length === 0) {
+                container.innerHTML = '<div style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Tidak ditemukan entri penilaian yang tersimpan.</div>';
+                return;
+            }
+
+            container.innerHTML = history.map(item => `
+                <div class="history-item" id="mhist_${item.id}">
+                    <div class="history-header" onclick="toggleHistoryItem('mhist_${item.id}')">
+                        <span><strong>[${item.toolId.toUpperCase()}]</strong> ${item.summary}</span>
+                        <span style="font-weight: 400; color: var(--text-muted);">${item.timestamp}</span>
+                    </div>
+                    <div class="history-body">
+                        ${renderStructuredHistoryContent(item.data)}
+                        <div style="margin-top: 0.75rem; text-align: right;">
+                            <button class="btn-clear-history" onclick="deleteHistoryItem(${item.id})">Hapus Entri</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderDashboardSnapshot() {
+            const snap = moneyCrisisState.crisisSnapshot;
+            const stateBadge = document.getElementById('dashSnapshotState');
+            
+            if (stateBadge) {
+                stateBadge.innerText = snap.stateLabel || "Belum Dinilai";
+                stateBadge.className = "badge " + getBadgeClass(snap.stateLabel);
+            }
+
+            document.getElementById('snapGap').innerText = snap.cashFlowDeficit ? `Rp${snap.cashFlowDeficit.toLocaleString('id-ID')}/bln` : "--";
+            document.getElementById('snapRunway').innerText = snap.liquidRunway || "--";
+            document.getElementById('snapBudget').innerText = snap.essentialBaseline ? `Rp${snap.essentialBaseline.toLocaleString('id-ID')}/bln` : "--";
+            document.getElementById('snapCoord').innerText = snap.teamAlignment || "--";
+        }
+
+        function getBadgeClass(stateLabel) {
+            switch(stateLabel) {
+                case "DARURAT":
+                case "IMMEDIATE": return "badge-immediate";
+                case "MENDESAK":
+                case "URGENT": return "badge-urgent";
+                case "TERTEKAN":
+                case "STRESSED": return "badge-stressed";
+                case "STABIL":
+                case "STABILIZING": return "badge-stabilizing";
+                default: return "badge-stressed";
+            }
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 1: LOGIKA TRIASE KRISIS
+           ------------------------------------------------------------------- */
+        function loadSampleTool1() {
+            document.getElementById('t1_income_before').value = 5500000;
+            document.getElementById('t1_income_now').value = 1200000;
+            document.getElementById('t1_savings').value = 400000;
+            document.getElementById('t1_essential_cost').value = 2800000;
+            document.getElementById('t1_months_cover').value = "0";
+            document.getElementById('t1_crisis_type').value = "job_loss_one";
+            
+            const checkboxes = document.querySelectorAll('input[name="t1_behind"]');
+            checkboxes.forEach(cb => {
+                cb.checked = (cb.value === 'Sewa/KPR' || cb.value === 'Kartu Kredit');
+            });
+        }
+
+        function processTool1(e) {
+            e.preventDefault();
+            const incBefore = parseFloat(document.getElementById('t1_income_before').value) || 0;
+            const incNow = parseFloat(document.getElementById('t1_income_now').value) || 0;
+            const savings = parseFloat(document.getElementById('t1_savings').value) || 0;
+            const essentialCost = parseFloat(document.getElementById('t1_essential_cost').value) || 0;
+            const monthsCover = document.getElementById('t1_months_cover').value;
+            const crisisType = document.getElementById('t1_crisis_type').options[document.getElementById('t1_crisis_type').selectedIndex].text;
+            
+            const behindBills = [];
+            document.querySelectorAll('input[name="t1_behind"]:checked').forEach(cb => behindBills.push(cb.value));
+
+            // Matriks Penentuan Status
+            let stateLabel = "TERTEKAN";
+            let stateDesc = "";
+
+            if (monthsCover === "0" || behindBills.includes("Sewa/KPR") || (essentialCost > 0 && savings < (essentialCost * 0.25))) {
+                stateLabel = "DARURAT";
+                stateDesc = "Penanganan segera diperlukan. Kewajiban pokok (tempat tinggal/kebutuhan dasar) terancam dalam 30 hari.";
+            } else if (monthsCover === "less_1" || behindBills.length >= 2) {
+                stateLabel = "MENDESAK";
+                stateDesc = "Defisit pendapatan parah. Kekurangan arus kas akan menghabiskan sisa cadangan dengan cepat.";
+            } else if (monthsCover === "1_2") {
+                stateLabel = "TERTEKAN";
+                stateDesc = "Cadangan jangka pendek masih ada, tetapi pengurangan biaya dan penambahan pendapatan harus dilakukan sebelum cadangan habis.";
+            } else {
+                stateLabel = "STABIL";
+                stateDesc = "Cadangan dasar tersedia. Fokus beralih ke penggantian pendapatan secara stabil dan komunikasi terstruktur dengan kreditur.";
+            }
+
+            // Perhitungan
+            const gap = essentialCost > 0 ? (essentialCost - incNow) : (incBefore - incNow);
+            let runwayText = "";
+            if (essentialCost > 0) {
+                const days = Math.round((savings / essentialCost) * 30.44);
+                runwayText = `Sekitar <strong>${days} hari</strong> berdasarkan tabungan dana tunai (Rp${savings.toLocaleString('id-ID')}) vs pengeluaran pokok (Rp${essentialCost.toLocaleString('id-ID')}/bln).`;
+            } else {
+                runwayText = savings < 500000 ? "Diperkirakan 7–14 hari cadangan tunai langsung." : "Perhitungan daya tahan membutuhkan data pasti pengeluaran pokok (selesaikan Anggaran Bertahan Hidup selanjutnya).";
+            }
+
+            const bleedingText = behindBills.length > 0 
+                ? `Prioritaskan segera: <strong>${escapeHTML(behindBills.join(', '))}</strong>. Fokus utama harus tetap pada tempat tinggal dan utilitas dasar sebelum utang tanpa agunan.`
+                : "Tidak ada kewajiban pokok kritis yang dilaporkan menunggak. Pertahankan komunikasi proaktif dengan penyedia layanan untuk menghindari gagal bayar.";
+
+            const stopsText = `
+                1. <strong>Hentikan Pengeluaran Opsional:</strong> Hentikan semua langganan digital, keanggotaan, pembelian opsional, dan makan di luar.<br>
+                2. <strong>Lindungi Tempat Tinggal & Makanan:</strong> Alokasikan setiap rupiah yang ada untuk bahan makanan mentah, tempat tinggal, dan transportasi kerja pokok.<br>
+                3. <strong>Hentikan Pembayaran Berlebih Utang Tanpa Agunan:</strong> Bayar jumlah minimum saja atau ajukan penundaan pembayaran sementara pada kartu kredit alih-alih menghabiskan dana makanan.
+            `;
+
+            const gapText = gap > 0 
+                ? `Defisit bulanan pasti saat ini adalah sekitar <strong>Rp${gap.toLocaleString('id-ID')} / bulan</strong>.` 
+                : `Pendapatan yang ada saat ini cukup untuk menutup estimasi pengeluaran inti, menyisakan margin dasar.`;
+
+            const tasksText = `
+                • <strong>Hari Ini:</strong> Kumpulkan transaksi bank 30 hari terakhir untuk memverifikasi uang keluar yang sebenarnya. Hubungi pemilik tempat tinggal jika sewa/KPR berisiko.<br>
+                • <strong>Besok:</strong> Hubungi penyedia layanan umum (Listrik/Air) untuk menanyakan program keringanan atau penyesuaian tanggal jatuh tempo.
+            `;
+
+            // Tampilan UI
+            const badge = document.getElementById('t1_res_score_badge');
+            badge.className = `badge ${getBadgeClass(stateLabel)}`;
+            badge.innerText = stateLabel;
+
+            document.getElementById('t1_res_score').innerHTML = stateDesc;
+            document.getElementById('t1_res_runway').innerHTML = runwayText;
+            document.getElementById('t1_res_gap').innerHTML = gapText;
+            document.getElementById('t1_res_bleeding').innerHTML = bleedingText;
+            document.getElementById('t1_res_stops').innerHTML = stopsText;
+            document.getElementById('t1_res_48hours').innerHTML = tasksText;
+
+            document.getElementById('resultsTool1').classList.add('active');
+
+            // Perbarui Status Global & Gambaran Utama
+            moneyCrisisState.crisisSnapshot.stateLabel = stateLabel;
+            moneyCrisisState.crisisSnapshot.cashFlowDeficit = gap > 0 ? gap : 0;
+            moneyCrisisState.crisisSnapshot.liquidRunway = essentialCost > 0 ? `${Math.round((savings/essentialCost)*30.44)} Hari` : "Telah Dinilai";
+            if (!moneyCrisisState.completedTools.includes('tool1')) moneyCrisisState.completedTools.push('tool1');
+            saveState();
+
+            // Simpan ke Riwayat
+            const structuredData = {
+                "Status Krisis": stateLabel,
+                "Penyebab Utama": crisisType,
+                "Pendapatan Pasti": `Rp${incNow.toLocaleString('id-ID')}/bln`,
+                "Tabungan Tunai": `Rp${savings.toLocaleString('id-ID')}`,
+                "Kewajiban Menunggak": behindBills.join(', ') || "Tidak ada"
+            };
+            saveToHistory('tool1', `Triase: ${stateLabel} (${crisisType})`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 2: LOGIKA ANGGARAN BERTAHAN HIDUP
+           ------------------------------------------------------------------- */
+        function loadSampleTool2() {
+            document.getElementById('t2_rent').value = 1800000;
+            document.getElementById('t2_food').value = 450000;
+            document.getElementById('t2_utilities').value = 250000;
+            document.getElementById('t2_transport').value = 180000;
+            document.getElementById('t2_insurance').value = 280000;
+            document.getElementById('t2_debt').value = 400000;
+            document.getElementById('t2_childcare').value = 0;
+            document.getElementById('t2_nonessential').value = 650000;
+            document.getElementById('t2_morale_cost').value = 15000;
+        }
+
+        function processTool2(e) {
+            e.preventDefault();
+            const rent = parseFloat(document.getElementById('t2_rent').value) || 0;
+            const food = parseFloat(document.getElementById('t2_food').value) || 0;
+            const util = parseFloat(document.getElementById('t2_utilities').value) || 0;
+            const trans = parseFloat(document.getElementById('t2_transport').value) || 0;
+            const ins = parseFloat(document.getElementById('t2_insurance').value) || 0;
+            const debt = parseFloat(document.getElementById('t2_debt').value) || 0;
+            const child = parseFloat(document.getElementById('t2_childcare').value) || 0;
+            const nonEssential = parseFloat(document.getElementById('t2_nonessential').value) || 0;
+            const moraleCost = parseFloat(document.getElementById('t2_morale_cost').value) || 0;
+
+            const coreEssentials = rent + food + util + trans + ins + child;
+            const totalWithDebt = coreEssentials + debt;
+
+            const budgetHtml = `
+                <table class="budget-table">
+                    <tr><th>Tingkat Pengeluaran</th><th>Jumlah Bulanan</th></tr>
+                    <tr><td><strong>Kebutuhan Bertahan Hidup Inti</strong> (Tempat Tinggal, Makanan, Listrik/Air, Transportasi Kerja)</td><td><strong>Rp${coreEssentials.toLocaleString('id-ID')}</strong></td></tr>
+                    <tr><td><strong>Kebutuhan Inti + Pembayaran Utang Minimum</strong></td><td><strong>Rp${totalWithDebt.toLocaleString('id-ID')}</strong></td></tr>
+                    <tr><td><strong>Kapasitas Pengeluaran Opsional / Bisa Ditunda</strong></td><td>Rp${nonEssential.toLocaleString('id-ID')}</td></tr>
+                </table>
+                <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-muted);">Menghilangkan atau mengurangi pengeluaran opsional dapat membebaskan hingga <strong>Rp${nonEssential.toLocaleString('id-ID')}/bln</strong> secara instan untuk cadangan arus kas.</p>
+            `;
+
+            const cutlistHtml = `
+                • <strong>Belanja Opsional & Langganan:</strong> Hentikan segera (Potensi penghematan: ~Rp${Math.round(nonEssential * 0.5).toLocaleString('id-ID')}/bln)<br>
+                • <strong>Makan di Luar / Jajan:</strong> Ganti sepenuhnya dengan memasak bahan makanan di rumah (Potensi penghematan: ~Rp${Math.round(nonEssential * 0.3).toLocaleString('id-ID')}/bln)<br>
+                • <strong>Layanan TV Kabel/Paket Data Tinggi:</strong> Turunkan paket atau minta penundaan sementara (Potensi penghematan: ~Rp${Math.round(nonEssential * 0.2).toLocaleString('id-ID')}/bln)
+            `;
+
+            const weeklyFood = Math.round(food / 4.33);
+            const foodplanHtml = `
+                Target Dasar Pangan: <strong>Rp${food.toLocaleString('id-ID')} / bulan</strong> (~Rp${weeklyFood.toLocaleString('id-ID')} / minggu).<br>
+                <strong>Strategi Fokus:</strong> Prioritaskan bahan makanan mentah pokok (beras, telur, tahu/tempe, sayuran, minyak). Hindari makanan siap saji atau layanan pesan-antar makanan.
+            `;
+
+            const housingRatio = Math.round((rent / coreEssentials) * 100);
+            let housingHtml = `Biaya tempat tinggal mencakup <strong>${housingRatio}%</strong> dari total pengeluaran pokok Anda (Rp${rent.toLocaleString('id-ID')} dari Rp${coreEssentials.toLocaleString('id-ID')}).<br>`;
+            if (housingRatio > 50) {
+                housingHtml += `<em>Pengamatan:</em> Biaya tempat tinggal menghabiskan lebih dari separuh anggaran pokok Anda. Hubungi pemilik kontrakan atau penyedia KPR lebih awal untuk mengajukan penyesuaian atau keringanan pembayaran sebelum menunggak.`;
+            } else {
+                housingHtml += `<em>Pengamatan:</em> Rasio tempat tinggal berada dalam batas wajar terhadap pengeluaran pokok. Pertahankan pembayaran tempat tinggal sebagai prioritas utama.`;
+            }
+
+            const luxuryHtml = moraleCost > 0 
+                ? `Anda memilih item penjaga ketenangan senilai <strong>Rp${moraleCost.toLocaleString('id-ID')}/bulan</strong>. Menjaga satu hal kecil yang sengaja dialokasikan mencegah stres berlebih dan mendukung kepatuhan anggaran jangka panjang.`
+                : `Pertimbangkan untuk memilih satu item penjaga ketenangan berbiaya sangat murah/gratis (contoh: seduh kopi di rumah atau jalan-jalan ke taman) untuk menjaga kesehatan mental.`;
+
+            const cashsystemHtml = `
+                Anggaran Belanja Makanan Mingguan: <strong>Rp${weeklyFood.toLocaleString('id-ID')}</strong>.<br>
+                <strong>Metode Kontrol yang Disarankan:</strong><br>
+                1. <i>Sistem Amplop Cash:</i> Tarik tunai Rp${weeklyFood.toLocaleString('id-ID')} setiap hari Senin untuk kebutuhan makan/pokok. Jika habis, manfaatkan stok bahan makanan di dapur.<br>
+                2. <i>Rekening Khusus Pengeluaran:</i> Transfer tepat Rp${weeklyFood.toLocaleString('id-ID')} setiap minggu ke rekening sekunder/dompet digital khusus agar tidak terpakai untuk hal lain.
+            `;
+
+            document.getElementById('t2_res_budget').innerHTML = budgetHtml;
+            document.getElementById('t2_res_cutlist').innerHTML = cutlistHtml;
+            document.getElementById('t2_res_foodplan').innerHTML = foodplanHtml;
+            document.getElementById('t2_res_housing').innerHTML = housingHtml;
+            document.getElementById('t2_res_luxury').innerHTML = luxuryHtml;
+            document.getElementById('t2_res_cashsystem').innerHTML = cashsystemHtml;
+
+            document.getElementById('resultsTool2').classList.add('active');
+
+            // Perbarui Status Global
+            moneyCrisisState.crisisSnapshot.essentialBaseline = coreEssentials;
+            if (!moneyCrisisState.completedTools.includes('tool2')) moneyCrisisState.completedTools.push('tool2');
+            saveState();
+
+            const structuredData = {
+                "Kebutuhan Inti": `Rp${coreEssentials.toLocaleString('id-ID')}/bln`,
+                "Inti + Utang": `Rp${totalWithDebt.toLocaleString('id-ID')}/bln`,
+                "Penghematan Opsional": `Rp${nonEssential.toLocaleString('id-ID')}/bln`,
+                "Batas Pangan Mingguan": `Rp${weeklyFood.toLocaleString('id-ID')}/minggu`
+            };
+            saveToHistory('tool2', `Anggaran: Batas Inti Rp${coreEssentials.toLocaleString('id-ID')}/bln`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 3: LOGIKA SKRIP KREDITUR
+           ------------------------------------------------------------------- */
+        function loadSampleTool3() {
+            const creditors = document.querySelectorAll('input[name="t3_creditors"]');
+            creditors.forEach(cb => {
+                cb.checked = (cb.value === 'Penerbit Kartu Kredit' || cb.value === 'Pemilik Kontrakan / Pengelola');
+            });
+            document.getElementById('t3_payment_ability').value = "Pembayaran sebagian kecil";
+            document.querySelector('input[name="t3_history"][value="Pertama kali mengalami kesulitan"]').checked = true;
+            document.querySelector('input[name="t3_method"][value="Panggilan Telepon"]').checked = true;
+            document.getElementById('t3_fear').value = "Saya khawatir mereka menolak pembayaran sebagian dan langsung mengenakan denda ekstra.";
+        }
+
+        function processTool3(e) {
+            e.preventDefault();
+            const selectedCreditors = [];
+            document.querySelectorAll('input[name="t3_creditors"]:checked').forEach(cb => selectedCreditors.push(cb.value));
+            const paymentAbility = document.getElementById('t3_payment_ability').value;
+            const history = document.querySelector('input[name="t3_history"]:checked').value;
+            const method = document.querySelector('input[name="t3_method"]:checked').value;
+            const fear = document.getElementById('t3_fear').value;
+
+            const providerLabel = selectedCreditors.length > 0 ? selectedCreditors.join(', ') : 'Pemberi Pinjaman/Penyedia';
+
+            const phoneScript = `\"Halo, nama saya [Nama Anda], Nomor Akun/Pelanggan [Nomor Akun]. Saya menghubungi secara proaktif karena rumah tangga kami sedang mengalami penurunan pendapatan yang tidak terduga.
+
+Kami selalu menjaga komitmen pembayaran kami (${history.toLowerCase()}), tetapi saat ini arus kas kami sedang sangat terbatas. Berdasarkan anggaran darurat kami, kemampuan yang bisa saya ikhtiarkan hari ini adalah [${paymentAbility}].
+
+Saya ingin menanyakan program keringanan, penundaan pembayaran, atau pengurangan bunga apa yang tersedia bagi nasabah yang sedang mengalami penurunan pendapatan sementara? Bagaimana kita bisa bekerja sama agar akun ini tetap berstatus baik tanpa denda?\"`;
+
+            const emailScript = `Subjek: Permohonan Keringanan Pembayaran - No. Akun: [Nomor Akun] - [Nama Anda]
+
+Dengan hormat Tim Layanan / Bagian Keringanan Pembayaran,
+
+Saya menulis surat ini secara proaktif terkait akun saya (${escapeHTML(providerLabel)}). Berhubung adanya penurunan pendapatan rumah tangga yang tidak terduga, kami sedang menyesuaikan anggaran untuk memenuhi kebutuhan pokok.
+
+Catatan kami menunjukkan komitmen baik kami pada akun ini selama ini. Untuk tetap proaktif, saya memohon informasi mengenai program bantuan keringanan, penghapusan denda, atau opsi penyesuaian pembayaran sementara untuk 60 hingga 90 hari ke depan.
+
+Saat ini, kemampuan pembayaran rumah tangga kami adalah: ${escapeHTML(paymentAbility)}.
+
+Mohon petunjuk mengenai opsi yang tersedia, dokumen persyaratan yang diperlukan, serta bagaimana penyesuaian ini memengaruhi status pinjaman kami. Terima kasih atas pengertian dan bantuannya.
+
+Hormat saya,
+[Nama Anda]
+[Nomor Telepon]`;
+
+            const scriptBox = `
+                <div class="script-text">${escapeHTML(phoneScript)}</div>
+                <div style="margin-top: 0.5rem;">
+                    <button class="btn-copy" id="btnCopyPhone"><i class="fa-solid fa-copy"></i> Salin Skrip Panggilan</button>
+                </div>
+            `;
+
+            const emailBox = `
+                <div class="script-text">${escapeHTML(emailScript)}</div>
+                <div style="margin-top: 0.5rem;">
+                    <button class="btn-copy" id="btnCopyEmail"><i class="fa-solid fa-copy"></i> Salin Templat Email</button>
+                </div>
+            `;
+
+            const docsBox = `
+                • Bukti perubahan pendapatan (surat pemutusan hubungan kerja, slip gaji berkurang, atau catatan medis)<br>
+                • Ringkasan anggaran pengeluaran pokok bulanan rumah tangga<br>
+                • Nomor akun dan tagihan bulan terakhir<br>
+                • Buku Catatan Panggilan (Catat: Tanggal, Jam, Nama Petugas, ID Petugas, Nomor Referensi, dan Ketentuan Kesepakatan)
+            `;
+
+            const askBox = `
+                • Tanyakan: "Program keringanan atau perpanjangan waktu resmi apa saja yang Anda miliki?"<br>
+                • Pastikan: "Apakah ada denda yang dihapuskan selama masa keringanan?" dan "Bagaimana status laporan kredit/kolektibilitas saya selama kesepakatan ini?"<br>
+                • Minta: Konfirmasi tertulis dari setiap perubahan struktur pembayaran melalui email atau surat sebelum Anda menganggap kesepakatan selesai.
+            `;
+
+            const followupBox = `
+                Kirimkan email atau surat konfirmasi dalam waktu 24 jam setelah kesepakatan lisan dibuat: <i>"Menindaklanjuti percakapan saya dengan petugas [Nama Petugas] pada [Tanggal], saya mengonfirmasi kesepakatan kita untuk [Ketentuan] dengan nomor referensi [Nomor Referensi]."</i> Simpan salinan fisiknya di folder dokumen Anda.
+            `;
+
+            const ifnoBox = `
+                Jika petugas pertama menolak: Minta untuk dihubungkan ke tingkatan lebih tinggi atau 'Departemen Penanganan Keringanan/Restrukturisasi'. Jika berurusan dengan utang yang rumit, pertimbangkan untuk berkonsultasi dengan lembaga konseling keuangan atau bantuan hukum terpercaya di wilayah Anda.
+            `;
+
+            document.getElementById('t3_res_script').innerHTML = scriptBox;
+            document.getElementById('t3_res_email').innerHTML = emailBox;
+            document.getElementById('t3_res_docs').innerHTML = docsBox;
+            document.getElementById('t3_res_ask').innerHTML = askBox;
+            document.getElementById('t3_res_followup').innerHTML = followupBox;
+            document.getElementById('t3_res_ifno').innerHTML = ifnoBox;
+
+            // Lampirkan pendengar acara secara aman
+            document.getElementById('btnCopyPhone').onclick = () => copyToClipboard(phoneScript);
+            document.getElementById('btnCopyEmail').onclick = () => copyToClipboard(emailScript);
+
+            document.getElementById('resultsTool3').classList.add('active');
+
+            if (!moneyCrisisState.completedTools.includes('tool3')) moneyCrisisState.completedTools.push('tool3');
+            saveState();
+
+            const structuredData = {
+                "Penyedia Layanan": providerLabel,
+                "Kemampuan Bayar": paymentAbility,
+                "Metode Kontak": method,
+                "Riwayat": history
+            };
+            saveToHistory('tool3', `Skrip: ${providerLabel}`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 4: LOGIKA HENTIKAN MENYALAHKAN
+           ------------------------------------------------------------------- */
+        function loadSampleTool4() {
+            document.getElementById('t4_target_a').value = "Pasangan";
+            document.getElementById('t4_target_b').value = "Diri Sendiri";
+            document.getElementById('t4_pattern').value = "Pola Menarik Diri/Menyerang";
+            document.getElementById('t4_needs_a').value = "Saya perlu tahu bahwa kamu berkomitmen penuh untuk menyelesaikan ini bersamaku, meskipun kesalahan telah terjadi.";
+            document.getElementById('t4_needs_b').value = "Saya perlu tahu bahwa saya tetap dihargai meskipun pendapatan saya berdampak.";
+        }
+
+        function processTool4(e) {
+            e.preventDefault();
+            const targetA = document.getElementById('t4_target_a').value;
+            const targetB = document.getElementById('t4_target_b').value;
+            const pattern = document.getElementById('t4_pattern').value;
+            const needsA = document.getElementById('t4_needs_a').value || "Validasi dan komunikasi yang jelas.";
+            const needsB = document.getElementById('t4_needs_b').value || "Kepastian dan tindakan konstruktif.";
+
+            const blamemapHtml = `
+                Fokus Pasangan A: <strong>${escapeHTML(targetA)}</strong>.<br>
+                Fokus Pasangan B: <strong>${escapeHTML(targetB)}</strong>.<br>
+                Dinamika Saat Ini: <strong>${escapeHTML(pattern)}</strong>.<br>
+                <em>Analisis:</em> Saling menyalahkan menguras energi mental dan emosional yang dibutuhkan untuk membuat keputusan keuangan yang jernih. Mengubah fokus dari "Siapa yang menyebabkan ini?" menjadi "Apa langkah kita selanjutnya?" akan mengembalikan ketenangan.
+            `;
+
+            const reframeHtml = `
+                <strong>Bingkai Ulang "Musuh Bersama":</strong> Defisit keuangan adalah rintangan dari luar. Ini bukan "Pasangan A vs Pasangan B"—melainkan <strong>Pasangan A + Pasangan B vs Krisis Keuangan</strong>. Arahkan energi untuk menyelesaikan masalah bersama-sama.
+            `;
+
+            const apologyHtml = `
+                <strong>Kerangka Tanggung Jawab:</strong> Sampaikan fakta tanpa pertahanan diri atau penyesalan berlebihan yang merusak: <i>"Pilihan yang diambil telah menimbulkan risiko keuangan. Saya mengakui peran saya dalam keputusan tersebut, dan saya berkomitmen penuh untuk bekerja di sampingmu demi menstabilkan rumah tangga kita."</i>
+            `;
+
+            const forgivenessHtml = `
+                <strong>Tanggung Jawab & Pemulihan:</strong> Pemulihan kondisi tidak menuntut kesempurnaan emosional secara instan. Sepakati untuk menghentikan perdebatan masa lalu selama 30 hari ke depan agar 100% energi fokus untuk mengamankan makanan, tempat tinggal, dan pendapatan.
+            `;
+
+            const checkinHtml = `
+                <strong>Ritual Evaluasi Malam 5-Menit Terstruktur:</strong><br>
+                1. <i>Evaluasi Emosi (1 mnt):</i> "Bagaimana perasaanmu saat ini dalam skala 1 sampai 10?"<br>
+                2. <i>Apresiasi Kecil (1 mnt):</i> "Satu hal produktif apa yang telah kita lakukan hari ini sebagai tim?"<br>
+                3. <i>Satu Prioritas Utama (2 mnt):</i> "Apa tugas keuangan utama kita besok?"<br>
+                4. <i>Batasan (1 mnt):</i> Tetapkan waktu berhenti pembicaraan uang setiap malam untuk menjaga kualitas tidur dan istirahat.
+            `;
+
+            const therapyHtml = `
+                Jika diskusi berujung pada hinaan pribadi, ancaman perpisahan, atau saling mendiamkan secara total, pertimbangkan untuk mencari konseling pasangan atau mediasi profesional setelah kebutuhan dasar teratasi.
+            `;
+
+            document.getElementById('t4_res_blamemap').innerHTML = blamemapHtml;
+            document.getElementById('t4_res_reframe').innerHTML = reframeHtml;
+            document.getElementById('t4_res_apology').innerHTML = apologyHtml;
+            document.getElementById('t4_res_forgiveness').innerHTML = forgivenessHtml;
+            document.getElementById('t4_res_checkin').innerHTML = checkinHtml;
+            document.getElementById('t4_res_therapy').innerHTML = therapyHtml;
+
+            document.getElementById('resultsTool4').classList.add('active');
+
+            moneyCrisisState.crisisSnapshot.teamAlignment = pattern === "Bersatu" ? "Bersatu" : "Perlu Penyelarasan";
+            if (!moneyCrisisState.completedTools.includes('tool4')) moneyCrisisState.completedTools.push('tool4');
+            saveState();
+
+            const structuredData = {
+                "Pola Konflik": pattern,
+                "Fokus Pasangan A": targetA,
+                "Fokus Pasangan B": targetB,
+                "Status Kekompakan": moneyCrisisState.crisisSnapshot.teamAlignment
+            };
+            saveToHistory('tool4', `Penyelarasan: ${pattern}`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TOOL 5: LOGIKA TARGET PEMULIHAN
+           ------------------------------------------------------------------- */
+        function loadSampleTool5() {
+            document.getElementById('t5_target_income').value = 5500000;
+            document.getElementById('t5_timeline').value = "6_months";
+            document.getElementById('t5_plan_a').value = "Mengirim 10 lamaran kerja setiap minggu, menghubungi relasi kerja lama.";
+            document.getElementById('t5_plan_b').value = "Mengambil pekerjaan lepas dan menjadi pengemudi logistik akhir pekan untuk arus kas langsung.";
+            document.getElementById('t5_win').value = "Membatalkan langganan yang tidak penting dan menurunkan paket internet, menghemat Rp140.000/bulan.";
+        }
+
+        function processTool5(e) {
+            e.preventDefault();
+            const targetIncome = parseFloat(document.getElementById('t5_target_income').value) || 0;
+            const timelineText = document.getElementById('t5_timeline').options[document.getElementById('t5_timeline').selectedIndex].text;
+            const planA = document.getElementById('t5_plan_a').value;
+            const planB = document.getElementById('t5_plan_b').value;
+            const win = document.getElementById('t5_win').value;
+
+            const d30Html = `
+                <strong>Fokus Keuangan:</strong> Hentikan semua kebocoran uang, tuntaskan Anggaran Bertahan Hidup, buat kesepakatan keringanan dengan kreditur, dan amankan penghasilan tambahan darurat.<br>
+                <strong>Fokus Hubungan:</strong> Jaga ritual evaluasi harian 5 menit tanpa memicu perdebatan.
+            `;
+
+            const d60Html = `
+                <strong>Indikator Kemajuan:</strong> Langkah pencarian pendapatan mulai memasuki tahap wawancara aktif, pengerjaan proyek, atau hasil pekerjaan sampingan.<br>
+                <strong>Tindakan Penyesuaian:</strong> Jika defisit pendapatan masih di atas 50%, perluas area pencarian kerja atau pertimbangkan menjual barang rumah tangga yang tidak terpakai.
+            `;
+
+            const d90Html = `
+                <strong>Tolok Ukur Stabilitas:</strong> Kebutuhan pokok bulanan terpenuhi secara konsisten dari pendapatan yang stabil tanpa menambah utang baru.<br>
+                <strong>Fokus Cadangan:</strong> Mulai membangun dana darurat tunai awal sebesar Rp1.000.000.
+            `;
+
+            const bridgeHtml = `
+                <strong>Tindakan Pasangan A:</strong> ${escapeHTML(planA)}<br>
+                <strong>Tindakan Pasangan B:</strong> ${escapeHTML(planB)}<br>
+                <em>Opsi Penghasilan Tambahan:</em> Bekerja paruh waktu, jasa lepas, konsultasi, atau menjual barang bekas layak pakai.
+            `;
+
+            const celebrationHtml = `
+                Apresiasi setiap pencapaian kecil! <strong>Aturan:</strong> Perayaan pencapaian harus berbiaya nol atau sangat murah (contoh: nonton film di rumah, piknik di taman, memasak bersama) agar momentum pemulihan tetap terjaga.
+            `;
+
+            const timelineHtml = `
+                Target Jangka Waktu: <strong>${escapeHTML(timelineText)}</strong>.<br>
+                <em>Konteks:</em> Stabilisasi keuangan adalah proses bertahap. Konsistensi, komunikasi yang jujur, dan penyelarasan bersama jauh lebih penting daripada kecepatan.
+            `;
+
+            document.getElementById('t5_res_30day').innerHTML = d30Html;
+            document.getElementById('t5_res_60day').innerHTML = d60Html;
+            document.getElementById('t5_res_90day').innerHTML = d90Html;
+            document.getElementById('t5_res_bridge').innerHTML = bridgeHtml;
+            document.getElementById('t5_res_celebration').innerHTML = celebrationHtml;
+            document.getElementById('t5_res_timeline').innerHTML = timelineHtml;
+
+            document.getElementById('resultsTool5').classList.add('active');
+
+            if (!moneyCrisisState.completedTools.includes('tool5')) moneyCrisisState.completedTools.push('tool5');
+            saveState();
+
+            const structuredData = {
+                "Target Pendapatan Pemulihan": `Rp${targetIncome.toLocaleString('id-ID')}/bln`,
+                "Target Jangka Waktu": timelineText,
+                "Rencana Pasangan A": planA,
+                "Rencana Pasangan B": planB,
+                "Keberhasilan Saat Ini": win || "Belum ada"
+            };
+            saveToHistory('tool5', `Peta Jalan: Target Rp${targetIncome.toLocaleString('id-ID')}/bln`, structuredData);
+        }
+
+        /* -------------------------------------------------------------------
+           TAMPILAN SINTESIS RENCANA SAYA
+           ------------------------------------------------------------------- */
+        function renderMasterPlan() {
+            const container = document.getElementById('planSynthesisContent');
+            if (!container) return;
+
+            const snap = moneyCrisisState.crisisSnapshot;
+            const completed = moneyCrisisState.completedTools;
+
+            let html = `
+                <div class="result-box">
+                    <div class="result-box-title">GAMBARAN KRISIS RUMAH TANGGA</div>
+                    <div class="result-box-content">
+                        <strong>Status Penilaian:</strong> ${snap.stateLabel}<br>
+                        <strong>Defisit Arus Kas Bulanan:</strong> ${snap.cashFlowDeficit ? `Rp${snap.cashFlowDeficit.toLocaleString('id-ID')}` : "Belum dihitung"}<br>
+                        <strong>Batas Kebutuhan Pokok Bulanan:</strong> ${snap.essentialBaseline ? `Rp${snap.essentialBaseline.toLocaleString('id-ID')}` : "Belum dihitung"}<br>
+                        <strong>Daya Tahan Dana Tunai:</strong> ${snap.liquidRunway}<br>
+                        <strong>Status Kekompakan Tim:</strong> ${snap.teamAlignment}
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="result-box">
+                    <div class="result-box-title">PROGRES PENYELESAIAN MODUL</div>
+                    <div class="result-box-content">
+                        • Triase Krisis: ${completed.includes('tool1') ? '✅ Selesai' : '⏳ Belum'}<br>
+                        • Anggaran Bertahan Hidup: ${completed.includes('tool2') ? '✅ Selesai' : '⏳ Belum'}<br>
+                        • Skrip Kreditur: ${completed.includes('tool3') ? '✅ Selesai' : '⏳ Belum'}<br>
+                        • Hentikan Menyalahkan: ${completed.includes('tool4') ? '✅ Selesai' : '⏳ Belum'}<br>
+                        • Target Pemulihan: ${completed.includes('tool5') ? '✅ Selesai' : '⏳ Belum'}
+                    </div>
+                </div>
+            `;
+
+            html += `
+                <div class="result-box">
+                    <div class="result-box-title">RENCANA TINGKAH LAKU & KESEPAKATAN BERSAMA</div>
+                    <div class="result-box-content">
+                        1. <strong>Utamakan Kebutuhan Pokok:</strong> Alokasikan seluruh pendapatan yang ada terlebih dahulu untuk tempat tinggal, bahan makanan mentah, listrik/air, dan transportasi kerja.<br>
+                        2. <strong>Komunikasi Proaktif dengan Penyedia Layanan:</strong> Hubungi kreditur/pemilik kontrakan sebelum jatuh tempo untuk memohon penyesuaian pembayaran.<br>
+                        3. <strong>Penyelarasan Tim:</strong> Jaga ritual evaluasi malam 5 menit. Batasi pembahasan masalah keuangan agar tidak mengganggu waktu istirahat.
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // Pengaturan Pendengar Acara Formulir
+        function setupFormListeners() {
+            document.getElementById('formTool1').addEventListener('submit', processTool1);
+            document.getElementById('formTool2').addEventListener('submit', processTool2);
+            document.getElementById('formTool3').addEventListener('submit', processTool3);
+            document.getElementById('formTool4').addEventListener('submit', processTool4);
+            document.getElementById('formTool5').addEventListener('submit', processTool5);
+        }
+    </script>
+</body>
+</html>

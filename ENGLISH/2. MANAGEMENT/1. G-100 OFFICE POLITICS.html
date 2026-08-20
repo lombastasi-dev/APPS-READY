@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Politics Navigator™</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --burgundy: #6D2E46;
+            --burgundy-light: #8D3E5B;
+            --burgundy-dark: #4D2031;
+            --sage: #A3B18A;
+            --sage-dark: #588157;
+            --sage-light: #DAD7CD;
+            --bg-gradient: linear-gradient(135deg, #FAF3F5 0%, #F1F8E8 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --sidebar-width: 260px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--burgundy);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            line-height: 1.2;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            padding: 0.75rem 1.5rem 0.25rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #FAF3F5;
+            color: var(--burgundy);
+        }
+
+        .nav-item.active {
+            background: #FAF3F5;
+            color: var(--burgundy);
+            border-left-color: var(--burgundy);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--burgundy);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Cards & Elements */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            color: white;
+            padding: 2.25rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: var(--radius-xl);
+        }
+
+        .hero-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-card p {
+            font-size: 1.05rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .problem-statement {
+            background: #FAF3F5;
+            border-left: 4px solid var(--burgundy);
+            padding: 1rem 1.25rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--burgundy-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sample-badge {
+            display: inline-block;
+            background: #FFF3CD;
+            color: #856404;
+            border: 1px solid #FFEEBA;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Orientation & Principles Box */
+        .orientation-box {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .orientation-box h3 {
+            color: var(--burgundy);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .orientation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .orientation-item {
+            background: #FAFAFA;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            border-left: 3px solid var(--sage-dark);
+        }
+
+        .orientation-item strong {
+            display: block;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        textarea, select, input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #FAFAFA;
+            transition: all 0.2s;
+        }
+
+        textarea:focus, select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--burgundy);
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(109, 46, 70, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .radio-label input {
+            accent-color: var(--burgundy);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--burgundy);
+            color: white;
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .btn-primary:hover {
+            background: var(--burgundy-light);
+            box-shadow: 0 4px 12px rgba(109, 46, 70, 0.2);
+        }
+
+        .btn-secondary {
+            background: #EAEAEA;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #E0E0E0;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: #F8F9FA;
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #bd2130;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-copy {
+            background: var(--sage-dark);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #466845;
+        }
+
+        /* Dashboard Grid */
+        .grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--burgundy);
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background: #FAF3F5;
+            color: var(--burgundy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.1rem;
+            color: var(--burgundy);
+        }
+
+        .dashboard-card p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Qualitative Snapshot Dashboard */
+        .snapshot-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .snapshot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .snapshot-pill {
+            background: #F8F9FA;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .snapshot-pill .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .snapshot-pill .value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        /* Recommendations Card */
+        .recommendations-card {
+            background: #F1F8E8;
+            border: 1px solid var(--sage);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendations-card h3 {
+            color: var(--sage-dark);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rec-item {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--sage-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .rec-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rec-item h4 {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .rec-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Analysis Output Styling */
+        .output-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .output-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-card {
+            border-top: 4px solid var(--burgundy);
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .output-card.sage-accent {
+            border-top-color: var(--sage-dark);
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .output-header h4 {
+            color: var(--burgundy);
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .output-card.sage-accent .output-header h4 {
+            color: var(--sage-dark);
+        }
+
+        .output-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .script-box {
+            background: #F8F9FA;
+            border: 1px dashed #CED4DA;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            position: relative;
+            margin: 0.75rem 0;
+            white-space: pre-line;
+            color: #1A252C;
+        }
+
+        .diagram-box {
+            background: #FAF3F5;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .diagram-node {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid var(--burgundy);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            color: var(--burgundy);
+            margin: 0.25rem;
+        }
+
+        .diagram-node.informal {
+            border-style: dashed;
+            border-color: var(--sage-dark);
+            color: var(--sage-dark);
+        }
+
+        .diagram-arrow {
+            display: inline-block;
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Next Move / Priority Box */
+        .priority-box {
+            background: #FAF3F5;
+            border: 2px solid var(--burgundy);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .priority-box h4 {
+            color: var(--burgundy);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Guided Sequence (Office Politics Reset) */
+        .reset-step-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .reset-step-card.completed {
+            border-left: 4px solid var(--sage-dark);
+        }
+
+        .reset-step-info h4 {
+            font-size: 1rem;
+            color: var(--burgundy);
+            margin-bottom: 0.25rem;
+        }
+
+        .reset-step-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* History Accordion */
+        .history-section {
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-header h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .history-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .history-summary {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FAFAFA;
+        }
+
+        .history-summary:hover {
+            background: #F0F0F0;
+        }
+
+        .history-details {
+            padding: 1rem;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            background: #FFFFFF;
+        }
+
+        .history-item.open .history-details {
+            display: block;
+        }
+
+        /* Printable View Styles */
+        .printable-container {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        .print-header {
+            border-bottom: 2px solid var(--burgundy);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .print-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .print-section h3 {
+            color: var(--burgundy);
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--burgundy);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-weight: 500;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            width: 100%;
+            padding: 1.5rem 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.mobile-open {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .hero-card h2 {
+                font-size: 1.6rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .btn-group, .history-section, .no-print, footer, .toast {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+
+            body {
+                background: #FFFFFF !important;
+                color: #000000 !important;
+            }
+
+            .card, .output-card, .printable-container {
+                box-shadow: none !important;
+                border: 1px solid #CCCCCC !important;
+                page-break-inside: avoid;
+            }
+
+            .script-box {
+                border: 1px solid #999999 !important;
+                background: #F9F9F9 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header no-print">
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--burgundy);">
+            <i class="fa-solid fa-compass"></i>
+            <span>Office Politics Navigator™</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay no-print" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar no-print" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-compass"></i>
+                <h1>Office Politics<br><span style="font-size:0.8rem; font-weight:400; color:var(--text-muted);">Navigator™</span></h1>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Core System</div>
+                <a class="nav-item active" data-tool="dashboard">
+                    <i class="fa-solid fa-house"></i> Dashboard
+                </a>
+                
+                <div class="nav-section-title">Toolkit Modules</div>
+                <a class="nav-item" data-tool="politics-map">
+                    <i class="fa-solid fa-sitemap"></i> Politics Map
+                </a>
+                <a class="nav-item" data-tool="alliance-builder">
+                    <i class="fa-solid fa-handshake"></i> Alliance Builder
+                </a>
+                <a class="nav-item" data-tool="neutral-position">
+                    <i class="fa-solid fa-scale-balanced"></i> Neutral Position
+                </a>
+                <a class="nav-item" data-tool="visibility-strategy">
+                    <i class="fa-solid fa-eye"></i> Visibility Strategy
+                </a>
+                <a class="nav-item" data-tool="values-guard">
+                    <i class="fa-solid fa-shield-halved"></i> Values Guard
+                </a>
+
+                <div class="nav-section-title">Guided & Synthesis</div>
+                <a class="nav-item" data-tool="reset-guided">
+                    <i class="fa-solid fa-route"></i> 7-Day Reset
+                </a>
+                <a class="nav-item" data-tool="printable-plan">
+                    <i class="fa-solid fa-print"></i> My Office Politics Plan
+                </a>
+                <a class="nav-item" data-tool="history-view">
+                    <i class="fa-solid fa-clock-rotate-left"></i> My History
+                </a>
+                <a class="nav-item" data-tool="privacy-view">
+                    <i class="fa-solid fa-lock"></i> Privacy & Data
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-container">
+
+                <!-- DASHBOARD VIEW -->
+                <section id="view-dashboard" class="tool-view">
+                    <div class="card hero-card">
+                        <h2>OFFICE POLITICS NAVIGATOR™</h2>
+                        <p>Understand the game without selling your soul.</p>
+                    </div>
+
+                    <!-- Strategic Orientation -->
+                    <div class="orientation-box">
+                        <h3><i class="fa-solid fa-compass"></i> Core Operating Principles</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                            Workplace politics is the natural human system for distributing resources and making decisions. The goal is not to become manipulative, but to cultivate strategic awareness while protecting your integrity.
+                        </p>
+                        <div class="orientation-grid">
+                            <div class="orientation-item">
+                                <strong>Clarity, Not Paranoia</strong>
+                                Treat political observations as working hypotheses, not absolute facts about motives.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>Reciprocal Alliances</strong>
+                                Build trust-based relationships rooted in mutual value, support, and professional respect.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>Authentic Visibility</strong>
+                                Ensure key stakeholders recognize your contributions through team wins and structured metrics.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>Values Protection</strong>
+                                Establish clear professional boundaries to safeguard your ethical standards under pressure.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Qualitative Snapshot -->
+                    <div class="snapshot-container" id="dashboard-snapshot">
+                        <div class="snapshot-header">
+                            <h3 style="font-size: 1rem; color: var(--burgundy);"><i class="fa-solid fa-chart-pie"></i> Your Qualitative Landscape Snapshot</h3>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);" id="snapshot-updated">Not evaluated yet</span>
+                        </div>
+                        <div class="snapshot-grid">
+                            <div class="snapshot-pill">
+                                <span class="label">Formal Power</span>
+                                <span class="value" id="snap-formal">Unmapped</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Informal Influence</span>
+                                <span class="value" id="snap-informal">Unmapped</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Alliances</span>
+                                <span class="value" id="snap-alliances">Unmapped</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Neutrality</span>
+                                <span class="value" id="snap-neutrality">Unmapped</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Visibility</span>
+                                <span class="value" id="snap-visibility">Unmapped</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Values Status</span>
+                                <span class="value" id="snap-values">Unmapped</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategic Recommendations -->
+                    <div id="dashboard-recommendations" class="recommendations-card" style="display:none;">
+                        <h3><i class="fa-solid fa-lightbulb"></i> Cross-Module Recommendations</h3>
+                        <div id="recommendations-list"></div>
+                    </div>
+
+                    <!-- Tool Navigation Grid -->
+                    <div class="grid-dashboard">
+                        <div class="dashboard-card" onclick="switchTool('politics-map')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-sitemap"></i></div>
+                                    <h3>Politics Map</h3>
+                                </div>
+                                <p>Decode how decisions actually get made, formal authority vs informal influence.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('alliance-builder')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-handshake"></i></div>
+                                    <h3>Alliance Builder</h3>
+                                </div>
+                                <p>Form mutually beneficial, protective workplace relationships without feeling transactional.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('neutral-position')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                                    <h3>Neutral Position</h3>
+                                </div>
+                                <p>Navigate crossfire between factions without getting dragged down or taking sides.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('visibility-strategy')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-eye"></i></div>
+                                    <h3>Visibility Strategy</h3>
+                                </div>
+                                <p>Ensure key stakeholders recognize your value authentically without self-aggrandizement.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('values-guard')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                    <h3>Values Guard</h3>
+                                </div>
+                                <p>Protect your moral code and career standing under toxic or dubious pressure.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: POLITICS MAP -->
+                <section id="view-politics-map" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Politics Map</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"I don't understand how decisions actually get made here."</span>
+                        </div>
+
+                        <div id="sample-banner-politics-map" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Sample scenario — this is not your personal result.</span>
+                        </div>
+
+                        <form id="form-politics-map">
+                            <div class="form-group">
+                                <label for="pm-formal">Who has formal authority?</label>
+                                <textarea id="pm-formal" placeholder="e.g., Director Sarah, VP of Engineering"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pm-informal">Who has informal influence?</label>
+                                <textarea id="pm-informal" placeholder="e.g., Senior Lead Tech Mark, Admin Assistant Julie"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pm-allies">Who is allied with whom?</label>
+                                <textarea id="pm-allies" placeholder="e.g., Mark has VP's ear; Product Manager aligned with Marketing"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pm-decisions">Where do decisions really happen?</label>
+                                <select id="pm-decisions">
+                                    <option value="In official meetings">In official meetings</option>
+                                    <option value="In side conversations">In side conversations / pre-meetings</option>
+                                    <option value="In leadership offsites">In leadership offsites</option>
+                                    <option value="I don't know">I don't know</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Is there a rival faction?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="Yes"> Yes</label>
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="Maybe"> Maybe</label>
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="No"> No</label>
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="Not sure"> Not sure</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('politics-map')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('politics-map')"><i class="fa-solid fa-rotate-right"></i> Start Over</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Analyze Landscape</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-politics-map" class="output-section"></div>
+                    <div class="history-section" id="history-politics-map"></div>
+                </section>
+
+                <!-- TOOL 2: ALLIANCE BUILDER -->
+                <section id="view-alliance-builder" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Alliance Builder</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"I need relationships that protect me without feeling like I'm using people."</span>
+                        </div>
+
+                        <div id="sample-banner-alliance-builder" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Sample scenario — this is not your personal result.</span>
+                        </div>
+
+                        <form id="form-alliance-builder">
+                            <div class="form-group">
+                                <label for="ab-trust">Who do you trust?</label>
+                                <textarea id="ab-trust" placeholder="e.g., Peers Jane and Dave from Operations"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-trusts-you">Who trusts you?</label>
+                                <textarea id="ab-trusts-you" placeholder="e.g., Direct manager, Junior analysts"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-need-know">Who do you need to know better?</label>
+                                <textarea id="ab-need-know" placeholder="e.g., Head of Finance, Lead Product Designer"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-offer">What do you offer others?</label>
+                                <select id="ab-offer">
+                                    <option value="Expertise">Technical / Domain Expertise</option>
+                                    <option value="Resources">Access to Resources / Budget</option>
+                                    <option value="Support">Emotional & Operational Support</option>
+                                    <option value="Information">Early Intel & Cross-functional Information</option>
+                                    <option value="Connections">Network Connections</option>
+                                    <option value="Hard work">Execution Capacity & Hard Work</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-need">What do you need from others?</label>
+                                <select id="ab-need">
+                                    <option value="Protection">Political Protection / Cover</option>
+                                    <option value="Information">Early Information & Context</option>
+                                    <option value="Advocacy">Public Advocacy / Sponsorship</option>
+                                    <option value="Opportunities">Stretch Opportunities & Projects</option>
+                                    <option value="Validation">Validation & Peer Feedback</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('alliance-builder')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('alliance-builder')"><i class="fa-solid fa-rotate-right"></i> Start Over</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-diagram-project"></i> Generate Strategy</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-alliance-builder" class="output-section"></div>
+                    <div class="history-section" id="history-alliance-builder"></div>
+                </section>
+
+                <!-- TOOL 3: THE NEUTRAL POSITION -->
+                <section id="view-neutral-position" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>The Neutral Position</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"I'm caught between two powerful people/groups and I don't want to pick sides."</span>
+                        </div>
+
+                        <div id="sample-banner-neutral-position" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Sample scenario — this is not your personal result.</span>
+                        </div>
+
+                        <form id="form-neutral-position">
+                            <div class="form-group">
+                                <label for="np-sides">Who are the two sides?</label>
+                                <textarea id="np-sides" placeholder="e.g., VP of Sales vs VP of Product"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="np-want">What do they want from you?</label>
+                                <textarea id="np-want" placeholder="e.g., Public endorsement of their project timeline"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="np-consequence">What happens if you choose a side?</label>
+                                <textarea id="np-consequence" placeholder="e.g., Lose budget access from losing party; alienate core team"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Can you avoid choosing?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="Yes"> Yes</label>
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="Temporarily"> Temporarily</label>
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="No"> No</label>
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="Not sure"> Not sure</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('neutral-position')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('neutral-position')"><i class="fa-solid fa-rotate-right"></i> Start Over</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield"></i> Develop Neutral Playbook</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-neutral-position" class="output-section"></div>
+                    <div class="history-section" id="history-neutral-position"></div>
+                </section>
+
+                <!-- TOOL 4: VISIBILITY STRATEGY -->
+                <section id="view-visibility-strategy" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Visibility Strategy</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"Good work isn't enough. I need the right people to know I exist."</span>
+                        </div>
+
+                        <div id="sample-banner-visibility-strategy" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Sample scenario — this is not your personal result.</span>
+                        </div>
+
+                        <form id="form-visibility-strategy">
+                            <div class="form-group">
+                                <label for="vs-known-for">What do you want to be known for?</label>
+                                <textarea id="vs-known-for" placeholder="e.g., Data-driven optimization, reliable crisis execution"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vs-target-audience">Who needs to know about your work?</label>
+                                <textarea id="vs-target-audience" placeholder="e.g., Skip-level Director, Cross-functional Engineering Leads"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vs-current-share">How do you currently share wins?</label>
+                                <select id="vs-current-share">
+                                    <option value="I don't">I don't share wins / Keep head down</option>
+                                    <option value="Team meetings">Team meetings only</option>
+                                    <option value="One-on-ones">1-on-1s with direct manager</option>
+                                    <option value="Email updates">Status email updates</option>
+                                    <option value="Social/Slack">Public Slack/Teams channels</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vs-discomfort">What feels uncomfortable about self-promotion?</label>
+                                <textarea id="vs-discomfort" placeholder="e.g., Feels like bragging, fear of looking arrogant or needy"></textarea>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('visibility-strategy')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('visibility-strategy')"><i class="fa-solid fa-rotate-right"></i> Start Over</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bullhorn"></i> Build Visibility Plan</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-visibility-strategy" class="output-section"></div>
+                    <div class="history-section" id="history-visibility-strategy"></div>
+                </section>
+
+                <!-- TOOL 5: VALUES GUARD -->
+                <section id="view-values-guard" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Values Guard</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"The political pressure is asking me to compromise who I am."</span>
+                        </div>
+
+                        <div id="sample-banner-values-guard" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Sample scenario — this is not your personal result.</span>
+                        </div>
+
+                        <form id="form-values-guard">
+                            <div class="form-group">
+                                <label for="vg-pressure-type">What pressure are you facing?</label>
+                                <select id="vg-pressure-type">
+                                    <option value="Gossip">Participating in toxic gossip</option>
+                                    <option value="Backstabbing">Backstabbing / Scapegoating someone</option>
+                                    <option value="Exclusion">Systematically excluding a colleague</option>
+                                    <option value="Falsifying results">Falsifying or massaging metrics/data</option>
+                                    <option value="Undermining a colleague">Undermining another lead's authority</option>
+                                    <option value="Hiding information">Withholding critical information</option>
+                                    <option value="Other">Other ethical dilemma</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vg-source">Who is applying the pressure?</label>
+                                <select id="vg-source">
+                                    <option value="Boss">Direct Boss / Supervisor</option>
+                                    <option value="Peer">Peer / Teammate</option>
+                                    <option value="Team culture">Prevailing Team Culture</option>
+                                    <option value="Senior leader">Senior Executive</option>
+                                    <option value="Myself">Internal Anxiety / Myself</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vg-value-risk">What value is at risk?</label>
+                                <textarea id="vg-value-risk" placeholder="e.g., Personal integrity, fairness, psychological safety"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vg-fear">What are you afraid will happen if you refuse?</label>
+                                <textarea id="vg-fear" placeholder="e.g., Getting passed over for promotion, social isolation"></textarea>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('values-guard')"><i class="fa-solid fa-wand-magic-sparkles"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('values-guard')"><i class="fa-solid fa-rotate-right"></i> Start Over</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield-cat"></i> Formulate Defense</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-values-guard" class="output-section"></div>
+                    <div class="history-section" id="history-values-guard"></div>
+                </section>
+
+                <!-- GUIDED SEQUENCE: 7-DAY RESET -->
+                <section id="view-reset-guided" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Office Politics Reset</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                            A structured sequence to systematically evaluate your workplace environment and establish a proactive political strategy.
+                        </p>
+
+                        <div class="reset-step-card" id="reset-card-1">
+                            <div class="reset-step-info">
+                                <h4>Day 1: Map the Landscape</h4>
+                                <p>Decode formal authority vs informal decision hubs using Politics Map.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('politics-map')">Go to Map</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-2">
+                            <div class="reset-step-info">
+                                <h4>Day 2: Strengthen Relationships</h4>
+                                <p>Identify key alliances and plan reciprocal connection using Alliance Builder.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('alliance-builder')">Go to Alliances</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-3">
+                            <div class="reset-step-info">
+                                <h4>Day 3: Handle Political Crossfire</h4>
+                                <p>Establish neutral framing for competing demands with Neutral Position.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('neutral-position')">Go to Neutrality</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-4">
+                            <div class="reset-step-info">
+                                <h4>Day 4: Make Your Work Visible</h4>
+                                <p>Formulate an authentic progress update using Visibility Strategy.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('visibility-strategy')">Go to Visibility</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-5">
+                            <div class="reset-step-info">
+                                <h4>Day 5: Protect Your Values</h4>
+                                <p>Set firm, respectful boundary lines against toxic pressure with Values Guard.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('values-guard')">Go to Values Guard</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-6">
+                            <div class="reset-step-info">
+                                <h4>Day 6 & 7: Synthesize Strategy</h4>
+                                <p>Generate your complete consolidated 30-Day Workplace Strategy Plan.</p>
+                            </div>
+                            <button class="btn btn-sm btn-copy" onclick="switchTool('printable-plan')">View Consolidated Plan</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PRINTABLE PLAN VIEW -->
+                <section id="view-printable-plan" class="tool-view" style="display:none;">
+                    <div class="card no-print" style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.3rem;">My Office Politics Plan</h2>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Consolidated summary of your active strategic assessments.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+                        </div>
+                    </div>
+
+                    <div class="printable-container" id="printable-plan-content">
+                        <!-- Dynamic printable plan content rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- UNIFIED HISTORY VIEW -->
+                <section id="view-history-view" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2>My Strategy History</h2>
+                            <button class="btn btn-sm btn-danger" onclick="clearGlobalHistory()"><i class="fa-solid fa-trash"></i> Clear All History</button>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Review all past political evaluations saved locally in your browser.</p>
+                        <div id="unified-history-container"></div>
+                    </div>
+                </section>
+
+                <!-- PRIVACY & DATA VIEW -->
+                <section id="view-privacy-view" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Privacy & Data Security</h2>
+                        <div style="margin-top: 1rem; line-height: 1.6; font-size: 0.95rem; color: var(--text-main);">
+                            <p><strong>100% Client-Side Privacy:</strong> Office Politics Navigator™ operates entirely inside your Web Browser. No personal names, notes, or political analyses are ever transmitted to external servers, cloud databases, or third parties.</p>
+                            
+                            <h3 style="font-size: 1rem; color: var(--burgundy); margin-top: 1.5rem; margin-bottom: 0.5rem;">Local Storage Details</h3>
+                            <p>Your inputs and saved strategy analyses are stored exclusively in your browser's <code>localStorage</code> under versioned keys (<code>officepolitics_v2_state</code>). Clearing your browser data will erase this information.</p>
+
+                            <h3 style="font-size: 1rem; color: var(--burgundy); margin-top: 1.5rem; margin-bottom: 0.5rem;">Data Control Actions</h3>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-outline" onclick="exportDataJSON()"><i class="fa-solid fa-download"></i> Export Data (JSON)</button>
+                                <button class="btn btn-danger" onclick="clearGlobalHistory()"><i class="fa-solid fa-trash"></i> Reset All Saved Data</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Global Footer -->
+            <footer class="no-print">
+                <div class="footer-content">
+                    For professional relationship strategy only. Not psychological, legal, or HR advice. For harassment, discrimination, or unlawful workplace conduct, contact appropriate organizational authorities or legal advisors.
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Toast Component -->
+    <div id="toast" class="toast">Copied to clipboard!</div>
+
+    <script>
+        /* ==========================================================================
+           CENTRAL APPLICATION STATE & UTILITIES
+           ========================================================================== */
+        const STORAGE_KEY_STATE = 'officepolitics_v2_state';
+        const STORAGE_KEY_HISTORY = 'officepolitics_v2_history';
+
+        let officePoliticsState = {
+            completedTools: [],
+            toolResults: {},
+            historyMeta: {},
+            currentInputs: {},
+            recommendations: [],
+            privacyAcknowledged: true,
+            lastUpdated: null
+        };
+
+        // Utility: HTML Escaping for XSS Prevention
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppState();
+            setupNavigation();
+            setupFormListeners();
+            loadAllHistories();
+            updateDashboardSnapshot();
+        });
+
+        function loadAppState() {
+            try {
+                const savedState = localStorage.getItem(STORAGE_KEY_STATE);
+                if (savedState) {
+                    officePoliticsState = Object.assign(officePoliticsState, JSON.parse(savedState));
+                }
+            } catch (e) {
+                console.error("Failed to load local state:", e);
+            }
+        }
+
+        function saveAppState() {
+            try {
+                officePoliticsState.lastUpdated = new Date().toISOString();
+                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(officePoliticsState));
+                updateDashboardSnapshot();
+            } catch (e) {
+                console.error("Failed to save local state:", e);
+            }
+        }
+
+        /* ==========================================================================
+           NAVIGATION & UI HANDLERS
+           ========================================================================== */
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const toolId = item.getAttribute('data-tool');
+                    switchTool(toolId);
+                    closeMobileSidebar();
+                });
+            });
+
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('mobile-open');
+            });
+
+            overlay.addEventListener('click', closeMobileSidebar);
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('sidebarOverlay').classList.remove('mobile-open');
+        }
+
+        function switchTool(toolId) {
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.toggle('active', nav.getAttribute('data-tool') === toolId);
+            });
+
+            document.querySelectorAll('.tool-view').forEach(view => {
+                view.style.display = view.id === `view-${toolId}` ? 'block' : 'none';
+            });
+
+            if (toolId === 'printable-plan') {
+                renderPrintablePlan();
+            } else if (toolId === 'history-view') {
+                renderUnifiedHistory();
+            } else if (toolId === 'reset-guided') {
+                updateGuidedResetUI();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* Toast & Clipboard Helpers */
+        function showToast(message = "Copied to clipboard!") {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Copied text to clipboard!");
+                }).catch(err => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied text to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy automatically.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* ==========================================================================
+           SAMPLE DATA & RESET FUNCTIONS
+           ========================================================================== */
+        const SAMPLE_DATA = {
+            'politics-map': {
+                'pm-formal': 'Director Sarah (Engineering) & VP James',
+                'pm-informal': 'Senior PM Mark (has VP ear, informal gatekeeper) & Executive Assistant Julie',
+                'pm-allies': 'Mark is closely allied with VP James; Product team aligns with Marketing against Ops',
+                'pm-decisions': 'In side conversations',
+                'pm-rival': 'Yes'
+            },
+            'alliance-builder': {
+                'ab-trust': 'Jane (Tech Lead) and Dave (Operations Lead)',
+                'ab-trusts-you': 'Direct Manager (VP Alex) and Junior Analysts',
+                'ab-need-know': 'Operations Manager Karen (controls execution bandwidth)',
+                'ab-offer': 'Expertise',
+                'ab-need': 'Advocacy'
+            },
+            'neutral-position': {
+                'np-sides': 'VP Alex (wants faster feature shipping) vs Director Karen (wants stability & high quality)',
+                'np-want': 'Public support for their preferred product roadmap at Friday review',
+                'np-consequence': 'Alienates either VP Alex (career blocker) or Director Karen (operational blocker)',
+                'np-avoid': 'Temporarily'
+            },
+            'visibility-strategy': {
+                'vs-known-for': 'Data visualization & translating complex technical metrics into executive stories',
+                'vs-target-audience': 'Skip-level Director & Cross-functional Business Development Leads',
+                'vs-current-share': 'One-on-ones',
+                'vs-discomfort': 'Feels like self-aggrandizing bragging; uncomfortable putting myself in spotlight'
+            },
+            'values-guard': {
+                'vg-pressure-type': 'Gossip',
+                'vg-source': 'Team culture',
+                'vg-value-risk': 'Kindness, psychological safety, and personal integrity',
+                'vg-fear': 'Being socially excluded or branded as "not a team player"'
+            }
+        };
+
+        function loadSample(toolId) {
+            const data = SAMPLE_DATA[toolId];
+            if (!data) return;
+
+            Object.keys(data).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = data[key];
+                } else {
+                    const radios = document.getElementsByName(key);
+                    radios.forEach(radio => {
+                        if (radio.value === data[key]) radio.checked = true;
+                    });
+                }
+            });
+
+            const banner = document.getElementById(`sample-banner-${toolId}`);
+            if (banner) banner.style.display = 'block';
+
+            showToast("Sample scenario loaded.");
+        }
+
+        function resetToolForm(toolId) {
+            if (!confirm("Start over with this tool? Your form inputs and current output will be reset.")) return;
+
+            const form = document.getElementById(`form-${toolId}`);
+            if (form) form.reset();
+
+            const output = document.getElementById(`output-${toolId}`);
+            if (output) {
+                output.innerHTML = '';
+                output.classList.remove('active');
+            }
+
+            const banner = document.getElementById(`sample-banner-${toolId}`);
+            if (banner) banner.style.display = 'none';
+
+            showToast("Form reset.");
+        }
+
+        /* ==========================================================================
+           ANALYSIS ENGINES (DETERMINISTIC ANALYSIS LOGIC)
+           ========================================================================== */
+        function setupFormListeners() {
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const toolId = this.id.replace('form-', '');
+                    processAnalysis(toolId);
+                });
+            });
+        }
+
+        function processAnalysis(toolId) {
+            const outputContainer = document.getElementById(`output-${toolId}`);
+            let htmlContent = '';
+            let summaryText = '';
+            let toolResultData = {};
+
+            const banner = document.getElementById(`sample-banner-${toolId}`);
+            if (banner) banner.style.display = 'none';
+
+            if (toolId === 'politics-map') {
+                const formal = document.getElementById('pm-formal').value.trim() || 'Not specified';
+                const informal = document.getElementById('pm-informal').value.trim() || 'Not specified';
+                const allies = document.getElementById('pm-allies').value.trim() || 'Not specified';
+                const decisions = document.getElementById('pm-decisions').value;
+                const rival = document.querySelector('input[name="pm-rival"]:checked')?.value || 'Not sure';
+
+                toolResultData = { formal, informal, allies, decisions, rival };
+                summaryText = `Map: Formal Authority (${formal.substring(0,25)}...)`;
+
+                const primaryFormal = formal.split(',')[0] || 'Formal Lead';
+                const primaryInformal = informal.split(',')[0] || 'Shadow Influencer';
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-sitemap"></i> Working Power Map</h4>
+                        </div>
+                        <div class="output-content">
+                            <p><strong>Formal Authority:</strong> ${escapeHTML(formal)}</p>
+                            <p><strong>Informal Influence:</strong> ${escapeHTML(informal)}</p>
+                            <div class="diagram-box">
+                                <span class="diagram-node">${escapeHTML(primaryFormal)}</span>
+                                <span class="diagram-arrow"><i class="fa-solid fa-arrows-left-right"></i></span>
+                                <span class="diagram-node informal">${escapeHTML(primaryInformal)}</span>
+                                <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-muted);">
+                                    Solid = Title Authority | Dashed = Perceived Real Ear/Influence
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-filter"></i> The Decision Pipeline</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Based on your observation that decisions take place <strong>${escapeHTML(decisions.toLowerCase())}</strong>, formal forums may function primarily as confirmation points.</p>
+                            <p style="margin-top:0.5rem;"><strong>Recommended Strategy:</strong> Consider pre-briefing ${escapeHTML(primaryInformal)} and key stakeholders prior to general meetings to understand objections early.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-eye-slash"></i> Faction & Risk Exposure</h4>
+                        </div>
+                        <div class="output-content">
+                            <p><strong>Perceived Rival Factions:</strong> ${escapeHTML(rival)}</p>
+                            <p>${rival === 'Yes' ? 'Active rival factions present crossfire risk. Keep project communications tightly focused on objective KPIs and documented requirements rather than political alignment.' : 'No obvious active faction warfare detected. Focus on maintaining open cross-functional lines.'}</p>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Your Highest Priority Move</h4>
+                        <p style="font-size: 0.9rem;">Map your current projects directly to ${escapeHTML(primaryInformal)}'s stated operational priorities while securing formal sign-off from ${escapeHTML(primaryFormal)}.</p>
+                    </div>
+                `;
+            } else if (toolId === 'alliance-builder') {
+                const trust = document.getElementById('ab-trust').value.trim() || 'Peers';
+                const trustsYou = document.getElementById('ab-trusts-you').value.trim() || 'Team';
+                const needKnow = document.getElementById('ab-need-know').value.trim() || 'Stakeholders';
+                const offer = document.getElementById('ab-offer').value;
+                const need = document.getElementById('ab-need').value;
+
+                toolResultData = { trust, trustsYou, needKnow, offer, need };
+                summaryText = `Alliance: Focus on ${needKnow.substring(0,25)}...`;
+
+                const outreachScript = `"Hi ${needKnow.split(',')[0] || 'there'}, I'm reviewing our priorities for next month. Given your team's focus, I'd love to share a quick update on our work in ${offer.toLowerCase()} and see if there are areas where we can support your goals."`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-handshake"></i> Relationship Strategy</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>You offer <strong>${escapeHTML(offer)}</strong> and require <strong>${escapeHTML(need)}</strong>. Strategic target: <strong>${escapeHTML(needKnow)}</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-seedling"></i> Reciprocal Connection Plan</h4>
+                        </div>
+                        <div class="output-content">
+                            <ol style="padding-left:1.2rem; line-height:1.7;">
+                                <li><strong>Low-cost Value Share:</strong> Share relevant operational intel or research with ${escapeHTML(needKnow)} without asking for immediate returns.</li>
+                                <li><strong>Support Offer:</strong> Offer early capacity in ${escapeHTML(offer)} to assist with their upcoming milestones.</li>
+                                <li><strong>Credit Amplification:</strong> Recognize ${escapeHTML(trustsYou)}'s contributions publicly in joint discussions.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-comment-dots"></i> Outreach Script</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${outreachScript.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Copy Script</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(outreachScript)}</div>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Your Highest Priority Move</h4>
+                        <p style="font-size: 0.9rem;">Schedule a brief 15-minute alignment check-in with ${escapeHTML(needKnow.split(',')[0] || 'target stakeholder')} centered on how your ${escapeHTML(offer)} can assist their quarter goals.</p>
+                    </div>
+                `;
+            } else if (toolId === 'neutral-position') {
+                const sides = document.getElementById('np-sides').value.trim() || 'Side A vs Side B';
+                const want = document.getElementById('np-want').value.trim() || 'Commitment';
+                const consequence = document.getElementById('np-consequence').value.trim() || 'Political exposure';
+                const avoid = document.querySelector('input[name="np-avoid"]:checked')?.value || 'Temporarily';
+
+                toolResultData = { sides, want, consequence, avoid };
+                summaryText = `Neutrality: ${sides.substring(0,25)}...`;
+
+                const neutralScriptText = `"I completely understand why ${sides.split('vs')[0] || 'Side A'} is prioritizing this timeline, and I also recognize ${sides.split('vs')[1] || 'Side B'}'s concerns regarding execution risk. My primary focus is ensuring the core objective succeeds without creating technical or operational debt."`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-shield"></i> Neutral Framing Script</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${neutralScriptText.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Copy Script</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(neutralScriptText)}</div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Validates both perspectives without endorsing factional agendas.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-language"></i> The Operational Translator</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Reframe subjective political demands into objective operational constraints:</p>
+                            <p style="margin-top:0.5rem;"><strong>Instead of:</strong> "They are trying to control the agenda."<br>
+                            <strong>Reframe as:</strong> "Their primary constraint appears to be schedule risk, whereas our constraint is quality assurance."</p>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Your Highest Priority Move</h4>
+                        <p style="font-size: 0.9rem;">Anchor your formal stance strictly in documented objective metrics and shared organizational goals.</p>
+                    </div>
+                `;
+            } else if (toolId === 'visibility-strategy') {
+                const knownFor = document.getElementById('vs-known-for').value.trim() || 'Execution excellence';
+                const audience = document.getElementById('vs-target-audience').value.trim() || 'Leadership';
+                const shareMethod = document.getElementById('vs-current-share').value;
+                const discomfort = document.getElementById('vs-discomfort').value.trim() || 'Fear of bragging';
+
+                toolResultData = { knownFor, audience, shareMethod, discomfort };
+                summaryText = `Visibility: ${knownFor.substring(0,25)}...`;
+
+                const narrativeText = `I specialize in translating technical execution into clear business outcomes, ensuring our team consistently delivers high-quality ${knownFor}.`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-quote-left"></i> Professional Narrative</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${narrativeText.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Copy Narrative</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(narrativeText)}</div>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-bullhorn"></i> Authentic Visibility Ritual</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>To overcome discomfort (<em>"${escapeHTML(discomfort)}"</em>):</p>
+                            <ul style="padding-left:1.2rem; margin-top:0.5rem; line-height:1.7;">
+                                <li><strong>The Shared Win:</strong> Frame wins around team effort ("Our project group achieved X; I led the execution piece").</li>
+                                <li><strong>The Insight Share:</strong> Share operational lessons learned rather than self-praise.</li>
+                                <li><strong>Monthly Milestone Email:</strong> Send a brief 3-bullet progress report to ${escapeHTML(audience)}.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Your Highest Priority Move</h4>
+                        <p style="font-size: 0.9rem;">Institute a monthly 3-bullet summary update to ${escapeHTML(audience)} focusing on milestone achievements and team credit.</p>
+                    </div>
+                `;
+            } else if (toolId === 'values-guard') {
+                const pressure = document.getElementById('vg-pressure-type').value;
+                const source = document.getElementById('vg-source').value;
+                const valueAtRisk = document.getElementById('vg-value-risk').value.trim() || 'Personal Integrity';
+                const fear = document.getElementById('vg-fear').value.trim() || 'Social exclusion';
+
+                toolResultData = { pressure, source, valueAtRisk, fear };
+                summaryText = `Values Guard: ${pressure} from ${source}`;
+
+                const boundaryScriptText = `"I understand the situation is challenging, but I have a personal rule against ${pressure.toLowerCase()}. I'm going to stay focused strictly on project deliverables and documented facts."`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-shield-halved"></i> Boundary Script</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${boundaryScriptText.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Copy Script</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(boundaryScriptText)}</div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Establishes professional boundaries regarding <strong>${escapeHTML(valueAtRisk)}</strong> without unnecessary escalation.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-door-open"></i> Practical Disengagement Tactic</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>When pressured by ${escapeHTML(source)}: Use objective operational disconnects ("I have a hard deadline in 5 minutes," "Let's review the official project metrics") to step back cleanly.</p>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Your Highest Priority Move</h4>
+                        <p style="font-size: 0.9rem;">Maintain documented evidence of work outputs and uphold your boundary around ${escapeHTML(valueAtRisk)}.</p>
+                    </div>
+                `;
+            }
+
+            outputContainer.innerHTML = htmlContent;
+            outputContainer.classList.add('active');
+
+            // Update Central State
+            if (!officePoliticsState.completedTools.includes(toolId)) {
+                officePoliticsState.completedTools.push(toolId);
+            }
+            officePoliticsState.toolResults[toolId] = toolResultData;
+            
+            const historyEntry = { summary: summaryText, date: new Date().toLocaleDateString(), data: toolResultData };
+            saveHistory(toolId, historyEntry);
+            saveAppState();
+            generateCrossModuleRecommendations();
+        }
+
+        /* ==========================================================================
+           CROSS-MODULE RECOMMENDATIONS ENGINE
+           ========================================================================== */
+        function generateCrossModuleRecommendations() {
+            const recs = [];
+            const results = officePoliticsState.toolResults;
+
+            if (results['politics-map'] && results['politics-map'].decisions === 'In side conversations') {
+                recs.push({
+                    title: "Side-Conversation Influence Triggered",
+                    text: "Your Politics Map indicates decisions happen in side conversations. Use the Alliance Builder to identify key informal influencers for pre-meeting alignment."
+                });
+            }
+
+            if (results['politics-map'] && results['politics-map'].rival === 'Yes' && results['neutral-position']) {
+                recs.push({
+                    title: "Active Rival Faction Protection",
+                    text: "Rival factions are present. Apply your Neutral Position scripts to maintain objective framing in all cross-departmental reviews."
+                });
+            }
+
+            if (results['visibility-strategy'] && results['visibility-strategy'].shareMethod === "I don't") {
+                recs.push({
+                    title: "Visibility Deficit Identified",
+                    text: "You currently do not share wins. Adopt the Shared Win technique to inform key stakeholders without feeling like bragging."
+                });
+            }
+
+            if (results['values-guard'] && results['values-guard'].pressure === 'Falsifying results') {
+                recs.push({
+                    title: "Critical Integrity Risk",
+                    text: "Ethical pressure around metrics detected. Document all source data meticulously and consider escalation to official compliance or HR channels if pressure persists."
+                });
+            }
+
+            officePoliticsState.recommendations = recs;
+            renderRecommendationsUI();
+        }
+
+        function renderRecommendationsUI() {
+            const container = document.getElementById('dashboard-recommendations');
+            const list = document.getElementById('recommendations-list');
+            if (!container || !list) return;
+
+            if (!officePoliticsState.recommendations || officePoliticsState.recommendations.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            officePoliticsState.recommendations.forEach(rec => {
+                html += `
+                    <div class="rec-item">
+                        <h4>${escapeHTML(rec.title)}</h4>
+                        <p>${escapeHTML(rec.text)}</p>
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+            container.style.display = 'block';
+        }
+
+        /* ==========================================================================
+           QUALITATIVE SNAPSHOT RENDERER
+           ========================================================================== */
+        function updateDashboardSnapshot() {
+            const results = officePoliticsState.toolResults;
+
+            document.getElementById('snap-formal').innerText = results['politics-map'] ? (results['politics-map'].formal ? 'Mapped' : 'Clear') : 'Unmapped';
+            document.getElementById('snap-informal').innerText = results['politics-map'] ? (results['politics-map'].informal ? 'Identified' : 'Unclear') : 'Unmapped';
+            document.getElementById('snap-alliances').innerText = results['alliance-builder'] ? 'Developing' : 'Unmapped';
+            document.getElementById('snap-neutrality').innerText = results['neutral-position'] ? (results['neutral-position'].avoid === 'Yes' ? 'Stable' : 'Pressured') : 'Unmapped';
+            document.getElementById('snap-visibility').innerText = results['visibility-strategy'] ? 'Structured' : 'Unmapped';
+            document.getElementById('snap-values').innerText = results['values-guard'] ? 'Guarded' : 'Unmapped';
+
+            const updatedLabel = document.getElementById('snapshot-updated');
+            if (updatedLabel && officePoliticsState.lastUpdated) {
+                updatedLabel.innerText = `Updated: ${new Date(officePoliticsState.lastUpdated).toLocaleTimeString()}`;
+            }
+
+            renderRecommendationsUI();
+        }
+
+        /* ==========================================================================
+           PRINTABLE PLAN RENDERER
+           ========================================================================== */
+        function renderPrintablePlan() {
+            const container = document.getElementById('printable-plan-content');
+            if (!container) return;
+
+            const results = officePoliticsState.toolResults;
+            const dateStr = new Date().toLocaleDateString();
+
+            let html = `
+                <div class="print-header">
+                    <div>
+                        <h2 style="color:var(--burgundy); font-size:1.6rem;">OFFICE POLITICS STRATEGY PLAN</h2>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">Office Politics Navigator™ — Confidential Personal Copy</p>
+                    </div>
+                    <div style="text-align:right; font-size:0.85rem; color:var(--text-muted);">
+                        Generated: ${dateStr}
+                    </div>
+                </div>
+
+                <div class="print-section">
+                    <h3>1. Landscape & Authority Map</h3>
+                    <p><strong>Formal Authority:</strong> ${escapeHTML(results['politics-map']?.formal || 'Not evaluated')}</p>
+                    <p><strong>Informal Influence:</strong> ${escapeHTML(results['politics-map']?.informal || 'Not evaluated')}</p>
+                    <p><strong>Decision Hubs:</strong> ${escapeHTML(results['politics-map']?.decisions || 'Not evaluated')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>2. Relationship & Alliance Target</h3>
+                    <p><strong>Priority Relationship Target:</strong> ${escapeHTML(results['alliance-builder']?.needKnow || 'Not evaluated')}</p>
+                    <p><strong>Value Contribution:</strong> ${escapeHTML(results['alliance-builder']?.offer || 'Not evaluated')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>3. Neutrality Framing</h3>
+                    <p><strong>Competing Stakeholders:</strong> ${escapeHTML(results['neutral-position']?.sides || 'Not evaluated')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>4. Visibility Plan</h3>
+                    <p><strong>Core Professional Reputation Target:</strong> ${escapeHTML(results['visibility-strategy']?.knownFor || 'Not evaluated')}</p>
+                    <p><strong>Target Audience:</strong> ${escapeHTML(results['visibility-strategy']?.audience || 'Not evaluated')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>5. Values & Integrity Guard</h3>
+                    <p><strong>Protected Value:</strong> ${escapeHTML(results['values-guard']?.valueAtRisk || 'Not evaluated')}</p>
+                    <p><strong>Pressure Source:</strong> ${escapeHTML(results['values-guard']?.source || 'Not evaluated')}</p>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        /* ==========================================================================
+           GUIDED RESET WORKFLOW
+           ========================================================================== */
+        function updateGuidedResetUI() {
+            const completed = officePoliticsState.completedTools;
+            const steps = [
+                { id: 1, tool: 'politics-map' },
+                { id: 2, tool: 'alliance-builder' },
+                { id: 3, tool: 'neutral-position' },
+                { id: 4, tool: 'visibility-strategy' },
+                { id: 5, tool: 'values-guard' }
+            ];
+
+            steps.forEach(s => {
+                const card = document.getElementById(`reset-card-${s.id}`);
+                if (card) {
+                    if (completed.includes(s.tool)) {
+                        card.classList.add('completed');
+                    } else {
+                        card.classList.remove('completed');
+                    }
+                }
+            });
+        }
+
+        /* ==========================================================================
+           LOCAL HISTORY MANAGEMENT
+           ========================================================================== */
+        function saveHistory(toolId, entry) {
+            const key = `politics_history_${toolId}`;
+            let history = JSON.parse(localStorage.getItem(key) || '[]');
+            history.unshift(entry);
+            if (history.length > 30) history = history.slice(0, 30);
+            localStorage.setItem(key, JSON.stringify(history));
+            loadHistory(toolId);
+        }
+
+        function loadHistory(toolId) {
+            const historyContainer = document.getElementById(`history-${toolId}`);
+            if (!historyContainer) return;
+
+            const key = `politics_history_${toolId}`;
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+
+            if (history.length === 0) {
+                historyContainer.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <div class="history-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Analysis History (${history.length})</h3>
+                    <button class="btn btn-sm btn-secondary" onclick="clearHistory('${toolId}')">Clear Tool History</button>
+                </div>
+            `;
+
+            history.forEach((item, idx) => {
+                html += `
+                    <div class="history-item" id="hist-${toolId}-${idx}">
+                        <div class="history-summary" onclick="toggleHistoryItem('${toolId}', ${idx})">
+                            <span>${escapeHTML(item.summary)}</span>
+                            <span style="color:var(--text-muted); font-size:0.8rem;">${escapeHTML(item.date)}</span>
+                        </div>
+                        <div class="history-details">
+                            <pre style="font-size:0.8rem; white-space:pre-wrap; color:var(--text-muted);">${escapeHTML(JSON.stringify(item.data, null, 2))}</pre>
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = html;
+        }
+
+        function toggleHistoryItem(toolId, idx) {
+            const item = document.getElementById(`hist-${toolId}-${idx}`);
+            if (item) item.classList.toggle('open');
+        }
+
+        function clearHistory(toolId) {
+            if (!confirm("Clear saved history for this tool?")) return;
+            const key = `politics_history_${toolId}`;
+            localStorage.removeItem(key);
+            loadHistory(toolId);
+            showToast("Tool history cleared.");
+        }
+
+        function loadAllHistories() {
+            ['politics-map', 'alliance-builder', 'neutral-position', 'visibility-strategy', 'values-guard'].forEach(toolId => {
+                loadHistory(toolId);
+            });
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unified-history-container');
+            if (!container) return;
+
+            const tools = ['politics-map', 'alliance-builder', 'neutral-position', 'visibility-strategy', 'values-guard'];
+            let html = '';
+
+            tools.forEach(toolId => {
+                const key = `politics_history_${toolId}`;
+                const history = JSON.parse(localStorage.getItem(key) || '[]');
+                if (history.length > 0) {
+                    html += `<h3 style="font-size:1rem; color:var(--burgundy); margin-top:1rem; margin-bottom:0.5rem; text-transform:capitalize;">${toolId.replace('-', ' ')}</h3>`;
+                    history.forEach(item => {
+                        html += `
+                            <div class="history-item open" style="margin-bottom:0.5rem;">
+                                <div class="history-summary">
+                                    <span>${escapeHTML(item.summary)}</span>
+                                    <span style="color:var(--text-muted); font-size:0.8rem;">${escapeHTML(item.date)}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            container.innerHTML = html || '<p style="color:var(--text-muted); font-size:0.9rem;">No history items recorded yet.</p>';
+        }
+
+        function clearGlobalHistory() {
+            if (!confirm("Are you sure you want to clear ALL saved histories and local state across the application?")) return;
+            localStorage.clear();
+            officePoliticsState = { completedTools: [], toolResults: {}, historyMeta: {}, currentInputs: {}, recommendations: [], privacyAcknowledged: true, lastUpdated: null };
+            loadAllHistories();
+            updateDashboardSnapshot();
+            showToast("All local data reset.");
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(officePoliticsState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "office_politics_navigator_data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EducationMatch™ — Sistem Operasi Keputusan & Keselarasan Pendidikan Keluarga</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slateBlue: '#3B82F6',
+                        roseAccent: '#E11D48',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFF1F2 100%);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Notifikasi Toast -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 text-sm font-medium">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-message">Berhasil disalin ke papan klip!</span>
+    </div>
+
+    <!-- Header Seluler -->
+    <header class="bg-white border-b border-slate-200 lg:hidden px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center font-bold text-lg shadow-sm">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div>
+                <span class="font-bold text-slate-900 tracking-tight text-lg">EducationMatch™</span>
+                <span class="text-[10px] text-slate-400 block -mt-1 font-semibold">SISTEM KEPUTUSAN</span>
+            </div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <div class="flex flex-1 relative">
+        <!-- Overlay Bilah Sisi untuk Seluler -->
+        <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+        <!-- Bilah Sisi (Sidebar) -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-sm">
+            <!-- Header Bilah Sisi -->
+            <div class="p-6 border-b border-slate-100 hidden lg:flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center font-bold text-xl shadow-sm">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 tracking-tight">EducationMatch™</h1>
+                    <p class="text-xs text-slate-500 font-medium">Sistem Keputusan Keluarga</p>
+                </div>
+            </div>
+
+            <!-- Tautan Navigasi -->
+            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                <button onclick="switchScreen('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slateBlue bg-blue-50/80 shadow-sm">
+                    <i class="fa-solid fa-house text-base w-5 text-center"></i>
+                    <span>Dasbor</span>
+                </button>
+
+                <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Modul Keputusan</div>
+
+                <button onclick="switchScreen('tool-1')" id="nav-tool-1" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-compass text-base w-5 text-center text-slateBlue"></i>
+                    <span>1. Matriks Filosofi</span>
+                </button>
+
+                <button onclick="switchScreen('tool-2')" id="nav-tool-2" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-wallet text-base w-5 text-center text-roseAccent"></i>
+                    <span>2. Keselarasan Anggaran</span>
+                </button>
+
+                <button onclick="switchScreen('tool-3')" id="nav-tool-3" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-puzzle-piece text-base w-5 text-center text-slateBlue"></i>
+                    <span>3. Kesesuaian Anak</span>
+                </button>
+
+                <button onclick="switchScreen('tool-4')" id="nav-tool-4" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-comments text-base w-5 text-center text-roseAccent"></i>
+                    <span>4. Skrip Negosiasi</span>
+                </button>
+
+                <button onclick="switchScreen('tool-5')" id="nav-tool-5" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-file-contract text-base w-5 text-center text-slateBlue"></i>
+                    <span>5. Uji Coba 90 Hari</span>
+                </button>
+
+                <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Sintesis & OS</div>
+
+                <button onclick="switchScreen('plan')" id="nav-plan" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-clipboard-list text-base w-5 text-center text-emerald-600"></i>
+                    <span>Rencana Pendidikan Saya</span>
+                </button>
+
+                <button onclick="switchScreen('reset-7day')" id="nav-reset-7day" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-calendar-week text-base w-5 text-center text-indigo-600"></i>
+                    <span>Reset Keputusan 7-Hari</span>
+                </button>
+
+                <button onclick="switchScreen('privacy')" id="nav-privacy" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-shield-halved text-base w-5 text-center text-slate-500"></i>
+                    <span>Privasi & Keamanan</span>
+                </button>
+            </nav>
+
+            <!-- Informasi Catatan Kaki Bilah Sisi -->
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-center space-x-2 text-xs text-slate-500 font-medium">
+                    <i class="fa-solid fa-shield-halved text-slateBlue"></i>
+                    <span>100% Sisi Klien & Privat</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Area Konten Utama -->
+        <main class="flex-1 flex flex-col min-w-0">
+            <div class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+                <!-- ================= LAYAR DASBOR ================= -->
+                <section id="screen-dashboard" class="space-y-8">
+                    <!-- Kartu Utam/Hero -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 translate-x-6 -translate-y-6 w-48 h-48 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute right-20 bottom-0 translate-y-8 w-40 h-40 bg-rose-50 rounded-full blur-2xl pointer-events-none"></div>
+                        
+                        <div class="relative z-10 max-w-2xl">
+                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-slateBlue mb-4">
+                                <i class="fa-solid fa-sparkles"></i>
+                                <span>Sistem Operasi Komersial V2</span>
+                            </span>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-3">Fokus pada kebutuhan anak—bukan perdebatan.</h1>
+                            <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-6">
+                                Keputusan pendidikan menjadi rumit ketika ambisi akademis, kesejahteraan, keuangan, status, logistik, dan kecemasan orang tua bercampur menjadi satu perdebatan. EducationMatch™ memisahkan dimensi-dimensi tersebut agar Anda dapat mengambil keputusan secara bertahap.
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="switchScreen('tool-1')" class="px-5 py-2.5 rounded-xl bg-slateBlue text-white font-medium text-sm shadow-sm hover:bg-blue-600 transition-colors flex items-center space-x-2">
+                                    <span>Mulai Langkah 1: Matriks Filosofi</span>
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                                <button onclick="switchScreen('reset-7day')" class="px-5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 transition-colors flex items-center space-x-2">
+                                    <i class="fa-solid fa-calendar-week text-indigo-600"></i>
+                                    <span>Reset Keputusan 7-Hari</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kerangka Visual & Mesin Hambatan Keputusan -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h2 class="text-lg font-bold text-slate-900">5 Dimensi Keputusan</h2>
+                            <p class="text-xs text-slate-500">Pisahkan keputusan ke dalam tiap dimensi sebelum mencoba menyelesaikannya.</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center">
+                            <div class="p-3 bg-blue-50/60 border border-blue-100 rounded-xl">
+                                <span class="text-xs font-bold text-slateBlue block mb-1">1. NILAI</span>
+                                <span class="text-[11px] text-slate-600 block">Apa tujuan utama pendidikan?</span>
+                            </div>
+                            <div class="p-3 bg-rose-50/60 border border-rose-100 rounded-xl">
+                                <span class="text-xs font-bold text-roseAccent block mb-1">2. KEUANGAN</span>
+                                <span class="text-[11px] text-slate-600 block">Berapa anggaran yang sanggup dipenuhi?</span>
+                            </div>
+                            <div class="p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl">
+                                <span class="text-xs font-bold text-emerald-600 block mb-1">3. ANAK</span>
+                                <span class="text-[11px] text-slate-600 block">Lingkungan apa yang sesuai untuk anak?</span>
+                            </div>
+                            <div class="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
+                                <span class="text-xs font-bold text-purple-600 block mb-1">4. HUBUNGAN</span>
+                                <span class="text-[11px] text-slate-600 block">Apa isu sebenarnya yang diperdebatkan?</span>
+                            </div>
+                            <div class="p-3 bg-amber-50/60 border border-amber-100 rounded-xl">
+                                <span class="text-xs font-bold text-amber-600 block mb-1">5. EKSPERIMEN</span>
+                                <span class="text-[11px] text-slate-600 block">Opsi apa yang dapat diuji coba sementara?</span>
+                            </div>
+                        </div>
+
+                        <!-- Banner Hambatan Keputusan -->
+                        <div id="dashboard-bottleneck-card" class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fa-solid fa-circle-nodes text-slateBlue text-xl mt-0.5"></i>
+                                <div>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Mesin Deteksi Hambatan Keputusan</span>
+                                    <p id="bottleneck-text" class="text-sm font-semibold text-slate-900">Belum ada modul yang diselesaikan. Selesaikan modul pertama Anda untuk mengidentifikasi hambatan utama.</p>
+                                </div>
+                            </div>
+                            <button id="bottleneck-action-btn" onclick="switchScreen('tool-1')" class="px-4 py-2 bg-slateBlue text-white text-xs font-semibold rounded-lg hover:bg-blue-600 transition-colors shrink-0">
+                                Mulai Langkah 1
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Widget Skor Keselarasan -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold shadow-inner">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">Indeks Keselarasan Keputusan</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Indikator refleksi heuristik berdasarkan keputusan yang dicatat</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-6 w-full sm:w-auto justify-end">
+                            <div class="text-right">
+                                <div id="dashboard-alignment-score" class="text-3xl font-bold text-slate-900">75%</div>
+                                <div class="text-xs font-medium text-emerald-600 flex items-center justify-end space-x-1 mt-0.5">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                    <span id="alignment-status-text">Kalibrasi Keputusan Aktif</span>
+                                </div>
+                            </div>
+                            <div class="w-24 bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div id="alignment-progress-bar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid 5 Kartu Modul -->
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 mb-4 px-1">Jelajahi 5 Modul Keputusan</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            
+                            <!-- Kartu 1 -->
+                            <div onclick="switchScreen('tool-1')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slateBlue/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-compass"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-slateBlue transition-colors">1. Matriks Filosofi</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Temukan kesamaan pandangan antara prestasi akademis, kesejahteraan, kreativitas, struktur, dan perkembangan sosial.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-slateBlue space-x-1">
+                                    <span>Buka modul</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Kartu 2 -->
+                            <div onclick="switchScreen('tool-2')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-roseAccent/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-wallet"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-roseAccent transition-colors">2. Keselarasan Anggaran</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Pahami dampak pilihan pendidikan terhadap seluruh anggaran rumah tangga—bukan hanya biaya sekolah.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-roseAccent space-x-1">
+                                    <span>Buka modul</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Kartu 3 -->
+                            <div onclick="switchScreen('tool-3')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slateBlue/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-puzzle-piece"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-slateBlue transition-colors">3. Kesesuaian Anak</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Bandingkan lingkungan sekolah berdasarkan kondisi dan kepribadian anak, bukan semata preferensi orang tua.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-slateBlue space-x-1">
+                                    <span>Buka modul</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Kartu 4 -->
+                            <div onclick="switchScreen('tool-4')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-roseAccent/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-comments"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-roseAccent transition-colors">4. Skrip Negosiasi</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Ubah perdebatan sengit tentang sekolah menjadi percakapan terstruktur mengenai kekhawatiran dan prioritas.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-roseAccent space-x-1">
+                                    <span>Buka modul</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Kartu 5 -->
+                            <div onclick="switchScreen('tool-5')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slateBlue/50 transition-all cursor-pointer flex flex-col justify-between group md:col-span-2 lg:col-span-1">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-file-contract"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-slateBlue transition-colors">5. Kesepakatan Uji Coba 90 Hari</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Ketika kepastian sulit dicapai, buat uji coba fleksibel dengan indikator keberhasilan dan tanggal evaluasi yang jelas.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-slateBlue space-x-1">
+                                    <span>Buka modul</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= MODUL 1: MATRIKS FILOSOFI ================= -->
+                <section id="screen-tool-1" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-compass"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Modul 1: Matriks Filosofi</h2>
+                                    <p class="text-xs text-slate-500">Menyelaraskan nilai-nilai inti dan paradigma pendidikan orang tua</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool1()" class="px-4 py-2 rounded-xl bg-blue-50 text-slateBlue font-medium text-xs hover:bg-blue-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Muat Skenario Contoh</span>
+                            </button>
+                        </div>
+
+                        <!-- Catatan Deskripsi Masalah -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Masalah Utama:</span> "Satu pihak menginginkan nilai tertinggi dengan segala cara; pihak lain menginginkan kesejahteraan holistik." Perbedaan sering terjadi karena kedua orang tua berusaha melindungi nilai mendasar yang sama-sama valid melalui pendekatan yang berbeda.
+                            </div>
+                        </div>
+
+                        <!-- Formulir -->
+                        <form id="form-tool-1" onsubmit="handleTool1Submit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Prioritas Pasangan A</label>
+                                    <select id="t1-p1" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Pilih prioritas...</option>
+                                        <option value="Prestasi akademis tinggi">Prestasi akademis tinggi</option>
+                                        <option value="Kebebasan kreatif">Kebebasan kreatif</option>
+                                        <option value="Kecerdasan sosial">Kecerdasan sosial</option>
+                                        <option value="Kedisiplinan & struktur">Kedisiplinan & struktur</option>
+                                        <option value="Keterampilan hidup praktis">Keterampilan hidup praktis</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Prioritas Pasangan B</label>
+                                    <select id="t1-p2" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Pilih prioritas...</option>
+                                        <option value="Prestasi akademis tinggi">Prestasi akademis tinggi</option>
+                                        <option value="Kebebasan kreatif">Kebebasan kreatif</option>
+                                        <option value="Kecerdasan sosial">Kecerdasan sosial</option>
+                                        <option value="Kedisiplinan & struktur">Kedisiplinan & struktur</option>
+                                        <option value="Keterampilan hidup praktis">Keterampilan hidup praktis</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kelas / Usia Anak Saat Ini</label>
+                                    <input type="text" id="t1-grade" placeholder="Contoh: Kelas 5 SD / 10 tahun" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Area Konflik Utama</label>
+                                    <select id="t1-conflict" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Pilih area konflik...</option>
+                                        <option value="Jam belajar">Jam belajar</option>
+                                        <option value="Beban ekstrakurikuler">Beban ekstrakurikuler</option>
+                                        <option value="Jenis sekolah">Jenis sekolah</option>
+                                        <option value="Ekspektasi nilai">Ekspektasi nilai</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-slateBlue text-white font-medium text-sm rounded-xl shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-gears"></i>
+                                <span>Hasilkan Analisis Keselarasan Filosofi</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Area Output untuk Modul 1 -->
+                    <div id="output-tool-1" class="space-y-6 hidden">
+                        <!-- Wadah Arsitektur Terpadu -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Gambaran Umum & Hal yang Berjalan Baik -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block mb-1">RINGKASAN & NILAI-NILAI INTI ANDA</span>
+                                <div id="t1-res-gap" class="space-y-4 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Model Hibrida -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">OPSI PENGASUHAN HIBRIDA</span>
+                                <div id="t1-res-hybrid" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Pernyataan Misi -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block">PERNYATAAN MISI PENDIDIKAN TERPADU</span>
+                                    <button onclick="copyToClipboard('t1-mission-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Salin Pernyataan</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 italic text-slate-800 text-sm leading-relaxed" id="t1-mission-text"></div>
+                            </div>
+
+                            <!-- Rekomendasi Modul Selanjutnya -->
+                            <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-slateBlue">Langkah Selanjutnya yang Disarankan:</strong> Uji apakah filosofi pendidikan yang dipilih sesuai dengan anggaran rumah tangga Anda.
+                                </div>
+                                <button onclick="switchScreen('tool-2')" class="px-3 py-1.5 bg-slateBlue text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors shrink-0">
+                                    Lanjut ke Keselarasan Anggaran
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Analisis -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-1')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Riwayat Analisis Sebelumnya (<span id="count-tool-1">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-1"></i>
+                        </div>
+                        <div id="history-tool-1" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= MODUL 2: KESELARASAN BIAYA & ANGGARAN ================= -->
+                <section id="screen-tool-2" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Modul 2: Keselarasan Biaya & Anggaran</h2>
+                                    <p class="text-xs text-slate-500">Menguji keberlanjutan keuangan rumah tangga dan prioritas keluarga lainnya</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool2()" class="px-4 py-2 rounded-xl bg-rose-50 text-roseAccent font-medium text-xs hover:bg-rose-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Muat Skenario Contoh</span>
+                            </button>
+                        </div>
+
+                        <!-- Catatan Deskripsi Masalah -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Masalah Utama:</span> "Kami berbeda pendapat mengenai berapa banyak uang yang dialokasikan untuk sekolah swasta, guru les, dan kursus." Evaluasi pengeluaran pendidikan terhadap stabilitas keluarga secara keseluruhan tanpa memicu rasa bersalah.
+                            </div>
+                        </div>
+
+                        <!-- Formulir -->
+                        <form id="form-tool-2" onsubmit="handleTool2Submit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Rencana Biaya Pendidikan Tahunan (Rp / $)</label>
+                                    <input type="number" id="t2-expenses" placeholder="Contoh: 15000000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Pendapatan Bersih Tahunan Rumah Tangga (Rp / $)</label>
+                                    <input type="number" id="t2-income" placeholder="Contoh: 110000000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Batas Kenyamanan Anggaran Pasangan A (/tahun)</label>
+                                    <input type="number" id="t2-p1-budget" placeholder="Contoh: 15000000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Batas Kenyamanan Anggaran Pasangan B (/tahun)</label>
+                                    <input type="number" id="t2-p2-budget" placeholder="Contoh: 7000000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Tujuan Keluarga Lainnya yang Membutuhkan Dana</label>
+                                <textarea id="t2-goals" rows="2" placeholder="Contoh: Tabungan kuliah, dana darurat, uang muka rumah" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-roseAccent text-white font-medium text-sm rounded-xl shadow-sm hover:bg-rose-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-calculator"></i>
+                                <span>Hitung Anggaran & Keselarasan Nilai Manfaat</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Area Output untuk Modul 2 -->
+                    <div id="output-tool-2" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Gambaran Umum & Klasifikasi -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">RINGKASAN BIAYA PENDIDIKAN & TINGKAT BEBAN KEUANGAN</span>
+                                <div id="t2-res-snapshot" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- ROI & Uji Nilai Manfaat -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block mb-1">UJI NILAI MANFAAT & PERBANDINGAN JALUR</span>
+                                <div id="t2-res-roi" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Rentang Negosiasi -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block">RENTANG ACUAN NEGOSIASI</span>
+                                    <button onclick="copyToClipboard('t2-compromise-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Salin Rentang</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed" id="t2-compromise-text"></div>
+                                <p class="text-[11px] text-slate-400 mt-2 font-medium">* Nilai tengah ini adalah titik acuan negosiasi—bukan rekomendasi keuangan resmi. Konsultasikan dengan profesional untuk nasihat utang/pajak/investasi secara khusus.</p>
+                            </div>
+
+                            <!-- Rekomendasi Modul Selanjutnya -->
+                            <div class="p-4 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-roseAccent">Langkah Selanjutnya yang Disarankan:</strong> Sekarang evaluasi apakah lingkungan yang diusulkan sesuai dengan kebutuhan nyata anak Anda.
+                                </div>
+                                <button onclick="switchScreen('tool-3')" class="px-3 py-1.5 bg-roseAccent text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition-colors shrink-0">
+                                    Lanjut ke Kesesuaian Anak
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Analisis -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-2')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Riwayat Perhitungan Anggaran (<span id="count-tool-2">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-2"></i>
+                        </div>
+                        <div id="history-tool-2" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= MODUL 3: EVALUATOR KESESUAIAN BERBASIS ANAK ================= -->
+                <section id="screen-tool-3" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-puzzle-piece"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Modul 3: Evaluator Kesesuaian Berbasis Anak</h2>
+                                    <p class="text-xs text-slate-500">Mengarahkan pilihan pendidikan pada kepribadian dan kondisi nyata anak Anda</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool3()" class="px-4 py-2 rounded-xl bg-blue-50 text-slateBlue font-medium text-xs hover:bg-blue-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Muat Skenario Contoh</span>
+                            </button>
+                        </div>
+
+                        <!-- Catatan Deskripsi Masalah -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Masalah Utama:</span> "Kami berdebat tentang apa yang KAMI inginkan, bukan apa yang sebenarnya dibutuhkan anak kami." Alihkan fokus dari kebanggaan orang tua ke kesesuaian objektif dengan karakter anak.
+                            </div>
+                        </div>
+
+                        <!-- Formulir -->
+                        <form id="form-tool-3" onsubmit="handleTool3Submit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Gaya Belajar / Temperamen Anak</label>
+                                    <select id="t3-style" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Pilih gaya belajar...</option>
+                                        <option value="Visual / Mandiri">Visual / Mandiri</option>
+                                        <option value="Sangat sosial">Sangat sosial</option>
+                                        <option value="Membutuhkan struktur terpandu">Membutuhkan struktur terpandu</option>
+                                        <option value="Mudah kewalahan">Mudah kewalahan</option>
+                                        <option value="Cenderung cemas">Cenderung cemas</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kondisi Akademis Anak Saat Ini</label>
+                                    <select id="t3-state" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Pilih kondisi saat ini...</option>
+                                        <option value=" berkembang sangat baik">Berkembang sangat baik</option>
+                                        <option value="Rata-rata / Cukup">Rata-rata / Cukup</option>
+                                        <option value="Mengalami kesulitan">Mengalami kesulitan</option>
+                                        <option value="Kelelahan / Burnout">Kelelahan / Burnout</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Lingkungan Usulan Pasangan A</label>
+                                    <input type="text" id="t3-env-a" placeholder="Contoh: Sekolah unggulan bertekanan tinggi" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Lingkungan Usulan Pasangan B</label>
+                                    <input type="text" id="t3-env-b" placeholder="Contoh: Sekolah negeri seimbang dengan konseling & seni" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-slateBlue text-white font-medium text-sm rounded-xl shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-child-reaching"></i>
+                                <span>Evaluasi Kesesuaian Kebutuhan Anak</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Area Output untuk Modul 3 -->
+                    <div id="output-tool-3" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Sinyal Kesesuaian -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block mb-1">ANALISIS KUALITATIF SINYAL KESESUAIAN</span>
+                                <div id="t3-res-match" class="space-y-4 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Cek Tekanan & Ego Orang Tua -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">RESIKO TEKANAN & CEK EGO ORANG TUA</span>
+                                <div id="t3-res-redflag" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Keputusan & Verifikasi Lapangan -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block">REKOMENDASI KEPUTUSAN & VERIFIKASI NYATA</span>
+                                    <button onclick="copyToClipboard('t3-verdict-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Salin Keputusan</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed" id="t3-verdict-text"></div>
+                            </div>
+
+                            <!-- Rekomendasi Modul Selanjutnya -->
+                            <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-slateBlue">Langkah Selanjutnya yang Disarankan:</strong> Siapkan skrip percakapan terstruktur dan empatis untuk mendiskusikan hasil ini bersama pasangan.
+                                </div>
+                                <button onclick="switchScreen('tool-4')" class="px-3 py-1.5 bg-slateBlue text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors shrink-0">
+                                    Lanjut ke Skrip Negosiasi
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Analisis -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-3')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Riwayat Evaluasi Kesesuaian (<span id="count-tool-3">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-3"></i>
+                        </div>
+                        <div id="history-tool-3" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= MODUL 4: PEMBUAT SKRIP NEGOSIASI PASANGAN ================= -->
+                <section id="screen-tool-4" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-comments"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Modul 4: Skrip Negosiasi Pasangan</h2>
+                                    <p class="text-xs text-slate-500">Meredakan ketegangan perdebatan sekolah dengan dialog terstruktur yang berfokus pada kekhawatiran inti</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool4()" class="px-4 py-2 rounded-xl bg-rose-50 text-roseAccent font-medium text-xs hover:bg-rose-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Muat Skenario Contoh</span>
+                            </button>
+                        </div>
+
+                        <!-- Catatan Deskripsi Masalah -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Masalah Utama:</span> "Setiap diskusi tentang sekolah selalu berujung pada pertengkaran hebat." Alihkan argumen dari saling mempertahankan posisi menjadi proses mengidentifikasi rasa takut dan tujuan bersama.
+                            </div>
+                        </div>
+
+                        <!-- Formulir -->
+                        <form id="form-tool-4" onsubmit="handleTool4Submit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Topik Spesifik yang Perdebatkan</label>
+                                <input type="text" id="t4-topic" placeholder="Contoh: Menambah 3 jam les wajib & les bimbel di akhir pekan" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kekhawatiran Utama Pasangan A</label>
+                                    <textarea id="t4-fear-a" rows="3" placeholder="Contoh: Anak tertinggal dari teman-temannya di bidang STEM dan kehilangan peluang di masa depan" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Kekhawatiran Utama Pasangan B</label>
+                                    <textarea id="t4-fear-b" rows="3" placeholder="Contoh: Anak mengalami kelelahan mental kronis, kecemasan, dan kehilangan kegembiraan dalam berkreasi" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-roseAccent text-white font-medium text-sm rounded-xl shadow-sm hover:bg-rose-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-comment-dots"></i>
+                                <span>Hasilkan Skrip Redam Ketegangan</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Area Output untuk Modul 4 -->
+                    <div id="output-tool-4" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Kalimat Pembuka -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">POIN-POIN UNTUK MEREDAKAN KETEGANGAN</span>
+                                <div id="t4-res-points" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Skrip Dialog Lengkap -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block">SKRIP DISKUSI TERSTRUKTUR</span>
+                                    <button onclick="copyToClipboard('t4-script-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Salin Skrip</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed space-y-3" id="t4-script-text"></div>
+                            </div>
+
+                            <!-- Usulan Solusi Win-Win -->
+                            <div>
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">KERANGKA KOMPROMI YANG DIUSULKAN</span>
+                                <div id="t4-res-proposal" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Rekomendasi Modul Selanjutnya -->
+                            <div class="p-4 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-roseAccent">Langkah Selanjutnya yang Disarankan:</strong> Ubah kompromi ini menjadi uji coba terstruktur selama 90 hari.
+                                </div>
+                                <button onclick="switchScreen('tool-5')" class="px-3 py-1.5 bg-roseAccent text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition-colors shrink-0">
+                                    Lanjut ke Uji Coba 90 Hari
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Analisis -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-4')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Riwayat Skrip Negosiasi (<span id="count-tool-4">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-4"></i>
+                        </div>
+                        <div id="history-tool-4" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= MODUL 5: KESEPAKATAN UJI COBA PENDIDIKAN 90 HARI ================= -->
+                <section id="screen-tool-5" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-file-contract"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Modul 5: Kesepakatan Uji Coba Pendidikan 90 Hari</h2>
+                                    <p class="text-xs text-slate-500">Mencegah Kebuntuan Keputusan Permanen Melalui Eksperimen Sementara</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool5()" class="px-4 py-2 rounded-xl bg-blue-50 text-slateBlue font-medium text-xs hover:bg-blue-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Muat Skenario Contoh</span>
+                            </button>
+                        </div>
+
+                        <!-- Catatan Deskripsi Masalah -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Masalah Utama:</span> "Kami tidak bisa menyepakati keputusan permanen, sehingga diskusi jalan di tempat." Jalankan eksperimen yang dapat dievaluasi kembali dengan indikator keberhasilan yang jelas.
+                            </div>
+                        </div>
+
+                        <!-- Formulir -->
+                        <form id="form-tool-5" onsubmit="handleTool5Submit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Rencana Perubahan yang Diusulkan</label>
+                                <input type="text" id="t5-change" placeholder="Contoh: Uji coba 90 hari pengurangan beban belajar malam & tanpa PR di akhir pekan" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Indikator Utama Keberhasilan</label>
+                                    <select id="t5-metric" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Pilih indikator keberhasilan...</option>
+                                        <option value="Peningkatan nilai akademik">Peningkatan nilai akademik</option>
+                                        <option value="Tingkat kecemasan anak berkurang">Tingkat kecemasan anak berkurang</option>
+                                        <option value="Umpan balik guru lebih positif">Umpan balik guru lebih positif</option>
+                                        <option value="Keberlanjutan anggaran keuangan">Keberlanjutan anggaran keuangan</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Tanggal Evaluasi Ulang</label>
+                                    <input type="date" id="t5-date" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-slateBlue text-white font-medium text-sm rounded-xl shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-file-signature"></i>
+                                <span>Hasilkan Kesepakatan Uji Coba 90 Hari</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Area Output untuk Modul 5 -->
+                    <div id="output-tool-5" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Teks Kesepakatan -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block">TEMPLAT KESEPAKATAN EKSPERIMEN 90 HARI</span>
+                                    <button onclick="copyToClipboard('t5-contract-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Salin Kesepakatan</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed space-y-2" id="t5-contract-text"></div>
+                                <p class="text-[11px] text-slate-400 mt-2 font-medium">* Dokumen ini adalah templat kesepakatan internal orang tua untuk kejelasan keputusan—bukan dokumen hukum resmi.</p>
+                            </div>
+
+                            <!-- Pertanyaan Evaluasi Mingguan -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">PANDUAN EVALUASI MINGGUAN</span>
+                                <div id="t5-res-prompts" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Ketentuan Penyesuaian -->
+                            <div>
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">ATURAN PENYESUAIAN & EVALUASI ULANG</span>
+                                <div id="t5-res-exit" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Rekomendasi Modul Selanjutnya -->
+                            <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-slateBlue">Langkah Selanjutnya yang Disarankan:</strong> Lihat sintesis lengkap Rencana Pendidikan Anda berdasarkan seluruh modul yang telah diisi.
+                                </div>
+                                <button onclick="switchScreen('plan')" class="px-3 py-1.5 bg-slateBlue text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors shrink-0">
+                                    Lihat Rencana Lengkap
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Analisis -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-5')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Riwayat Kesepakatan Uji Coba (<span id="count-tool-5">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-5"></i>
+                        </div>
+                        <div id="history-tool-5" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= SINTESIS: RENCANA PENDIDIKAN SAYA ================= -->
+                <section id="screen-plan" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                                    <i class="fa-solid fa-clipboard-list"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Rencana Pendidikan Saya</h2>
+                                    <p class="text-xs text-slate-500">Peta jalan keputusan terpadu dari seluruh modul yang telah diselesaikan</p>
+                                </div>
+                            </div>
+                            <button onclick="copyToClipboard('plan-content-area')" class="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium text-xs transition-colors flex items-center space-x-2">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>Salin Rencana Lengkap</span>
+                            </button>
+                        </div>
+
+                        <div id="plan-content-area" class="space-y-6 text-sm text-slate-700">
+                            <!-- Konten rencana diisi otomatis melalui JS -->
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= PANDUAN BERTAHAP: RESET 7 HARI ================= -->
+                <section id="screen-reset-7day" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full inline-block mb-3">Panduan Langkah Demi Langkah</span>
+                            <h2 class="text-2xl font-bold text-slate-900">Reset Keputusan Pendidikan 7-Hari</h2>
+                            <p class="text-xs text-slate-500 mt-1">Panduan harian terstruktur untuk mengubah perselisihan sekolah menjadi keputusan bersama yang tenang.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 1 — TENTUKAN FILOSOFI</span>
+                                    <p class="text-xs text-slate-600">Identifikasi prioritas utama tiap pihak menggunakan Matriks Filosofi.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-1')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 2 — UJI REALITAS KEUANGAN</span>
+                                    <p class="text-xs text-slate-600">Evaluasi kemampuan anggaran rumah tangga menggunakan Keselarasan Anggaran.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-2')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 3 — FOKUS PADA KEBUTUHAN ANAK</span>
+                                    <p class="text-xs text-slate-600">Nilai pilihan sekolah berdasarkan kondisi karakter anak dengan modul Kesesuaian Anak.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-3')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 4 — LAKUKAN DISKUSI</span>
+                                    <p class="text-xs text-slate-600">Gunakan Skrip Negosiasi untuk membahas kekhawatiran secara tenang.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-4')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 5 — RANCANG EKSPERIMEN</span>
+                                    <p class="text-xs text-slate-600">Buat Uji Coba 90 Hari yang dapat disesuaikan kembali dengan indikator evaluasi yang jelas.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-5')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 6 — SINTESIS PETA JALAN</span>
+                                    <p class="text-xs text-slate-600">Tinjau rangkuman Rencana Pendidikan dan pernyataan misi keluarga Anda.</p>
+                                </div>
+                                <button onclick="switchScreen('plan')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">HARI 7 — EVALUASI & KOMITMEN</span>
+                                    <p class="text-xs text-slate-600">Berkomitmen untuk mendukung eksperimen bersama tanpa menerapkan aturan yang bertentangan.</p>
+                                </div>
+                                <button onclick="switchScreen('dashboard')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Mulai</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= PRIVASI & KEAMANAN ================= -->
+                <section id="screen-privacy" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                            <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900">Privasi & Arsitektur Data</h2>
+                                <p class="text-xs text-slate-500">Penyimpanan Lokal 100% Privat di Sisi Klien</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-xs text-slate-600 leading-relaxed">
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Penyimpanan Lokal Saja</h3>
+                                <p>EducationMatch™ beroperasi sepenuhnya di dalam peramban web Anda. Semua data input, perhitungan, skrip, dan kesepakatan uji coba disimpan secara lokal di <code class="bg-slate-200 px-1 py-0.5 rounded">localStorage</code> peramban Anda. Tidak ada data yang dikirim ke server luar, basis data awan, atau pelacak pihak ketiga.</p>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Kontrol Data Sepenuhnya</h3>
+                                <p>Anda dapat menghapus riwayat lokal kapan saja di dalam panel riwayat setiap modul atau dengan menghapus memori karantina (cache) peramban Anda. Proses ekspor rencana dilakukan langsung melalui papan klip (clipboard) perangkat Anda.</p>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Pernyataan Penyangkalan (Disclaimer)</h3>
+                                <p>Aplikasi ini dirancang khusus sebagai alat bantu refleksi pasangan dan penunjang keputusan keluarga. Aplikasi ini tidak menggantikan terapi psikologis, konsultasi hukum, penasihat keuangan, atau diagnosis pendidikan formal.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Catatan Kaki Wajib di Setiap Layar -->
+            <footer class="mt-auto py-6 px-4 text-center border-t border-slate-200 bg-white/50 text-xs text-slate-500 font-medium">
+                Hanya untuk refleksi pasangan dan pertimbangan keputusan pendidikan keluarga. Bukan konseling keluarga, nasihat keuangan, pendidikan, atau hukum.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Logika Aplikasi JavaScript -->
+    <script>
+        // Status Aplikasi Terpusat
+        const educationMatchState = {
+            completedTools: [],
+            toolResults: {
+                philosophy: null,
+                budget: null,
+                childFit: null,
+                negotiation: null,
+                trial: null
+            },
+            currentInputs: {},
+            lastUpdated: null
+        };
+
+        // Penanganan Navigasi
+        function switchScreen(screenId) {
+            const screens = ['dashboard', 'tool-1', 'tool-2', 'tool-3', 'tool-4', 'tool-5', 'plan', 'reset-7day', 'privacy'];
+            screens.forEach(s => {
+                const el = document.getElementById('screen-' + s);
+                if (el) el.classList.add('hidden');
+                const nav = document.getElementById('nav-' + s);
+                if (nav) {
+                    nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900";
+                }
+            });
+
+            const target = document.getElementById('screen-' + screenId);
+            if (target) target.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + screenId);
+            if (activeNav) {
+                activeNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slateBlue bg-blue-50/80 shadow-sm";
+            }
+
+            if (screenId === 'plan') {
+                renderEducationPlan();
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Notifikasi Toast
+        function showToast(message = "Berhasil disalin ke papan klip!") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Berhasil disalin!");
+            }).catch(err => {
+                console.error('Gagal menyalin: ', err);
+            });
+        }
+
+        // Pengelolaan LocalStorage & Riwayat
+        const STORAGE_PREFIX = "edumatch_v2_history_";
+        const MAX_HISTORY = 30;
+
+        function getHistory(toolId) {
+            try {
+                const data = localStorage.getItem(STORAGE_PREFIX + toolId);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveHistory(toolId, item) {
+            let history = getHistory(toolId);
+            history.unshift(item);
+            if (history.length > MAX_HISTORY) {
+                history = history.slice(0, MAX_HISTORY);
+            }
+            try {
+                localStorage.setItem(STORAGE_PREFIX + toolId, JSON.stringify(history));
+            } catch (e) {
+                console.error('Gagal menyimpan riwayat', e);
+            }
+            updateHistoryUI(toolId);
+            updateDashboardAlignmentScore();
+            evaluateBottleneck();
+        }
+
+        function clearHistory(toolId) {
+            localStorage.removeItem(STORAGE_PREFIX + toolId);
+            updateHistoryUI(toolId);
+            updateDashboardAlignmentScore();
+            evaluateBottleneck();
+            showToast("Riwayat telah dihapus");
+        }
+
+        function toggleHistory(toolId) {
+            const el = document.getElementById('history-' + toolId);
+            const chevron = document.getElementById('chevron-' + toolId);
+            el.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        function updateHistoryUI(toolId) {
+            const history = getHistory(toolId);
+            const container = document.getElementById('history-' + toolId);
+            const countEl = document.getElementById('count-' + toolId);
+            if (countEl) countEl.textContent = history.length;
+
+            if (!container) return;
+            if (history.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic py-2">Belum ada riwayat tersimpan. Isi formulir di atas untuk mencatat analisis pertama Anda.</p>`;
+                return;
+            }
+
+            let html = `<div class="flex justify-end mb-2"><button onclick="clearHistory('${toolId}')" class="text-xs text-roseAccent font-semibold hover:underline">Hapus Riwayat</button></div>`;
+            history.forEach((entry, idx) => {
+                html += `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-xs space-y-1">
+                        <div class="flex items-center justify-between font-semibold text-slate-800">
+                            <span>#${history.length - idx} — ${entry.title || 'Analisis'}</span>
+                            <span class="text-[10px] text-slate-400 font-normal">${entry.date}</span>
+                        </div>
+                        <p class="text-slate-600 truncate">${entry.summary}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateDashboardAlignmentScore() {
+            let totalItems = 0;
+            for (let i = 1; i <= 5; i++) {
+                totalItems += getHistory('tool-' + i).length;
+            }
+            let score = 70 + Math.min(totalItems * 4, 25);
+            if (score > 98) score = 98;
+            if (totalItems === 0) score = 75;
+
+            const scoreEl = document.getElementById('dashboard-alignment-score');
+            const barEl = document.getElementById('alignment-progress-bar');
+            const statusEl = document.getElementById('alignment-status-text');
+
+            if (scoreEl) scoreEl.textContent = score + '%';
+            if (barEl) barEl.style.width = score + '%';
+            if (statusEl) {
+                if (score >= 85) statusEl.textContent = "Harmoni Kolaborasi Tinggi";
+                else if (score >= 75) statusEl.textContent = "Kalibrasi Keputusan Aktif";
+                else statusEl.textContent = "Fase Negosiasi Aktif";
+            }
+        }
+
+        // Mesin Hambatan Keputusan
+        function evaluateBottleneck() {
+            const h1 = getHistory('tool-1').length;
+            const h2 = getHistory('tool-2').length;
+            const h3 = getHistory('tool-3').length;
+            const h4 = getHistory('tool-4').length;
+            const h5 = getHistory('tool-5').length;
+
+            const textEl = document.getElementById('bottleneck-text');
+            const btnEl = document.getElementById('bottleneck-action-btn');
+
+            if (!textEl || !btnEl) return;
+
+            if (h1 === 0) {
+                textEl.textContent = "HAMBATAN FILOSOFI: Anda perlu menyelaraskan prioritas utama mengenai apa yang ingin dicapai dari pendidikan.";
+                btnEl.textContent = "Buka Matriks Filosofi";
+                btnEl.setAttribute('onclick', "switchScreen('tool-1')");
+            } else if (h2 === 0) {
+                textEl.textContent = "HAMBATAN ANGGARAN: Uji apakah pilihan pendidikan yang diinginkan berkelanjutan secara finansial.";
+                btnEl.textContent = "Buka Keselarasan Anggaran";
+                btnEl.setAttribute('onclick', "switchScreen('tool-2')");
+            } else if (h3 === 0) {
+                textEl.textContent = "HAMBATAN KESESUAIAN ANAK: Periksa apakah lingkungan yang diusulkan cocok dengan karakter anak saat ini.";
+                btnEl.textContent = "Buka Evaluator Kesesuaian Anak";
+                btnEl.setAttribute('onclick', "switchScreen('tool-3')");
+            } else if (h4 === 0) {
+                textEl.textContent = "HAMBATAN RELASI: Diskusi mungkin masih berfokus pada benturan posisi, bukan kecemasan yang mendasarinya.";
+                btnEl.textContent = "Buka Skrip Negosiasi";
+                btnEl.setAttribute('onclick', "switchScreen('tool-4')");
+            } else if (h5 === 0) {
+                textEl.textContent = "HAMBATAN KETIDAKPASTIAN: Atasi kebuntuan dengan uji coba terstruktur dan dapat dievaluasi kembali selama 90 hari.";
+                btnEl.textContent = "Buat Uji Coba 90 Hari";
+                btnEl.setAttribute('onclick', "switchScreen('tool-5')");
+            } else {
+                textEl.textContent = "SEMUA MODUL SELESAI: Lihat rancangan Rencana Pendidikan Anda untuk memfinalisasi langkah keputusan berikutnya.";
+                btnEl.textContent = "Lihat Rencana Pendidikan Saya";
+                btnEl.setAttribute('onclick', "switchScreen('plan')");
+            }
+        }
+
+        // ================= PENANGANAN FORMULIR MODUL =================
+
+        // MODUL 1
+        function loadSampleTool1() {
+            document.getElementById('t1-p1').value = "Prestasi akademis tinggi";
+            document.getElementById('t1-p2').value = "Kebebasan kreatif";
+            document.getElementById('t1-grade').value = "Kelas 5 SD / 10 tahun";
+            document.getElementById('t1-conflict').value = "Beban ekstrakurikuler";
+        }
+
+        function handleTool1Submit(event) {
+            event.preventDefault();
+            const p1 = document.getElementById('t1-p1').value;
+            const p2 = document.getElementById('t1-p2').value;
+            const grade = document.getElementById('t1-grade').value;
+            const conflict = document.getElementById('t1-conflict').value;
+
+            educationMatchState.toolResults.philosophy = { p1, p2, grade, conflict };
+
+            document.getElementById('t1-res-gap').innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-2">
+                    <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-100">
+                        <span class="font-semibold text-slateBlue block mb-1">Fokus Pasangan A: ${p1}</span>
+                        <p class="text-xs text-slate-600">Berupaya menjaga peluang masa depan, kemajuan terukur, kedisiplinan, dan kesiapan kompetitif anak.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-rose-50/60 border border-rose-100">
+                        <span class="font-semibold text-roseAccent block mb-1">Fokus Pasangan B: ${p2}</span>
+                        <p class="text-xs text-slate-600">Berupaya menjaga pemulihan emosional, rasa ingin tahu alami, kemandirian, dan kesehatan mental yang berkelanjutan.</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-600 mt-2"><strong class="text-slate-800">Titik Ketegangan Utama (${conflict}):</strong> Perselisihan muncul ketika tuntutan terstruktur (${p1}) mengurangi waktu istirahat fleksibel (${p2}) bagi siswa di tingkat ${grade}. Kedua pihak pada dasarnya melindungi prioritas yang sama-sama bernilai.</p>
+            `;
+
+            document.getElementById('t1-res-hybrid').innerHTML = `
+                <ul class="space-y-2 text-xs text-slate-700">
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                        <span><strong>Alokasi Waktu Terjadwal:</strong> Pusatkan sesi belajar akademis intensif pada jam tertentu, sehingga waktu malam bebas dari tekanan untuk pemulihan kreatif.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                        <span><strong>Integrasi Berbasis Proyek:</strong> Salurkan target akademis utama (${p1}) ke dalam proyek kreatif pilihan anak (${p2}) agar kedua prioritas dapat terpenuhi secara bersamaan.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                        <span><strong>Evaluasi Keseimbangan Triwulanan:</strong> Tinjau kembali tingkat stres dan perkembangan anak setiap 90 hari untuk memastikan tidak ada tekanan berlebih maupun stagnasi.</span>
+                    </li>
+                </ul>
+            `;
+
+            const missionText = `Sebagai orang tua dari anak kami di tingkat ${grade}, kami berkomitmen untuk mendukung pertumbuhan akademis yang bermakna sekaligus menjaga hubungan belajar yang sehat, menyenangkan, dan berkelanjutan. Kami memilih untuk memperlakukan perbedaan pendapat sebagai tantangan perancangan solusi bersama, bukan perselisihan yang harus dimenangkan oleh salah satu pihak.`;
+            document.getElementById('t1-mission-text').textContent = missionText;
+
+            document.getElementById('output-tool-1').classList.remove('hidden');
+            document.getElementById('output-tool-1').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-1', {
+                title: `Matriks Filosofi (${p1} vs ${p2})`,
+                summary: `Tingkat: ${grade} | Konflik: ${conflict}`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // MODUL 2
+        function loadSampleTool2() {
+            document.getElementById('t2-expenses').value = "15000000";
+            document.getElementById('t2-income').value = "110000000";
+            document.getElementById('t2-p1-budget').value = "15000000";
+            document.getElementById('t2-p2-budget').value = "7000000";
+            document.getElementById('t2-goals').value = "Tabungan kuliah, dana darurat, uang muka rumah";
+        }
+
+        function handleTool2Submit(event) {
+            event.preventDefault();
+            const expenses = parseFloat(document.getElementById('t2-expenses').value);
+            const income = parseFloat(document.getElementById('t2-income').value);
+            const p1Budget = parseFloat(document.getElementById('t2-p1-budget').value);
+            const p2Budget = parseFloat(document.getElementById('t2-p2-budget').value);
+            const goals = document.getElementById('t2-goals').value;
+
+            const ratio = ((expenses / income) * 100).toFixed(1);
+            const budgetGap = Math.abs(p1Budget - p2Budget);
+
+            let burdenCategory = "Komitmen Sedang";
+            if (ratio > 25) burdenCategory = "Beban Rumah Tangga Sangat Tinggi";
+            else if (ratio > 15) burdenCategory = "Komitmen Rumah Tangga Tinggi";
+            else if (ratio < 8) burdenCategory = "Komitmen Rumah Tangga Ringan";
+
+            educationMatchState.toolResults.budget = { expenses, income, ratio, p1Budget, p2Budget, budgetGap, goals, burdenCategory };
+
+            document.getElementById('t2-res-snapshot').innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
+                    <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200/60">
+                        <span class="text-xs text-slate-500 block">Rasio Pengeluaran terhadap Pendapatan</span>
+                        <span class="text-lg font-bold text-slate-900">${ratio}%</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200/60">
+                        <span class="text-xs text-slate-500 block">Selisih Batas Anggaran Pasangan</span>
+                        <span class="text-lg font-bold text-roseAccent">Rp ${budgetGap.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200/60">
+                        <span class="text-xs text-slate-500 block">Tingkat Beban Rumah Tangga</span>
+                        <span class="text-xs font-bold text-amber-600 block mt-1">${burdenCategory}</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-600">Mengalokasikan Rp ${expenses.toLocaleString('id-ID')} per tahun setara dengan <strong>${ratio}%</strong> dari pendapatan bersih rumah tangga (Rp ${income.toLocaleString('id-ID')}). Pengeluaran yang bersaing langsung dengan tujuan lain (${goals}) membutuhkan evaluasi prioritas yang cermat.</p>
+            `;
+
+            document.getElementById('t2-res-roi').innerHTML = `
+                <div class="space-y-2 text-xs text-slate-700">
+                    <p><strong>Jalannya Investasi Lebih Tinggi (Rp ${Math.max(p1Budget, p2Budget).toLocaleString('id-ID')}):</strong> Dapat menyediakan fasilitas atau dukungan khusus, tetapi memperketat dana darurat rumah tangga dan alokasi tujuan jangka panjang.</p>
+                    <p><strong>Jalur Konservatif (Rp ${Math.min(p1Budget, p2Budget).toLocaleString('id-ID')}):</strong> Menjaga ketahanan finansial keluarga sambil mengandalkan pengayaan belajar di rumah untuk mengatasi kekurangan akademis.</p>
+                    <p><strong>Uji Nilai Manfaat:</strong> Besarnya biaya tidak selalu berbanding lurus dengan kualitas pendidikan. Manfaat pendidikan terbesar terjadi ketika pengeluaran secara tepat menyelesaikan kebutuhan tumbuh kembang anak yang spesifik.</p>
+                </div>
+            `;
+
+            const midpoint = Math.round((p1Budget + p2Budget) / 2);
+            const compromiseText = `Titik Tengah Acuan Negosiasi: Rp ${midpoint.toLocaleString('id-ID')} per tahun. (Batas Pasangan A: Rp ${p1Budget.toLocaleString('id-ID')} | Batas Pasangan B: Rp ${p2Budget.toLocaleString('id-ID')}). Gunakan rentang ini untuk mengeksplorasi investasi yang terarah sambil tetap menjaga ruang untuk ${goals}.`;
+            document.getElementById('t2-compromise-text').textContent = compromiseText;
+
+            document.getElementById('output-tool-2').classList.remove('hidden');
+            document.getElementById('output-tool-2').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-2', {
+                title: `Keselarasan Anggaran (Rp ${expenses.toLocaleString('id-ID')} / thn)`,
+                summary: `Rasio: ${ratio}% | Selisih Batas: Rp ${budgetGap.toLocaleString('id-ID')}`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // MODUL 3
+        function loadSampleTool3() {
+            document.getElementById('t3-style').value = "Cenderung cemas";
+            document.getElementById('t3-state').value = "Kelelahan / Burnout";
+            document.getElementById('t3-env-a').value = "Sekolah unggulan bertekanan tinggi";
+            document.getElementById('t3-env-b').value = "Sekolah negeri seimbang dengan konseling & seni";
+        }
+
+        function handleTool3Submit(event) {
+            event.preventDefault();
+            const style = document.getElementById('t3-style').value;
+            const state = document.getElementById('t3-state').value;
+            const envA = document.getElementById('t3-env-a').value;
+            const envB = document.getElementById('t3-env-b').value;
+
+            educationMatchState.toolResults.childFit = { style, state, envA, envB };
+
+            document.getElementById('t3-res-match').innerHTML = `
+                <div class="space-y-3">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <span class="font-semibold text-slate-900 block mb-0.5">Opsi A: ${envA}</span>
+                        <p class="text-xs text-slate-600">Sinyal: <strong class="text-amber-600">Potensi Ketidakcocokan Tekanan</strong> bagi anak yang saat ini berada dalam kondisi "${state}" dengan karakter "${style}".</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100">
+                        <span class="font-semibold text-slate-900 block mb-0.5">Opsi B: ${envB}</span>
+                        <p class="text-xs text-slate-600">Sinyal: <strong class="text-emerald-600">Sinyal Kesesuaian Lebih Kuat</strong>. Sangat cocok dengan kondisi anak yang sedang mengalami cemas atau kelelahan dengan mengutamakan ritme belajar yang mendukung serta kesejahteraan holistik.</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t3-res-redflag').innerHTML = `
+                <ul class="space-y-2 text-xs text-slate-700">
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-triangle-exclamation text-roseAccent mt-0.5"></i>
+                        <span><strong>Peringatan Tekanan:</strong> Jika anak menunjukkan tanda-tanda kelelahan akademis (${state}), menambahkan tekanan yang lebih tinggi membutuhkan pertimbangan yang sangat hati-hati, bukan peningkatan beban secara otomatis.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-compass text-slateBlue mt-0.5"></i>
+                        <span><strong>Cek Ego Orang Tua:</strong> Tanyakan pada diri sendiri: "Apakah kami akan tetap memilih opsi ini jika tidak ada orang lain yang tahu sekolah mana yang dimasuki anak kami?" Berfokuslah pada kenyamanan pengalaman harian anak.</span>
+                    </li>
+                </ul>
+            `;
+
+            const verdictText = `Berdasarkan data yang dimasukkan, Opsi B (${envB}) memberikan sinyal kesesuaian yang lebih kuat untuk anak yang sedang mengalami ${state} dengan gaya belajar ${style}. Verifikasi hal ini di dunia nyata dengan mengunjungi sekolah, meninjau beban PR, dan mengamati sistem pendampingan siswa.`;
+            document.getElementById('t3-verdict-text').textContent = verdictText;
+
+            document.getElementById('output-tool-3').classList.remove('hidden');
+            document.getElementById('output-tool-3').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-3', {
+                title: `Evaluator Kesesuaian Anak (${style} / ${state})`,
+                summary: `Kesesuaian Lebih Kuat: Opsi B (${envB})`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // MODUL 4
+        function loadSampleTool4() {
+            document.getElementById('t4-topic').value = "Menambah 3 jam les wajib & les bimbel di akhir pekan";
+            document.getElementById('t4-fear-a').value = "Anak tertinggal dari teman-temannya di bidang STEM dan kehilangan peluang di masa depan";
+            document.getElementById('t4-fear-b').value = "Anak mengalami kelelahan mental kronis, kecemasan, dan kehilangan kegembiraan dalam berkreasi";
+        }
+
+        function handleTool4Submit(event) {
+            event.preventDefault();
+            const topic = document.getElementById('t4-topic').value;
+            const fearA = document.getElementById('t4-fear-a').value;
+            const fearB = document.getElementById('t4-fear-b').value;
+
+            educationMatchState.toolResults.negotiation = { topic, fearA, fearB };
+
+            document.getElementById('t4-res-points').innerHTML = `
+                <ul class="space-y-2 text-xs text-slate-700">
+                    <li class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        "Saya rasa kita berdua sama-sama berupaya melindungi hal yang penting terkait <strong>${topic}</strong>. Sebelum kita memperebutkan solusi, bisakah kita saling berbagi apa yang paling kita khawatirkan jika memilih jalur lain?"
+                    </li>
+                    <li class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        "Saya memahami kekhawatiranmu tentang kesiapan akademis anak. Bisakah kita juga memperhatikan tingkat energi dan stres harian anak kita?"
+                    </li>
+                </ul>
+            `;
+
+            document.getElementById('t4-script-text').innerHTML = `
+                <div class="space-y-3">
+                    <p><strong>Pasangan A:</strong> "Saat kita membahas ${topic}, kekhawatiran terbesar saya adalah bahwa ${fearA}."</p>
+                    <p><strong>Pasangan B:</strong> "Saya memahami kekhawatiran itu. Ketakutan terdalam saya adalah bahwa ${fearB}."</p>
+                    <p><strong>Pasangan A:</strong> "Bagaimana cara kita tetap mendukung kesiapan akademis tanpa memicu stres berlebih pada anak?"</p>
+                    <p><strong>Pasangan B:</strong> "Mari kita coba pendekatan uji coba terbatas—seperti satu sesi terarah per minggu dan tetap menjaga akhir pekan bebas les."</p>
+                </div>
+            `;
+
+            document.getElementById('t4-res-proposal').innerHTML = `
+                <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-100 text-xs text-slate-700 space-y-2">
+                    <span class="font-semibold text-emerald-800 block text-sm">Kerangka Kompromi</span>
+                    <p><strong>Tindakan:</strong> Batasi perubahan yang diusulkan (${topic}) ke tingkat sedang dan berbatas waktu sambil tetap menjaga waktu istirahat anak.</p>
+                    <p><strong>Jadwal Evaluasi:</strong> Evaluasi bersama setelah 45 hari berdasarkan indikator kesejahteraan anak yang telah disepakati.</p>
+                </div>
+            `;
+
+            document.getElementById('output-tool-4').classList.remove('hidden');
+            document.getElementById('output-tool-4').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-4', {
+                title: `Skrip Negosiasi (${topic})`,
+                summary: `Membahas ketakutan antara kesiapan akademis vs kelelahan mental.`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // MODUL 5
+        function loadSampleTool5() {
+            document.getElementById('t5-change').value = "Uji coba 90 hari pengurangan beban belajar malam & tanpa PR di akhir pekan";
+            document.getElementById('t5-metric').value = "Tingkat kecemasan anak berkurang";
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 90);
+            document.getElementById('t5-date').value = futureDate.toISOString().split('T')[0];
+        }
+
+        function handleTool5Submit(event) {
+            event.preventDefault();
+            const change = document.getElementById('t5-change').value;
+            const metric = document.getElementById('t5-metric').value;
+            const reviewDate = document.getElementById('t5-date').value;
+
+            educationMatchState.toolResults.trial = { change, metric, reviewDate };
+
+            document.getElementById('t5-contract-text').innerHTML = `
+                <p><strong>KESEPAKATAN UJI COBA PENDIDIKAN 90 HARI</strong></p>
+                <p><strong>Perubahan yang Diusulkan:</strong> ${change}</p>
+                <p><strong>Indikator Utama Keberhasilan:</strong> ${metric}</p>
+                <p><strong>Tanggal Evaluasi Resmi:</strong> ${reviewDate}</p>
+                <p class="mt-2 text-slate-600 font-normal">Kedua orang tua sepakat untuk mendukung eksperimen ini dengan iktikad baik tanpa menerapkan aturan yang bertentangan selama masa uji coba.</p>
+            `;
+
+            document.getElementById('t5-res-prompts').innerHTML = `
+                <ol class="list-decimal list-inside space-y-2 text-xs text-slate-700">
+                    <li><strong>Pemeriksaan Energi & Suasana Hati:</strong> "Bagaimana tingkat stres dan semangat anak kita minggu ini dibandingkan sebelum uji coba?"</li>
+                    <li><strong>Progres Indikator:</strong> "Bukti nyata apa yang kita lihat terkait <em>${metric}</em>?"</li>
+                    <li><strong>Kendala Lapangan:</strong> "Tantangan tak terduga apa yang muncul dan perlu kita sesuaikan?"</li>
+                </ol>
+            `;
+
+            document.getElementById('t5-res-exit').innerHTML = `
+                <div class="space-y-2 text-xs text-slate-700">
+                    <p><strong>Uji Coba Berhasil:</strong> Jika <em>${metric}</em> menunjukkan perbaikan positif yang jelas pada ${reviewDate}, pertimbangkan untuk melanjutkan atau meresmikan pendekatan ini.</p>
+                    <p><strong>Uji Coba Belum Berhasil:</strong> Jika indikator memburuk atau tidak menunjukkan perbaikan, beralihlah ke jalur alternatif yang telah disepakati sebelumnya tanpa saling menyalahkan.</p>
+                </div>
+            `;
+
+            document.getElementById('output-tool-5').classList.remove('hidden');
+            document.getElementById('output-tool-5').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-5', {
+                title: `Uji Coba 90 Hari (${change})`,
+                summary: `Indikator: ${metric} | Evaluasi: ${reviewDate}`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // Tampilkan Rencana Pendidikan Saya
+        function renderEducationPlan() {
+            const planContainer = document.getElementById('plan-content-area');
+            if (!planContainer) return;
+
+            const res = educationMatchState.toolResults;
+
+            let html = `
+                <div class="p-4 bg-blue-50/60 rounded-xl border border-blue-100">
+                    <h3 class="font-bold text-slateBlue text-base mb-2">1. Hal yang Kami Sepakati (Prinsip Bersama Keluarga)</h3>
+                    <p class="italic text-slate-800">${res.philosophy ? document.getElementById('t1-mission-text').textContent : "Selesaikan Modul 1 (Matriks Filosofi) untuk menghasilkan pernyataan misi pendidikan keluarga Anda."}</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">2. Keberlanjutan Keuangan</h4>
+                        <p class="text-xs text-slate-600">${res.budget ? `Pengeluaran Tahunan: Rp ${res.budget.expenses.toLocaleString('id-ID')} (${res.budget.ratio}% dari pendapatan) | Tingkat Beban: ${res.budget.burdenCategory}` : "Selesaikan Modul 2 (Keselarasan Anggaran) untuk meninjau batas keuangan."}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">3. Pertimbangan Kebutuhan Anak</h4>
+                        <p class="text-xs text-slate-600">${res.childFit ? `Karakter Belajar: ${res.childFit.style} | Kondisi Saat Ini: ${res.childFit.state}` : "Selesaikan Modul 3 (Kesesuaian Anak) untuk menilai sinyal cocok-tidaknya lingkungan sekolah."}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">4. Fokus Diskusi Utama</h4>
+                        <p class="text-xs text-slate-600">${res.negotiation ? `Topik: ${res.negotiation.topic}` : "Selesaikan Modul 4 (Skrip Negosiasi) untuk memetakan ketakutan utama dan titik kompromi."}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">5. Eksperimen Uji Coba Aktif</h4>
+                        <p class="text-xs text-slate-600">${res.trial ? `Uji Coba: ${res.trial.change} | Indikator: ${res.trial.metric} | Evaluasi: ${res.trial.reviewDate}` : "Selesaikan Modul 5 (Uji Coba 90 Hari) untuk merancang eksperimen."}</p>
+                    </div>
+                </div>
+            `;
+
+            planContainer.innerHTML = html;
+        }
+
+        // Inisialisasi riwayat & status saat memuat halaman
+        window.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 5; i++) {
+                updateHistoryUI('tool-' + i);
+            }
+            updateDashboardAlignmentScore();
+            evaluateBottleneck();
+        });
+    </script>
+</body>
+</html>

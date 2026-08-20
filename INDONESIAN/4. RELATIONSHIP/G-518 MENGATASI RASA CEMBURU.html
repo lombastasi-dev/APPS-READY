@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reset Kecemburuan™ — Keamanan Tanpa Pengawasan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #6A040F;
+      --primary-light: #9D0208;
+      --primary-subtle: #F5E6E8;
+      --gold: #D4A373;
+      --gold-light: #FAEDCD;
+      --bg-gradient: linear-gradient(135deg, #FFF8F5 0%, #FDF2E9 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2B2D42;
+      --text-muted: #6C757D;
+      --border-color: #E9ECEF;
+      --sidebar-width: 260px;
+      --radius-xl: 1rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05);
+      --shadow-md: 0 10px 15px -3px rgba(106,4,15,0.07);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: var(--bg-gradient); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; line-height: 1.6; }
+    .app-container { display: flex; flex: 1; position: relative; }
+
+    .sidebar { width: var(--sidebar-width); background: #FFFFFF; border-right: 1px solid var(--border-color); position: fixed; top: 0; bottom: 0; left: 0; z-index: 100; display: flex; flex-direction: column; box-shadow: var(--shadow-sm); transition: transform 0.3s ease; }
+    .sidebar-header { padding: 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; gap: 0.75rem; }
+    .brand-logo { width: 38px; height: 38px; background: var(--primary); color: #FFF; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; }
+    .brand-title { font-weight: 700; font-size: 1.15rem; color: var(--primary); letter-spacing: -0.02em; }
+    .sidebar-nav { padding: 1rem 0.75rem; flex: 1; overflow-y: auto; }
+    .nav-item { display: flex; align-items: center; gap: 0.85rem; padding: 0.75rem 1rem; color: var(--text-muted); border-radius: var(--radius-md); margin-bottom: 0.25rem; font-weight: 500; font-size: 0.925rem; cursor: pointer; transition: all 0.2s ease; border: none; background: transparent; width: 100%; text-align: left; }
+    .nav-item:hover { background: var(--primary-subtle); color: var(--primary); }
+    .nav-item.active { background: var(--primary); color: #FFFFFF; }
+    .nav-item i { font-size: 1.1rem; width: 20px; text-align: center; }
+
+    .mobile-header { display: none; background: #FFFFFF; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 90; }
+    .mobile-menu-btn { background: none; border: none; font-size: 1.5rem; color: var(--primary); cursor: pointer; }
+    .sidebar-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 95; backdrop-filter: blur(2px); }
+
+    .main-wrapper { flex: 1; margin-left: var(--sidebar-width); display: flex; flex-direction: column; min-height: 100vh; }
+    .main-content { padding: 2.5rem 1.5rem; max-width: 800px; width: 100%; margin: 0 auto; flex: 1; }
+    .card { background: var(--card-bg); border-radius: var(--radius-xl); padding: 1.75rem; box-shadow: var(--shadow-sm); border: 1px solid rgba(212,163,115,0.2); margin-bottom: 1.5rem; }
+
+    .page-header { margin-bottom: 2rem; }
+    .page-title { font-size: 1.85rem; color: var(--primary); font-weight: 700; margin-bottom: 0.5rem; letter-spacing: -0.02em; }
+    .page-subtitle { color: var(--text-muted); font-size: 1rem; }
+
+    .form-group { margin-bottom: 1.5rem; }
+    .form-label { display: block; font-weight: 600; font-size: 0.95rem; margin-bottom: 0.5rem; color: var(--text-main); }
+    .form-control, .form-select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-color); border-radius: var(--radius-md); font-size: 0.95rem; color: var(--text-main); background: #FAFAFA; transition: all 0.2s ease; }
+    .form-control:focus, .form-select:focus { outline: none; border-color: var(--gold); background: #FFFFFF; box-shadow: 0 0 0 3px rgba(212,163,115,0.25); }
+    textarea.form-control { min-height: 100px; resize: vertical; }
+    .checkbox-grid, .radio-group { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.75rem; margin-top: 0.5rem; }
+    .custom-check, .custom-radio { display: flex; align-items: center; gap: 0.6rem; padding: 0.6rem 0.8rem; background: #FAFAFA; border: 1px solid var(--border-color); border-radius: var(--radius-md); cursor: pointer; font-size: 0.9rem; user-select: none; transition: background 0.15s; }
+    .custom-check:hover, .custom-radio:hover { background: #F0F0F0; }
+    .custom-check input, .custom-radio input { accent-color: var(--primary); width: 16px; height: 16px; }
+
+    .btn-group { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; padding: 0.75rem 1.5rem; font-weight: 600; font-size: 0.95rem; border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s ease; border: none; }
+    .btn-primary { background: var(--primary); color: #FFFFFF; }
+    .btn-primary:hover { background: var(--primary-light); box-shadow: 0 4px 12px rgba(106,4,15,0.2); }
+    .btn-secondary { background: var(--gold-light); color: #5A3E1B; border: 1px solid var(--gold); }
+    .btn-secondary:hover { background: var(--gold); color: #FFFFFF; }
+    .btn-outline { background: transparent; border: 1px solid var(--border-color); color: var(--text-muted); }
+    .btn-outline:hover { background: #F8F9FA; color: var(--text-main); }
+    .btn-sm { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+
+    .output-container { margin-top: 2.5rem; display: none; animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .output-card { background: #FFFFFF; border-radius: var(--radius-xl); border-left: 5px solid var(--primary); padding: 2rem; box-shadow: var(--shadow-md); }
+    .output-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+    .output-title { color: var(--primary); font-size: 1.4rem; font-weight: 700; }
+    .result-section { margin-bottom: 1.5rem; }
+    .result-section:last-child { margin-bottom: 0; }
+    .result-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; color: var(--gold); margin-bottom: 0.35rem; }
+    .result-content { font-size: 1rem; color: var(--text-main); background: #FAF7F5; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #F0E6DF; }
+    .script-box { background: #FFF8F5; border: 1px dashed var(--primary); padding: 1.25rem; border-radius: var(--radius-md); position: relative; margin-top: 0.5rem; }
+    .copy-btn { position: absolute; top: 0.75rem; right: 0.75rem; }
+
+    .history-section { margin-top: 3rem; border-top: 1px solid var(--border-color); padding-top: 2rem; }
+    .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .history-item { background: #FFFFFF; border: 1px solid var(--border-color); border-radius: var(--radius-md); margin-bottom: 0.75rem; overflow: hidden; }
+    .history-summary { padding: 1rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: 600; background: #FAFAFA; }
+    .history-summary:hover { background: #F0F0F0; }
+    .history-details { padding: 1.25rem; border-top: 1px solid var(--border-color); display: none; background: #FFFFFF; }
+
+    .toast { position: fixed; bottom: 20px; right: 20px; background: var(--primary); color: white; padding: 0.75rem 1.5rem; border-radius: var(--radius-md); box-shadow: var(--shadow-md); z-index: 1000; display: none; align-items: center; gap: 0.5rem; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    .app-footer { background: #FFFFFF; border-top: 1px solid var(--border-color); padding: 1.5rem; text-align: center; font-size: 0.85rem; color: var(--text-muted); margin-top: auto; }
+
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+    .dash-card { background: #FFFFFF; border-radius: var(--radius-xl); padding: 1.5rem; border: 1px solid rgba(212,163,115,0.3); box-shadow: var(--shadow-sm); cursor: pointer; transition: all 0.25s ease; display: flex; flex-direction: column; justify-content: space-between; }
+    .dash-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary); }
+    .dash-icon { width: 48px; height: 48px; border-radius: 12px; background: var(--primary-subtle); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; margin-bottom: 1rem; }
+    .dash-title { font-size: 1.15rem; font-weight: 700; color: var(--primary); margin-bottom: 0.5rem; }
+    .dash-desc { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem; }
+    .dash-link { font-size: 0.875rem; font-weight: 600; color: var(--gold); display: flex; align-items: center; gap: 0.35rem; }
+    .dash-card:hover .dash-link { color: var(--primary); }
+
+    .reset-progress { display: flex; gap: 0.5rem; flex-wrap: wrap; margin: 1rem 0; }
+    .reset-day { background: var(--primary-subtle); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; color: var(--primary); }
+    .reset-day.done { background: var(--primary); color: white; }
+
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .mobile-header { display: flex; }
+      .main-wrapper { margin-left: 0; }
+      .main-content { padding: 1.5rem 1rem; }
+      .checkbox-grid, .radio-group { grid-template-columns: 1fr; }
+      .btn-group { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="mobile-header">
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <div class="brand-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="brand-title">ResetKecemburuan™</span>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuToggle"><i class="fa-solid fa-bars"></i></button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="brand-logo"><i class="fa-solid fa-shield-halved"></i></div>
+      <span class="brand-title">ResetKecemburuan™</span>
+    </div>
+    <nav class="sidebar-nav">
+      <button class="nav-item active" onclick="switchView('dashboard')"><i class="fa-solid fa-house"></i> Beranda</button>
+      <button class="nav-item" onclick="switchView('tool1')"><i class="fa-solid fa-arrows-spin"></i> Penghenti Spiral</button>
+      <button class="nav-item" onclick="switchView('tool2')"><i class="fa-solid fa-magnifying-glass"></i> Bukti vs Cerita</button>
+      <button class="nav-item" onclick="switchView('tool3')"><i class="fa-solid fa-comments"></i> Percakapan</button>
+      <button class="nav-item" onclick="switchView('tool4')"><i class="fa-solid fa-handshake"></i> Pembangun Batasan</button>
+      <button class="nav-item" onclick="switchView('tool5')"><i class="fa-solid fa-user-shield"></i> Cek Keamanan Diri</button>
+      <button class="nav-item" onclick="switchView('reset')"><i class="fa-solid fa-rotate"></i> Reset 7 Hari</button>
+      <button class="nav-item" onclick="switchView('plan')"><i class="fa-solid fa-list-check"></i> Rencana Keamananku</button>
+      <button class="nav-item" onclick="switchView('history')"><i class="fa-solid fa-clock-rotate-left"></i> Riwayatku</button>
+      <button class="nav-item" onclick="switchView('privacy')"><i class="fa-solid fa-lock"></i> Privasi & Keamanan</button>
+    </nav>
+  </aside>
+
+  <div class="main-wrapper">
+    <main class="main-content">
+      <div id="contentArea"></div>
+      <footer class="app-footer"><p>Untuk refleksi mandiri dan dukungan komunikasi semata. Bukan terapi atau nasihat profesional. Untuk masalah kepercayaan atau keamanan, konsultasikan dengan profesional berlisensi.</p></footer>
+    </main>
+  </div>
+
+  <div id="toast" class="toast"><i class="fa-solid fa-check-circle"></i> <span id="toast-message">Disalin!</span></div>
+
+  <script>
+    /* ===== STATE & STORAGE ===== */
+    function getHistory(toolId) {
+      try { return JSON.parse(localStorage.getItem(`jr_history_${toolId}`) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, item) {
+      let h = getHistory(toolId);
+      h.unshift({ ...item, timestamp: new Date().toLocaleString('id-ID') });
+      if (h.length > 30) h = h.slice(0, 30);
+      localStorage.setItem(`jr_history_${toolId}`, JSON.stringify(h));
+    }
+    function clearHistory(toolId) {
+      localStorage.removeItem(`jr_history_${toolId}`);
+      renderTool(toolId);
+    }
+    function clearAllHistory() {
+      ['tool1','tool2','tool3','tool4','tool5','reset'].forEach(id => localStorage.removeItem(`jr_history_${id}`));
+      renderTool('history');
+      showToast('Semua riwayat dihapus');
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      document.getElementById('toast-message').textContent = msg;
+      t.style.display = 'flex';
+      setTimeout(() => t.style.display = 'none', 2000);
+    }
+    function copyToClipboard(text) {
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => showToast('Disalin!')).catch(() => fallbackCopy(text));
+      else fallbackCopy(text);
+    }
+    function fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      showToast('Disalin!');
+    }
+
+    /* ===== NAVIGASI ===== */
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const menuBtn = document.getElementById('mobileMenuToggle');
+    function closeSidebar() { sidebar.classList.remove('open'); overlay.classList.remove('open'); }
+    function openSidebar() { sidebar.classList.add('open'); overlay.classList.add('open'); }
+    menuBtn.addEventListener('click', openSidebar);
+    overlay.addEventListener('click', closeSidebar);
+
+    function switchView(viewId) {
+      closeSidebar();
+      document.querySelectorAll('.nav-item').forEach(b => b.classList.toggle('active', b.getAttribute('onclick').includes(viewId)));
+      renderTool(viewId);
+    }
+    document.querySelectorAll('.nav-item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const match = btn.getAttribute('onclick').match(/switchView\('([^']+)'\)/);
+        if (match) switchView(match[1]);
+      });
+    });
+
+    /* ===== MESIN RENDER ===== */
+    function renderTool(viewId) {
+      const container = document.getElementById('contentArea');
+      switch (viewId) {
+        case 'dashboard': container.innerHTML = renderDashboard(); break;
+        case 'tool1': container.innerHTML = renderTool1(); break;
+        case 'tool2': container.innerHTML = renderTool2(); break;
+        case 'tool3': container.innerHTML = renderTool3(); break;
+        case 'tool4': container.innerHTML = renderTool4(); break;
+        case 'tool5': container.innerHTML = renderTool5(); break;
+        case 'reset': container.innerHTML = renderReset(); break;
+        case 'plan': container.innerHTML = renderPlan(); break;
+        case 'history': container.innerHTML = renderHistoryView(); break;
+        case 'privacy': container.innerHTML = renderPrivacy(); break;
+        default: container.innerHTML = renderDashboard();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function renderHistoryAccordion(toolId, history, label) {
+      if (!history || history.length === 0) return '';
+      return `
+        <div class="history-section">
+          <div class="history-header">
+            <span style="font-weight:600;color:var(--primary);"><i class="fa-solid fa-clock-rotate-left"></i> ${label} Sebelumnya (${history.length})</span>
+            <button class="btn btn-outline btn-sm" onclick="clearHistory('${toolId}')">Hapus Riwayat</button>
+          </div>
+          ${history.map((item, idx) => `
+            <div class="history-item">
+              <div class="history-summary" onclick="toggleHistoryItem('${toolId}', ${idx})">
+                <span>${item.timestamp}</span>
+                <i class="fa-solid fa-chevron-down" id="hist-icon-${toolId}-${idx}"></i>
+              </div>
+              <div class="history-details" id="hist-body-${toolId}-${idx}">${item.outputHTML || item.summary}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function toggleHistoryItem(toolId, idx) {
+      const body = document.getElementById(`hist-body-${toolId}-${idx}`);
+      const icon = document.getElementById(`hist-icon-${toolId}-${idx}`);
+      if (body.style.display === 'block') {
+        body.style.display = 'none';
+        icon.className = 'fa-solid fa-chevron-down';
+      } else {
+        body.style.display = 'block';
+        icon.className = 'fa-solid fa-chevron-up';
+      }
+    }
+
+    /* ===== BERANDA ===== */
+    function renderDashboard() {
+      return `
+        <div class="card" style="background:linear-gradient(135deg,#6A040F 0%,#9D0208 100%);color:white;">
+          <h1 style="font-size:2.2rem;font-weight:700;margin-bottom:0.5rem;letter-spacing:-0.02em;">Reset Kecemburuan™</h1>
+          <p style="font-size:1.1rem;color:#FAEDCD;font-weight:300;">Bangun keamanan tanpa mengubah cinta menjadi pengawasan.</p>
+        </div>
+        <div class="dashboard-grid">
+          <div class="dash-card" onclick="switchView('tool1')"><div class="dash-icon"><i class="fa-solid fa-arrows-spin"></i></div><div class="dash-title">Penghenti Spiral</div><div class="dash-desc">Hentikan siklus pengawasan impulsif, pengecekan ponsel, dan kompulsi.</div><div class="dash-link">Buka <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool2')"><div class="dash-icon"><i class="fa-solid fa-magnifying-glass"></i></div><div class="dash-title">Bukti vs Cerita</div><div class="dash-desc">Pisahkan fakta yang dapat diamati dari asumsi yang didorong kecemasan.</div><div class="dash-link">Buka <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool3')"><div class="dash-icon"><i class="fa-solid fa-comments"></i></div><div class="dash-title">Percakapan</div><div class="dash-desc">Naskah pembukaan non-tuduhan yang meminimalkan pertahanan diri dan mencari kejelasan.</div><div class="dash-link">Buka <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool4')"><div class="dash-icon"><i class="fa-solid fa-handshake"></i></div><div class="dash-title">Pembangun Batasan</div><div class="dash-desc">Tetapkan kesepakatan yang adil dan timbal balik tanpa jatuh ke dalam kontrol atau pengawasan.</div><div class="dash-link">Buka <i class="fa-solid fa-arrow-right"></i></div></div>
+          <div class="dash-card" onclick="switchView('tool5')"><div class="dash-icon"><i class="fa-solid fa-user-shield"></i></div><div class="dash-title">Cek Keamanan Diri</div><div class="dash-desc">Petakan ketidakamanan internal, trauma masa lalu, dan kembangkan harga diri yang mandiri.</div><div class="dash-link">Buka <i class="fa-solid fa-arrow-right"></i></div></div>
+        </div>
+      `;
+    }
+
+    /* ===== ALAT 1: PENGHENTI SPIRAL ===== */
+    function renderTool1() {
+      const h = getHistory('tool1');
+      return `
+        <div class="page-header"><h2 class="page-title">Penghenti Spiral</h2><p class="page-subtitle">"Aku tidak bisa berhenti memeriksa ponsel, lokasi, atau media sosial mereka."</p></div>
+        <div class="card">
+          <form id="form-tool1" onsubmit="event.preventDefault(); processTool1();">
+            <div class="form-group"><label class="form-label">Apa yang kamu periksa?</label><div class="checkbox-grid">
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Phone"> Ponsel</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Location"> Lokasi</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Social media"> Media sosial</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Messages"> Pesan</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Photos"> Foto</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Who they follow"> Yang mereka ikuti</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Their friends"> Teman mereka</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Their exes"> Mantan mereka</label>
+              <label class="custom-check"><input type="checkbox" name="t1_check" value="Everything"> Segalanya</label>
+            </div></div>
+            <div class="form-group"><label class="form-label">Seberapa sering?</label><select class="form-select" id="t1_freq"><option value="">Pilih...</option><option value="Multiple times daily">Beberapa kali sehari</option><option value="Daily">Setiap hari</option><option value="Few times a week">Beberapa kali seminggu</option><option value="Only when anxious">Hanya saat cemas</option></select></div>
+            <div class="form-group"><label class="form-label">Apa yang memicu dorongan?</label><textarea class="form-control" id="t1_trigger" placeholder="Misal: Saat mereka mendapat pesan dan membelokkan layar..."></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu harap temukan?</label><select class="form-select" id="t1_hope"><option value="">Pilih...</option><option value="Proof they're faithful">Bukti mereka setia</option><option value="Proof they're not">Bukti mereka tidak</option><option value="Reassurance">Kepastian</option><option value="Something to confront them with">Sesuatu untuk dikonfrontasi</option><option value="I don't know">Aku tidak tahu</option></select></div>
+            <div class="form-group"><label class="form-label">Apa yang terjadi setelah kamu periksa?</label><select class="form-select" id="t1_after"><option value="">Pilih...</option><option value="Relief">Lega</option><option value="More anxiety">Lebih cemas</option><option value="Guilt">Bersalah</option><option value="Fight">Terjadi pertengkaran</option><option value="Temporary calm then repeat">Tenang sementara lalu berulang</option></select></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Analisis Spiral</button><button type="button" class="btn btn-secondary" onclick="loadSample(1)">Muat Contoh</button></div>
+          </form>
+        </div>
+        <div id="output-tool1" class="output-container"></div>
+        ${renderHistoryAccordion('tool1', h, 'Analisis Spiral')}
+      `;
+    }
+
+    function loadSample(toolId) {
+      if (toolId === 1) {
+        document.querySelectorAll('input[name="t1_check"]').forEach(cb => cb.checked = ['Social media','Messages'].includes(cb.value));
+        document.getElementById('t1_freq').value = 'Daily';
+        document.getElementById('t1_trigger').value = 'Saat mereka mendapat notifikasi pesan larut malam dan tersenyum melihat ponsel.';
+        document.getElementById('t1_hope').value = 'Reassurance';
+        document.getElementById('t1_after').value = 'Temporary calm then repeat';
+      } else if (toolId === 2) {
+        document.getElementById('t2_event').value = 'Pasangan pulang dua jam lebih lambat dari biasanya dari kantor dengan bau parfum.';
+        document.getElementById('t2_observed').value = 'Tiba pukul 20:30 bukan pukul 18:30. Bau parfum bunga menyengat di jaket. Tidak mengirim pesan sebelumnya.';
+        document.getElementById('t2_assumed').value = 'Mereka pergi kencan rahasia dengan seseorang dari kantor dan melupakanku.';
+        document.querySelector('input[name="t2_asked"][value="No"]').checked = true;
+        document.getElementById('t2_response').value = '';
+      } else if (toolId === 3) {
+        document.getElementById('t3_know').value = 'Aku merasa sangat terputus dan cemas ketika kamu mempertahankan obrolan harian pribadi dengan mantan pasanganmu.';
+        document.getElementById('t3_fear').value = 'Kamu hanya tidak aman, dramatis, dan mencoba mengendalikan dengan siapa aku bicara.';
+        document.getElementById('t3_need').value = 'Transparency';
+        document.querySelector('input[name="t3_history"][value="Never"]').checked = true;
+      } else if (toolId === 4) {
+        document.getElementById('t4_worry').value = 'Pergi minum larut malam dengan rekan kerja tanpa pembaruan atau perkiraan waktu kembali.';
+        document.getElementById('t4_secure').value = 'Pesan singkat sebelum meninggalkan kantor dan pembaruan cepat jika tetap keluar melewati tengah malam.';
+        document.getElementById('t4_controlling').value = 'Menuntut pelacakan lokasi GPS langsung atau memerlukan bukti foto dengan siapa mereka bersama.';
+        document.getElementById('t4_offer').value = 'Aku akan memberi ruang penuh tanpa menelepon spam atau menuntut balasan instan saat mereka keluar.';
+      } else if (toolId === 5) {
+        document.getElementById('t5_life').value = 'Bergulat dengan masalah citra tubuh dan stagnasi karier akhir-akhir ini dibandingkan rekan-rekan.';
+        document.querySelector('input[name="t5_pattern"][value="Only when I was cheated on before"]').checked = true;
+        document.getElementById('t5_partner').value = 'Merasa kokoh dalam nilai diriku sendiri, mempercayai instingku, dan memiliki hobi mandiri.';
+        document.getElementById('t5_solo').value = 'Tidak ada hobi solo saat ini atau pertemuan teman terpisah; kebanyakan menonton TV bersama.';
+      }
+      showToast('Contoh dimuat');
+    }
+
+    function processTool1() {
+      const checked = Array.from(document.querySelectorAll('input[name="t1_check"]:checked')).map(c => c.value);
+      const freq = document.getElementById('t1_freq').value;
+      const trigger = document.getElementById('t1_trigger').value;
+      const hope = document.getElementById('t1_hope').value;
+      const after = document.getElementById('t1_after').value;
+      const checks = checked.length ? checked.join(', ') : 'perilaku umum';
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-arrows-spin"></i> Siklus Pengecekanmu</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString('id-ID')}</span></div>
+          <div class="result-section"><div class="result-label">Pola Spiralmu</div><div class="result-content">Kamu memantau <strong>${checks}</strong> secara <strong>${freq.toLowerCase()}</strong>, dipicu oleh: <em>"${escapeHtml(trigger)}"</em>.</div></div>
+          <div class="result-section"><div class="result-label">Apa yang Ingin Dipecahkan oleh Pengecekan</div><div class="result-content">Kamu mencari <strong>${hope.toLowerCase()}</strong>, tetapi efek setelah pengecekan adalah <strong>${after.toLowerCase()}</strong>.</div></div>
+          <div class="result-section"><div class="result-label">Siklusnya</div><div class="result-content"><strong>Pemicu → Dorongan → Pengecekan → ${after} → Ketidakpastian baru</strong>. Siklus ini memperkuat dorongan daripada menyelesaikannya.</div></div>
+          <div class="result-section"><div class="result-label">Satu Batasan Diri</div><div class="result-content">Coba batasan terstruktur: periksa sekali sehari pada waktu tertentu (misal, 20:00) selama 3 menit. Tidak ada pengecekan saat di tempat tidur atau saat bekerja.</div></div>
+          <div class="result-section"><div class="result-label">Pertanyaan Sesungguhnya</div><div class="result-content"><em>"Apakah aku mencari keamanan di layar, atau aku butuh percakapan jujur tentang kedekatan emosional?"</em></div></div>
+          <div class="result-section"><div class="result-label">Tindakan Alternatif</div><div class="result-content">Saat dorongan muncul: Atur timer 15 menit. Jauhkan perangkat. Pergi ke luar atau minum air dingin. Jika dorongan masih ada, tuliskan daripada mencari.</div></div>
+          <div class="result-section"><div class="result-label">Jika Kamu Menemukan Sesuatu</div><div class="result-content"><strong>Ambigu:</strong> Jeda. Ambigu sering terdistorsi oleh kecemasan. <strong>Bukti jelas:</strong> Dokumentasikan fakta secara objektif. Rencanakan diskusi terstruktur dengan tenang yang berfokus pada pelanggaran batasan.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool1').innerHTML = html;
+      document.getElementById('output-tool1').style.display = 'block';
+      setHistory('tool1', { summary: `Analisis Spiral (${freq})`, outputHTML: html });
+      renderTool1();
+    }
+
+    /* ===== ALAT 2: BUKTI vs CERITA ===== */
+    function renderTool2() {
+      const h = getHistory('tool2');
+      return `
+        <div class="page-header"><h2 class="page-title">Bukti vs Cerita</h2><p class="page-subtitle">"Aku punya 'bukti' tapi aku tidak tahu apakah aku mengada-ada."</p></div>
+        <div class="card">
+          <form id="form-tool2" onsubmit="event.preventDefault(); processTool2();">
+            <div class="form-group"><label class="form-label">Apa yang terjadi secara spesifik?</label><textarea class="form-control" id="t2_event" placeholder="Jelaskan insiden yang memicu kecurigaanmu..."></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu amati? (FAKTA saja)</label><textarea class="form-control" id="t2_observed" placeholder="Apa yang benar-benar terjadi tanpa interpretasi?"></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu asumsikan? (Ceritanya)</label><textarea class="form-control" id="t2_assumed" placeholder="Narasi apa yang diciptakan pikirannmu?"></textarea></div>
+            <div class="form-group"><label class="form-label">Pernahkah kamu bertanya kepada mereka tentang itu?</label><div class="radio-group">
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="Yes, directly"> Ya, langsung</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="Yes, indirectly"> Ya, tidak langsung</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="No" checked> Tidak</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="I tested them"> Aku menguji mereka</label>
+              <label class="custom-radio"><input type="radio" name="t2_asked" value="I accused them"> Aku menuduh mereka</label>
+            </div></div>
+            <div class="form-group"><label class="form-label">Tanggapan mereka (jika ada):</label><textarea class="form-control" id="t2_response" placeholder="Apa yang mereka katakan atau bagaimana reaksi mereka?"></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-scale-balanced"></i> Pisahkan Fakta dari Cerita</button><button type="button" class="btn btn-secondary" onclick="loadSample(2)">Muat Contoh</button></div>
+          </form>
+        </div>
+        <div id="output-tool2" class="output-container"></div>
+        ${renderHistoryAccordion('tool2', h, 'Dekonstruksi Realitas')}
+      `;
+    }
+
+    function processTool2() {
+      const observed = document.getElementById('t2_observed').value;
+      const assumed = document.getElementById('t2_assumed').value;
+      const asked = document.querySelector('input[name="t2_asked"]:checked')?.value || 'Tidak ditentukan';
+      const response = document.getElementById('t2_response').value;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-scale-balanced"></i> Dekonstruksi Realitas</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString('id-ID')}</span></div>
+          <div class="result-section"><div class="result-label">Fakta</div><div class="result-content">"${escapeHtml(observed)}"</div></div>
+          <div class="result-section"><div class="result-label">Ceritamu</div><div class="result-content">"${escapeHtml(assumed)}"</div></div>
+          <div class="result-section"><div class="result-label">Kesenjangan</div><div class="result-content">Kesenjangan antara pengamatan dan asumsi adalah tempat kecemasan berkembang. Kamu mengamati peristiwa, tetapi kamu mengisi konteks yang hilang dengan bencana.</div></div>
+          <div class="result-section"><div class="result-label">3 Kemungkinan Penjelasan Alternatif</div><div class="result-content"><ol style="padding-left:1.2rem;"><li>Situasi canggung atau salah kelola yang tidak ada hubungannya dengan pengkhianatan.</li><li>Stres kerja, gangguan pribadi, atau kewajiban keluarga yang menyita perhatian mereka.</li><li>Komunikasi buruk atau kelalaian penilaian tanpa niat jahat.</li></ol></div></div>
+          <div class="result-section"><div class="result-label">Satu Pertanyaan untuk Diajukan</div><div class="script-box">"Aku perhatikan ${escapeHtml(observed.substring(0, 60))}... dan pikiranku mulai menciptakan cerita yang membuat stres. Bisakah kamu membantu aku memahami apa yang terjadi dari sisimu?"<button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('Aku perhatikan ${escapeHtml(observed.substring(0, 60))}... dan pikiranku mulai menciptakan cerita yang membuat stres. Bisakah kamu membantu aku memahami apa yang terjadi dari sisimu?')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+          <div class="result-section"><div class="result-label">Pemeriksaan Bendera Merah</div><div class="result-content">Apakah ini peristiwa terisolasi atau bagian dari pola kerahasiaan yang terdokumentasi? Peristiwa terisolasi layak mendapat dialog yang ingin tahu; pola yang terdokumentasi layak mendapat keputusan batasan struktural.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool2').innerHTML = html;
+      document.getElementById('output-tool2').style.display = 'block';
+      setHistory('tool2', { summary: `Analisis Bukti vs Cerita`, outputHTML: html });
+      renderTool2();
+    }
+
+    /* ===== ALAT 3: PERCAKAPAN ===== */
+    function renderTool3() {
+      const h = getHistory('tool3');
+      return `
+        <div class="page-header"><h2 class="page-title">Percakapan</h2><p class="page-subtitle">"Aku ingin membicarakannya tanpa memulai pertengkaran."</p></div>
+        <div class="card">
+          <form id="form-tool3" onsubmit="event.preventDefault(); processTool3();">
+            <div class="form-group"><label class="form-label">Apa yang ingin kamu sampaikan?</label><textarea class="form-control" id="t3_know" placeholder="Perasaan internal atau realitas situasional apa yang ingin kamu sampaikan?"></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu takutkan akan mereka katakan?</label><textarea class="form-control" id="t3_fear" placeholder="Misal: 'Kamu gila', 'Aku tidak tahan lagi'"></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu butuhkan dari mereka?</label><select class="form-select" id="t3_need"><option value="">Pilih...</option><option value="Reassurance">Kepastian</option><option value="Transparency">Transparansi</option><option value="Boundaries">Batasan</option><option value="Time">Waktu / Kehadiran</option><option value="Explanation">Penjelasan</option><option value="Change in behavior">Perubahan perilaku</option></select></div>
+            <div class="form-group"><label class="form-label">Pernahkah kamu mengangkat ini sebelumnya?</label><div class="radio-group">
+              <label class="custom-radio"><input type="radio" name="t3_history" value="Never" checked> Tidak pernah</label>
+              <label class="custom-radio"><input type="radio" name="t3_history" value="Once"> Sekali</label>
+              <label class="custom-radio"><input type="radio" name="t3_history" value="Multiple times"> Beberapa kali</label>
+              <label class="custom-radio"><input type="radio" name="t3_history" value="They know but we avoid it"> Mereka tahu tapi kita menghindarinya</label>
+            </div></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-comment-dots"></i> Buat Cetak Biru</button><button type="button" class="btn btn-secondary" onclick="loadSample(3)">Muat Contoh</button></div>
+          </form>
+        </div>
+        <div id="output-tool3" class="output-container"></div>
+        ${renderHistoryAccordion('tool3', h, 'Cetak Biru Dialog')}
+      `;
+    }
+
+    function processTool3() {
+      const know = document.getElementById('t3_know').value;
+      const fear = document.getElementById('t3_fear').value;
+      const need = document.getElementById('t3_need').value;
+      const history = document.querySelector('input[name="t3_history"]:checked')?.value || 'Tidak pernah';
+      const script = `Saat ${know.toLowerCase().replace(/^saat\s*/, '')}, aku merasa cemas dan terputus, dan aku butuh ${need.toLowerCase()} agar kita bisa tetap aman bersama.`;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-comments"></i> Cetak Biru Dialog</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString('id-ID')}</span></div>
+          <div class="result-section"><div class="result-label">Pembukaanmu</div><div class="script-box">"${escapeHtml(script)}"<button class="btn btn-secondary btn-sm copy-btn" onclick="copyToClipboard('${escapeHtml(script)}')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+          <div class="result-section"><div class="result-label">Apa yang Sebenarnya Kamu Minta</div><div class="result-content"><strong>${need}</strong> — ini adalah permintaan konkret, bukan tuntutan samar.</div></div>
+          <div class="result-section"><div class="result-label">Apa yang Tidak Boleh Dikatakan</div><div class="result-content"><ul style="padding-left:1.2rem;color:#850000;"><li>"Kamu selalu membuatku merasa paranoid." (Pernyataan menyeluruh yang menuduh)</li><li>"Mengapa kamu menyembunyikan sesuatu dariku?" (Menganggap bersalah)</li><li>"Jika kamu peduli, kamu tidak akan melakukan ini." (Manipulasi emosional)</li></ul></div></div>
+          <div class="result-section"><div class="result-label">Jika Mereka Bertahan</div><div class="result-content"><em>"Aku tidak menyerangmu. Aku berbagi perasaan internalku agar kita bisa menyelesaikannya bersama. Aku ingin mendengar perspektifmu."</em></div></div>
+          <div class="result-section"><div class="result-label">Jika Mereka Menenangkanmu</div><div class="result-content"><em>"Terima kasih telah menenangkanku. Itu membantu. Mari kita sepakati kebiasaan sederhana agar aku tetap merasa membumi."</em></div></div>
+          <div class="result-section"><div class="result-label">Satu Kesepakatan yang Diusulkan</div><div class="result-content">Usulkan langkah terukur yang disesuaikan dengan <strong>${need}</strong>: misal, "Alih-alih kerahasiaan, mari kita sepakat untuk komunikasi terbuka saat rencana berubah tak terduga."</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool3').innerHTML = html;
+      document.getElementById('output-tool3').style.display = 'block';
+      setHistory('tool3', { summary: `Cetak Biru Percakapan (${need})`, outputHTML: html });
+      renderTool3();
+    }
+
+    /* ===== ALAT 4: PEMBANGUN BATASAN ===== */
+    function renderTool4() {
+      const h = getHistory('tool4');
+      return `
+        <div class="page-header"><h2 class="page-title">Pembangun Batasan</h2><p class="page-subtitle">"Kami butuh aturan yang melindungi kami berdua tanpa saling mengendalikan."</p></div>
+        <div class="card">
+          <form id="form-tool4" onsubmit="event.preventDefault(); processTool4();">
+            <div class="form-group"><label class="form-label">Perilaku apa yang membuatmu khawatir?</label><textarea class="form-control" id="t4_worry" placeholder="Jelaskan tindakan berulang spesifik yang menyebabkan kesusahan..."></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang benar-benar membantu kamu merasa aman?</label><textarea class="form-control" id="t4_secure" placeholder="Jelaskan tindakan realistis..."></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang akan terasa mengendalikan bagimu jika mereka memintanya darimu?</label><textarea class="form-control" id="t4_controlling" placeholder="Di mana batasnya menjadi melampaui batas?"></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu bersedia tawarkan sebagai imbalan?</label><textarea class="form-control" id="t4_offer" placeholder="Bagaimana kamu akan membalas transparansi atau menawarkan kebebasan?"></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-handshake"></i> Bangun Kesepakatan</button><button type="button" class="btn btn-secondary" onclick="loadSample(4)">Muat Contoh</button></div>
+          </form>
+        </div>
+        <div id="output-tool4" class="output-container"></div>
+        ${renderHistoryAccordion('tool4', h, 'Kesepakatan')}
+      `;
+    }
+
+    function processTool4() {
+      const worry = document.getElementById('t4_worry').value;
+      const secure = document.getElementById('t4_secure').value;
+      const controlling = document.getElementById('t4_controlling').value;
+      const offer = document.getElementById('t4_offer').value;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-handshake"></i> Model Kesepakatan Timbal Balik</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString('id-ID')}</span></div>
+          <div class="result-section"><div class="result-label">Kekhawatiran</div><div class="result-content">"${escapeHtml(worry)}"</div></div>
+          <div class="result-section"><div class="result-label">Kebutuhan Keamanan</div><div class="result-content">"${escapeHtml(secure)}"</div></div>
+          <div class="result-section"><div class="result-label">Batasan yang Adil</div><div class="result-content"><strong>Kesepakatan:</strong> ${escapeHtml(secure)}. Ini melindungi transparansi tanpa memaksakan pengawasan.</div></div>
+          <div class="result-section"><div class="result-label">Tawaranmu</div><div class="result-content">"${escapeHtml(offer)}"</div></div>
+          <div class="result-section"><div class="result-label">Pemeriksaan Berkala</div><div class="result-content">Tetapkan tanggal tinjauan dalam <strong>2 minggu</strong>. Tanyakan: <em>"Apakah kesepakatan ini membantu kepercayaan kita tanpa membuat salah satu dari kita merasa dikendalikan?"</em></div></div>
+          <div class="result-section"><div class="result-label">Jika Mereka Menolak</div><div class="result-content">Jika transparansi yang wajar ditolak sebagai "mengendalikan," selidiki apakah mereka menolak akuntabilitas atau apakah pendekatan masa lalu membuat mereka bertahan.</div></div>
+          <div class="result-section"><div class="result-label">Jika Kamu Tidak Bisa Sepakat</div><div class="result-content">Ketidakcocokan mendasar terjadi ketika satu pasangan membutuhkan privasi total tanpa akuntabilitas sementara yang lain membutuhkan verifikasi konstan. Hubungan yang sehat membutuhkan standar pertimbangan bersama.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool4').innerHTML = html;
+      document.getElementById('output-tool4').style.display = 'block';
+      setHistory('tool4', { summary: `Kesepakatan Batasan`, outputHTML: html });
+      renderTool4();
+    }
+
+    /* ===== ALAT 5: CEK KEAMANAN DIRI ===== */
+    function renderTool5() {
+      const h = getHistory('tool5');
+      return `
+        <div class="page-header"><h2 class="page-title">Cek Keamanan Diri</h2><p class="page-subtitle">"Bahkan jika mereka setia, aku tidak merasa aman di kepalaku sendiri."</p></div>
+        <div class="card">
+          <form id="form-tool5" onsubmit="event.preventDefault(); processTool5();">
+            <div class="form-group"><label class="form-label">Di mana lagi dalam hidupmu kamu merasa tidak aman?</label><textarea class="form-control" id="t5_life" placeholder="Misal: Citra tubuh, posisi karier, status sosial..."></textarea></div>
+            <div class="form-group"><label class="form-label">Apakah kecemburuan menjadi pola dalam hubungan masa lalu?</label><div class="radio-group">
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="Yes, always"> Ya, selalu</label>
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="Sometimes"> Kadang-kadang</label>
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="This is new" checked> Ini baru</label>
+              <label class="custom-radio"><input type="radio" name="t5_pattern" value="Only when I was cheated on before"> Hanya saat pernah diselingkuhi sebelumnya</label>
+            </div></div>
+            <div class="form-group"><label class="form-label">Apa yang akan membuatmu merasa seperti pasangan yang aman?</label><textarea class="form-control" id="t5_partner" placeholder="Kualitas atau perilaku pribadi apa yang akan memberi kamu kepercayaan diri?"></textarea></div>
+            <div class="form-group"><label class="form-label">Apa yang kamu lakukan untuk dirimu sendiri yang tidak ada hubungannya dengan mereka?</label><textarea class="form-control" id="t5_solo" placeholder="Hobi mandiri, rutinitas solo, tujuan, atau pertemanan..."></textarea></div>
+            <div class="btn-group"><button type="submit" class="btn btn-primary"><i class="fa-solid fa-heart-pulse"></i> Analisis Keamanan Internal</button><button type="button" class="btn btn-secondary" onclick="loadSample(5)">Muat Contoh</button></div>
+          </form>
+        </div>
+        <div id="output-tool5" class="output-container"></div>
+        ${renderHistoryAccordion('tool5', h, 'Peta Keamanan Internal')}
+      `;
+    }
+
+    function processTool5() {
+      const life = document.getElementById('t5_life').value;
+      const pattern = document.querySelector('input[name="t5_pattern"]:checked')?.value || 'Tidak ditentukan';
+      const partner = document.getElementById('t5_partner').value;
+      const solo = document.getElementById('t5_solo').value;
+      const html = `
+        <div class="output-card">
+          <div class="output-header"><span class="output-title"><i class="fa-solid fa-user-shield"></i> Peta Keamanan Internal</span><span style="font-size:0.85rem;color:var(--text-muted);">${new Date().toLocaleDateString('id-ID')}</span></div>
+          <div class="result-section"><div class="result-label">Peta Ketidakamananmu</div><div class="result-content">Kecemburuan sering memproyeksikan kerentanan eksternal. Stres hidup yang kamu laporkan—<strong>"${escapeHtml(life)}"</strong>—dapat merembes ke ketakutan hubungan.</div></div>
+          <div class="result-section"><div class="result-label">Masa Lalu vs Sekarang</div><div class="result-content">Profil Riwayat: <strong>${pattern}</strong>. Jika kamu membawa trauma hubungan masa lalu, otakmu dapat memperlakukan momen netral saat ini sebagai ancaman aktif.</div></div>
+          <div class="result-section"><div class="result-label">Apa yang Akan Dipraktikkan oleh Versi Aman Dirimu</div><div class="result-content">"${escapeHtml(partner)}"</div></div>
+          <div class="result-section"><div class="result-label">Satu Bangunan Solo</div><div class="result-content">Komitmen 2 jam per minggu yang didedikasikan sepenuhnya untuk pertumbuhan mandiri: <strong>"${escapeHtml(solo.length > 5 ? solo : 'Kembangkan hobi solo baru, rutinitas kebugaran, atau keterampilan')}"</strong>.</div></div>
+          <div class="result-section"><div class="result-label">Realitas Kemitraan</div><div class="result-content">Pasangan dapat memberikan kepastian, kehangatan, dan kejujuran, tetapi mereka tidak dapat menyembuhkan defisit harga diri internal. Validasi eksternal adalah cermin; jika fondasi dalam terasa rusak, tidak ada jumlah kepastian yang akan terasa cukup.</div></div>
+          <div class="result-section"><div class="result-label">Kapan Dukungan Tambahan Mungkin Membantu</div><div class="result-content">Pertimbangkan dukungan profesional jika pengecekan atau perenungan menghabiskan lebih dari satu jam sehari, menyebabkan kepanikan parah, atau menyebabkan pertengkaran eksplosif yang sering meskipun ada kepastian pasangan.</div></div>
+        </div>
+      `;
+      document.getElementById('output-tool5').innerHTML = html;
+      document.getElementById('output-tool5').style.display = 'block';
+      setHistory('tool5', { summary: `Analisis Keamanan Diri (${pattern})`, outputHTML: html });
+      renderTool5();
+    }
+
+    /* ===== RESET 7 HARI ===== */
+    let resetDays = JSON.parse(localStorage.getItem('jr_reset_days') || '{"day":0}');
+    function renderReset() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">Reset Kecemburuan 7 Hari</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">Perjalanan terpandu melalui kelima alat untuk membangun keamanan hubungan.</p>
+          <div style="display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:1.5rem;">
+            <span class="reset-day" id="resetDay1">Hari 1: Spiral</span>
+            <span class="reset-day" id="resetDay2">Hari 2: Bukti</span>
+            <span class="reset-day" id="resetDay3">Hari 3: Percakapan</span>
+            <span class="reset-day" id="resetDay4">Hari 4: Batasan</span>
+            <span class="reset-day" id="resetDay5">Hari 5: Keamanan Diri</span>
+            <span class="reset-day" id="resetDay6">Hari 6: Sintesis</span>
+            <span class="reset-day" id="resetDay7">Hari 7: Rencana</span>
+          </div>
+          <div id="resetContent">
+            <p style="color:#718096;">Mulai dengan Hari 1: Penghenti Spiral. Selesaikan setiap alat secara berurutan untuk membangun Rencana Keamanan Hubunganmu.</p>
+            <button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Mulai Hari 1</button>
+          </div>
+          <div id="resetPlanOutput" class="output-card" style="margin-top:1.5rem;display:none;">
+            <div class="result-section"><div class="result-title"><i class="fa-solid fa-list-check"></i> Rencana Keamanan Hubunganmu</div></div>
+            <div id="resetPlanContent"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function startReset() {
+      const day = resetDays.day || 0;
+      const tools = ['tool1','tool2','tool3','tool4','tool5'];
+      const labelMap = ['Penghenti Spiral','Bukti vs Cerita','Percakapan','Pembangun Batasan','Cek Keamanan Diri'];
+      if (day < 5) {
+        switchView(tools[day]);
+        showToast(`Memulai Hari ${day+1}: ${labelMap[day]}`);
+        resetDays.day = day + 1;
+        localStorage.setItem('jr_reset_days', JSON.stringify(resetDays));
+      } else if (day === 5) {
+        synthesizeReset();
+        resetDays.day = 6;
+        localStorage.setItem('jr_reset_days', JSON.stringify(resetDays));
+      } else if (day === 6) {
+        showToast('Reset selesai! Lihat rencanamu di Rencana Keamananku.');
+        switchView('plan');
+      }
+      updateResetUI();
+    }
+
+    function synthesizeReset() {
+      const plan = {
+        tool1: getHistory('tool1')[0]?.summary || 'Renungkan pola pengecekanmu.',
+        tool2: getHistory('tool2')[0]?.summary || 'Renungkan bukti vs cerita.',
+        tool3: getHistory('tool3')[0]?.summary || 'Renungkan kebutuhan komunikasimu.',
+        tool4: getHistory('tool4')[0]?.summary || 'Renungkan kesepakatan timbal balik.',
+        tool5: getHistory('tool5')[0]?.summary || 'Renungkan keamanan internal.'
+      };
+      document.getElementById('resetPlanContent').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Pemicu Utamaku</strong><br>${plan.tool1}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Apa yang Sebenarnya Aku Tahu</strong><br>${plan.tool2}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Apa yang Kubutuhkan</strong><br>${plan.tool3}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Kesepakatan Adil Kami</strong><br>${plan.tool4}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;grid-column:1/-1;"><strong>Apa yang Bisa Kubangun Sendiri</strong><br>${plan.tool5}</div>
+        </div>
+        <div style="margin-top:1rem;padding:1rem;background:#F5E6E8;border-radius:8px;"><strong>Tindakan 30 Hari Pertamaku:</strong> Pilih satu: jeda dan amati, komunikasikan kebutuhan, tetapkan batasan, atau bangun kebiasaan mandiri.</div>
+      `;
+      document.getElementById('resetPlanOutput').style.display = 'block';
+      setHistory('reset', { summary: 'Reset Kecemburuan 7 Hari Selesai', outputHTML: document.getElementById('resetPlanContent').innerHTML });
+      updateFriendshipPlan();
+    }
+
+    function updateResetUI() {
+      const day = resetDays.day || 0;
+      for (let i=1; i<=7; i++) {
+        const el = document.getElementById(`resetDay${i}`);
+        if (el) el.classList.toggle('done', i <= day);
+      }
+      const content = document.getElementById('resetContent');
+      if (day === 0) content.innerHTML = '<p style="color:#718096;">Mulai dengan Hari 1: Penghenti Spiral. Selesaikan setiap alat secara berurutan untuk membangun Rencana Keamanan Hubunganmu.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-play"></i> Mulai Hari 1</button>';
+      else if (day < 5) content.innerHTML = `<p>Hari ${day+1} dari 7: Selesaikan ${['Penghenti Spiral','Bukti vs Cerita','Percakapan','Pembangun Batasan','Cek Keamanan Diri'][day]}.</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-arrow-right"></i> Lanjutkan</button>`;
+      else if (day === 5) content.innerHTML = `<p>Kamu telah menyelesaikan semua alat. Siap untuk mensintesis Rencana Keamanan Hubunganmu?</p><button class="btn btn-primary" onclick="startReset()"><i class="fa-solid fa-list-check"></i> Sintesis Rencana</button>`;
+      else if (day === 6) content.innerHTML = `<p>✅ Reset selesai. Lihat rencanamu di Rencana Keamananku.</p><button class="btn btn-secondary" onclick="switchView('plan')">Lihat Rencana</button>`;
+    }
+
+    /* ===== RENCANA KEAMANAN HUBUNGAN ===== */
+    function renderPlan() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">Rencana Keamanan Hubunganku</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">Disintesis dari alat yang telah kamu selesaikan.</p>
+          <div id="planDisplay"><p style="color:#718096;">Selesaikan Reset Kecemburuan 7 Hari atau jalankan alat individu untuk membangun rencanamu.</p></div>
+        </div>
+      `;
+    }
+
+    function updateFriendshipPlan() {
+      const container = document.getElementById('planDisplay');
+      if (!container) return;
+      const t1 = getHistory('tool1')[0]?.summary || '—';
+      const t2 = getHistory('tool2')[0]?.summary || '—';
+      const t3 = getHistory('tool3')[0]?.summary || '—';
+      const t4 = getHistory('tool4')[0]?.summary || '—';
+      const t5 = getHistory('tool5')[0]?.summary || '—';
+      const hasData = t1 !== '—' || t2 !== '—' || t3 !== '—' || t4 !== '—' || t5 !== '—';
+      if (!hasData) {
+        container.innerHTML = '<p style="color:#718096;">Selesaikan Reset Kecemburuan 7 Hari atau jalankan alat individu untuk membangun rencanamu.</p>';
+        return;
+      }
+      container.innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Pemicu Utamaku</strong><br>${t1}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Apa yang Sebenarnya Aku Tahu</strong><br>${t2}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Apa yang Kubutuhkan</strong><br>${t3}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;"><strong>Kesepakatan Adil Kami</strong><br>${t4}</div>
+          <div style="background:#FAF7F5;padding:1rem;border-radius:8px;grid-column:1/-1;"><strong>Apa yang Bisa Kubangun Sendiri</strong><br>${t5}</div>
+        </div>
+        <div style="margin-top:1rem;padding:1rem;background:#F5E6E8;border-radius:8px;"><strong>Tindakan Pertamaku:</strong> Pilih satu: jeda dan amati, komunikasikan kebutuhan, tetapkan batasan, atau bangun kebiasaan mandiri.</div>
+      `;
+    }
+
+    /* ===== TAMPILAN RIWAYAT ===== */
+    function renderHistoryView() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">Riwayatku</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">Semua refleksi tersimpanmu dalam satu tempat.</p>
+          <div style="display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem;">
+            <button class="btn btn-secondary btn-sm" onclick="renderAllHistory()">Segarkan</button>
+            <button class="btn btn-secondary btn-sm" onclick="if(confirm('Hapus semua riwayat?')){clearAllHistory();}">Hapus Semua Riwayat</button>
+          </div>
+          <div id="allHistoryContainer"></div>
+        </div>
+      `;
+    }
+
+    function renderAllHistory() {
+      const container = document.getElementById('allHistoryContainer');
+      if (!container) return;
+      const modules = ['tool1','tool2','tool3','tool4','tool5','reset'];
+      const labelMap = { tool1:'Penghenti Spiral', tool2:'Bukti vs Cerita', tool3:'Percakapan', tool4:'Pembangun Batasan', tool5:'Cek Keamanan Diri', reset:'Reset 7 Hari' };
+      let html = '';
+      modules.forEach(m => {
+        const h = getHistory(m);
+        if (!h.length) return;
+        html += `<h4 style="margin:1rem 0 0.5rem;color:var(--primary);">${labelMap[m] || m}</h4>`;
+        html += h.map(item => `
+          <div class="history-item">
+            <div class="history-summary" style="cursor:default;">
+              <span>${item.timestamp}</span>
+              <span style="font-weight:400;color:var(--text-muted);">${item.summary}</span>
+            </div>
+          </div>
+        `).join('');
+      });
+      container.innerHTML = html || '<p style="color:#718096;">Tidak ada riwayat ditemukan.</p>';
+    }
+
+    /* ===== PRIVASI ===== */
+    function renderPrivacy() {
+      return `
+        <div class="card">
+          <h2 style="font-size:20px;font-weight:700;margin-bottom:6px;color:var(--primary);">Privasi & Keamanan</h2>
+          <p style="color:#718096;font-size:14px;margin-bottom:20px;">Datamu tetap di perangkatmu.</p>
+          <p><strong>Dirancang untuk privasi.</strong> Refleksimu tetap ada di perangkatmu. Kami tidak mengirimkan data ke server mana pun.</p>
+          <p style="margin-top:1rem;"><strong>Penting:</strong> Reset Kecemburuan adalah alat bantu refleksi dan komunikasi mandiri. Ini bukan terapi, diagnosis, intervensi krisis, atau konseling hubungan profesional.</p>
+          <p style="margin-top:1rem;">Jika hubungan melibatkan ancaman, kontrol koersif, penguntitan, pelecehan, kekerasan atau situasi lain di mana komunikasi langsung dapat meningkatkan bahaya, jangan gunakan latihan ini sebagai rencana keselamatan utama. Utamakan keselamatan dan dukungan profesional yang tepat.</p>
+          <p style="margin-top:1rem;"><i class="fa-solid fa-triangle-exclamation" style="color:var(--primary);"></i> Jangan pernah menghadapi orang yang berbahaya berdasarkan naskah yang dihasilkan.</p>
+        </div>
+      `;
+    }
+
+    /* ===== PEMBANTU ===== */
+    function escapeHtml(text) {
+      if (!text) return '';
+      return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    /* ===== INISIALISASI ===== */
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.nav-item').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const match = btn.getAttribute('onclick').match(/switchView\('([^']+)'\)/);
+          if (match) switchView(match[1]);
+        });
+      });
+      renderTool('dashboard');
+      updateResetUI();
+      updateFriendshipPlan();
+    });
+  </script>
+</body>
+</html>

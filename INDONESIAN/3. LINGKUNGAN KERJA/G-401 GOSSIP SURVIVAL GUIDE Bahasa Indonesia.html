@@ -1,0 +1,2132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panduan Bertahan dari Gosip™ — OS Navigasi Tempat Kerja Utama</title>
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --plum: #6D597A;
+            --plum-dark: #564462;
+            --plum-light: #8A7398;
+            --plum-subtle: #F3EFEF;
+            --warm-beige: #F2E9E4;
+            --beige-dark: #E2D4CD;
+            --bg-gradient: linear-gradient(135deg, #F5F0F7 0%, #FDF6EC 100%);
+            --text-main: #33272A;
+            --text-muted: #6C5A65;
+            --card-bg: #FFFFFF;
+            --border-color: #EAE3EA;
+            --success: #4A7C59;
+            --warning: #D97706;
+            --danger: #C53030;
+            --info: #2B6CB0;
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow-sm: 0 4px 12px rgba(109, 89, 122, 0.06);
+            --shadow-md: 0 8px 24px rgba(109, 89, 122, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* App Container */
+        .app-container {
+            display: flex;
+            flex: 1;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* Sidebar Architecture */
+        .sidebar {
+            width: 270px;
+            background-color: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--plum);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--plum);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+        }
+
+        .sidebar-nav {
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background-color: var(--warm-beige);
+            color: var(--plum-dark);
+        }
+
+        .nav-item.active {
+            background-color: var(--plum);
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            font-size: 1.05rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            height: 60px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 16px;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--plum);
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--plum);
+            cursor: pointer;
+            padding: 8px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Main Content Wrapper */
+        .main-wrapper {
+            margin-left: 270px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Hero Banner */
+        .dashboard-hero {
+            text-align: center;
+            padding: 36px 24px;
+            margin-bottom: 28px;
+            background: linear-gradient(130deg, #FFFFFF 0%, var(--warm-beige) 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .dashboard-hero h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--plum);
+            margin-bottom: 8px;
+            letter-spacing: -0.02em;
+        }
+
+        .dashboard-hero p {
+            font-size: 1rem;
+            color: var(--text-muted);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Orientation Box */
+        .orientation-box {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--plum);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 28px;
+        }
+
+        .orientation-box h3 {
+            font-size: 1.05rem;
+            color: var(--plum);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .orientation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .orientation-item {
+            background: #FAF7F9;
+            padding: 10px 12px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: var(--text-main);
+        }
+
+        .orientation-item strong {
+            color: var(--plum-dark);
+            display: block;
+            margin-bottom: 2px;
+        }
+
+        /* Tool Cards Grid */
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .tool-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.25s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--plum-light);
+        }
+
+        .tool-card-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            background: var(--warm-beige);
+            color: var(--plum);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 14px;
+        }
+
+        .tool-card-title {
+            font-size: 1.08rem;
+            font-weight: 700;
+            color: var(--plum);
+            margin-bottom: 6px;
+        }
+
+        .tool-card-desc {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+            margin-bottom: 16px;
+        }
+
+        .tool-card-action {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--plum);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Standard Card System */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-lg);
+            padding: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--plum);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+
+        .card-subtitle {
+            font-size: 0.93rem;
+            color: var(--text-muted);
+        }
+
+        /* Form Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .form-control, select.form-control {
+            width: 100%;
+            padding: 12px 14px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            background-color: #FFFFFF;
+            color: var(--text-main);
+            transition: all 0.2s;
+        }
+
+        .form-control:focus, select.form-control:focus {
+            outline: none;
+            border-color: var(--plum);
+            box-shadow: 0 0 0 3px rgba(109, 89, 122, 0.12);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 85px;
+        }
+
+        /* Custom Radio Groups */
+        .radio-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 14px;
+            border: 1.5px solid var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: #FFFFFF;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .radio-label:hover {
+            border-color: var(--plum-light);
+            background-color: #FAF7F9;
+        }
+
+        .radio-label input[type="radio"] {
+            accent-color: var(--plum);
+            width: 16px;
+            height: 16px;
+        }
+
+        .radio-label:has(input[type="radio"]:checked) {
+            border-color: var(--plum);
+            background-color: var(--warm-beige);
+            color: var(--plum-dark);
+            font-weight: 600;
+        }
+
+        /* Buttons */
+        .btn-toolbar {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 11px 20px;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background-color: var(--plum);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--plum-dark);
+            box-shadow: 0 4px 12px rgba(109, 89, 122, 0.22);
+        }
+
+        .btn-secondary {
+            background-color: var(--warm-beige);
+            color: var(--plum-dark);
+            border: 1px solid var(--beige-dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #EAE0D8;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            border-color: var(--plum-light);
+            color: var(--plum);
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.82rem;
+            border-radius: 6px;
+        }
+
+        /* Strategic Snapshot Banner */
+        .strategic-snapshot {
+            background: linear-gradient(135deg, var(--plum) 0%, var(--plum-dark) 100%);
+            color: #FFFFFF;
+            border-radius: var(--radius-md);
+            padding: 18px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .snapshot-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            opacity: 0.85;
+            margin-bottom: 4px;
+        }
+
+        .snapshot-main {
+            font-size: 1.05rem;
+            font-weight: 700;
+        }
+
+        /* Results / Output Panel */
+        .results-panel {
+            display: none;
+            margin-top: 28px;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-card {
+            background: #FFFFFF;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 22px 24px;
+            margin-bottom: 16px;
+            box-shadow: var(--shadow-sm);
+            position: relative;
+        }
+
+        .output-header {
+            font-size: 0.82rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+            color: var(--plum);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .output-body {
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        /* Script Box */
+        .script-box {
+            background: #FAF8F9;
+            border-left: 4px solid var(--plum);
+            padding: 16px;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-top: 10px;
+            font-family: inherit;
+            position: relative;
+            color: #2D2529;
+            font-style: italic;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--plum);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-btn:hover {
+            background: var(--warm-beige);
+            border-color: var(--plum-light);
+        }
+
+        /* Badges */
+        .severity-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+        }
+
+        .badge-low { background: #E6F4EA; color: #137333; }
+        .badge-medium { background: #FEF7E0; color: #B06000; }
+        .badge-high { background: #FCE8E6; color: #C5221F; }
+        .badge-critical { background: #7C0000; color: #FFFFFF; }
+
+        /* Cross Module Recommendation Box */
+        .recommendation-box {
+            background: #F4EFF6;
+            border: 1.5px solid var(--plum-light);
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .rec-text h4 {
+            color: var(--plum-dark);
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .rec-text p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+        }
+
+        /* History Accordion Section */
+        .history-section {
+            margin-top: 36px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .history-title {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--plum);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-item {
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 10px;
+            background: #FFFFFF;
+            overflow: hidden;
+        }
+
+        .history-item-header {
+            padding: 12px 16px;
+            background: #FAF7F9;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--plum-dark);
+        }
+
+        .history-item-body {
+            padding: 16px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.88rem;
+            background: #FFFFFF;
+            line-height: 1.5;
+        }
+
+        .history-item-body.open {
+            display: block;
+        }
+
+        /* 7-Day Reset Layout */
+        .day-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            margin-bottom: 14px;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .day-badge {
+            background: var(--warm-beige);
+            color: var(--plum-dark);
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
+
+        .day-content h4 {
+            color: var(--plum);
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+
+        .day-content p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            margin-bottom: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 24px;
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.6);
+            margin-top: auto;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: var(--plum-dark);
+            color: #FFFFFF;
+            padding: 12px 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.88rem;
+            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hidden { display: none !important; }
+
+        /* PRINT MEDIA STYLES */
+        @media print {
+            .sidebar, .mobile-header, .btn-toolbar, .copy-btn, .history-section, .footer, .toast, .orientation-box, .btn {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .main-content {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card, .output-card {
+                box-shadow: none !important;
+                border: 1px solid #CCC !important;
+                page-break-inside: avoid;
+            }
+            body {
+                background: #FFFFFF !important;
+                color: #000000 !important;
+            }
+            .print-header {
+                display: block !important;
+                margin-bottom: 20px;
+                border-bottom: 2px solid #000;
+                padding-bottom: 10px;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar { transform: translateX(-100%); }
+            .sidebar.mobile-open { transform: translateX(0); }
+            .sidebar-overlay.active { display: block; }
+            .mobile-header { display: flex; }
+            .main-wrapper { margin-left: 0; }
+            .main-content { padding: 20px 16px; }
+            .card { padding: 20px; }
+            .dashboard-hero h2 { font-size: 1.6rem; }
+            .radio-group { grid-template-columns: 1fr; }
+            .day-card { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="brand">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Gossip Survival OS</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka navigasi menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-shield-halved"></i>
+                <h1>Gossip Survival OS</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <button class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dasbor / Beranda</span>
+                </button>
+                <button class="nav-item" data-target="tool1">
+                    <i class="fa-solid fa-magnifying-glass-chart"></i>
+                    <span>1. Audit Situasi</span>
+                </button>
+                <button class="nav-item" data-target="tool2">
+                    <i class="fa-solid fa-comments"></i>
+                    <span>2. Respon Langsung</span>
+                </button>
+                <button class="nav-item" data-target="tool3">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>3. Non-Partisipasi</span>
+                </button>
+                <button class="nav-item" data-target="tool4">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>4. Perlindungan Target</span>
+                </button>
+                <button class="nav-item" data-target="tool5">
+                    <i class="fa-solid fa-door-open"></i>
+                    <span>5. Pelarian Sistem</span>
+                </button>
+                <button class="nav-item" data-target="reset7">
+                    <i class="fa-solid fa-calendar-check"></i>
+                    <span>Program Reset 7 Hari</span>
+                </button>
+                <button class="nav-item" data-target="history">
+                    <i class="fa-solid fa-clock-rotate-left"></i>
+                    <span>Riwayat Terpadu Saya</span>
+                </button>
+                <button class="nav-item" data-target="privacy">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span>Privasi & Hukum</span>
+                </button>
+            </nav>
+        </aside>
+
+        <!-- Main Content Wrapper -->
+        <div class="main-wrapper">
+            <main class="main-content">
+
+                <!-- PRINT HEADER (Hidden on screen) -->
+                <div class="print-header hidden">
+                    <h1>PANDUAN BERTAHAN DARI GOSIP™ — RENCANA PERTAHANAN REPUTASI SAYA</h1>
+                    <p>Dihasilkan melalui Sistem Operasi Sisi Klien | Catatan Navigasi Tempat Kerja Rahasia</p>
+                </div>
+
+                <!-- VIEW: DASHBOARD / HOME -->
+                <section id="dashboard" class="view-section">
+                    <div class="dashboard-hero">
+                        <h2>Panduan Bertahan dari Gosip™</h2>
+                        <p>Rumor menyebar cepat. Reputasi Anda tidak harus dikorbankan. Toolkit navigasi yang cerdas, praktis, dan non-reaktif untuk dinamika tempat kerja.</p>
+                    </div>
+
+                    <!-- Orientation Box -->
+                    <div class="orientation-box">
+                        <h3><i class="fa-solid fa-compass"></i> Orientasi Sistem & Prinsip Operasional</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted);">Rumor tempat kerja berkembang karena reaktivitas emosional, ambiguitas, dan amplifikasi saluran belakang. OS ini menyediakan refleksi praktis dan tindakan taktis—bukan diagnosis moral.</p>
+                        <div class="orientation-grid">
+                            <div class="orientation-item">
+                                <strong>1. Abaikan atau Atasi</strong>
+                                Kebisingan kecil mati jika diabaikan; rumor dengan paparan tinggi membutuhkan koreksi faktual yang tepat.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>2. Nol Reaksi Emosional</strong>
+                                Sampaikan fakta secara lugas dalam waktu kurang dari 15 detik, lalu kembali ke tugas utama.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>3. Kontrol Informasi Masuk</strong>
+                                Terapkan pembatasan informasi pribadi yang ketat saat Anda menjadi target.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>4. Dokumentasikan Secara Sistematis</strong>
+                                Simpan catatan pribadi secara offline (Protokol MOMO) untuk tindakan permusuhan.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tool-grid">
+                        <div class="tool-card" onclick="switchTab('tool1')">
+                            <div>
+                                <div class="tool-card-icon"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                                <div class="tool-card-title">1. Audit Situasi</div>
+                                <div class="tool-card-desc">Evaluasi tingkat keparahan, penyebaran, paparan rumor, dan tentukan apakah tindakan diperlukan.</div>
+                            </div>
+                            <div class="tool-card-action">Jalankan Audit <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="tool-card" onclick="switchTab('tool2')">
+                            <div>
+                                <div class="tool-card-icon"><i class="fa-solid fa-comments"></i></div>
+                                <div class="tool-card-title">2. Respon Langsung</div>
+                                <div class="tool-card-desc">Dapatkan skrip tepat untuk mengatasi sumber rumor, mengoreksi catatan, dan mengaktifkan sekutu dengan aman.</div>
+                            </div>
+                            <div class="tool-card-action">Dapatkan Skrip <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="tool-card" onclick="switchTab('tool3')">
+                            <div>
+                                <div class="tool-card-icon"><i class="fa-solid fa-user-shield"></i></div>
+                                <div class="tool-card-title">3. Non-Partisipasi</div>
+                                <div class="tool-card-desc">Kuasai cara keluar secara elegan, mengalihkan topik, dan membangun perisai reputasi dari drama.</div>
+                            </div>
+                            <div class="tool-card-action">Bangun Pertahanan <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="tool-card" onclick="switchTab('tool4')">
+                            <div>
+                                <div class="tool-card-icon"><i class="fa-solid fa-lock"></i></div>
+                                <div class="tool-card-title">4. Perlindungan Target</div>
+                                <div class="tool-card-desc">Langkah proaktif: pembatasan informasi, mengendalikan narasi, dan membuat dokumentasi.</div>
+                            </div>
+                            <div class="tool-card-action">Lindungi Diri Anda <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="tool-card" onclick="switchTab('tool5')">
+                            <div>
+                                <div class="tool-card-icon"><i class="fa-solid fa-door-open"></i></div>
+                                <div class="tool-card-title">5. Pelarian Sistem</div>
+                                <div class="tool-card-desc">Mendiagnosis toksisitas sistemik, memutuskan apakah akan bertahan, dan mengevaluasi linimasa keluar.</div>
+                            </div>
+                            <div class="tool-card-action">Evaluasi Sistem <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="tool-card" onclick="switchTab('reset7')">
+                            <div>
+                                <div class="tool-card-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                                <div class="tool-card-title">Reset 7 Hari</div>
+                                <div class="tool-card-desc">Panduan langkah demi langkah menggunakan semua alat untuk mengambil kembali kendali atas reputasi karier Anda.</div>
+                            </div>
+                            <div class="tool-card-action">Mulai Reset <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: SITUATION AUDIT -->
+                <section id="tool1" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-magnifying-glass-chart"></i> Alat 1 — Audit Situasi</h2>
+                            <p class="card-subtitle">Masalah: "Ada gosip tentang saya dan saya perlu memahami situasi yang sedang dihadapi."</p>
+                        </div>
+
+                        <form id="form-tool1" onsubmit="event.preventDefault(); runTool1();">
+                            <div class="form-group">
+                                <label class="form-label" for="t1-said">Apa yang sedang dikatakan?</label>
+                                <textarea id="t1-said" class="form-control" placeholder="Jelaskan rumor atau pernyataan tersebut..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t1-who">Siapa yang mengatakannya?</label>
+                                <select id="t1-who" class="form-control" required>
+                                    <option value="Satu orang">Satu orang</option>
+                                    <option value="Kelompok kecil">Kelompok kecil</option>
+                                    <option value="Meluas">Meluas</option>
+                                    <option value="Anonim/online">Anonim/online</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah ini tentang Anda, orang lain, atau perusahaan?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t1-target" value="Tentang saya" checked> Tentang saya</label>
+                                    <label class="radio-label"><input type="radio" name="t1-target" value="Tentang rekan kerja"> Tentang rekan kerja</label>
+                                    <label class="radio-label"><input type="radio" name="t1-target" value="Tentang pimpinan"> Tentang pimpinan</label>
+                                    <label class="radio-label"><input type="radio" name="t1-target" value="Budaya umum"> Budaya umum</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t1-how">Bagaimana Anda mengetahuinya?</label>
+                                <select id="t1-how" class="form-control" required>
+                                    <option value="Diberitahu secara langsung">Diberitahu secara langsung</option>
+                                    <option value="Mendengar secara tidak sengaja">Mendengar secara tidak sengaja</option>
+                                    <option value="Melihat di online">Melihat di online</option>
+                                    <option value="Rumor sampai ke saya">Rumor sampai ke saya</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah ada kebenarannya?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t1-truth" value="Ya"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="t1-truth" value="Sebagian"> Sebagian</label>
+                                    <label class="radio-label"><input type="radio" name="t1-truth" value="Tidak" checked> Tidak</label>
+                                    <label class="radio-label"><input type="radio" name="t1-truth" value="Tidak yakin"> Tidak yakin</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Audit Situasi</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample1()"><i class="fa-solid fa-vial"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="results-tool1" class="results-panel">
+                        <div class="strategic-snapshot">
+                            <div>
+                                <div class="snapshot-title">Ringkasan Strategis</div>
+                                <div class="snapshot-main" id="out1-snapshot-text">Audit Diperhitungkan</div>
+                            </div>
+                            <span id="out1-severity-badge" class="severity-badge"></span>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Penilaian Tingkat Keparahan</div>
+                            <div class="output-body" id="out1-severity"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Peta Penyebaran</div>
+                            <div class="output-body" id="out1-spread"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Dugaan Motif</div>
+                            <div class="output-body" id="out1-motive"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Tingkat Paparan Anda</div>
+                            <div class="output-body" id="out1-exposure"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Aturan Utama</div>
+                            <div class="output-body" id="out1-rule"></div>
+                        </div>
+
+                        <!-- Cross Module Recommendation -->
+                        <div class="recommendation-box" id="rec-tool1">
+                            <div class="rec-text">
+                                <h4><i class="fa-solid fa-circle-nodes"></i> Langkah Selanjutnya yang Direkomendasikan</h4>
+                                <p id="rec-tool1-text">Jalankan Respon Langsung untuk mendapatkan skrip yang tepat.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm" id="rec-tool1-btn" onclick="switchTab('tool2')">Alat Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Audit</div>
+                            <button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>
+                        </div>
+                        <div id="history-tool1"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: DIRECT RESPONSE -->
+                <section id="tool2" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-comments"></i> Alat 2 — Respon Langsung</h2>
+                            <p class="card-subtitle">Masalah: "Seseorang bergosip tentang saya dan saya harus mengatasinya tanpa memperburuk keadaan."</p>
+                        </div>
+
+                        <form id="form-tool2" onsubmit="event.preventDefault(); runTool2();">
+                            <div class="form-group">
+                                <label class="form-label" for="t2-source">Siapa sumbernya?</label>
+                                <select id="t2-source" class="form-control" required>
+                                    <option value="Rekan Sejawat">Rekan Sejawat</option>
+                                    <option value="Bawahan">Bawahan</option>
+                                    <option value="Atasan">Atasan</option>
+                                    <option value="Tidak Diketahui">Tidak Diketahui</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Hubungan Anda dengan mereka:</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t2-rel" value="Ramah"> Ramah</label>
+                                    <label class="radio-label"><input type="radio" name="t2-rel" value="Netral" checked> Netral</label>
+                                    <label class="radio-label"><input type="radio" name="t2-rel" value="Renggang"> Renggang</label>
+                                    <label class="radio-label"><input type="radio" name="t2-rel" value="Mempunyai kekuasaan atas saya"> Mempunyai Kekuasaan</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apa yang Anda inginkan?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t2-want" value="Hentikan rumor" checked> Hentikan rumor</label>
+                                    <label class="radio-label"><input type="radio" name="t2-want" value="Koreksi fakta"> Koreksi fakta</label>
+                                    <label class="radio-label"><input type="radio" name="t2-want" value="Lindungi reputasi"> Lindungi reputasi</label>
+                                    <label class="radio-label"><input type="radio" name="t2-want" value="Konfrontasi mereka"> Konfrontasi mereka</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah Anda memiliki sekutu yang mengetahui kebenarannya?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t2-allies" value="Ya"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="t2-allies" value="Beberapa" checked> Beberapa</label>
+                                    <label class="radio-label"><input type="radio" name="t2-allies" value="Tidak"> Tidak</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Hasilkan Strategi Respon</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample2()"><i class="fa-solid fa-vial"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="results-tool2" class="results-panel">
+                        <div class="strategic-snapshot">
+                            <div>
+                                <div class="snapshot-title">Fokus Strategis</div>
+                                <div class="snapshot-main" id="out2-snapshot-text">De-eskalasi Terkontrol</div>
+                            </div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Percakapan Pribadi</div>
+                            <div class="output-body">
+                                <p id="out2-private-desc"></p>
+                                <div class="script-box">
+                                    <span id="out2-private-script"></span>
+                                    <button class="copy-btn" onclick="copyText('out2-private-script')"><i class="fa-solid fa-copy"></i> Salin</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Koreksi Publik (Metode "Kebenaran Sederhana")</div>
+                            <div class="output-body" id="out2-public"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Protokol Aktivasi Sekutu</div>
+                            <div class="output-body" id="out2-ally"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Jika Mereka Membantahnya</div>
+                            <div class="output-body" id="out2-deny"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Jika Situasi Memburuk</div>
+                            <div class="output-body" id="out2-escalate"></div>
+                        </div>
+
+                        <!-- Cross Module Recommendation -->
+                        <div class="recommendation-box" id="rec-tool2">
+                            <div class="rec-text">
+                                <h4><i class="fa-solid fa-circle-nodes"></i> Langkah Selanjutnya yang Direkomendasikan</h4>
+                                <p id="rec-tool2-text">Tetapkan batasan non-partisipasi untuk mencegah dampak buruk.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="switchTab('tool3')">Alat Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Respon</div>
+                            <button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>
+                        </div>
+                        <div id="history-tool2"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: NON-PARTICIPATION STRATEGY -->
+                <section id="tool3" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-user-shield"></i> Alat 3 — Strategi Non-Partisipasi</h2>
+                            <p class="card-subtitle">Masalah: "Saya lelah terseret dalam obrolan gosip dan ingin keluar dari lingkaran tersebut."</p>
+                        </div>
+
+                        <form id="form-tool3" onsubmit="event.preventDefault(); runTool3();">
+                            <div class="form-group">
+                                <label class="form-label" for="t3-current">Bagaimana Anda merespon saat ini?</label>
+                                <select id="t3-current" class="form-control" required>
+                                    <option value="Mendengar diam-diam">Mendengar diam-diam</option>
+                                    <option value="Ikut berpartisipasi">Ikut berpartisipasi</option>
+                                    <option value="Mencoba mengubah topik">Mencoba mengubah topik</option>
+                                    <option value="Pergi/Meninggalkan obrolan">Pergi/Meninggalkan obrolan</option>
+                                    <option value="Menolak/Menolak terlibat">Menolak/Menolak terlibat</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t3-draws">Siapa yang menarik Anda masuk?</label>
+                                <select id="t3-draws" class="form-control" required>
+                                    <option value="Satu orang">Satu orang</option>
+                                    <option value="Satu kelompok">Satu kelompok</option>
+                                    <option value="Atasan saya">Atasan saya</option>
+                                    <option value="Semua orang">Semua orang</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t3-fear">Apa yang Anda takutkan terjadi jika Anda berhenti?</label>
+                                <textarea id="t3-fear" class="form-control" placeholder="Cth. Terlihat acuh, dinilai negatif, dikucilkan..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah Anda ingin mempertahankan hubungan ini?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t3-rel" value="Ya"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="t3-rel" value="Beberapa" checked> Beberapa</label>
+                                    <label class="radio-label"><input type="radio" name="t3-rel" value="Tidak"> Tidak</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield-halved"></i> Hasilkan Rencana Keluar</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample3()"><i class="fa-solid fa-vial"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="results-tool3" class="results-panel">
+                        <div class="output-card">
+                            <div class="output-header">Cara Keluar Elegan (5 Skrip Netral)</div>
+                            <div class="output-body">
+                                <p style="margin-bottom: 12px;">Gunakan kalimat netral ini untuk menarik diri dari percakapan secara langsung:</p>
+                                <div id="out3-exit-phrases"></div>
+                            </div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Kerangka Pengalihan Topik</div>
+                            <div class="output-body" id="out3-pivot"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Perubahan Reputasi ("Ujung Buntu Gosip")</div>
+                            <div class="output-body" id="out3-reputation"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Jika Didesak</div>
+                            <div class="output-body" id="out3-pressured"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Evaluasi Kerugian vs. Keuntungan Sosial</div>
+                            <div class="output-body" id="out3-cost"></div>
+                        </div>
+
+                        <!-- Cross Module Recommendation -->
+                        <div class="recommendation-box" id="rec-tool3">
+                            <div class="rec-text">
+                                <h4><i class="fa-solid fa-circle-nodes"></i> Langkah Selanjutnya yang Direkomendasikan</h4>
+                                <p id="rec-tool3-text">Lindungi batasan pribadi Anda secara proaktif dengan Pembatasan Informasi Alat 4.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="switchTab('tool4')">Alat Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Strategi</div>
+                            <button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>
+                        </div>
+                        <div id="history-tool3"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: TARGET PROTECTION -->
+                <section id="tool4" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-lock"></i> Alat 4 — Perlindungan Target</h2>
+                            <p class="card-subtitle">Masalah: "Saya takut menjadi sasaran pembicaraan berikutnya."</p>
+                        </div>
+
+                        <form id="form-tool4" onsubmit="event.preventDefault(); runTool4();">
+                            <div class="form-group">
+                                <label class="form-label" for="t4-target">Apa yang membuat Anda berpotensi menjadi target?</label>
+                                <select id="t4-target" class="form-control" required>
+                                    <option value="Kesalahan baru-baru ini">Kesalahan baru-baru ini</option>
+                                    <option value="Promosi jabatan">Promosi jabatan</option>
+                                    <option value="Konflik">Konflik</option>
+                                    <option value="Karyawan baru">Karyawan baru</option>
+                                    <option value="Berbeda dari yang lain">Berbeda dari yang lain</option>
+                                    <option value="Tidak ada yang spesifik, hanya cemas">Tidak ada yang spesifik, hanya cemas</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t4-who">Siapa yang paling mungkin menjadikan Anda target?</label>
+                                <textarea id="t4-who" class="form-control" placeholder="Jelaskan individu atau peran tersebut..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t4-vuln">Informasi apa tentang Anda yang rawan dimanfaatkan?</label>
+                                <textarea id="t4-vuln" class="form-control" placeholder="Rincian pribadi, kesalahan masa lalu, rencana karier..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah Anda mempercayai tim Anda?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t4-trust" value="Sebagian besar"> Sebagian besar</label>
+                                    <label class="radio-label"><input type="radio" name="t4-trust" value="Beberapa" checked> Beberapa</label>
+                                    <label class="radio-label"><input type="radio" name="t4-trust" value="Sedikit"> Sedikit</label>
+                                    <label class="radio-label"><input type="radio" name="t4-trust" value="Tidak ada"> Tidak ada</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-lock"></i> Bangun Rencana Pertahanan</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample4()"><i class="fa-solid fa-vial"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="results-tool4" class="results-panel">
+                        <div class="output-card">
+                            <div class="output-header">Pembatasan Akses Informasi</div>
+                            <div class="output-body" id="out4-lockdown"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Pengendalian Narasi</div>
+                            <div class="output-body" id="out4-narrative"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Pelindung dari Sekutu</div>
+                            <div class="output-body" id="out4-buffer"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Protokol Dokumentasi (Protokol MOMO)</div>
+                            <div class="output-body" id="out4-doc"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Tanda Deteksi Dini</div>
+                            <div class="output-body" id="out4-warning"></div>
+                        </div>
+
+                        <!-- Cross Module Recommendation -->
+                        <div class="recommendation-box" id="rec-tool4">
+                            <div class="rec-text">
+                                <h4><i class="fa-solid fa-circle-nodes"></i> Langkah Selanjutnya yang Direkomendasikan</h4>
+                                <p id="rec-tool4-text">Periksa kesehatan organisasi secara lebih luas dengan Alat 5 Pelarian Sistem.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="switchTab('tool5')">Alat Selanjutnya <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Perlindungan</div>
+                            <button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>
+                        </div>
+                        <div id="history-tool4"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: SYSTEM ESCAPE -->
+                <section id="tool5" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-door-open"></i> Alat 5 — Pelarian Sistem</h2>
+                            <p class="card-subtitle">Masalah: "Budaya gosip di sini sangat toksik dan saya harus memutuskan apakah bisa bertahan."</p>
+                        </div>
+
+                        <form id="form-tool5" onsubmit="event.preventDefault(); runTool5();">
+                            <div class="form-group">
+                                <label class="form-label" for="t5-pervasive">Seberapa meluas budaya gosip di sini?</label>
+                                <select id="t5-pervasive" class="form-control" required>
+                                    <option value="Satu orang">Satu orang</option>
+                                    <option value="Satu kelompok/klik">Satu kelompok/klik</option>
+                                    <option value="Seluruh departemen">Seluruh departemen</option>
+                                    <option value="Budaya perusahaan">Budaya perusahaan</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah hal ini mempengaruhi hasil kerja?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t5-outcomes" value="Ya, secara signifikan"> Signifikan</label>
+                                    <label class="radio-label"><input type="radio" name="t5-outcomes" value="Agak mempengaruhi" checked> Agak</label>
+                                    <label class="radio-label"><input type="radio" name="t5-outcomes" value="Belum terlihat"> Belum</label>
+                                    <label class="radio-label"><input type="radio" name="t5-outcomes" value="Tidak"> Tidak</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah pimpinan telah mengatasinya?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t5-leadership" value="Ya"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="t5-leadership" value="Tidak"> Tidak</label>
+                                    <label class="radio-label"><input type="radio" name="t5-leadership" value="Malah ikut berpartisipasi" checked> Ikut berpartisipasi</label>
+                                    <label class="radio-label"><input type="radio" name="t5-leadership" value="Tidak yakin"> Tidak yakin</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label" for="t5-tenure">Berapa lama Anda telah bekerja di sini?</label>
+                                <select id="t5-tenure" class="form-control" required>
+                                    <option value="<6bln">&lt; 6 bulan</option>
+                                    <option value="6bln-1thn">6 bulan - 1 tahun</option>
+                                    <option value="1-2thn" selected>1 - 2 tahun</option>
+                                    <option value="2thn+">2+ tahun</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Apakah Anda bersedia menjadi orang yang mengubah budaya tersebut?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="t5-agent" value="Ya"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="t5-agent" value="Tidak"> Tidak</label>
+                                    <label class="radio-label"><input type="radio" name="t5-agent" value="Hanya jika didukung" checked> Hanya jika didukung</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-toolbar">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Diagnosis Sistem</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample5()"><i class="fa-solid fa-vial"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="results-tool5" class="results-panel">
+                        <div class="output-card">
+                            <div class="output-header">Diagnosis Budaya</div>
+                            <div class="output-body" id="out5-diagnosis"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Kelayakan Menjadi Agen Perubahan</div>
+                            <div class="output-body" id="out5-path"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Rencana Perlindungan Selama Bekerja</div>
+                            <div class="output-body" id="out5-protection"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Linimasa Keluar Strategis</div>
+                            <div class="output-body" id="out5-timeline"></div>
+                        </div>
+
+                        <div class="output-card">
+                            <div class="output-header">Filter Wawancara Kerja Terbalik</div>
+                            <div class="output-body" id="out5-filter"></div>
+                        </div>
+
+                        <!-- Cross Module Recommendation -->
+                        <div class="recommendation-box" id="rec-tool5">
+                            <div class="rec-text">
+                                <h4><i class="fa-solid fa-circle-nodes"></i> Langkah Selanjutnya yang Direkomendasikan</h4>
+                                <p id="rec-tool5-text">Tinjau posisi Anda secara keseluruhan dalam Program Reset 7 Hari.</p>
+                            </div>
+                            <button class="btn btn-primary btn-sm" onclick="switchTab('reset7')">Lihat Reset 7 Hari <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="history-section">
+                        <div class="history-header">
+                            <div class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Sistem</div>
+                            <button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')"><i class="fa-solid fa-trash"></i> Hapus Riwayat</button>
+                        </div>
+                        <div id="history-tool5"></div>
+                    </div>
+                </section>
+
+                <!-- VIEW: 7-DAY REPUTATION RESET -->
+                <section id="reset7" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-calendar-check"></i> Program Reset Reputasi 7 Hari</h2>
+                            <p class="card-subtitle">Urutan terstruktur dan terpandu untuk mengambil kembali kendali, mengatur ulang batasan tim, dan meredam drama.</p>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 1</div>
+                            <div class="day-content">
+                                <h4>Petakan Keparahan & Paparan Pribadi</h4>
+                                <p>Jalankan Alat 1 (Audit Situasi). Tentukan apakah akan mengabaikan atau mengatasi rumor tersebut.</p>
+                                <button class="btn btn-outline btn-sm" onclick="switchTab('tool1')">Mulai Audit Hari 1</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 2</div>
+                            <div class="day-content">
+                                <h4>Buat & Gunakan Skrip De-eskalasi</h4>
+                                <p>Jalankan Alat 2 (Respon Langsung). Atasi sumber utama secara pribadi menggunakan bahasa non-defensif.</p>
+                                <button class="btn btn-outline btn-sm" onclick="switchTab('tool2')">Dapatkan Skrip Hari 2</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 3</div>
+                            <div class="day-content">
+                                <h4>Terapkan Batasan Non-Partisipasi</h4>
+                                <p>Jalankan Alat 3 (Non-Partisipasi). Gunakan pengalihan topik dan kalimat penutup saat mengobrol di tempat istirahat.</p>
+                                <button class="btn btn-outline btn-sm" onclick="switchTab('tool3')">Terapkan Pengalihan Hari 3</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 4</div>
+                            <div class="day-content">
+                                <h4>Terapkan Pembatasan Informasi & Protokol MOMO</h4>
+                                <p>Jalankan Alat 4 (Perhitungan Target). Hentikan berbagi cerita pribadi berlebihan dan mulai catatan offline.</p>
+                                <button class="btn btn-outline btn-sm" onclick="switchTab('tool4')">Atur Pembatasan Hari 4</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 5</div>
+                            <div class="day-content">
+                                <h4>Diagnosis Budaya Sistemik & Horizon Bekerja</h4>
+                                <p>Jalankan Alat 5 (Pelarian Sistem). Evaluasi apakah budaya toksik sudah mengakar atau hanya lokal.</p>
+                                <button class="btn btn-outline btn-sm" onclick="switchTab('tool5')">Diagnosis Sistem Hari 5</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 6</div>
+                            <div class="day-content">
+                                <h4>Sintesis Peta Pertahanan Reputasi</h4>
+                                <p>Tinjau catatan audit yang selesai dan perbaiki hubungan operasional utama.</p>
+                                <button class="btn btn-outline btn-sm" onclick="switchTab('history')">Tinjau Riwayat Terpadu</button>
+                            </div>
+                        </div>
+
+                        <div class="day-card">
+                            <div class="day-badge">HARI 7</div>
+                            <div class="day-content">
+                                <h4>Finalisasi Rencana Aksi & Navigasi 30 Hari</h4>
+                                <p>Cetak rencana aksi lengkap Anda dan berkomitmen untuk melaksanakannya secara tenang dan non-reaktif.</p>
+                                <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana Pertahanan</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- VIEW: UNIFIED HISTORY -->
+                <section id="history" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-clock-rotate-left"></i> Catatan Riwayat Terpadu Saya</h2>
+                            <p class="card-subtitle">Tampilan terpusat dari semua audit, skrip, dan catatan yang tersimpan secara aman di peramban Anda.</p>
+                        </div>
+
+                        <div class="btn-toolbar" style="margin-bottom: 20px;">
+                            <button class="btn btn-outline btn-sm" onclick="renderAllHistories()"><i class="fa-solid fa-rotate"></i> Perbarui Riwayat</button>
+                            <button class="btn btn-primary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Rencana Lengkap</button>
+                        </div>
+
+                        <div id="unified-history-container"></div>
+                    </div>
+                </section>
+
+                <!-- VIEW: PRIVACY & LEGAL -->
+                <section id="privacy" class="view-section hidden">
+                    <div class="card">
+                        <div class="card-header">
+                            <h2 class="card-title"><i class="fa-solid fa-scale-balanced"></i> Arsitektur Privasi & Batasan Hukum</h2>
+                            <p class="card-subtitle">Memahami keamanan data dan cakupan operasional Anda.</p>
+                        </div>
+                        <div style="font-size: 0.95rem; line-height: 1.6; color: var(--text-main);">
+                            <h3 style="color: var(--plum); margin-bottom: 8px;">100% Penyimpanan Data di Sisi Klien</h3>
+                            <p style="margin-bottom: 16px;">Aplikasi ini beroperasi sepenuhnya di dalam peramban web Anda. Tidak ada input, deskripsi teks, atau hasil audit yang dikirimkan ke server eksternal, basis data, atau layanan awan. Semua riwayat disimpan secara khusus di LocalStorage peramban Anda.</p>
+                            
+                            <h3 style="color: var(--plum); margin-bottom: 8px;">Batasan HR & Hukum</h3>
+                            <p style="margin-bottom: 16px;">Panduan Bertahan dari Gosip™ dirancang khusus untuk navigasi sosial, strategi reputasi, dan refleksi de-eskalasi. Ini bukan merupakan nasihat hukum resmi, konsultasi HR, atau terapi psikologis.</p>
+                            <p style="margin-bottom: 16px;">Jika Anda mengalami pelecehan parah di tempat kerja, diskriminasi ilegal, kondisi lingkungan kerja yang tidak kondusif, atau pencemaran nama baik secara hukum, Anda harus berkonsultasi dengan profesional HR terkoordinasi, penasihat hukum, atau otoritas ketenagakerjaan.</p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Mandatory Footer -->
+            <footer class="footer">
+                Hanya untuk navigasi sosial tempat kerja. Bukan nasihat hukum, HR, atau terapi. Untuk masalah pelecehan, intimidasi, atau pencemaran nama baik, hubungi HR atau pihak berwenang.
+            </footer>
+        </div>
+    </div>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-message">Bisa disalin ke papan klip!</span>
+    </div>
+
+    <!-- JavaScript Logic Engine -->
+    <script>
+        // CENTRAL OS STATE MODEL
+        const gossipOSState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        // DOM Initialization
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initMobileMenu();
+            renderAllHistories();
+        });
+
+        // HTML Sanitization / XSS Safety Utility
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag] || tag)
+            );
+        }
+
+        // Navigation Controller
+        function switchTab(targetId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            const activeNav = document.querySelector(`.nav-item[data-target="${targetId}"]`);
+            if (activeNav) activeNav.classList.add('active');
+
+            closeMobileMenu();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (targetId === 'history') {
+                renderUnifiedHistoryView();
+            }
+        }
+
+        function initNavigation() {
+            document.querySelectorAll('.nav-item').forEach(button => {
+                button.addEventListener('click', () => {
+                    const target = button.getAttribute('data-target');
+                    switchTab(target);
+                });
+            });
+        }
+
+        function initMobileMenu() {
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', closeMobileMenu);
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        // Toast Notification System
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        // Copy Text Utility
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Berhasil disalin ke papan klip!");
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast("Berhasil disalin!");
+            });
+        }
+
+        // Unified LocalStorage History Handler
+        function saveToHistory(toolId, summary, fullData) {
+            const key = `gossip_v2_history_${toolId}`;
+            let history = JSON.parse(localStorage.getItem(key) || '[]');
+            
+            const newItem = {
+                id: Date.now(),
+                timestamp: new Date().toLocaleString('id-ID', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                summary: escapeHTML(summary),
+                data: fullData
+            };
+
+            history.unshift(newItem);
+            if (history.length > 30) history = history.slice(0, 30);
+            
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory(toolId);
+
+            if (!gossipOSState.completedTools.includes(toolId)) {
+                gossipOSState.completedTools.push(toolId);
+            }
+            gossipOSState.lastUpdated = new Date();
+        }
+
+        function renderHistory(toolId) {
+            const key = `gossip_v2_history_${toolId}`;
+            const container = document.getElementById(`history-${toolId}`);
+            if (!container) return;
+
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+            if (history.length === 0) {
+                container.innerHTML = `<p style="color: var(--text-muted); font-size: 0.88rem; font-style: italic;">Belum ada riwayat tercatat.</p>`;
+                return;
+            }
+
+            container.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                        <span><i class="fa-regular fa-calendar-check" style="margin-right: 6px; color: var(--plum);"></i> ${item.summary}</span>
+                        <small style="color: var(--text-muted);">${item.timestamp}</small>
+                    </div>
+                    <div class="history-item-body" id="history-body-${item.id}">
+                        ${item.data}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleHistoryItem(id) {
+            const el = document.getElementById(`history-body-${id}`);
+            if (el) el.classList.toggle('open');
+        }
+
+        function clearHistory(toolId) {
+            if (confirm("Apakah Anda yakin ingin menghapus riwayat untuk alat ini?")) {
+                localStorage.removeItem(`gossip_v2_history_${toolId}`);
+                renderHistory(toolId);
+                showToast("Riwayat telah dihapus");
+            }
+        }
+
+        function renderAllHistories() {
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+        }
+
+        function renderUnifiedHistoryView() {
+            const container = document.getElementById('unified-history-container');
+            if (!container) return;
+
+            let html = '';
+            const tools = [
+                { id: 'tool1', name: '1. Audit Situasi' },
+                { id: 'tool2', name: '2. Respon Langsung' },
+                { id: 'tool3', name: '3. Non-Partisipasi' },
+                { id: 'tool4', name: '4. Perlindungan Target' },
+                { id: 'tool5', name: '5. Pelarian Sistem' }
+            ];
+
+            tools.forEach(tool => {
+                const history = JSON.parse(localStorage.getItem(`gossip_v2_history_${tool.id}`) || '[]');
+                html += `<h3 style="color: var(--plum); font-size: 1.05rem; margin: 18px 0 10px 0;">${tool.name}</h3>`;
+                if (history.length === 0) {
+                    html += `<p style="color: var(--text-muted); font-size: 0.85rem; font-style: italic; margin-bottom: 12px;">Belum ada audit tercatat untuk modul ini.</p>`;
+                } else {
+                    html += history.slice(0, 3).map(item => `
+                        <div class="history-item">
+                            <div class="history-item-header" onclick="toggleHistoryItem('u-${item.id}')">
+                                <span><i class="fa-regular fa-bookmark" style="margin-right: 6px; color: var(--plum);"></i> ${item.summary}</span>
+                                <small style="color: var(--text-muted);">${item.timestamp}</small>
+                            </div>
+                            <div class="history-item-body" id="history-body-u-${item.id}">
+                                ${item.data}
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            });
+
+            container.innerHTML = html;
+        }
+
+        // TOOL 1 LOGIC
+        function loadSample1() {
+            document.getElementById('t1-said').value = "Saya mendengar bahwa saya secara aktif melakukan wawancara kerja dan bersiap untuk pindah ke perusahaan pesaing langsung bulan depan.";
+            document.getElementById('t1-who').value = "Kelompok kecil";
+            document.querySelector('input[name="t1-target"][value="Tentang saya"]').checked = true;
+            document.getElementById('t1-how').value = "Mendengar secara tidak sengaja";
+            document.querySelector('input[name="t1-truth"][value="Tidak"]').checked = true;
+            showToast("Skenario contoh berhasil dimuat");
+        }
+
+        function runTool1() {
+            const said = escapeHTML(document.getElementById('t1-said').value);
+            const who = document.getElementById('t1-who').value;
+            const target = document.querySelector('input[name="t1-target"]:checked').value;
+            const how = document.getElementById('t1-how').value;
+            const truth = document.querySelector('input[name="t1-truth"]:checked').value;
+
+            let severity = "Sedang";
+            let badgeClass = "badge-medium";
+            let severityDesc = "";
+
+            if (target === "Tentang saya" && (who === "Meluas" || truth === "Ya")) {
+                severity = "Kritis"; badgeClass = "badge-critical";
+            } else if (target === "Tentang saya" || who === "Meluas") {
+                severity = "Tinggi"; badgeClass = "badge-high";
+            } else if (target === "Budaya umum" || who === "Satu orang") {
+                severity = "Rendah"; badgeClass = "badge-low";
+            }
+
+            if (severity === "Kritis") {
+                severityDesc = "Situasi ini mengancam kredibilitas profesional Anda, keamanan posisi, atau kepercayaan utama tim secara langsung. Intervensi yang cepat dan strategis sangat diperlukan.";
+            } else if (severity === "Tinggi") {
+                severityDesc = "Paparan signifikan. Jika dibiarkan, narasi ini dapat memengaruhi persepsi eksekutif atau mengaburkan akuntabilitas proyek.";
+            } else if (severity === "Sedang") {
+                severityDesc = "Risiko moderat. Terisolasi atau tahap awal, namun berpotensi membesar jika dipicu atau salah dikelola.";
+            } else {
+                severityDesc = "Dampak organisasi rendah. Obrolan biasa di latar belakang. Tingkat ancaman minimal.";
+            }
+
+            let spread = (who === "Satu orang") ? "Saat ini terbatas pada satu titik asal. Probabilitas penanganan cukup tinggi." :
+                         (who === "Kelompok kecil") ? "Beredar di dalam kelompok terisolasi. Berrisiko bocor ke saluran antar divisi." :
+                         (who === "Meluas") ? "Penyebaran ke berbagai arah. Narasi sudah menyimpang dari fakta asli." :
+                         "Penyebaran tanpa arah pasti melalui saluran informal. Membutuhkan transparansi resmi.";
+
+            let motive = (truth === "Ya" || truth === "Sebagian") ? "Kebocoran Informasi / Modal Sosial: Sebagian data nyata diperjualbelikan sebagai modal interaksi sosial." :
+                         (target === "Tentang saya") ? "Pengambilalihan Posisi atau Kecemasan: Menciptakan ketidakpastian sebelum evaluasi kinerja." :
+                         (target === "Tentang pimpinan") ? "Pelampiasan Institusional: Menandakan komunikasi pimpinan yang buruk atau ketakutan akan restrukturisasi." :
+                         "Rasa Bosan & Keakraban: Pergesekan sosial skala kecil yang digunakan untuk mempererat keakraban melalui drama bersama.";
+
+            let exposure = (target === "Tentang saya") ? "Pemangku kepentingan utama dan manajer langsung yang menilai keandalan Anda." :
+                           "Moral tim dan reputasi pribadi terkait integritas.";
+
+            let rule = (severity === "Kritis" || severity === "Tinggi") ? 
+                       "ATASI DENGAN PRESISI. Jangan diabaikan. Susun respon langsung yang tenang dan faktual kepada pengambil keputusan utama." :
+                       "ABAIKAN & BIARKAN MATI. Jangan bereaksi atau menunjukkan dampak emosional. Biarkan rumor mati tanpa perhatian.";
+
+            const badgeEl = document.getElementById('out1-severity-badge');
+            badgeEl.textContent = severity;
+            badgeEl.className = `severity-badge ${badgeClass}`;
+
+            document.getElementById('out1-snapshot-text').innerText = `Tingkat Risiko ${severity} — ${rule.split('.')[0]}`;
+            document.getElementById('out1-severity').innerHTML = `<p>${severityDesc}</p>`;
+            document.getElementById('out1-spread').innerHTML = `<p>${spread}</p>`;
+            document.getElementById('out1-motive').innerHTML = `<p>${motive}</p>`;
+            document.getElementById('out1-exposure').innerHTML = `<p>${exposure}</p>`;
+            document.getElementById('out1-rule').innerHTML = `<p><strong>${rule}</strong></p>`;
+
+            // Dynamic Cross Recommendation
+            const recText = document.getElementById('rec-tool1-text');
+            if (severity === "Kritis" || severity === "Tinggi") {
+                recText.innerText = "Terdeteksi paparan tinggi! Jalankan Alat 4 (Perhitungan Target & Catatan MOMO) bersamaan dengan Respon Langsung.";
+            } else {
+                recText.innerText = "Risiko rendah hingga sedang. Jalankan Alat 2 (Respon Langsung) untuk mendapatkan skrip de-eskalasi presisi.";
+            }
+
+            document.getElementById('results-tool1').style.display = 'block';
+
+            const summary = `[${severity}] ${target} — "${said.substring(0, 30)}..."`;
+            const fullHtml = `
+                <p><strong>Keparahan:</strong> ${severity}</p>
+                <p><strong>Rumor:</strong> ${said}</p>
+                <p><strong>Instruksi:</strong> ${rule}</p>
+            `;
+            saveToHistory('tool1', summary, fullHtml);
+        }
+
+        // TOOL 2 LOGIC
+        function loadSample2() {
+            document.getElementById('t2-source').value = "Rekan Sejawat";
+            document.querySelector('input[name="t2-rel"][value="Netral"]').checked = true;
+            document.querySelector('input[name="t2-want"][value="Hentikan rumor"]').checked = true;
+            document.querySelector('input[name="t2-allies"][value="Beberapa"]').checked = true;
+            showToast("Skenario contoh berhasil dimuat");
+        }
+
+        function runTool2() {
+            const source = document.getElementById('t2-source').value;
+            const rel = document.querySelector('input[name="t2-rel"]:checked').value;
+            const want = document.querySelector('input[name="t2-want"]:checked').value;
+            const allies = document.querySelector('input[name="t2-allies"]:checked').value;
+
+            let script = (source === "Atasan" || rel === "Mempunyai kekuasaan atas saya") ?
+                         `"Halo [Nama], saya mendengar ada sedikit kesalahpahaman yang beredar terkait [Topik]. Karena saya menghargai keselarasan dan komunikasi langsung dengan Anda, saya ingin memastikan Anda mendapatkan fakta yang sebenarnya langsung dari saya."` :
+                         (source === "Bawahan") ?
+                         `"Halo [Nama], saya mendengar rumor yang beredar tentang [Topik]. Sebagai anggota tim yang lebih senior, saya ingin memastikan komunikasi kita tetap transparan. Jika Anda memiliki pertanyaan tentang pekerjaan atau keputusan saya, silakan sampaikan langsung ke saya."` :
+                         `"Halo [Nama], seseorang menyebutkan bahwa Anda memiliki pertanyaan atau kekhawatiran terkait [Topik]. Saya ingin membicarakannya secara langsung agar kita bisa meluruskan kesalahpahaman ini segera."`;
+
+            let publicCorr = (want === "Koreksi fakta") ?
+                             "Saat diungkit dalam kelompok, sampaikan santai: <em>'Oh, saya juga mendengar rumor itu—ternyata fakta sebenarnya adalah X. Baguslah kalau kita bisa meluruskannya!'</em> Jangan terbawa emosi." :
+                             "Gunakan metode 'Kebenaran Sederhana': Sampaikan fakta polos dalam 15 detik atau kurang, lalu segera kembali ke agenda rapat/pembicaraan utama.";
+
+            let allyAct = (allies === "Ya" || allies === "Beberapa") ?
+                          "Beri tahu 1-2 sekutu terpercaya secara pribadi: <em>'Jika kamu mendengar orang mendiskusikan [rumor], tolong bantu sampaikan [fakta sederhana]. Saya ingin semuanya tetap kondusif.'</em>" :
+                          "Fokus pada komunikasi langsung atau tunjukkan konsistensi kinerja yang tidak tergoyahkan.";
+
+            let deny = `Jika mereka mengklaim <em>"Saya tidak pernah mengatakan itu"</em>, terima dengan tenang: <strong>"Baguslah kalau begitu. Saya hanya ingin meluruskan secara langsung. Terima kasih atas klarifikasinya."</strong> Skenario ini memberi tahu bahwa Anda waspada sekaligus memberi mereka jalan keluar yang terhormat.`;
+
+            let escalate = (source === "Atasan" || rel === "Mempunyai kekuasaan atas saya") ?
+                           "Jika rumor berlanjut dan memengaruhi penugasan proyek atau penilaian kinerja, catat tanggal/waktu/saksi dan atur konsultasi resmi dengan HR." :
+                           "Sampaikan bukti kejadian kepada manajer langsung dengan fokus pada 'dampak terhadap produktivitas tim dan hasil kerja.'";
+
+            document.getElementById('out2-private-desc').innerHTML = "Ajukan pertemuan 1-on-1 secara pribadi. Jaga nada bicara tetap netral, ingin tahu, dan tidak defensif:";
+            document.getElementById('out2-private-script').innerText = script;
+            document.getElementById('out2-public').innerHTML = `<p>${publicCorr}</p>`;
+            document.getElementById('out2-ally').innerHTML = `<p>${allyAct}</p>`;
+            document.getElementById('out2-deny').innerHTML = `<p>${deny}</p>`;
+            document.getElementById('out2-escalate').innerHTML = `<p>${escalate}</p>`;
+
+            const recText = document.getElementById('rec-tool2-text');
+            if (rel === "Mempunyai kekuasaan atas saya" || source === "Atasan") {
+                recText.innerText = "Melibatkan atasan! Pertimbangkan untuk menjalankan Alat 5 (Pelarian Sistem) untuk mendiagnosis toksisitas lingkungan kerja.";
+            } else {
+                recText.innerText = "Tetapkan batasan non-partisipasi dengan Alat 3 untuk mencegah efek samping drama.";
+            }
+
+            document.getElementById('results-tool2').style.display = 'block';
+
+            const summary = `Sumber: ${source} (${rel}) — Tujuan: ${want}`;
+            const fullHtml = `<p><strong>Skrip:</strong> ${escapeHTML(script)}</p><p><strong>Eskalasi:</strong> ${escalate}</p>`;
+            saveToHistory('tool2', summary, fullHtml);
+        }
+
+        // TOOL 3 LOGIC
+        function loadSample3() {
+            document.getElementById('t3-current').value = "Mendengar diam-diam";
+            document.getElementById('t3-draws').value = "Satu kelompok";
+            document.getElementById('t3-fear').value = "Takut terlihat acuh, dinilai negatif, atau dikucilkan dari pergaulan.";
+            document.querySelector('input[name="t3-rel"][value="Beberapa"]').checked = true;
+            showToast("Skenario contoh berhasil dimuat");
+        }
+
+        function runTool3() {
+            const current = document.getElementById('t3-current').value;
+            const draws = document.getElementById('t3-draws').value;
+            const fear = escapeHTML(document.getElementById('t3-fear').value);
+
+            const phrases = [
+                `"Wah, saya kurang tahu soal itu! Tapi saya harus menyelesaikan laporan ini sebelum jam 3 sore."`,
+                `"Saya berusaha tidak berspekulasi soal urusan kantor—pekerjaan saya hari ini sudah cukup menumpuk."`,
+                `"Kamu tahu sendiri, saya kurang update soal kabar kantor. Eh, ada yang tahu update terbaru Proyek X?"`,
+                `"Saya tidak tahu banyak soal itu jadi tidak bisa komentar. Permisi, saya mau ambil kopi dulu."`,
+                `"Kelihatannya itu masalah yang harus mereka selesaikan langsung. Bagaimana rencana pekerjaanmu sore ini?"`
+            ];
+
+            let phrasesHtml = phrases.map((p, idx) => `
+                <div class="script-box" style="margin-bottom: 10px;">
+                    <span id="script-t3-${idx}">${p}</span>
+                    <button class="copy-btn" onclick="copyText('script-t3-${idx}')"><i class="fa-solid fa-copy"></i> Salin</button>
+                </div>
+            `).join('');
+
+            let pivot = `Saat seseorang memancing obrolan gosip, tanggapi singkat dengan netral (<em>"Oh begitu", "Paham"</em>) lalu tanyakan hal terkait pekerjaan: <strong>"Bicara soal itu, apakah kamu sempat meninjau dokumen presentasi kemarin?"</strong>`;
+            let rep = `Posisikan diri Anda sebagai 'ujung buntu gosip': Bicaralah secara positif atau netral tentang rekan kerja yang tidak hadir. Saat gosip berhenti di Anda, orang lain akan berhenti menjadikan Anda tempat melampiaskan obrolan negatif.`;
+            
+            let pressured = (draws === "Atasan saya") ?
+                            "Jika atasan bergosip, alihkan ke hal profesional: <em>'Sepertinya situasinya rumit. Bagaimana Anda ingin kami menyesuaikan prioritas tim terkait hal ini?'</em>" :
+                            "Jika terus didesak, tersenyumlah dan katakan: <em>'Saya lagi agak kurang fokus obrol santai hari ini, mau menyelesaikan daftar tugas dulu.'</em>";
+
+            let cost = `
+                <p><strong style="color: var(--danger);">Potensi Kerugian:</strong> Anda mungkin kehilangan akses ke obrolan 'orang dalam' yang bersifat dangkal.</p>
+                <p style="margin-top: 6px;"><strong style="color: var(--success);">Keuntungan Pasti:</strong> Perlindungan mutlak dari efek samping drama, kepercayaan penuh dari pimpinan, serta ketenangan pikiran.</p>
+            `;
+
+            document.getElementById('out3-exit-phrases').innerHTML = phrasesHtml;
+            document.getElementById('out3-pivot').innerHTML = `<p>${pivot}</p>`;
+            document.getElementById('out3-reputation').innerHTML = `<p>${rep}</p>`;
+            document.getElementById('out3-pressured').innerHTML = `<p>${pressured}</p>`;
+            document.getElementById('out3-cost').innerHTML = cost;
+
+            document.getElementById('results-tool3').style.display = 'block';
+
+            const summary = `Ditarik oleh: ${draws} — Respon saat ini: ${current}`;
+            const fullHtml = `<p>Menghasilkan 5 skrip penutup dan strategi non-partisipasi untuk ${draws}.</p>`;
+            saveToHistory('tool3', summary, fullHtml);
+        }
+
+        // TOOL 4 LOGIC
+        function loadSample4() {
+            document.getElementById('t4-target').value = "Promosi jabatan";
+            document.getElementById('t4-who').value = "Satu rekan sejawat kompetitif yang juga mencalonkan diri untuk peran yang sama.";
+            document.getElementById('t4-vuln').value = "Detail kehidupan pribadi yang pernah dibagikan saat acara santai di masa lalu.";
+            document.querySelector('input[name="t4-trust"][value="Beberapa"]').checked = true;
+            showToast("Skenario contoh berhasil dimuat");
+        }
+
+        function runTool4() {
+            const targetReason = document.getElementById('t4-target').value;
+            const who = escapeHTML(document.getElementById('t4-who').value);
+            const vuln = escapeHTML(document.getElementById('t4-vuln').value);
+            const trust = document.querySelector('input[name="t4-trust"]:checked').value;
+
+            let lockdown = `Protokol segera: Terapkan pembatasan informasi pribadi yang ketat. Berhenti membagikan rencana akhir pekan, masalah pribadi, atau pendapat informal dengan rekan kerja yang belum teruji. Jaga agar interaksi berpusat pada hasil kerja.`;
+
+            let narrative = (targetReason === "Promosi jabatan") ?
+                            "Cegah rasa iri dengan membagi apresiasi secara bijak: <em>'Pencapaian ini berhasil berkat fondasi kuat yang dibangun oleh seluruh anggota tim.'</em>" :
+                            (targetReason === "Kesalahan baru-baru ini") ?
+                            "Akui kesalahan secara profesional sebelum orang lain membingkainya secara negatif: <em>'Kami menemukan kendala pada Proyek X, berikut adalah penyebab utama dan rencana perbaikannya.'</em>" :
+                            "Pastikan manajer Anda menerima pembaruan status secara berkala dan singkat agar narasi pihak ketiga tidak mengisi kekosongan informasi.";
+
+            let buffer = `Identifikasi 1-2 pimpinan divisi lain yang disegani. Bangun hubungan profesional melalui hasil kerja yang andal. Kepercayaan eksternal berfungsi sebagai pelindung alami.`;
+            let doc = `<strong>Protokol MOMO:</strong> Catat tanggal, waktu, kutipan tepat, dan saksi dalam catatan pribadi offline (Momen, Hasil/Outcome, Makna, Observasi). Jangan pernah menyimpan catatan ini di perangkat kantor.`;
+
+            let warning = `
+                <ul style="padding-left: 20px; line-height: 1.8;">
+                    <li>Percakapan mendadak terhenti saat Anda memasuki ruangan.</li>
+                    <li>Sindiran pasif-agresif berkedok 'candaan' tentang posisi Anda.</li>
+                    <li>Pengambil keputusan utama mengajukan pertanyaan yang tidak biasa ringkasnya tentang tugas rutin.</li>
+                </ul>
+            `;
+
+            document.getElementById('out4-lockdown').innerHTML = `<p>${lockdown}</p>`;
+            document.getElementById('out4-narrative').innerHTML = `<p>${narrative}</p>`;
+            document.getElementById('out4-buffer').innerHTML = `<p>${buffer}</p>`;
+            document.getElementById('out4-doc').innerHTML = `<p>${doc}</p>`;
+            document.getElementById('out4-warning').innerHTML = warning;
+
+            document.getElementById('results-tool4').style.display = 'block';
+
+            const summary = `Risiko Target: ${targetReason} — Kepercayaan Tim: ${trust}`;
+            const fullHtml = `<p><strong>Kerentanan:</strong> ${vuln}</p><p><strong>Protokol Pembatasan:</strong> Diterapkan.</p>`;
+            saveToHistory('tool4', summary, fullHtml);
+        }
+
+        // TOOL 5 LOGIC
+        function loadSample5() {
+            document.getElementById('t5-pervasive').value = "Seluruh departemen";
+            document.querySelector('input[name="t5-outcomes"][value="Agak mempengaruhi"]').checked = true;
+            document.querySelector('input[name="t5-leadership"][value="Malah ikut berpartisipasi"]').checked = true;
+            document.getElementById('t5-tenure').value = "1-2thn";
+            document.querySelector('input[name="t5-agent"][value="Hanya jika didukung"]').checked = true;
+            showToast("Skenario contoh berhasil dimuat");
+        }
+
+        function runTool5() {
+            const pervasive = document.getElementById('t5-pervasive').value;
+            const outcomes = document.querySelector('input[name="t5-outcomes"]:checked').value;
+            const leadership = document.querySelector('input[name="t5-leadership"]:checked').value;
+            const agent = document.querySelector('input[name="t5-agent"]:checked').value;
+
+            let diag = (leadership === "Malah ikut berpartisipasi" || pervasive === "Budaya perusahaan") ?
+                       "<strong style='color: var(--danger);'>TOKSISITAS SISTEMIK MENGAKAR.</strong> Ketika pimpinan ikut berpartisipasi, sikap tidak ikut berpartisipasi dianggab sebagai pembangkangan. Budaya ini tidak bisa diperbaiki dari bawah." :
+                       (pervasive === "Seluruh departemen") ?
+                       "<strong style='color: var(--warning);'>KERUSAKAN BUDAYA LOKAL.</strong> Penegakan batasan yang buruk di departemen. Risiko tinggi mengalami kejenuhan (burnout)." :
+                       "<strong style='color: var(--success);'>GESEKAN TERKONTROL.</strong> Masalah terisolasi pada individu tertentu. Budaya secara umum masih bisa diselamatkan.";
+
+            let path = (leadership === "Malah ikut berpartisipasi" || agent === "Tidak") ?
+                       "JANGAN mencoba memperbaiki budaya ini. Anda akan menjadi sasaran empuk perlawanan. Lindungi energi mental Anda dan selesaikan tugas dengan bersih." :
+                       "Fokus pada mikro-budaya: Contohkan komunikasi transparan, tolak informasi tanpa verifikasi, puji rekan kerja secara terbuka.";
+
+            let prot = `1. Lepaskan keterikatan emosional.<br>2. Konfirmasikan semua persetujuan melalui email tindak lanjut.<br>3. Diskusikan stres kerja hanya dengan mentor eksternal.`;
+
+            let timeline = (leadership === "Malah ikut berpartisipasi" && outcomes.includes("Ya")) ?
+                           "<strong>Rencana Keluar Segera (30-90 Hari):</strong> Perbarui resume, bangun jaringan secara diam-diam, dan siapkan langkah keluar." :
+                           (pervasive === "Seluruh departemen") ?
+                           "<strong>Rencana Jangka Jangkauan Sedang (3-6 Bulan):</strong> Jajaki kemungkinan mutasi internal atau peluang luar." :
+                           "<strong>Pantau Situasi (6+ Bulan):</strong> Pertahankan batasan; evaluasi ulang jika sikap pimpinan memburuk.";
+
+            let filter = `Ajukan pertanyaan halus ini saat wawancara kerja di tempat baru:<br>• <em>"Bagaimana tim menyelesaikan prioritas yang saling bertabrakan?"</em><br>• <em>"Bagaimana umpan balik disampaikan antara pimpinan dan anggota tim?"</em>`;
+
+            document.getElementById('out5-diagnosis').innerHTML = `<p>${diag}</p>`;
+            document.getElementById('out5-path').innerHTML = `<p>${path}</p>`;
+            document.getElementById('out5-protection').innerHTML = `<p>${prot}</p>`;
+            document.getElementById('out5-timeline').innerHTML = `<p>${timeline}</p>`;
+            document.getElementById('out5-filter').innerHTML = `<p>${filter}</p>`;
+
+            document.getElementById('results-tool5').style.display = 'block';
+
+            const summary = `Sistem: ${pervasive} — Pimpinan: ${leadership}`;
+            const fullHtml = `<p><strong>Diagnosis:</strong> ${diag}</p><p><strong>Linimasa:</strong> ${timeline}</p>`;
+            saveToHistory('tool5', summary, fullHtml);
+        }
+    </script>
+</body>
+</html>

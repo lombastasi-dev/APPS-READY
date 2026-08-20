@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EducationMatch™ — Family Education Decision & Alignment OS</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slateBlue: '#3B82F6',
+                        roseAccent: '#E11D48',
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFF1F2 100%);
+            min-height: 100vh;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="text-slate-800 flex flex-col min-h-screen">
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-lg flex items-center space-x-3 text-sm font-medium">
+        <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- Mobile Header -->
+    <header class="bg-white border-b border-slate-200 lg:hidden px-4 py-3 flex items-center justify-between sticky top-0 z-30 shadow-sm">
+        <div class="flex items-center space-x-3">
+            <div class="w-9 h-9 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center font-bold text-lg shadow-sm">
+                <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+            <div>
+                <span class="font-bold text-slate-900 tracking-tight text-lg">EducationMatch™</span>
+                <span class="text-[10px] text-slate-400 block -mt-1 font-semibold">DECISION OS</span>
+            </div>
+        </div>
+        <button onclick="toggleMobileSidebar()" class="p-2 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <div class="flex flex-1 relative">
+        <!-- Sidebar Overlay for Mobile -->
+        <div id="sidebar-overlay" onclick="toggleMobileSidebar()" class="fixed inset-0 bg-slate-900/40 z-40 hidden lg:hidden backdrop-blur-sm transition-opacity"></div>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white border-r border-slate-200 flex flex-col transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out shadow-sm">
+            <!-- Sidebar Header -->
+            <div class="p-6 border-b border-slate-100 hidden lg:flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center font-bold text-xl shadow-sm">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-slate-900 tracking-tight">EducationMatch™</h1>
+                    <p class="text-xs text-slate-500 font-medium">Family Decision OS</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+                <button onclick="switchScreen('dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slateBlue bg-blue-50/80 shadow-sm">
+                    <i class="fa-solid fa-house text-base w-5 text-center"></i>
+                    <span>Dashboard</span>
+                </button>
+
+                <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Decision Modules</div>
+
+                <button onclick="switchScreen('tool-1')" id="nav-tool-1" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-compass text-base w-5 text-center text-slateBlue"></i>
+                    <span>1. Philosophy Matrix</span>
+                </button>
+
+                <button onclick="switchScreen('tool-2')" id="nav-tool-2" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-wallet text-base w-5 text-center text-roseAccent"></i>
+                    <span>2. Budget Alignment</span>
+                </button>
+
+                <button onclick="switchScreen('tool-3')" id="nav-tool-3" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-puzzle-piece text-base w-5 text-center text-slateBlue"></i>
+                    <span>3. Child-Centric Fit</span>
+                </button>
+
+                <button onclick="switchScreen('tool-4')" id="nav-tool-4" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-comments text-base w-5 text-center text-roseAccent"></i>
+                    <span>4. Negotiation Scripts</span>
+                </button>
+
+                <button onclick="switchScreen('tool-5')" id="nav-tool-5" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-file-contract text-base w-5 text-center text-slateBlue"></i>
+                    <span>5. 90-Day Trial</span>
+                </button>
+
+                <div class="pt-4 pb-2 px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Synthesis & OS</div>
+
+                <button onclick="switchScreen('plan')" id="nav-plan" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-clipboard-list text-base w-5 text-center text-emerald-600"></i>
+                    <span>My Education Plan</span>
+                </button>
+
+                <button onclick="switchScreen('reset-7day')" id="nav-reset-7day" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-calendar-week text-base w-5 text-center text-indigo-600"></i>
+                    <span>7-Day Decision Reset</span>
+                </button>
+
+                <button onclick="switchScreen('privacy')" id="nav-privacy" class="w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900">
+                    <i class="fa-solid fa-shield-halved text-base w-5 text-center text-slate-500"></i>
+                    <span>Privacy & Security</span>
+                </button>
+            </nav>
+
+            <!-- Sidebar Footer info -->
+            <div class="p-4 border-t border-slate-100 bg-slate-50/50">
+                <div class="flex items-center space-x-2 text-xs text-slate-500 font-medium">
+                    <i class="fa-solid fa-shield-halved text-slateBlue"></i>
+                    <span>100% Client-Side & Private</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 flex flex-col min-w-0">
+            <div class="flex-1 max-w-4xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+                <!-- ================= DASHBOARD SCREEN ================= -->
+                <section id="screen-dashboard" class="space-y-8">
+                    <!-- Hero Card -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 relative overflow-hidden">
+                        <div class="absolute right-0 top-0 translate-x-6 -translate-y-6 w-48 h-48 bg-blue-50 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="absolute right-20 bottom-0 translate-y-8 w-40 h-40 bg-rose-50 rounded-full blur-2xl pointer-events-none"></div>
+                        
+                        <div class="relative z-10 max-w-2xl">
+                            <span class="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-slateBlue mb-4">
+                                <i class="fa-solid fa-sparkles"></i>
+                                <span>Commercial V2 Operating System</span>
+                            </span>
+                            <h1 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight mb-3">Make the decision about the child—not the argument.</h1>
+                            <p class="text-base sm:text-lg text-slate-600 leading-relaxed mb-6">
+                                Education decisions become difficult when academic ambition, wellbeing, money, status, logistics, and parental fears all become one argument. EducationMatch™ separates those dimensions so you can make the decision one layer at a time.
+                            </p>
+                            <div class="flex flex-wrap gap-3">
+                                <button onclick="switchScreen('tool-1')" class="px-5 py-2.5 rounded-xl bg-slateBlue text-white font-medium text-sm shadow-sm hover:bg-blue-600 transition-colors flex items-center space-x-2">
+                                    <span>Start Step 1: Philosophy Matrix</span>
+                                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                                </button>
+                                <button onclick="switchScreen('reset-7day')" class="px-5 py-2.5 rounded-xl bg-white border border-slate-300 text-slate-700 font-medium text-sm hover:bg-slate-50 transition-colors flex items-center space-x-2">
+                                    <i class="fa-solid fa-calendar-week text-indigo-600"></i>
+                                    <span>7-Day Decision Reset</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Framework & Bottleneck Engine -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <h2 class="text-lg font-bold text-slate-900">The 5 Decision Dimensions</h2>
+                            <p class="text-xs text-slate-500">Separate the decision into dimensions before trying to solve it.</p>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-3 text-center">
+                            <div class="p-3 bg-blue-50/60 border border-blue-100 rounded-xl">
+                                <span class="text-xs font-bold text-slateBlue block mb-1">1. VALUES</span>
+                                <span class="text-[11px] text-slate-600 block">What should education accomplish?</span>
+                            </div>
+                            <div class="p-3 bg-rose-50/60 border border-rose-100 rounded-xl">
+                                <span class="text-xs font-bold text-roseAccent block mb-1">2. MONEY</span>
+                                <span class="text-[11px] text-slate-600 block">What can we sustainably afford?</span>
+                            </div>
+                            <div class="p-3 bg-emerald-50/60 border border-emerald-100 rounded-xl">
+                                <span class="text-xs font-bold text-emerald-600 block mb-1">3. CHILD</span>
+                                <span class="text-[11px] text-slate-600 block">What environment fits this child?</span>
+                            </div>
+                            <div class="p-3 bg-purple-50/60 border border-purple-100 rounded-xl">
+                                <span class="text-xs font-bold text-purple-600 block mb-1">4. RELATIONSHIP</span>
+                                <span class="text-[11px] text-slate-600 block">What are we actually arguing about?</span>
+                            </div>
+                            <div class="p-3 bg-amber-50/60 border border-amber-100 rounded-xl">
+                                <span class="text-xs font-bold text-amber-600 block mb-1">5. EXPERIMENT</span>
+                                <span class="text-[11px] text-slate-600 block">What can we test temporarily?</span>
+                            </div>
+                        </div>
+
+                        <!-- Bottleneck Banner -->
+                        <div id="dashboard-bottleneck-card" class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="flex items-start space-x-3">
+                                <i class="fa-solid fa-circle-nodes text-slateBlue text-xl mt-0.5"></i>
+                                <div>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400 block">Decision Bottleneck Engine</span>
+                                    <p id="bottleneck-text" class="text-sm font-semibold text-slate-900">No tools completed yet. Complete your first module to identify your primary bottleneck.</p>
+                                </div>
+                            </div>
+                            <button id="bottleneck-action-btn" onclick="switchScreen('tool-1')" class="px-4 py-2 bg-slateBlue text-white text-xs font-semibold rounded-lg hover:bg-blue-600 transition-colors shrink-0">
+                                Start Step 1
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Alignment Score Widget -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl font-bold shadow-inner">
+                                <i class="fa-solid fa-chart-line"></i>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-slate-900 text-base">Decision Alignment Index</h3>
+                                <p class="text-xs text-slate-500 mt-0.5">Heuristic reflection indicator based on your recorded decisions</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center space-x-6 w-full sm:w-auto justify-end">
+                            <div class="text-right">
+                                <div id="dashboard-alignment-score" class="text-3xl font-bold text-slate-900">75%</div>
+                                <div class="text-xs font-medium text-emerald-600 flex items-center justify-end space-x-1 mt-0.5">
+                                    <i class="fa-solid fa-arrow-up"></i>
+                                    <span id="alignment-status-text">Active Decision Calibration</span>
+                                </div>
+                            </div>
+                            <div class="w-24 bg-slate-100 rounded-full h-3 overflow-hidden">
+                                <div id="alignment-progress-bar" class="bg-gradient-to-r from-blue-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 5 Tool Cards Grid -->
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900 mb-4 px-1">Explore the 5 Decision Modules</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            
+                            <!-- Card 1 -->
+                            <div onclick="switchScreen('tool-1')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slateBlue/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-compass"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-slateBlue transition-colors">1. Philosophy Matrix</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Find common ground between academic ambition, wellbeing, creativity, structure, and social development.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-slateBlue space-x-1">
+                                    <span>Launch module</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Card 2 -->
+                            <div onclick="switchScreen('tool-2')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-roseAccent/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-wallet"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-roseAccent transition-colors">2. Budget Alignment</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">See what an education choice means for the whole household—not just the tuition bill.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-roseAccent space-x-1">
+                                    <span>Launch module</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Card 3 -->
+                            <div onclick="switchScreen('tool-3')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slateBlue/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-puzzle-piece"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-slateBlue transition-colors">3. Child-Centric Fit</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Compare environments against the child's current state and temperament rather than parental preference alone.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-slateBlue space-x-1">
+                                    <span>Launch module</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Card 4 -->
+                            <div onclick="switchScreen('tool-4')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-roseAccent/50 transition-all cursor-pointer flex flex-col justify-between group">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-comments"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-roseAccent transition-colors">4. Negotiation Scripts</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">Turn heated school arguments into structured conversations about underlying fears, goals, and trade-offs.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-roseAccent space-x-1">
+                                    <span>Launch module</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                            <!-- Card 5 -->
+                            <div onclick="switchScreen('tool-5')" class="bg-white rounded-2xl p-6 border border-slate-200/80 shadow-sm hover:shadow-md hover:border-slateBlue/50 transition-all cursor-pointer flex flex-col justify-between group md:col-span-2 lg:col-span-1">
+                                <div>
+                                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl mb-4 group-hover:scale-110 transition-transform">
+                                        <i class="fa-solid fa-file-contract"></i>
+                                    </div>
+                                    <h3 class="font-bold text-slate-900 text-base mb-1 group-hover:text-slateBlue transition-colors">5. 90-Day Trial Agreement</h3>
+                                    <p class="text-xs text-slate-500 leading-relaxed">When certainty is impossible, create a reversible trial with explicit success metrics and review dates.</p>
+                                </div>
+                                <div class="mt-6 flex items-center text-xs font-semibold text-slateBlue space-x-1">
+                                    <span>Launch module</span>
+                                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= TOOL 1: PHILOSOPHY MATRIX ================= -->
+                <section id="screen-tool-1" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-compass"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Module 1: Philosophy Matrix</h2>
+                                    <p class="text-xs text-slate-500">Align core values and parenting educational paradigms</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool1()" class="px-4 py-2 rounded-xl bg-blue-50 text-slateBlue font-medium text-xs hover:bg-blue-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Load Sample Scenario</span>
+                            </button>
+                        </div>
+
+                        <!-- Problem description note -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Core Problem:</span> "One partner wants top grades at all costs; the other wants holistic wellbeing." Disagreements often occur because both parents are protecting valid underlying values using different approaches.
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="form-tool-1" onsubmit="handleTool1Submit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner A Priority</label>
+                                    <select id="t1-p1" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Select priority...</option>
+                                        <option value="High academic performance">High academic performance</option>
+                                        <option value="Creative freedom">Creative freedom</option>
+                                        <option value="Social intelligence">Social intelligence</option>
+                                        <option value="Discipline & structure">Discipline & structure</option>
+                                        <option value="Practical life skills">Practical life skills</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner B Priority</label>
+                                    <select id="t1-p2" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Select priority...</option>
+                                        <option value="High academic performance">High academic performance</option>
+                                        <option value="Creative freedom">Creative freedom</option>
+                                        <option value="Social intelligence">Social intelligence</option>
+                                        <option value="Discipline & structure">Discipline & structure</option>
+                                        <option value="Practical life skills">Practical life skills</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Child's Current Grade / Age</label>
+                                    <input type="text" id="t1-grade" placeholder="e.g., 5th Grade / 10 years old" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Primary Area of Conflict</label>
+                                    <select id="t1-conflict" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Select conflict area...</option>
+                                        <option value="Study hours">Study hours</option>
+                                        <option value="Extracurricular load">Extracurricular load</option>
+                                        <option value="School type">School type</option>
+                                        <option value="Grade expectations">Grade expectations</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-slateBlue text-white font-medium text-sm rounded-xl shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-gears"></i>
+                                <span>Generate Philosophy Alignment Analysis</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Area for Tool 1 -->
+                    <div id="output-tool-1" class="space-y-6 hidden">
+                        <!-- Unified Architecture Container -->
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Snapshot & What's Working -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block mb-1">YOUR SNAPSHOT & CORE VALUES</span>
+                                <div id="t1-res-gap" class="space-y-4 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Hybrid Model -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">HYBRID PARENTING OPTIONS</span>
+                                <div id="t1-res-hybrid" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Mission Statement -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block">UNIFIED EDUCATIONAL MISSION STATEMENT</span>
+                                    <button onclick="copyToClipboard('t1-mission-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Statement</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 italic text-slate-800 text-sm leading-relaxed" id="t1-mission-text"></div>
+                            </div>
+
+                            <!-- Next Best Tool Recommendation -->
+                            <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-slateBlue">Recommended Next Step:</strong> Test whether your chosen educational philosophy fits your household budget.
+                                </div>
+                                <button onclick="switchScreen('tool-2')" class="px-3 py-1.5 bg-slateBlue text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors shrink-0">
+                                    Go to Budget Alignment
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-1')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Past Analysis History (<span id="count-tool-1">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-1"></i>
+                        </div>
+                        <div id="history-tool-1" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= TOOL 2: COST & BUDGET ALIGNMENT ================= -->
+                <section id="screen-tool-2" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-wallet"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Module 2: Cost & Budget Alignment</h2>
+                                    <p class="text-xs text-slate-500">Test household financial sustainability and competing family goals</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool2()" class="px-4 py-2 rounded-xl bg-rose-50 text-roseAccent font-medium text-xs hover:bg-rose-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Load Sample Scenario</span>
+                            </button>
+                        </div>
+
+                        <!-- Problem description note -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Core Problem:</span> "We disagree on how much money to spend on private school, tutors, and lessons." Evaluate educational spending against overall family sustainability without causing resentment.
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="form-tool-2" onsubmit="handleTool2Submit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Proposed Annual Educational Expenses ($)</label>
+                                    <input type="number" id="t2-expenses" placeholder="e.g., 15000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Household Annual Net Income ($)</label>
+                                    <input type="number" id="t2-income" placeholder="e.g., 110000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner A Budget Comfort Limit ($/yr)</label>
+                                    <input type="number" id="t2-p1-budget" placeholder="e.g., 15000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner B Budget Comfort Limit ($/yr)</label>
+                                    <input type="number" id="t2-p2-budget" placeholder="e.g., 7000" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Other Competing Family Goals</label>
+                                <textarea id="t2-goals" rows="2" placeholder="e.g., College savings fund, emergency buffer, home down payment" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required></textarea>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-roseAccent text-white font-medium text-sm rounded-xl shadow-sm hover:bg-rose-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-calculator"></i>
+                                <span>Calculate Budget & ROI Alignment</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Area for Tool 2 -->
+                    <div id="output-tool-2" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Snapshot & Classification -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">EDUCATION COST SNAPSHOT & BURDEN RATING</span>
+                                <div id="t2-res-snapshot" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- ROI & Value Test -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block mb-1">VALUE TEST & PATH COMPARISON</span>
+                                <div id="t2-res-roi" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Negotiation Range -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block">NEGOTIATION REFERENCE RANGE</span>
+                                    <button onclick="copyToClipboard('t2-compromise-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Range</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed" id="t2-compromise-text"></div>
+                                <p class="text-[11px] text-slate-400 mt-2 font-medium">* This midpoint is a negotiation reference point—not a financially validated recommendation. Consult qualified professionals for specific debt/tax/wealth advice.</p>
+                            </div>
+
+                            <!-- Next Best Tool Recommendation -->
+                            <div class="p-4 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-roseAccent">Recommended Next Step:</strong> Now assess whether the proposed environment fits your child's actual needs.
+                                </div>
+                                <button onclick="switchScreen('tool-3')" class="px-3 py-1.5 bg-roseAccent text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition-colors shrink-0">
+                                    Go to Child Fit
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-2')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Past Budget Calculations (<span id="count-tool-2">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-2"></i>
+                        </div>
+                        <div id="history-tool-2" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= TOOL 3: CHILD-CENTRIC FIT EVALUATOR ================= -->
+                <section id="screen-tool-3" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-puzzle-piece"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Module 3: Child-Centric Fit Evaluator</h2>
+                                    <p class="text-xs text-slate-500">Center educational choices on your child's actual temperament and state</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool3()" class="px-4 py-2 rounded-xl bg-blue-50 text-slateBlue font-medium text-xs hover:bg-blue-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Load Sample Scenario</span>
+                            </button>
+                        </div>
+
+                        <!-- Problem description note -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Core Problem:</span> "We are arguing over what WE want, not what our child actually needs." Shift focus from parental ego to objective match with your child's temperament.
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="form-tool-3" onsubmit="handleTool3Submit(event)" class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Child's Learning Style / Temperament</label>
+                                    <select id="t3-style" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Select learning style...</option>
+                                        <option value="Visual/Independent">Visual/Independent</option>
+                                        <option value="Highly social">Highly social</option>
+                                        <option value="Needs hands-on structure">Needs hands-on structure</option>
+                                        <option value="Easily overwhelmed">Easily overwhelmed</option>
+                                        <option value="Anxious">Anxious</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Child's Current Academic State</label>
+                                    <select id="t3-state" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Select current state...</option>
+                                        <option value="Thriving">Thriving</option>
+                                        <option value="Average">Average</option>
+                                        <option value="Struggling">Struggling</option>
+                                        <option value="Burnt out">Burnt out</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner A Proposed Environment</label>
+                                    <input type="text" id="t3-env-a" placeholder="e.g., High-pressure elite preparatory academy" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner B Proposed Environment</label>
+                                    <input type="text" id="t3-env-b" placeholder="e.g., Balanced local public school with strong counseling & arts" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-slateBlue text-white font-medium text-sm rounded-xl shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-child-reaching"></i>
+                                <span>Evaluate Child-Centric Match</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Area for Tool 3 -->
+                    <div id="output-tool-3" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Fit Signal -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block mb-1">QUALITATIVE FIT SIGNAL ANALYSIS</span>
+                                <div id="t3-res-match" class="space-y-4 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Pressure & Ego Check -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">PRESSURE CONCERNS & PARENTAL EGO CHECK</span>
+                                <div id="t3-res-redflag" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Verdict & Real-World Verification -->
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block">CHILD-CENTRIC DECISION SIGNAL & REAL-WORLD VERIFICATION</span>
+                                    <button onclick="copyToClipboard('t3-verdict-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Verdict</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed" id="t3-verdict-text"></div>
+                            </div>
+
+                            <!-- Next Best Tool Recommendation -->
+                            <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-slateBlue">Recommended Next Step:</strong> Prepare structured, empathetic conversation scripts to discuss this fit with your spouse.
+                                </div>
+                                <button onclick="switchScreen('tool-4')" class="px-3 py-1.5 bg-slateBlue text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors shrink-0">
+                                    Go to Negotiation Scripts
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-3')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Past Fit Evaluations (<span id="count-tool-3">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-3"></i>
+                        </div>
+                        <div id="history-tool-3" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= TOOL 4: SPOUSAL NEGOTIATION SCRIPT GENERATOR ================= -->
+                <section id="screen-tool-4" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-rose-50 text-roseAccent flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-comments"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Module 4: Spousal Negotiation Script</h2>
+                                    <p class="text-xs text-slate-500">De-escalate school arguments with structured dialogue focused on fears and trade-offs</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool4()" class="px-4 py-2 rounded-xl bg-rose-50 text-roseAccent font-medium text-xs hover:bg-rose-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Load Sample Scenario</span>
+                            </button>
+                        </div>
+
+                        <!-- Problem description note -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Core Problem:</span> "Every discussion about school turns into a heated argument." Move from positions vs. positions to identifying underlying fears and shared goals.
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="form-tool-4" onsubmit="handleTool4Submit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Specific Topic of Dispute</label>
+                                <input type="text" id="t4-topic" placeholder="e.g., Adding 3 hours of mandatory weekend tutoring & Kumon" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner A Fear / Core Worry</label>
+                                    <textarea id="t4-fear-a" rows="3" placeholder="e.g., Child falling behind peers in competitive STEM fields and missing future opportunities" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Partner B Fear / Core Worry</label>
+                                    <textarea id="t4-fear-b" rows="3" placeholder="e.g., Child experiencing chronic mental exhaustion, anxiety, and losing the joy of creativity" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-roseAccent/50" required></textarea>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-roseAccent text-white font-medium text-sm rounded-xl shadow-sm hover:bg-rose-700 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-comment-dots"></i>
+                                <span>Generate De-escalation Scripts</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Area for Tool 4 -->
+                    <div id="output-tool-4" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Opening Openers -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">DE-ESCALATION TALKING POINTS</span>
+                                <div id="t4-res-points" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Full Dialogue Script -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block">STRUCTURED DISCUSSION SCRIPT</span>
+                                    <button onclick="copyToClipboard('t4-script-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Script</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed space-y-3" id="t4-script-text"></div>
+                            </div>
+
+                            <!-- Win-Win Proposal -->
+                            <div>
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">PROPOSED COMPROMISE FRAMEWORK</span>
+                                <div id="t4-res-proposal" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Next Best Tool Recommendation -->
+                            <div class="p-4 bg-rose-50/50 rounded-xl border border-rose-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-roseAccent">Recommended Next Step:</strong> Turn this compromise into a structured 90-day trial experiment.
+                                </div>
+                                <button onclick="switchScreen('tool-5')" class="px-3 py-1.5 bg-roseAccent text-white rounded-lg text-xs font-semibold hover:bg-rose-700 transition-colors shrink-0">
+                                    Go to 90-Day Trial
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-4')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Past Negotiation Scripts (<span id="count-tool-4">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-4"></i>
+                        </div>
+                        <div id="history-tool-4" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= TOOL 5: 90-DAY EDUCATIONAL TRIAL AGREEMENT ================= -->
+                <section id="screen-tool-5" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-blue-50 text-slateBlue flex items-center justify-center text-xl">
+                                    <i class="fa-solid fa-file-contract"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">Module 5: 90-Day Educational Trial Agreement</h2>
+                                    <p class="text-xs text-slate-500">Break permanent deadlocks with a time-bound, reversible experiment</p>
+                                </div>
+                            </div>
+                            <button onclick="loadSampleTool5()" class="px-4 py-2 rounded-xl bg-blue-50 text-slateBlue font-medium text-xs hover:bg-blue-100 transition-colors flex items-center space-x-2">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Load Sample Scenario</span>
+                            </button>
+                        </div>
+
+                        <!-- Problem description note -->
+                        <div class="bg-slate-50 rounded-xl p-4 mb-6 border border-slate-200/60 text-xs text-slate-600 flex items-start space-x-3">
+                            <i class="fa-solid fa-triangle-exclamation text-amber-500 text-base mt-0.5"></i>
+                            <div>
+                                <span class="font-semibold text-slate-900">Core Problem:</span> "We can't agree on a permanent path, so we are stuck in deadlock." Try a reversible experiment with clear review rules instead.
+                            </div>
+                        </div>
+
+                        <!-- Form -->
+                        <form id="form-tool-5" onsubmit="handleTool5Submit(event)" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Proposed Educational Change</label>
+                                <input type="text" id="t5-change" placeholder="e.g., 90-day trial of reduced evening study pressure & zero weekend homework" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Key Metric for Success</label>
+                                    <select id="t5-metric" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                        <option value="">Select success metric...</option>
+                                        <option value="Improved grades">Improved grades</option>
+                                        <option value="Lower child anxiety">Lower child anxiety</option>
+                                        <option value="Better teacher feedback">Better teacher feedback</option>
+                                        <option value="Financial sustainability">Financial sustainability</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">Review Date</label>
+                                    <input type="date" id="t5-date" class="w-full rounded-xl border border-slate-300 px-3.5 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slateBlue/50" required>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="w-full mt-4 py-3 bg-slateBlue text-white font-medium text-sm rounded-xl shadow-sm hover:bg-blue-600 transition-colors flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-file-signature"></i>
+                                <span>Generate 90-Day Trial Agreement</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Output Area for Tool 5 -->
+                    <div id="output-tool-5" class="space-y-6 hidden">
+                        <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                            
+                            <!-- Contract Text -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <div class="flex items-center justify-between mb-2">
+                                    <span class="text-xs font-bold text-slateBlue uppercase tracking-wider block">90-DAY EXPERIMENT AGREEMENT TEMPLATE</span>
+                                    <button onclick="copyToClipboard('t5-contract-text')" class="px-3 py-1 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium flex items-center space-x-1 transition-colors">
+                                        <i class="fa-regular fa-copy"></i>
+                                        <span>Copy Agreement</span>
+                                    </button>
+                                </div>
+                                <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 text-slate-800 text-sm leading-relaxed space-y-2" id="t5-contract-text"></div>
+                                <p class="text-[11px] text-slate-400 mt-2 font-medium">* This document is a mutual parenting agreement template for decision-making clarity—not a legal document.</p>
+                            </div>
+
+                            <!-- Weekly Prompts -->
+                            <div class="border-b border-slate-100 pb-4">
+                                <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider block mb-1">WEEKLY CHECK-IN PROMPTS</span>
+                                <div id="t5-res-prompts" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Exit Clause -->
+                            <div>
+                                <span class="text-xs font-bold text-roseAccent uppercase tracking-wider block mb-1">PRE-AGREED EXIT & RE-EVALUATION RULES</span>
+                                <div id="t5-res-exit" class="space-y-3 text-sm text-slate-700"></div>
+                            </div>
+
+                            <!-- Next Best Tool Recommendation -->
+                            <div class="p-4 bg-blue-50/50 rounded-xl border border-blue-100 flex items-center justify-between">
+                                <div class="text-xs text-slate-600">
+                                    <strong class="text-slateBlue">Recommended Next Step:</strong> View your full synthesized Education Plan incorporating all saved modules.
+                                </div>
+                                <button onclick="switchScreen('plan')" class="px-3 py-1.5 bg-slateBlue text-white rounded-lg text-xs font-semibold hover:bg-blue-600 transition-colors shrink-0">
+                                    View Full Plan
+                                </button>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- History Accordion -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6">
+                        <div class="flex items-center justify-between cursor-pointer" onclick="toggleHistory('tool-5')">
+                            <div class="flex items-center space-x-2">
+                                <i class="fa-solid fa-clock-rotate-left text-slate-400 text-sm"></i>
+                                <span class="font-bold text-sm text-slate-700">Past Trial Agreements (<span id="count-tool-5">0</span>)</span>
+                            </div>
+                            <i class="fa-solid fa-chevron-down text-xs text-slate-400 transition-transform" id="chevron-tool-5"></i>
+                        </div>
+                        <div id="history-tool-5" class="hidden mt-4 space-y-3 pt-4 border-t border-slate-100"></div>
+                    </div>
+                </section>
+
+
+                <!-- ================= SYNTHESIS: MY EDUCATION PLAN ================= -->
+                <section id="screen-plan" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl font-bold">
+                                    <i class="fa-solid fa-clipboard-list"></i>
+                                </div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-slate-900">My Education Plan</h2>
+                                    <p class="text-xs text-slate-500">Synthesized decision roadmap across all completed modules</p>
+                                </div>
+                            </div>
+                            <button onclick="copyToClipboard('plan-content-area')" class="px-4 py-2 rounded-xl bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium text-xs transition-colors flex items-center space-x-2">
+                                <i class="fa-regular fa-copy"></i>
+                                <span>Copy Full Plan</span>
+                            </button>
+                        </div>
+
+                        <div id="plan-content-area" class="space-y-6 text-sm text-slate-700">
+                            <!-- JS populated plan content -->
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= GUIDED SEQUENCE: 7-DAY RESET ================= -->
+                <section id="screen-reset-7day" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="border-b border-slate-100 pb-4">
+                            <span class="text-xs font-semibold bg-indigo-50 text-indigo-600 px-3 py-1 rounded-full inline-block mb-3">Guided Decision Journey</span>
+                            <h2 class="text-2xl font-bold text-slate-900">7-Day Education Decision Reset</h2>
+                            <p class="text-xs text-slate-500 mt-1">A structured daily workflow to turn persistent school conflict into a calm, shared decision.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 1 — DEFINE PHILOSOPHY</span>
+                                    <p class="text-xs text-slate-600">Identify what each partner is protecting using the Philosophy Matrix.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-1')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 2 — TEST FINANCIAL REALITY</span>
+                                    <p class="text-xs text-slate-600">Evaluate household burden and trade-offs using Budget Alignment.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-2')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 3 — CENTER THE CHILD</span>
+                                    <p class="text-xs text-slate-600">Assess options against actual temperament using Child-Centric Fit.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-3')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 4 — HOLD THE CONVERSATION</span>
+                                    <p class="text-xs text-slate-600">Use structured Negotiation Scripts to discuss fears without arguing.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-4')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 5 — DESIGN AN EXPERIMENT</span>
+                                    <p class="text-xs text-slate-600">Set up a reversible 90-Day Trial with explicit metrics and review dates.</p>
+                                </div>
+                                <button onclick="switchScreen('tool-5')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 6 — SYNTHESIZE THE ROADMAP</span>
+                                    <p class="text-xs text-slate-600">Review your compiled Education Plan and mission statement.</p>
+                                </div>
+                                <button onclick="switchScreen('plan')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+
+                            <div class="p-4 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-indigo-600 block">DAY 7 — REVIEW & COMMIT</span>
+                                    <p class="text-xs text-slate-600">Commit to supporting the experiment without parallel, contradictory rules.</p>
+                                </div>
+                                <button onclick="switchScreen('dashboard')" class="px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs font-medium hover:bg-slate-50">Launch</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- ================= PRIVACY & SECURITY ================= -->
+                <section id="screen-privacy" class="space-y-6 hidden">
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 p-6 sm:p-8 space-y-6">
+                        <div class="flex items-center space-x-3 border-b border-slate-100 pb-4">
+                            <div class="w-12 h-12 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold text-slate-900">Privacy & Data Architecture</h2>
+                                <p class="text-xs text-slate-500">100% Client-Side Private Storage</p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 text-xs text-slate-600 leading-relaxed">
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Local Storage Only</h3>
+                                <p>EducationMatch™ operates entirely within your web browser. All inputs, calculations, scripts, and trial agreements are stored locally in your browser's <code class="bg-slate-200 px-1 py-0.5 rounded">localStorage</code>. No data is ever transmitted to external servers, cloud databases, or third-party trackers.</p>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Complete Data Control</h3>
+                                <p>You can clear your local history at any time within each tool's history drawer or by clearing your browser cache. Exporting your plan is performed directly via your local clipboard.</p>
+                            </div>
+
+                            <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/60">
+                                <h3 class="font-bold text-slate-900 text-sm mb-1">Decision Support Disclaimer</h3>
+                                <p>This application is designed solely for partner reflection and family decision-support. It does not constitute psychological therapy, legal advice, financial advising, or formal educational diagnosis.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Mandatory Footer on Every Screen -->
+            <footer class="mt-auto py-6 px-4 text-center border-t border-slate-200 bg-white/50 text-xs text-slate-500 font-medium">
+                For partner reflection and educational decision-making only. Not family therapy, financial, educational, or legal advice.
+            </footer>
+        </main>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Central Application State
+        const educationMatchState = {
+            completedTools: [],
+            toolResults: {
+                philosophy: null,
+                budget: null,
+                childFit: null,
+                negotiation: null,
+                trial: null
+            },
+            currentInputs: {},
+            lastUpdated: null
+        };
+
+        // Navigation Handling
+        function switchScreen(screenId) {
+            const screens = ['dashboard', 'tool-1', 'tool-2', 'tool-3', 'tool-4', 'tool-5', 'plan', 'reset-7day', 'privacy'];
+            screens.forEach(s => {
+                const el = document.getElementById('screen-' + s);
+                if (el) el.classList.add('hidden');
+                const nav = document.getElementById('nav-' + s);
+                if (nav) {
+                    nav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slate-600 hover:bg-slate-50 hover:text-slate-900";
+                }
+            });
+
+            const target = document.getElementById('screen-' + screenId);
+            if (target) target.classList.remove('hidden');
+
+            const activeNav = document.getElementById('nav-' + screenId);
+            if (activeNav) {
+                activeNav.className = "w-full flex items-center space-x-3 px-4 py-3 rounded-xl font-medium text-sm transition-all text-slateBlue bg-blue-50/80 shadow-sm";
+            }
+
+            if (screenId === 'plan') {
+                renderEducationPlan();
+            }
+
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (!sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            sidebar.classList.toggle('-translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        // Toast Notification
+        function showToast(message = "Copied to clipboard!") {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            msgEl.textContent = message;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2000);
+        }
+
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Copied successfully!");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        // LocalStorage & History Management
+        const STORAGE_PREFIX = "edumatch_v2_history_";
+        const MAX_HISTORY = 30;
+
+        function getHistory(toolId) {
+            try {
+                const data = localStorage.getItem(STORAGE_PREFIX + toolId);
+                return data ? JSON.parse(data) : [];
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveHistory(toolId, item) {
+            let history = getHistory(toolId);
+            history.unshift(item);
+            if (history.length > MAX_HISTORY) {
+                history = history.slice(0, MAX_HISTORY);
+            }
+            try {
+                localStorage.setItem(STORAGE_PREFIX + toolId, JSON.stringify(history));
+            } catch (e) {
+                console.error('Failed to save history', e);
+            }
+            updateHistoryUI(toolId);
+            updateDashboardAlignmentScore();
+            evaluateBottleneck();
+        }
+
+        function clearHistory(toolId) {
+            localStorage.removeItem(STORAGE_PREFIX + toolId);
+            updateHistoryUI(toolId);
+            updateDashboardAlignmentScore();
+            evaluateBottleneck();
+            showToast("History cleared");
+        }
+
+        function toggleHistory(toolId) {
+            const el = document.getElementById('history-' + toolId);
+            const chevron = document.getElementById('chevron-' + toolId);
+            el.classList.toggle('hidden');
+            chevron.classList.toggle('rotate-180');
+        }
+
+        function updateHistoryUI(toolId) {
+            const history = getHistory(toolId);
+            const container = document.getElementById('history-' + toolId);
+            const countEl = document.getElementById('count-' + toolId);
+            if (countEl) countEl.textContent = history.length;
+
+            if (!container) return;
+            if (history.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 italic py-2">No saved runs yet. Submit the form above to record your first analysis.</p>`;
+                return;
+            }
+
+            let html = `<div class="flex justify-end mb-2"><button onclick="clearHistory('${toolId}')" class="text-xs text-roseAccent font-semibold hover:underline">Clear History</button></div>`;
+            history.forEach((entry, idx) => {
+                html += `
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60 text-xs space-y-1">
+                        <div class="flex items-center justify-between font-semibold text-slate-800">
+                            <span>#${history.length - idx} — ${entry.title || 'Analysis'}</span>
+                            <span class="text-[10px] text-slate-400 font-normal">${entry.date}</span>
+                        </div>
+                        <p class="text-slate-600 truncate">${entry.summary}</p>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function updateDashboardAlignmentScore() {
+            let totalItems = 0;
+            for (let i = 1; i <= 5; i++) {
+                totalItems += getHistory('tool-' + i).length;
+            }
+            let score = 70 + Math.min(totalItems * 4, 25);
+            if (score > 98) score = 98;
+            if (totalItems === 0) score = 75;
+
+            const scoreEl = document.getElementById('dashboard-alignment-score');
+            const barEl = document.getElementById('alignment-progress-bar');
+            const statusEl = document.getElementById('alignment-status-text');
+
+            if (scoreEl) scoreEl.textContent = score + '%';
+            if (barEl) barEl.style.width = score + '%';
+            if (statusEl) {
+                if (score >= 85) statusEl.textContent = "High Collaborative Harmony";
+                else if (score >= 75) statusEl.textContent = "Active Decision Calibration";
+                else statusEl.textContent = "Active Negotiation Phase";
+            }
+        }
+
+        // Bottleneck Engine
+        function evaluateBottleneck() {
+            const h1 = getHistory('tool-1').length;
+            const h2 = getHistory('tool-2').length;
+            const h3 = getHistory('tool-3').length;
+            const h4 = getHistory('tool-4').length;
+            const h5 = getHistory('tool-5').length;
+
+            const textEl = document.getElementById('bottleneck-text');
+            const btnEl = document.getElementById('bottleneck-action-btn');
+
+            if (!textEl || !btnEl) return;
+
+            if (h1 === 0) {
+                textEl.textContent = "VALUES BOTTLENECK: You appear to have unaligned priorities regarding what education should achieve.";
+                btnEl.textContent = "Run Philosophy Matrix";
+                btnEl.setAttribute('onclick', "switchScreen('tool-1')");
+            } else if (h2 === 0) {
+                textEl.textContent = "MONEY BOTTLENECK: Test whether your chosen educational options are financially sustainable.";
+                btnEl.textContent = "Run Budget Alignment";
+                btnEl.setAttribute('onclick', "switchScreen('tool-2')");
+            } else if (h3 === 0) {
+                textEl.textContent = "CHILD-FIT BOTTLENECK: Check whether proposed environments match your child's current temperament.";
+                btnEl.textContent = "Run Child Fit Evaluator";
+                btnEl.setAttribute('onclick', "switchScreen('tool-3')");
+            } else if (h4 === 0) {
+                textEl.textContent = "RELATIONSHIP BOTTLENECK: Discussions may be getting stuck in positions rather than underlying worries.";
+                btnEl.textContent = "Generate Negotiation Scripts";
+                btnEl.setAttribute('onclick', "switchScreen('tool-4')");
+            } else if (h5 === 0) {
+                textEl.textContent = "UNCERTAINTY BOTTLENECK: Break remaining deadlock with a structured, reversible 90-day trial.";
+                btnEl.textContent = "Create 90-Day Trial";
+                btnEl.setAttribute('onclick', "switchScreen('tool-5')");
+            } else {
+                textEl.textContent = "ALL MODULES COMPLETE: View your synthesized Education Plan to finalize your next decision step.";
+                btnEl.textContent = "View My Education Plan";
+                btnEl.setAttribute('onclick', "switchScreen('plan')");
+            }
+        }
+
+        // ================= TOOL SUBMISSIONS & ENGINE =================
+
+        // TOOL 1
+        function loadSampleTool1() {
+            document.getElementById('t1-p1').value = "High academic performance";
+            document.getElementById('t1-p2').value = "Creative freedom";
+            document.getElementById('t1-grade').value = "5th Grade / 10 years old";
+            document.getElementById('t1-conflict').value = "Extracurricular load";
+        }
+
+        function handleTool1Submit(event) {
+            event.preventDefault();
+            const p1 = document.getElementById('t1-p1').value;
+            const p2 = document.getElementById('t1-p2').value;
+            const grade = document.getElementById('t1-grade').value;
+            const conflict = document.getElementById('t1-conflict').value;
+
+            educationMatchState.toolResults.philosophy = { p1, p2, grade, conflict };
+
+            document.getElementById('t1-res-gap').innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 my-2">
+                    <div class="p-4 rounded-xl bg-blue-50/60 border border-blue-100">
+                        <span class="font-semibold text-slateBlue block mb-1">Partner A Focus: ${p1}</span>
+                        <p class="text-xs text-slate-600">May protect future opportunity, measurable progress, discipline, and competitive preparedness.</p>
+                    </div>
+                    <div class="p-4 rounded-xl bg-rose-50/60 border border-rose-100">
+                        <span class="font-semibold text-roseAccent block mb-1">Partner B Focus: ${p2}</span>
+                        <p class="text-xs text-slate-600">May protect emotional recovery, intrinsic curiosity, autonomy, and sustainable mental health.</p>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-600 mt-2"><strong class="text-slate-800">Key Tension Point (${conflict}):</strong> The disagreement arises when structured demands (${p1}) encroach upon unstructured restoration time (${p2}) for a student in ${grade}. Both partners are protecting valid priorities.</p>
+            `;
+
+            document.getElementById('t1-res-hybrid').innerHTML = `
+                <ul class="space-y-2 text-xs text-slate-700">
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                        <span><strong>Time-Boxed Rigor:</strong> Concentrate intensive academic blocks into defined periods, leaving evenings protected for unstructured creative recovery.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                        <span><strong>Project-Based Integration:</strong> Channel core academic goals (${p1}) into self-directed creative projects (${p2}) to satisfy both priorities simultaneously.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-check text-emerald-500 mt-0.5"></i>
+                        <span><strong>Quarterly Balance Audit:</strong> Re-evaluate engagement every 90 days to ensure neither pressure nor stagnation dominates.</span>
+                    </li>
+                </ul>
+            `;
+
+            const missionText = `As parents of our ${grade} child, we commit to supporting both meaningful academic growth and a sustainable, curious, healthy relationship with learning. We choose to treat disagreements as design problems to solve together rather than battles one parent must win.`;
+            document.getElementById('t1-mission-text').textContent = missionText;
+
+            document.getElementById('output-tool-1').classList.remove('hidden');
+            document.getElementById('output-tool-1').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-1', {
+                title: `Philosophy Matrix (${p1} vs ${p2})`,
+                summary: `Grade: ${grade} | Conflict: ${conflict}`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // TOOL 2
+        function loadSampleTool2() {
+            document.getElementById('t2-expenses').value = "15000";
+            document.getElementById('t2-income').value = "110000";
+            document.getElementById('t2-p1-budget').value = "15000";
+            document.getElementById('t2-p2-budget').value = "7000";
+            document.getElementById('t2-goals').value = "College savings fund, emergency buffer, home down payment";
+        }
+
+        function handleTool2Submit(event) {
+            event.preventDefault();
+            const expenses = parseFloat(document.getElementById('t2-expenses').value);
+            const income = parseFloat(document.getElementById('t2-income').value);
+            const p1Budget = parseFloat(document.getElementById('t2-p1-budget').value);
+            const p2Budget = parseFloat(document.getElementById('t2-p2-budget').value);
+            const goals = document.getElementById('t2-goals').value;
+
+            const ratio = ((expenses / income) * 100).toFixed(1);
+            const budgetGap = Math.abs(p1Budget - p2Budget);
+
+            let burdenCategory = "Moderate Commitment";
+            if (ratio > 25) burdenCategory = "Very High Household Burden";
+            else if (ratio > 15) burdenCategory = "High Household Commitment";
+            else if (ratio < 8) burdenCategory = "Light Household Commitment";
+
+            educationMatchState.toolResults.budget = { expenses, income, ratio, p1Budget, p2Budget, budgetGap, goals, burdenCategory };
+
+            document.getElementById('t2-res-snapshot').innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
+                    <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200/60">
+                        <span class="text-xs text-slate-500 block">Expense-to-Income Ratio</span>
+                        <span class="text-lg font-bold text-slate-900">${ratio}%</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200/60">
+                        <span class="text-xs text-slate-500 block">Partner Comfort Gap</span>
+                        <span class="text-lg font-bold text-roseAccent">$${budgetGap.toLocaleString()}</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-xl text-center border border-slate-200/60">
+                        <span class="text-xs text-slate-500 block">Household Burden Level</span>
+                        <span class="text-xs font-bold text-amber-600 block mt-1">${burdenCategory}</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-600">Allocating $${expenses.toLocaleString()} annually represents <strong>${ratio}%</strong> of household net income ($${income.toLocaleString()}). Spending competing directly with stated goals (${goals}) requires clear trade-off evaluation.</p>
+            `;
+
+            document.getElementById('t2-res-roi').innerHTML = `
+                <div class="space-y-2 text-xs text-slate-700">
+                    <p><strong>Higher-Investment Path ($${Math.max(p1Budget, p2Budget).toLocaleString()}):</strong> May provide specific facilities or support, but tightens household emergency buffers and long-term goal allocations.</p>
+                    <p><strong>Conservative Path ($${Math.min(p1Budget, p2Budget).toLocaleString()}):</strong> Preserves financial resilience while relying on targeted home enrichment to address academic gaps.</p>
+                    <p><strong>Value Test:</strong> Price itself does not establish educational quality. The strongest educational return occurs when spending solves a specifically identified developmental need.</p>
+                </div>
+            `;
+
+            const midpoint = Math.round((p1Budget + p2Budget) / 2);
+            const compromiseText = `Negotiation Reference Midpoint: $${midpoint.toLocaleString()} per year. (Partner A Limit: $${p1Budget.toLocaleString()} | Partner B Limit: $${p2Budget.toLocaleString()}). Use this range to explore targeted investments while protecting room for ${goals}.`;
+            document.getElementById('t2-compromise-text').textContent = compromiseText;
+
+            document.getElementById('output-tool-2').classList.remove('hidden');
+            document.getElementById('output-tool-2').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-2', {
+                title: `Budget Alignment ($${expenses.toLocaleString()} / yr)`,
+                summary: `Ratio: ${ratio}% | Comfort Gap: $${budgetGap.toLocaleString()}`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // TOOL 3
+        function loadSampleTool3() {
+            document.getElementById('t3-style').value = "Anxious";
+            document.getElementById('t3-state').value = "Burnt out";
+            document.getElementById('t3-env-a').value = "High-pressure elite preparatory academy";
+            document.getElementById('t3-env-b').value = "Balanced local public school with strong counseling & arts";
+        }
+
+        function handleTool3Submit(event) {
+            event.preventDefault();
+            const style = document.getElementById('t3-style').value;
+            const state = document.getElementById('t3-state').value;
+            const envA = document.getElementById('t3-env-a').value;
+            const envB = document.getElementById('t3-env-b').value;
+
+            educationMatchState.toolResults.childFit = { style, state, envA, envB };
+
+            document.getElementById('t3-res-match').innerHTML = `
+                <div class="space-y-3">
+                    <div class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        <span class="font-semibold text-slate-900 block mb-0.5">Option A: ${envA}</span>
+                        <p class="text-xs text-slate-600">Signal: <strong class="text-amber-600">Potential Pressure Mismatch</strong> for a child who is currently "${state}" with an "${style}" temperament.</p>
+                    </div>
+                    <div class="p-3 bg-emerald-50/60 rounded-xl border border-emerald-100">
+                        <span class="font-semibold text-slate-900 block mb-0.5">Option B: ${envB}</span>
+                        <p class="text-xs text-slate-600">Signal: <strong class="text-emerald-600">Stronger Fit Signal</strong>. Aligns well with an anxious or burnt-out state by prioritizing supportive pacing and holistic wellbeing.</p>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('t3-res-redflag').innerHTML = `
+                <ul class="space-y-2 text-xs text-slate-700">
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-triangle-exclamation text-roseAccent mt-0.5"></i>
+                        <span><strong>Pressure Warning:</strong> If a child is showing signs of academic exhaustion (${state}), adding substantially higher pressure may warrant careful review rather than automatic escalation.</span>
+                    </li>
+                    <li class="flex items-start space-x-2">
+                        <i class="fa-solid fa-compass text-slateBlue mt-0.5"></i>
+                        <span><strong>Parental Ego Check:</strong> Ask yourselves: "Would we choose this option if no one else knew which school our child attended?" Focus on the child's daily lived experience.</span>
+                    </li>
+                </ul>
+            `;
+
+            const verdictText = `Based on the inputs provided, Option B (${envB}) presents a stronger fit signal for a child presenting as ${state} with a ${style} learning temperament. Verify this in real life by visiting the environment, reviewing homework loads, and observing student support systems.`;
+            document.getElementById('t3-verdict-text').textContent = verdictText;
+
+            document.getElementById('output-tool-3').classList.remove('hidden');
+            document.getElementById('output-tool-3').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-3', {
+                title: `Child Fit Evaluator (${style} / ${state})`,
+                summary: `Stronger Fit: Option B (${envB})`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // TOOL 4
+        function loadSampleTool4() {
+            document.getElementById('t4-topic').value = "Adding 3 hours of mandatory weekend tutoring & Kumon";
+            document.getElementById('t4-fear-a').value = "Child falling behind peers in competitive STEM fields and missing future opportunities";
+            document.getElementById('t4-fear-b').value = "Child experiencing chronic mental exhaustion, anxiety, and losing the joy of creativity";
+        }
+
+        function handleTool4Submit(event) {
+            event.preventDefault();
+            const topic = document.getElementById('t4-topic').value;
+            const fearA = document.getElementById('t4-fear-a').value;
+            const fearB = document.getElementById('t4-fear-b').value;
+
+            educationMatchState.toolResults.negotiation = { topic, fearA, fearB };
+
+            document.getElementById('t4-res-points').innerHTML = `
+                <ul class="space-y-2 text-xs text-slate-700">
+                    <li class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        "I think we're both trying to protect something important regarding <strong>${topic}</strong>. Before we debate solutions, can we each share what we are most worried would happen if we choose the other path?"
+                    </li>
+                    <li class="p-3 bg-slate-50 rounded-xl border border-slate-200/60">
+                        "I hear your worry about academic security. Can we also look closely at our child's daily energy and stress levels?"
+                    </li>
+                </ul>
+            `;
+
+            document.getElementById('t4-script-text').innerHTML = `
+                <div class="space-y-3">
+                    <p><strong>Partner A:</strong> "When we discuss ${topic}, my biggest concern is that ${fearA}."</p>
+                    <p><strong>Partner B:</strong> "I understand that concern. My deepest fear is that ${fearB}."</p>
+                    <p><strong>Partner A:</strong> "How can we support academic readiness without causing unnecessary stress?"</p>
+                    <p><strong>Partner B:</strong> "Let's explore a capped trial approach—like one targeted session per week with protected weekends."</p>
+                </div>
+            `;
+
+            document.getElementById('t4-res-proposal').innerHTML = `
+                <div class="p-4 rounded-xl bg-emerald-50/60 border border-emerald-100 text-xs text-slate-700 space-y-2">
+                    <span class="font-semibold text-emerald-800 block text-sm">Compromise Framework</span>
+                    <p><strong>Action:</strong> Cap the proposed change (${topic}) to a moderate, time-bound scale while preserving rest and recovery time.</p>
+                    <p><strong>Review Checkpoint:</strong> Re-evaluate together after 45 days against agreed wellbeing indicators.</p>
+                </div>
+            `;
+
+            document.getElementById('output-tool-4').classList.remove('hidden');
+            document.getElementById('output-tool-4').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-4', {
+                title: `Negotiation Script (${topic})`,
+                summary: `Addressed fears regarding academic readiness vs burnout.`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // TOOL 5
+        function loadSampleTool5() {
+            document.getElementById('t5-change').value = "90-day trial of reduced evening study pressure & zero weekend homework";
+            document.getElementById('t5-metric').value = "Lower child anxiety";
+            const futureDate = new Date();
+            futureDate.setDate(futureDate.getDate() + 90);
+            document.getElementById('t5-date').value = futureDate.toISOString().split('T')[0];
+        }
+
+        function handleTool5Submit(event) {
+            event.preventDefault();
+            const change = document.getElementById('t5-change').value;
+            const metric = document.getElementById('t5-metric').value;
+            const reviewDate = document.getElementById('t5-date').value;
+
+            educationMatchState.toolResults.trial = { change, metric, reviewDate };
+
+            document.getElementById('t5-contract-text').innerHTML = `
+                <p><strong>90-DAY EDUCATIONAL TRIAL AGREEMENT</strong></p>
+                <p><strong>Proposed Change:</strong> ${change}</p>
+                <p><strong>Primary Success Metric:</strong> ${metric}</p>
+                <p><strong>Official Review Date:</strong> ${reviewDate}</p>
+                <p class="mt-2 text-slate-600 font-normal">Both parents agree to fully support this experiment in good faith without parallel, contradictory rules during the trial window.</p>
+            `;
+
+            document.getElementById('t5-res-prompts').innerHTML = `
+                <ol class="list-decimal list-inside space-y-2 text-xs text-slate-700">
+                    <li><strong>Energy & Mood Check:</strong> "How has our child's overall stress and enthusiasm been this week compared with the baseline?"</li>
+                    <li><strong>Metric Progress:</strong> "What specific evidence do we see regarding <em>${metric}</em>?"</li>
+                    <li><strong>Friction Points:</strong> "What unexpected hurdles arose that we need to adjust?"</li>
+                </ol>
+            `;
+
+            document.getElementById('t5-res-exit').innerHTML = `
+                <div class="space-y-2 text-xs text-slate-700">
+                    <p><strong>Successful Trial:</strong> If <em>${metric}</em> shows clear positive movement by ${reviewDate}, consider continuing or formally adopting this approach.</p>
+                    <p><strong>Unsuccessful Trial:</strong> If the metric worsens or fails to improve, pivot to the pre-agreed alternative path without assigning blame or reopening past arguments.</p>
+                </div>
+            `;
+
+            document.getElementById('output-tool-5').classList.remove('hidden');
+            document.getElementById('output-tool-5').scrollIntoView({ behavior: 'smooth' });
+
+            saveHistory('tool-5', {
+                title: `90-Day Trial (${change})`,
+                summary: `Metric: ${metric} | Review: ${reviewDate}`,
+                date: new Date().toLocaleDateString()
+            });
+        }
+
+        // Render My Education Plan
+        function renderEducationPlan() {
+            const planContainer = document.getElementById('plan-content-area');
+            if (!planContainer) return;
+
+            const res = educationMatchState.toolResults;
+
+            let html = `
+                <div class="p-4 bg-blue-50/60 rounded-xl border border-blue-100">
+                    <h3 class="font-bold text-slateBlue text-base mb-2">1. What We Agree On (Shared Family Principle)</h3>
+                    <p class="italic text-slate-800">${res.philosophy ? document.getElementById('t1-mission-text').textContent : "Complete Module 1 (Philosophy Matrix) to generate your shared family educational mission."}</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">2. Financial Sustainability</h4>
+                        <p class="text-xs text-slate-600">${res.budget ? `Annual Outlay: $${res.budget.expenses.toLocaleString()} (${res.budget.ratio}% of income) | Burden Level: ${res.budget.burdenCategory}` : "Complete Module 2 (Budget Alignment) to review financial limits."}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">3. Child Fit Considerations</h4>
+                        <p class="text-xs text-slate-600">${res.childFit ? `Temperament: ${res.childFit.style} | Current State: ${res.childFit.state}` : "Complete Module 3 (Child Fit) to assess fit signals."}</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">4. Core Conversation Focus</h4>
+                        <p class="text-xs text-slate-600">${res.negotiation ? `Topic: ${res.negotiation.topic}` : "Complete Module 4 (Negotiation Scripts) to frame key fears and trade-offs."}</p>
+                    </div>
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-900 text-xs uppercase tracking-wider mb-2">5. Active Reversible Experiment</h4>
+                        <p class="text-xs text-slate-600">${res.trial ? `Trial: ${res.trial.change} | Metric: ${res.trial.metric} | Review: ${res.trial.reviewDate}` : "Complete Module 5 (90-Day Trial) to set up an experiment."}</p>
+                    </div>
+                </div>
+            `;
+
+            planContainer.innerHTML = html;
+        }
+
+        // Initialize history & state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            for (let i = 1; i <= 5; i++) {
+                updateHistoryUI('tool-' + i);
+            }
+            updateDashboardAlignmentScore();
+            evaluateBottleneck();
+        });
+    </script>
+</body>
+</html>

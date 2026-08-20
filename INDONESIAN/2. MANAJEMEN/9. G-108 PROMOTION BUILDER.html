@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromotionBuilder — Sistem Pengembangan & Kenaikan Karier</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS RESET & VARS */
+        :root {
+            --emerald-dark: #1b4332;
+            --emerald: #2D6A4F;
+            --emerald-light: #52b788;
+            --emerald-subtle: #d8f3dc;
+            --gold: #D4A373;
+            --gold-light: #fefae0;
+            --bg-gradient: linear-gradient(135deg, #F1F8F5 0%, #FDF6EC 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* LAYOUT STYLES */
+        #app-container {
+            display: flex;
+            flex: 1;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--emerald);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--emerald-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--emerald-subtle);
+            color: var(--emerald-dark);
+        }
+
+        .nav-item.active {
+            background: #f0f7f4;
+            color: var(--emerald);
+            border-left-color: var(--emerald);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* MOBILE HEADER / HAMBURGER */
+        .mobile-header {
+            display: none;
+            background: #ffffff;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--emerald-dark);
+            cursor: pointer;
+        }
+
+        /* MAIN CONTENT AREA */
+        #main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content-area {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+            flex: 1;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        /* CARDS & UI COMPONENTS */
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-header h2 {
+            font-size: 1.75rem;
+            color: var(--emerald-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .tool-problem {
+            background: var(--gold-light);
+            border-left: 4px solid var(--gold);
+            padding: 0.75rem 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.95rem;
+            color: #7c5227;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        /* FORM CONTROLS */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            color: var(--emerald-dark);
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fdfdfd;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+            background: #ffffff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.25rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 400;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* BUTTONS */
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--emerald);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--emerald-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-copy {
+            background: var(--gold-light);
+            color: #7c5227;
+            border: 1px solid var(--gold);
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 0.375rem;
+        }
+
+        .btn-copy:hover {
+            background: var(--gold);
+            color: #ffffff;
+        }
+
+        /* DASHBOARD SPECIFIC */
+        .dashboard-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 1rem;
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .dashboard-hero h2 {
+            font-size: 2.25rem;
+            color: var(--emerald-dark);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            border-color: var(--emerald-light);
+        }
+
+        .dashboard-card .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.5rem;
+            background: var(--emerald-subtle);
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.1rem;
+            color: var(--emerald-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-card p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.not-started { background: #e9ecef; color: #495057; }
+        .status-badge.complete { background: var(--emerald-subtle); color: var(--emerald-dark); }
+
+        /* UNIFIED RESULTS HIERARCHY */
+        .output-container {
+            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--emerald-subtle);
+            padding-bottom: 0.5rem;
+        }
+
+        .output-header h3 {
+            color: var(--emerald-dark);
+            font-size: 1.25rem;
+        }
+
+        .output-section {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .output-section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-section-content {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            white-space: pre-line;
+        }
+
+        .snapshot-card {
+            background: #f0f7f4;
+            border: 1px solid var(--emerald-light);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .one-priority-box {
+            background: #fefae0;
+            border-left: 4px solid var(--gold);
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #7c5227;
+        }
+
+        .next-tool-callout {
+            background: #ffffff;
+            border: 1px dashed var(--emerald);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        /* HISTORY SECTION / ACCORDION */
+        .history-accordion {
+            margin-top: 2.5rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .history-header h4 {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-list {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .history-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            color: var(--emerald-dark);
+        }
+
+        .history-item-date {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* TOAST NOTIFICATION */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--emerald-dark);
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 2000;
+        }
+
+        #toast.show {
+            opacity: 1;
+        }
+
+        /* VISUAL MAPS (For Sponsor Strategy) */
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .sponsor-box {
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            background: #f8f9fa;
+        }
+
+        .sponsor-box-title {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .sponsor-box.deciders { border-color: #adb5bd; background: #e9ecef; }
+        .sponsor-box.advocates { border-color: var(--emerald-light); background: var(--emerald-subtle); }
+        .sponsor-box.neutrals { border-color: #ffe8cc; background: #fff4e6; }
+        .sponsor-box.blockers { border-color: #ffc9c9; background: #ffe3e3; }
+
+        /* PRINT STYLES */
+        @media print {
+            #sidebar, .mobile-header, .btn-container, .btn-copy, .history-accordion, footer, .next-tool-callout {
+                display: none !important;
+            }
+            #main-wrapper {
+                margin-left: 0 !important;
+            }
+            .content-area {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card, .output-section {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+            }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            #main-wrapper {
+                margin-left: 0;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .content-area {
+                padding: 1.5rem 1rem;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 950;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .sponsor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- HEADER MOBILE -->
+        <div class="mobile-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-chess-knight" style="color: var(--emerald); font-size: 1.25rem;"></i>
+                <span style="font-weight: 700; color: var(--emerald-dark);">PromotionBuilder</span>
+            </div>
+            <button class="hamburger-btn" id="hamburger-toggle" aria-label="Buka/Tutup Menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- SIDEBAR TETAP -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-chess-knight"></i>
+                <h1>PromotionBuilder</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a class="nav-item active" data-tool="dashboard"><i class="fa-solid fa-chart-pie"></i> Dasbor</a></li>
+                <li><a class="nav-item" data-tool="gap"><i class="fa-solid fa-magnifying-glass-chart"></i> Analisis Kesenjangan</a></li>
+                <li><a class="nav-item" data-tool="impact"><i class="fa-solid fa-briefcase"></i> Portofolio Dampak</a></li>
+                <li><a class="nav-item" data-tool="sponsor"><i class="fa-solid fa-users-viewfinder"></i> Strategi Sponsor</a></li>
+                <li><a class="nav-item" data-tool="conversation"><i class="fa-solid fa-comments"></i> Panduan Percakapan</a></li>
+                <li><a class="nav-item" data-tool="planb"><i class="fa-solid fa-shield-halved"></i> Strategi Rencana B</a></li>
+                <li style="border-top: 1px solid var(--border-color); margin-top: 0.5rem; padding-top: 0.5rem;">
+                    <a class="nav-item" data-tool="reset7"><i class="fa-solid fa-calendar-check"></i> Reset Promosi 7 Hari</a>
+                </li>
+                <li><a class="nav-item" data-tool="strategy"><i class="fa-solid fa-award"></i> Strategi Promosi Saya</a></li>
+                <li><a class="nav-item" data-tool="history"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya</a></li>
+                <li><a class="nav-item" data-tool="privacy"><i class="fa-solid fa-user-shield"></i> Privasi & Data</a></li>
+            </ul>
+        </aside>
+
+        <!-- WADAH UTAMA -->
+        <div id="main-wrapper">
+            <main class="content-area">
+
+                <!-- DASBOR -->
+                <div id="view-dashboard" class="tool-view">
+                    <div class="dashboard-hero">
+                        <h2>Sistem Builder Promosi Karier</h2>
+                        <p>Jangan menunggu untuk diperhatikan. Bangun argumen strategis yang tidak bisa mereka abaikan.</p>
+                    </div>
+
+                    <!-- MULAI DI SINI / ORIENTASI -->
+                    <div class="card" style="background: #f0f7f4; border-color: var(--emerald-light);">
+                        <h3 style="color: var(--emerald-dark); margin-bottom: 0.5rem;"><i class="fa-solid fa-compass"></i> Mulai Di Sini & Orientasi</h3>
+                        <p style="font-size: 0.9rem; color: #333; margin-bottom: 0.75rem;">
+                            Kenaikan jabatan membutuhkan keselarasan lingkup kerja, bukti tak terbantahkan, sponsor eksekutif, waktu taktis, dan perlindungan risiko. Pilih modul di bawah ini sesuai prioritas Anda saat ini:
+                        </p>
+                        <ul style="font-size: 0.85rem; color: var(--text-muted); margin-left: 1.25rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                            <li>• <strong>Analisis Kesenjangan:</strong> Belum jelas mengenai apa yang membedakan Anda dengan level target? Mulai di sini.</li>
+                            <li>• <strong>Portofolio Dampak:</strong> Butuh bukti terstruktur bahwa Anda sudah bekerja di level yang lebih tinggi? Bangun argumen Anda.</li>
+                            <li>• <strong>Strategi Sponsor:</strong> Butuh pemimpin kunci yang mendukung Anda dalam rapat kalibrasi tertutup? Petakan pengaruh politik.</li>
+                            <li>• <strong>Panduan Percakapan:</strong> Pertemuan makin dekat? Buat naskah yang disesuaikan dengan gaya atasan Anda.</li>
+                            <li>• <strong>Strategi Rencana B:</strong> Menghadapi penundaan atau pembekuan anggaran? Susun rencana cadangan & mobilitas Anda.</li>
+                        </ul>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" onclick="switchTool('gap')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                                <h3>Analisis Kesenjangan</h3>
+                                <p>Petakan kesenjangan keterampilan, ruang lingkup, dan politik antara peran Anda saat ini dan level berikutnya.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-gap">Belum Dimulai</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('impact')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-briefcase"></i></div>
+                                <h3>Portofolio Dampak</h3>
+                                <p>Kumpulkan bukti tak terbantahkan, metrik, dan fakta bahwa Anda telah beroperasi di level lebih tinggi.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-impact">Belum Dimulai</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('sponsor')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-users-viewfinder"></i></div>
+                                <h3>Strategi Sponsor</h3>
+                                <p>Identifikasi pengambil keputusan kunci dan bangun modal politik agar pendukung kuat memback-up Anda.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-sponsor">Belum Dimulai</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('conversation')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-comments"></i></div>
+                                <h3>Panduan Percakapan</h3>
+                                <p>Dapatkan naskah tepat dan kerangka taktis untuk memulai pembicaraan promosi dengan atasan Anda.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-conversation">Belum Dimulai</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('planb')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div>
+                                <h3>Strategi Rencana B</h3>
+                                <p>Susun kerangka cadangan strategis untuk penolakan halus, penundaan, atau skenario 'belum siap'.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-planb">Belum Dimulai</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ALAT 1: ANALISIS KESENJANGAN -->
+                <div id="view-gap" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Analisis Kesenjangan</h2>
+                        <div class="tool-problem">"Saya tidak tahu apa yang sebenarnya membedakan saya dari level berikutnya."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-gap">
+                            <div class="form-group">
+                                <label for="gap-current-title">Jabatan Anda saat ini:*</label>
+                                <input type="text" id="gap-current-title" placeholder="contoh: Senior Data Analyst">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-target-title">Jabatan target:*</label>
+                                <input type="text" id="gap-target-title" placeholder="contoh: Analytics Manager">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-current-resp">Tanggung jawab saat ini:</label>
+                                <textarea id="gap-current-resp" placeholder="Apa yang Anda habiskan dalam pekerjaan sehari-hari?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-next-resp">Apa yang dilakukan level berikutnya:</label>
+                                <textarea id="gap-next-resp" placeholder="Tanggung jawab apa yang dipegang oleh orang di peran target?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-criteria">Kriteria promosi perusahaan:</label>
+                                <select id="gap-criteria">
+                                    <option value="Clear and documented">Jelas dan terdokumentasi</option>
+                                    <option value="Informal">Informal</option>
+                                    <option value="Political">Politik</option>
+                                    <option value="Unknown">Tidak diketahui</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('gap')"><i class="fa-solid fa-bolt"></i> Buat Strategi</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('gap')"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('gap')"><i class="fa-solid fa-arrow-rotate-left"></i> Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-gap" class="output-container"></div>
+                    <div id="history-gap" class="history-accordion"></div>
+                </div>
+
+                <!-- ALAT 2: PORTOFOLIO DAMPAK -->
+                <div id="view-impact" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Portofolio Dampak</h2>
+                        <div class="tool-problem">"Saya butuh bukti bahwa saya sudah beroperasi di level berikutnya."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-impact">
+                            <div class="form-group">
+                                <label for="impact-led">Proyek yang Anda pimpin tanpa wewenang formal:*</label>
+                                <textarea id="impact-led" placeholder="Jelaskan inisiatif yang Anda ambil alih..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-mentored">Momen saat Anda membimbing atau melatih orang lain:</label>
+                                <textarea id="impact-mentored" placeholder="Siapa yang telah Anda onboard, latih, atau bimbing?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-process">Peningkatan proses yang Anda buat:</label>
+                                <textarea id="impact-process" placeholder="Sistem atau alur kerja apa yang Anda perbaiki atau percepat?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-revenue">Dampak pendapatan atau efisiensi biaya yang Anda hasilkan:</label>
+                                <textarea id="impact-revenue" placeholder="Uang yang dihemat, pendapatan yang dihasilkan, akun klien yang dipertahankan..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-cross">Pekerjaan lintas fungsi yang Anda inisiasi:</label>
+                                <textarea id="impact-cross" placeholder="Proyek yang melibatkan tim lain, departemen, atau mitra eksternal..."></textarea>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('impact')"><i class="fa-solid fa-bolt"></i> Susun Portofolio</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('impact')"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('impact')"><i class="fa-solid fa-arrow-rotate-left"></i> Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-impact" class="output-container"></div>
+                    <div id="history-impact" class="history-accordion"></div>
+                </div>
+
+                <!-- ALAT 3: STRATEGI SPONSOR -->
+                <div id="view-sponsor" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Strategi Sponsor</h2>
+                        <div class="tool-problem">"Saya membutuhkan seseorang berpengaruh yang membela saya di balik pintu tertutup."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-sponsor">
+                            <div class="form-group">
+                                <label for="sponsor-deciders">Siapa yang memutuskan promosi?</label>
+                                <textarea id="sponsor-deciders" placeholder="Nama atau jabatan Direktur, VP, komite..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sponsor-supports">Siapa yang sudah mendukung Anda?</label>
+                                <textarea id="sponsor-supports" placeholder="Atasan langsung, rekan kerja senior, pimpinan lintas fungsi..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sponsor-neutral">Siapa yang bersikap netral?</label>
+                                <textarea id="sponsor-neutral" placeholder="Orang yang sedikit mengenal Anda namun belum mengambil sikap..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sponsor-resist">Siapa yang mungkin menolak?</label>
+                                <textarea id="sponsor-resist" placeholder="Rekan selevel yang bersaing untuk peran sama, pemimpin yang ragu..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Apakah Anda pernah meminta seseorang menjadi sponsor Anda?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="sponsor-asked" value="Sudah"> Sudah</label>
+                                    <label class="radio-label"><input type="radio" name="sponsor-asked" value="Belum" checked> Belum</label>
+                                    <label class="radio-label"><input type="radio" name="sponsor-asked" value="Bingung caranya"> Bingung caranya</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('sponsor')"><i class="fa-solid fa-bolt"></i> Petakan Strategi Sponsor</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('sponsor')"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('sponsor')"><i class="fa-solid fa-arrow-rotate-left"></i> Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-sponsor" class="output-container"></div>
+                    <div id="history-sponsor" class="history-accordion"></div>
+                </div>
+
+                <!-- ALAT 4: PARCAKAPAN -->
+                <div id="view-conversation" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Panduan Percakapan</h2>
+                        <div class="tool-problem">"Saya perlu memberi tahu atasan bahwa saya ingin promosi tanpa terdengar menuntut."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-conversation">
+                            <div class="form-group">
+                                <label for="conv-tenure">Berapa lama di peran saat ini?</label>
+                                <select id="conv-tenure">
+                                    <option value="<1yr">&lt; 1 tahun</option>
+                                    <option value="1-2yr">1 - 2 tahun</option>
+                                    <option value="2-3yr">2 - 3 tahun</option>
+                                    <option value="3yr+">3+ tahun</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Gaya kepemimpinan atasan Anda:</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Berbasis Data" checked> Berbasis Data</label>
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Berbasis Hubungan"> Berbasis Hubungan</label>
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Pengahindar"> Penghindar Konflik</label>
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="To the Point"> To the Point / Langsung</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="conv-health">Kondisi keuangan perusahaan:</label>
+                                <select id="conv-health">
+                                    <option value="Tumbuh / Ekspansi">Tumbuh / Ekspansi</option>
+                                    <option value="Stabil">Stabil</option>
+                                    <option value="Ketat / Hemat Budget">Ketat / Hemat Anggaran</option>
+                                    <option value="Tidak Diketahui">Tidak Diketahui</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="conv-leverage">Posisi tawar (leverage) Anda:</label>
+                                <select id="conv-leverage">
+                                    <option value="Rekam jejak kuat">Rekam jejak performa kuat</option>
+                                    <option value="Permintaan pasar tinggi">Permintaan pasar tinggi untuk peran Anda</option>
+                                    <option value="Siap mencari peluang luar">Kesiapan menjelajah pasar luar</option>
+                                    <option value="Terbatas">Posisi tawar terbatas saat ini</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('conversation')"><i class="fa-solid fa-bolt"></i> Buat Panduan Taktis</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('conversation')"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('conversation')"><i class="fa-solid fa-arrow-rotate-left"></i> Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-conversation" class="output-container"></div>
+                    <div id="history-conversation" class="history-accordion"></div>
+                </div>
+
+                <!-- ALAT 5: RENCANA B -->
+                <div id="view-planb" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Strategi Rencana B</h2>
+                        <div class="tool-problem">"Bagaimana jika mereka bilang saya belum siap? Apa yang harus saya lakukan?"</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-planb">
+                            <div class="form-group">
+                                <label for="planb-feedback">Umpan balik apa yang Anda terima?</label>
+                                <select id="planb-feedback">
+                                    <option value="Anda sudah siap">Anda sudah siap (hanya menunggu alokasi tim/anggaran)</option>
+                                    <option value="Hampir siap">Hampir siap (ada 1 atau 2 kekurangan kecil)</option>
+                                    <option value="Butuh pengembangan">Butuh pengembangan signifikan</option>
+                                    <option value="Tidak ada umpan balik">Tidak ada umpan balik yang jelas</option>
+                                    <option value="Sinyal campuran">Sinyal campuran / umpan balik kontradiktif</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Apakah Anda bersedia menunggu?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="3 bulan"> 3 bulan</label>
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="6 bulan" checked> 6 bulan</label>
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="1 tahun"> 1 tahun</label>
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="Tidak bersedia"> Tidak bersedia menunggu</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Apakah Anda memiliki opsi eksternal?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Ada"> Ya, ada penawaran/diskusi aktif</label>
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Mengeksplorasi" checked> Sedang mengeksplorasi santai</label>
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Belum"> Tidak, belum mencari</label>
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Akan mulai"> Belum, tapi berencana memulai</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="planb-priority">Apa prioritas utama Anda?</label>
+                                <select id="planb-priority">
+                                    <option value="Jabatan">Gelar Jabatan / Senioritas</option>
+                                    <option value="Uang">Uang / Kompensasi</option>
+                                    <option value="Lingkup Kerja">Lingkup Kerja & Otonomi</option>
+                                    <option value="Pengakuan">Pengakuan & Penghargaan</option>
+                                    <option value="Pertumbuhan">Pertumbuhan Keterampilan & Karir</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('planb')"><i class="fa-solid fa-bolt"></i> Susun Rencana B</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('planb')"><i class="fa-solid fa-folder-open"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('planb')"><i class="fa-solid fa-arrow-rotate-left"></i> Mulai Ulang</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-planb" class="output-container"></div>
+                    <div id="history-planb" class="history-accordion"></div>
+                </div>
+
+                <!-- RESET PROMOSI 7 HARI -->
+                <div id="view-reset7" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Reset Promosi 7 Hari</h2>
+                        <div class="tool-problem">Langkah-langkah terpandu untuk menyiapkan pengajuan promosi lengkap Anda dalam 7 hari.</div>
+                    </div>
+
+                    <div class="card">
+                        <div id="reset7-steps-container"></div>
+                    </div>
+                </div>
+
+                <!-- SINTESIS STRATEGI PROMOSI SAYA -->
+                <div id="view-strategy" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Strategi Promosi Saya</h2>
+                        <div class="tool-problem">Rangkuman eksekutif hasil sintesis dari seluruh modul yang telah diselesaikan.</div>
+                    </div>
+
+                    <div class="btn-container" style="margin-bottom: 1rem;">
+                        <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Strategi</button>
+                        <button class="btn btn-secondary" onclick="copyStrategyToClipboard()"><i class="fa-solid fa-copy"></i> Salin Ringkasan Eksekutif</button>
+                    </div>
+
+                    <div id="strategy-synthesis-container"></div>
+                </div>
+
+                <!-- RIWAYAT SAYA -->
+                <div id="view-history" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Riwayat Saya</h2>
+                        <div class="tool-problem">Tinjau, muat ulang, atau hapus analisis tersimpan di seluruh modul sistem.</div>
+                    </div>
+
+                    <div class="btn-container" style="margin-bottom: 1.5rem;">
+                        <button class="btn btn-secondary" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Hapus Seluruh Riwayat Sistem</button>
+                    </div>
+
+                    <div id="unified-history-container"></div>
+                </div>
+
+                <!-- PRIVASI & DATA -->
+                <div id="view-privacy" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Privasi & Keamanan Data</h2>
+                        <div class="tool-problem">Arsitektur 100% Sisi Klien (Client-Side) — Data karier Anda tidak pernah meninggalkan peramban Anda.</div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="color: var(--emerald-dark); margin-bottom: 1rem;"><i class="fa-solid fa-shield-halved"></i> Jaminan Data</h3>
+                        <p style="margin-bottom: 1rem;">
+                            PromotionBuilder dibangun sepenuhnya menggunakan JavaScript murni dan penyimpanan lokal peramban (localStorage). 
+                            Tidak ada akun, detail masuk, atau input karier yang dikirimkan ke server eksternal atau sistem pelacak pihak ketiga.
+                        </p>
+                        <h4 style="color: var(--emerald-dark); margin-bottom: 0.5rem;">Panduan Etika Karier:</h4>
+                        <ul style="margin-left: 1.25rem; font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li>• <strong>Hanya Bukti Terotorisasi:</strong> Hanya tampilkan pencapaian dan metrik proyek yang memang diizinkan secara resmi untuk Anda bagikan. Jangan pernah mengekspor kode sumber rahasia, daftar klien keuangan, atau HAKI internal.</li>
+                            <li>• <strong>Tanpa Daya Tawar Tak Etis:</strong> Bangun posisi tawar melalui cakupan tanggung jawab murni, kepemimpinan, dan hasil bisnis terverifikasi—bukan ancaman buatan atau penawaran luar palsu.</li>
+                            <li>• <strong>Kontrol Lokal:</strong> Menghapus penyimpanan peramban Anda atau menggunakan mode penyamaran (incognito) akan mereset riwayat Anda. Anda dapat menghapus data kapan saja dari menu Riwayat.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- FOOTER -->
+            <footer>
+                Hanya untuk perencanaan peningkatan karier. Bukan jaminan kepastian promosi. Untuk proses promosi khusus perusahaan, konsultasikan dengan atasan Anda atau tim HR.
+            </footer>
+        </div>
+    </div>
+
+    <!-- NOTIFIKASI TOAST -->
+    <div id="toast">Berhasil disalin ke papan klip!</div>
+
+    <script>
+        /* APP STATE & CENTRAL STORE */
+        let currentTool = 'dashboard';
+
+        let appState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        const STORAGE_KEY_STATE = 'promotion_builder_v2_state';
+        const STORAGE_KEY_HIST = 'promotion_builder_v2_history';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initMobileMenu();
+            loadStateFromStorage();
+            migrateLegacyHistory();
+            updateDashboardBadges();
+            loadAllHistories();
+        });
+
+        /* NAVIGATION & MOBILE MENU */
+        function initNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetTool = item.getAttribute('data-tool');
+                    switchTool(targetTool);
+                    closeMobileMenu();
+                });
+            });
+        }
+
+        function switchTool(toolId) {
+            currentTool = toolId;
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('data-tool') === toolId);
+            });
+
+            document.querySelectorAll('.tool-view').forEach(view => {
+                view.style.display = 'none';
+            });
+
+            const activeView = document.getElementById(`view-${toolId}`);
+            if(activeView) {
+                activeView.style.display = 'block';
+            }
+
+            if (toolId === 'strategy') {
+                renderStrategySynthesis();
+            } else if (toolId === 'reset7') {
+                render7DayReset();
+            } else if (toolId === 'history') {
+                renderUnifiedHistory();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initMobileMenu() {
+            const toggle = document.getElementById('hamburger-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            toggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', closeMobileMenu);
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
+
+        /* STATE MANAGEMENT & LOCAL STORAGE */
+        function saveStateToStorage() {
+            appState.lastUpdated = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(appState));
+            updateDashboardBadges();
+        }
+
+        function loadStateFromStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY_STATE);
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch(e) {
+                    console.error("Gagal membaca status", e);
+                }
+            }
+        }
+
+        function updateDashboardBadges() {
+            ['gap', 'impact', 'sponsor', 'conversation', 'planb'].forEach(tool => {
+                const badge = document.getElementById(`badge-${tool}`);
+                if (badge) {
+                    if (appState.completedTools && appState.completedTools.includes(tool)) {
+                        badge.className = 'status-badge complete';
+                        badge.innerText = 'Selesai';
+                    } else {
+                        badge.className = 'status-badge not-started';
+                        badge.innerText = 'Belum Dimulai';
+                    }
+                }
+            });
+        }
+
+        /* SAMPLE DATA LOADERS */
+        function loadSample(tool) {
+            if (tool === 'gap') {
+                document.getElementById('gap-current-title').value = "Senior Data Analyst";
+                document.getElementById('gap-target-title').value = "Analytics Manager";
+                document.getElementById('gap-current-resp').value = "Menjalankan kueri ad-hoc, membangun dasbor, melakukan analisis kuantitatif retensi pelanggan, menyajikan temuan bulanan ke tim internal.";
+                document.getElementById('gap-next-resp').value = "Memimpin strategi data lintas departemen, membimbing analis junior, mengalokasikan sumber daya proyek, menetapkan panduan tim, berkomunikasi langsung dengan pemangku kepentingan VP.";
+                document.getElementById('gap-criteria').value = "Informal";
+            } else if (tool === 'impact') {
+                document.getElementById('impact-led').value = "Memimpin presentasi klien saat manajer sakit; mengambil alih presentasi tinjauan bisnis kuartalan bersama VP of Product.";
+                document.getElementById('impact-mentored').value = "Melatih dua karyawan baru tentang lingkungan SQL dan alur data internal; membuat dokumentasi onboarding.";
+                document.getElementById('impact-process').value = "Mengeksekusi otomatisasi skrip pelaporan keuangan bulanan, menghemat 10 jam kerja manual setiap bulan.";
+                document.getElementById('impact-revenue').value = "Mengenali pola risiko churn pelanggan lebih awal, menyelamatkan akun perusahaan kunci senilai $200k.";
+                document.getElementById('impact-cross').value = "Menginisiasi sinkronisasi lintas fungsi dengan tim rekayasa produk untuk memperbaiki kesenjangan pencatatan data yang memengaruhi metrik bisnis utama.";
+            } else if (tool === 'sponsor') {
+                document.getElementById('sponsor-deciders').value = "Director of Business Ops (Sarah) dan VP of Analytics (Mark)";
+                document.getElementById('sponsor-supports').value = "Atasan Langsung (Dave - menyukai hasil kerja saya)";
+                document.getElementById('sponsor-neutral').value = "Direktur tingkat atas (Sarah - kenal nama saya tapi jarang berinteraksi langsung)";
+                document.getElementById('sponsor-resist').value = "Rekan Analis Senior (Jason - merasa bersaing dalam kepemimpinan tim)";
+                
+                const radios = document.getElementsByName('sponsor-asked');
+                radios.forEach(r => r.checked = (r.value === 'Belum'));
+            } else if (tool === 'conversation') {
+                document.getElementById('conv-tenure').value = "2-3yr";
+                
+                const radios = document.getElementsByName('conv-style');
+                radios.forEach(r => r.checked = (r.value === 'Berbasis Data'));
+
+                document.getElementById('conv-health').value = "Stabil";
+                document.getElementById('conv-leverage').value = "Rekam jejak kuat";
+            } else if (tool === 'planb') {
+                document.getElementById('planb-feedback').value = "Hampir siap";
+                
+                const waitRadios = document.getElementsByName('planb-wait');
+                waitRadios.forEach(r => r.checked = (r.value === '6 bulan'));
+
+                const optRadios = document.getElementsByName('planb-options');
+                optRadios.forEach(r => r.checked = (r.value === 'Mengeksplorasi'));
+
+                document.getElementById('planb-priority').value = "Lingkup Kerja";
+            }
+            showToast("Skenario contoh berhasil dimuat (hanya untuk demonstrasi)");
+        }
+
+        function resetForm(tool) {
+            const form = document.getElementById(`form-${tool}`);
+            if (form) form.reset();
+            const output = document.getElementById(`output-${tool}`);
+            if (output) {
+                output.style.display = 'none';
+                output.innerHTML = '';
+            }
+            showToast("Formulir direset.");
+        }
+
+        /* STRATEGY ENGINE & GENERATORS */
+        function generateOutput(tool) {
+            let html = "";
+            let dataSummary = "";
+            let resultObj = {};
+
+            if (tool === 'gap') {
+                const current = escapeHtml(document.getElementById('gap-current-title').value.trim() || "Peran Saat Ini");
+                const target = escapeHtml(document.getElementById('gap-target-title').value.trim() || "Peran Target");
+                const cResp = escapeHtml(document.getElementById('gap-current-resp').value.trim() || "Tugas eksekusi standar.");
+                const nResp = escapeHtml(document.getElementById('gap-next-resp').value.trim() || "Pengawasan strategis, kepemimpinan, pembimbingan.");
+                const criteria = document.getElementById('gap-criteria').value;
+
+                if (!current || !target) {
+                    showToast("Harap isi jabatan saat ini dan target.");
+                    return;
+                }
+
+                dataSummary = `${current} → ${target}`;
+                resultObj = { current, target, cResp, nResp, criteria };
+
+                let criteriaText = "";
+                if (criteria === 'Informal' || criteria === 'Unknown') {
+                    criteriaText = `Karena kriteria bersifat **${criteria === 'Informal' ? 'Informal' : 'Tidak Diketahui'}**, keputusan promosi sangat bergantung pada **konsensus kepercayaan** di antara pimpinan senior. Faktor kunci tersembunyi: 1) Apakah pimpinan percaya pada Anda saat menghadapi kabar buruk? 2) Apakah rekan senior meminta nasihat Anda? 3) Apakah Anda menyelesaikan masalah sebelum atasan membawanya kepada Anda?`;
+                } else {
+                    criteriaText = `Meskipun kriteria bersifat **${criteria === 'Clear and documented' ? 'Jelas dan Terdokumentasi' : 'Politik'}**, daftar persyaratan hanya mengamankan nominasi. Promosi disetujui karena para pengambil keputusan memiliki keyakinan penuh bahwa Anda tidak akan gagal dalam skenario berisiko tinggi.`;
+                }
+
+                html = `
+                    <div class="output-header">
+                        <h3>Rencana Kesenjangan Strategis</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Salin Semua</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Ringkasan:</strong> Menjembatani dari <em>${current}</em> ke <em>${target}</em> berdasarkan kriteria <strong>${criteria}</strong>.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>HAL YANG SUDAH EFEKTIF & KEKUATAN SAAT INI</span></div>
+                        <div class="output-section-content">Anda memiliki pemahaman domain yang kuat dan pengalaman eksekusi inti pada posisi <em>${current}</em>. Anda telah membangun fondasi yang kokoh dalam tanggung jawab harian.</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>HAL YANG MEMBUTUHKAN PERHATIAN (KESENJANGAN)</span></div>
+                        <div class="output-section-content">
+<strong>1. Pergeseran dari Eksekusi ke Strategi:</strong> Transisi dari sekadar melakukan pekerjaan operasional (${cResp.substring(0, 80)}...) menjadi memegang hasil bisnis dan mengarahkan tujuan tim (${nResp.substring(0, 80)}...).
+<strong>2. Pergeseran Keterampilan yang Dibutuhkan:</strong> Tingkatkan fokus dari eksekusi teknis ke pengaruh lintas fungsi, prioritisasi sumber daya, dan komunikasi eksekutif.
+<strong>3. Kesenjangan Bukti Kepemimpinan:</strong> Resmikan bukti bahwa Anda sudah membuat keputusan yang selaras dengan profil <em>${target}</em> sebelum menerima gelar jabatan tersebut.</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>ARTI DARI KRITERIA INI</span></div>
+                        <div class="output-section-content">${criteriaText}</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> PRIORITAS UTAMA ANDA: Berhenti menunggu tugas. Dalam sesi 1-on-1 berikutnya, sajikan solusi untuk masalah berulang dalam tim alih-alih sekadar membawa pembaruan status.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>TINDAKAN PRAKTIS & TENGAT WAKTU</span></div>
+                        <div class="output-section-content">
+• <em>Bulan 1:</em> Menyelaraskan kompetensi target utama untuk <em>${target}</em> bersama atasan.
+• <em>Bulan 2–4:</em> Delegasikan tugas operasional standar untuk memimpin 1 proyek strategis yang ber-visibilitas tinggi.
+• <em>Bulan 5–6:</em> Dokumentasikan hasil, selaraskan dengan sponsor, dan mulai peninjauan promosi formal.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Langkah Selanjutnya yang Disarankan:</strong> Bangun poin bukti Anda.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('impact')">Buka Portofolio Dampak <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'impact') {
+                const led = escapeHtml(document.getElementById('impact-led').value.trim() || "Memimpin tugas operasional utama secara mandiri.");
+                const mentored = escapeHtml(document.getElementById('impact-mentored').value.trim() || "Membantu anggota tim dalam alur kerja.");
+                const process = escapeHtml(document.getElementById('impact-process').value.trim() || "Meningkatkan efisiensi operasional internal.");
+                const revenue = escapeHtml(document.getElementById('impact-revenue').value.trim() || "Menjaga anggaran & tengat waktu proyek.");
+                const cross = escapeHtml(document.getElementById('impact-cross').value.trim() || "Bekerja sama di lintas tim.");
+
+                if (!led) {
+                    showToast("Harap jelaskan setidaknya satu proyek yang Anda pimpin.");
+                    return;
+                }
+
+                dataSummary = "Ringkasan Portofolio Dampak";
+                resultObj = { led, mentored, process, revenue, cross };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Portofolio Dampak & Bukti</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Salin Semua</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Ringkasan:</strong> Bukti yang disintesis mencakup kepemimpinan, perbaikan proses, bimbingan, serta dampak pendapatan/biaya.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>BUKTI KEPEMIMPINAN</span> <button class="btn btn-copy" onclick="copyText(\`${led.replace(/'/g, "\\'")}\`)"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">
+• **Kepemimpinan De Facto:** ${led}
+• **Pengembang Talenta:** ${mentored}
+• **Optimalisasi Operasional:** ${process}
+• **Nilai Finansial / Strategis:** ${revenue}
+• **Pengaruh Lintas Batas Tim:** ${cross}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>ARTI DARI BUKTI INI</span></div>
+                        <div class="output-section-content">Bingkai pencapaian ini bukan sebagai "melakukan tugas ekstra", melainkan sebagai **evolusi tanggung jawab secara permanen**. Anda tidak lagi sekadar mencoba tugas yang lebih tinggi—Anda sedang mengelolanya dengan sukses saat ini.</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> PRIORITAS UTAMA ANDA: Kemas pencapaian mentah ini ke dalam ringkasan eksekutif satu halaman (one-pager) dan bagikan kepada atasan Anda sebelum siklus peninjauan dimulai.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>RINGKASAN SATU HALAMAN UNTUK PROMOSI EKSEKUTIF</span> <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">
+<strong>RINGKASAN PENGAJUAN PROMOSI</strong>
+• <strong>Ringkasan Eksekutif:</strong> Menunjukkan kesiapan untuk kenaikan jabatan formal berdasarkan kepemimpinan yang sedang berjalan dan dampak bisnis yang terukur.
+• <strong>Kontribusi Bisnis Utama:</strong>
+  - Dampak Finansial / Strategis Langsung: ${revenue}
+  - Optimalisasi Proses: ${process}
+• <strong>Kepemimpinan & Bimbingan:</strong>
+  - Inisiatif & Lingkup Kerja: ${led}
+  - Pengembangan Anggota Tim: ${mentored}
+• <strong>Cakupan Masa Depan:</strong> Siap untuk memperluas kapabilitas ini ke unit bisnis yang lebih luas.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Langkah Selanjutnya yang Disarankan:</strong> Galang dukungan tokoh kunci di belakang layar.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('sponsor')">Buka Strategi Sponsor <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'sponsor') {
+                const deciders = escapeHtml(document.getElementById('sponsor-deciders').value.trim() || "Pengambil Keputusan");
+                const supports = escapeHtml(document.getElementById('sponsor-supports').value.trim() || "Atasan Langsung");
+                const neutral = escapeHtml(document.getElementById('sponsor-neutral').value.trim() || "Manajemen Atas / Rekan");
+                const resist = escapeHtml(document.getElementById('sponsor-resist').value.trim() || "Rekan yang Ragu");
+                const asked = getRadioVal('sponsor-asked') || "Belum";
+
+                dataSummary = `Pengambil Keputusan: ${deciders.substring(0, 20)}...`;
+                resultObj = { deciders, supports, neutral, resist, asked };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Pemetaan & Strategi Sponsor</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Salin Semua</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Ringkasan:</strong> Peta pemangku kepentingan terbentuk. Area fokus: Mengubah pemangku kepentingan Netral menjadi pendukung aktif.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>PETA SPONSOR</span></div>
+                        <div class="output-section-content">
+                            <div class="sponsor-grid">
+                                <div class="sponsor-box deciders">
+                                    <div class="sponsor-box-title">Pengambil Keputusan</div>
+                                    <div>${deciders}</div>
+                                </div>
+                                <div class="sponsor-box advocates">
+                                    <div class="sponsor-box-title">Pendukung / Advocate</div>
+                                    <div>${supports}</div>
+                                </div>
+                                <div class="sponsor-box neutrals">
+                                    <div class="sponsor-box-title">Netral (Fokus Di Sini)</div>
+                                    <div>${neutral}</div>
+                                </div>
+                                <div class="sponsor-box blockers">
+                                    <div class="sponsor-box-title">Potensi Penolak</div>
+                                    <div>${resist}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> PRIORITAS UTAMA ANDA: Jadwalkan diskusi santai 20 menit meminta nasihat dengan 1 pemangku kepentingan netral kunci untuk membagikan keberhasilan proyek terbaru dan meminta arahan mereka.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>NASKAH MEMINTA DUKUNGAN SPONSOR</span> <button class="btn btn-copy" onclick="copyText('Saya sedang berfokus untuk meningkatkan dampak strategis saya pada proyek-proyek kita. Saat saya bersiap untuk level berikutnya, saya sangat menghargai perspektif Anda mengenai kerja saya serta masukan tentang apa yang dicari oleh pimpinan senior saat mengevaluasi kesiapan promosi.')"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">
+"Saya sedang berfokus untuk meningkatkan dampak strategis saya pada proyek-proyek kita. Saat saya bersiap untuk level berikutnya, saya sangat menghargai perspektif Anda mengenai kerja saya serta masukan tentang apa yang dicari oleh pimpinan senior saat mengevaluasi kesiapan promosi. Apakah Anda ada waktu untuk diskusi singkat selama 20 menit?"</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>RITME PEMBARUAN & STRATEGI LINTAS TINGKAT</span></div>
+                        <div class="output-section-content">
+• <strong>Frekuensi:</strong> Terhubung setiap 6–8 minggu sekali dengan ringkasan proyek 3 poin secara singkat.
+• <strong>Akses Lintas Tingkat (Skip-Level):</strong> Tawarkan diri untuk mempresentasikan retrospektif proyek atau pembaruan metrik secara langsung kepada pengambil keputusan netral guna membangun hubungan eksekutif pribadi.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Langkah Selanjutnya yang Disarankan:</strong> Siapkan diskusi promosi Anda.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('conversation')">Buka Panduan Percakapan <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'conversation') {
+                const tenure = document.getElementById('conv-tenure').value;
+                const style = getRadioVal('conv-style') || "Berbasis Data";
+                const health = document.getElementById('conv-health').value;
+                const leverage = document.getElementById('conv-leverage').value;
+
+                dataSummary = `Gaya: ${style} | Daya Tawar: ${leverage}`;
+                resultObj = { tenure, style, health, leverage };
+
+                let scriptOpening = "";
+                if (style === 'Berbasis Data') {
+                    scriptOpening = "Saya telah menyusun ringkasan singkat metrik kinerja utama dan perluasan cakupan tugas saya selama setahun terakhir. Saya ingin meluangkan waktu 15 menit untuk meninjau hasil ini dan mendiskusikan alur menuju promosi resmi.";
+                } else if (style === 'Berbasis Hubungan') {
+                    scriptOpening = "Saya sangat menghargai bimbingan dan pertumbuhan yang saya alami di tim ini. Ke depannya, saya ingin menyelaraskan bagaimana perkembangan tanggung jawab saya dapat mendukung tujuan tim dan seperti apa alur menuju jabatan berikutnya.";
+                } else if (style === 'Pengahindar') {
+                    scriptOpening = "Saya ingin memasukkan satu agenda khusus untuk minggu depan agar kita memiliki waktu untuk bersiap: menyelaraskan pencapaian karier saya dan menetapkan kriteria jelas untuk promosi level berikutnya.";
+                } else {
+                    scriptOpening = "Saya siap mengambil langkah berikutnya dalam karier saya di sini. Saya ingin mendiskusikan dampak kerja terbaru saya, meninjau kesiapan promosi, dan menetapkan lini waktu yang jelas untuk transisi tersebut.";
+                }
+
+                html = `
+                    <div class="output-header">
+                        <h3>Panduan Taktis Percakapan</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Salin Semua</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Ringkasan:</strong> Disesuaikan untuk atasan tipe <strong>${style}</strong> dalam kondisi keuangan perusahaan yang <strong>${health}</strong>.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>KALIMAT PEMBUKA (60 DETIK PERTAMA)</span> <button class="btn btn-copy" onclick="copyText(\`${scriptOpening.replace(/'/g, "\\'")}\`)"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">"${scriptOpening}"</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> PRIORITAS UTAMA ANDA: Minta sesi khusus 1-on-1 selama 30 menit minggu depan yang secara spesifik berfokus pada perkembangan karier Anda.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>ARGUMEN & CATATAN WAKTU</span></div>
+                        <div class="output-section-content">
+• <strong>Masa Kerja (${tenure}):</strong> Tonjolkan konsistensi operasional dan kepemimpinan yang berkelanjutan.
+• <strong>Adaptasi Gaya Atasan (${style}):</strong> ${style === 'Berbasis Data' ? 'Fokus secara tegas pada metrik konkret, penghematan waktu, dan ROI terukur.' : 'Fokus pada keharmonisan tim, umpan balik pemangku kepentingan, dan alur kepemimpinan.'}
+• <strong>Konteks Keuangan (${health}):</strong> ${health.includes('Ketat') ? 'Kondisi keuangan sedang ketat. Ajukan perubahan jabatan/lingkup kerja resmi sekarang, dengan tanggal pasti peninjauan penyesuaian gaji di siklus anggaran berikutnya.' : 'Kondisi keuangan mendukung. Kunci komitmen promosi 2-3 bulan sebelum siklus anggaran resmi ditutup.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>NASKAH RESPONS (YA / TIDAK / MENUNDA)</span></div>
+                        <div class="output-section-content">
+• <strong>Jika YA:</strong> "Terima kasih atas dukungannya. Untuk mengonfirmasi detailnya, bisakah kita menetapkan tanggal kunci pengajuan ke HR dan meninjau langkah selanjutnya dalam sesi 1-on-1 berikutnya?"
+• <strong>Jika TIDAK:</strong> "Saya memahami. Keterampilan atau pencapaian spesifik apa yang perlu saya tunjukkan dalam 3–6 bulan ke depan agar hal ini menjadi keputusan 'ya' yang pasti?"
+• <strong>Jika MENUNDA:</strong> "Saya mengerti bahwa dinamika pekerjaan bergerak cepat. Mari jadwalkan waktu 15 menit dalam 3 minggu ke depan khusus untuk mengunci target kinerja ini."</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Langkah Selanjutnya yang Disarankan:</strong> Siapkan perlindungan risiko dan strategi rencana B.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('planb')">Buka Strategi Rencana B <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'planb') {
+                const feedback = document.getElementById('planb-feedback').value;
+                const wait = getRadioVal('planb-wait') || "6 bulan";
+                const options = getRadioVal('planb-options') || "Mengeksplorasi";
+                const priority = document.getElementById('planb-priority').value;
+
+                dataSummary = `Umpan balik: ${feedback} | Prioritas: ${priority}`;
+                resultObj = { feedback, wait, options, priority };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Kerangka Rencana B</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Salin Semua</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Ringkasan:</strong> Strategi cadangan yang disesuaikan dengan status umpan balik ("${feedback}") dengan rentang waktu ${wait}.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>RENCANA PENGEMBANGAN & JABATAN PERANTARA</span></div>
+                        <div class="output-section-content">
+• Berdasarkan umpan balik ("${feedback}"), tetapkan 2 hasil nyata untuk 90 hari ke depan dengan pemeriksaan perkembangan berkala setiap dua minggu.
+• <strong>Jabatan Perantara (Title Bridge):</strong> Jika penyesuaian gaji tertunda, negosiasikan gelar fungsional perantara (misalnya, <em>Lead Project Manager</em> atau <em>Acting Team Lead</em>) untuk memvalidasi perluasan peran Anda baik secara internal maupun eksternal.</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> PRIORITAS UTAMA ANDA: Perbarui resume Anda dan perbarui profil LinkedIn secara bijak untuk memahami standar permintaan pasar eksternal saat ini.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>POSISI TAWAR EKSTERNAL & JADWAL EVALUASI</span></div>
+                        <div class="output-section-content">
+• <strong>Posisi Tawar Eksternal:</strong> ${options === 'Ada' || options === 'Mengeksplorasi' ? 'Jaga agar komunikasi eksternal tetap berjalan. Posisi tawar nyata muncul dari memiliki pilihan nyata, bukan ancaman.' : 'Uji permintaan pasar eksternal secara bijak untuk mengetahui nilai pasti Anda di pasar kerja.'}
+• <strong>Jadwal Evaluasi (${wait}):</strong> Hari ke-30 evaluasi ulang kemajuan target; Hari ke-60 nilai keselarasan sponsor; Hari ke-90 / Batas Waktu evaluasi jalur internal dibandingkan dengan opsi eksternal.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Langkah Selanjutnya yang Disarankan:</strong> Rangkum seluruh dokumen strategi Anda.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('strategy')">Lihat Ringkasan Strategi Lengkap <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            }
+
+            const outputContainer = document.getElementById(`output-${tool}`);
+            outputContainer.innerHTML = html;
+            outputContainer.style.display = 'block';
+
+            // Pembaruan status aplikasi
+            if (!appState.completedTools.includes(tool)) {
+                appState.completedTools.push(tool);
+            }
+            appState.toolResults[tool] = {
+                summary: dataSummary,
+                data: resultObj,
+                completedAt: new Date().toLocaleDateString('id-ID')
+            };
+            saveStateToStorage();
+
+            saveToHistory(tool, dataSummary, html, resultObj);
+        }
+
+        /* LOCALSTORAGE & HISTORY MANAGEMENT */
+        function saveToHistory(toolId, summary, htmlContent, rawData) {
+            const history = getHistoryFromStorage();
+
+            const newItem = {
+                id: Date.now(),
+                tool: toolId,
+                date: new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute:'2-digit' }),
+                summary: summary,
+                content: htmlContent,
+                data: rawData
+            };
+
+            history.unshift(newItem);
+            if (history.length > 50) history.splice(50);
+
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            renderHistory(toolId);
+        }
+
+        function getHistoryFromStorage() {
+            const raw = localStorage.getItem(STORAGE_KEY_HIST);
+            if (!raw) return [];
+            try {
+                return JSON.parse(raw);
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function renderHistory(toolId) {
+            const allHistory = getHistoryFromStorage();
+            const toolHistory = allHistory.filter(h => h.tool === toolId);
+            const container = document.getElementById(`history-${toolId}`);
+            if (!container) return;
+
+            if (toolHistory.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <div class="history-header" onclick="toggleHistoryList('${toolId}')">
+                    <h4><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Sebelumnya (${toolHistory.length})</h4>
+                    <i class="fa-solid fa-chevron-down" id="history-arrow-${toolId}"></i>
+                </div>
+                <div class="history-list" id="history-list-${toolId}">
+                    <div style="text-align: right; margin-bottom: 0.5rem;">
+                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="clearToolHistory('${toolId}')"><i class="fa-solid fa-trash"></i> Hapus Riwayat Alat Ini</button>
+                    </div>
+            `;
+
+            toolHistory.forEach(item => {
+                html += `
+                    <div class="history-item">
+                        <div>
+                            <div class="history-item-title">${escapeHtml(item.summary)}</div>
+                            <div class="history-item-date">${item.date}</div>
+                        </div>
+                        <div class="history-actions">
+                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="loadHistoryItem(${item.id})">Muat</button>
+                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #dc3545;" onclick="deleteHistoryItem(${item.id})"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function toggleHistoryList(toolId) {
+            const list = document.getElementById(`history-list-${toolId}`);
+            const arrow = document.getElementById(`history-arrow-${toolId}`);
+            if (list.style.display === 'block') {
+                list.style.display = 'none';
+                arrow.className = 'fa-solid fa-chevron-down';
+            } else {
+                list.style.display = 'block';
+                arrow.className = 'fa-solid fa-chevron-up';
+            }
+        }
+
+        function loadHistoryItem(itemId) {
+            const allHistory = getHistoryFromStorage();
+            const item = allHistory.find(h => h.id === itemId);
+
+            if (item) {
+                switchTool(item.tool);
+                const outputContainer = document.getElementById(`output-${item.tool}`);
+                outputContainer.innerHTML = item.content;
+                outputContainer.style.display = 'block';
+                showToast("Data riwayat dimuat!");
+            }
+        }
+
+        function deleteHistoryItem(itemId) {
+            if (!confirm("Apakah Anda yakin ingin menghapus catatan ini?")) return;
+            let history = getHistoryFromStorage();
+            history = history.filter(h => h.id !== itemId);
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            loadAllHistories();
+            if (currentTool === 'history') renderUnifiedHistory();
+            showToast("Catatan dihapus.");
+        }
+
+        function clearToolHistory(toolId) {
+            if (!confirm(`Hapus riwayat untuk modul ${toolId}?`)) return;
+            let history = getHistoryFromStorage();
+            history = history.filter(h => h.tool !== toolId);
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            renderHistory(toolId);
+            if (currentTool === 'history') renderUnifiedHistory();
+            showToast("Riwayat modul dibersihkan.");
+        }
+
+        function clearAllHistory() {
+            if (!confirm("Apakah Anda yakin ingin menghapus SELURUH riwayat tersimpan? Tindakan ini tidak dapat dibatalkan.")) return;
+            localStorage.removeItem(STORAGE_KEY_HIST);
+            localStorage.removeItem(STORAGE_KEY_STATE);
+            appState = { completedTools: [], toolResults: {}, lastUpdated: null };
+            updateDashboardBadges();
+            loadAllHistories();
+            if (currentTool === 'history') renderUnifiedHistory();
+            showToast("Seluruh riwayat sistem dihapus.");
+        }
+
+        function loadAllHistories() {
+            ['gap', 'impact', 'sponsor', 'conversation', 'planb'].forEach(renderHistory);
+        }
+
+        function migrateLegacyHistory() {
+            // Migrasi kunci lama promotion_history_* jika ada
+            const tools = ['gap', 'impact', 'sponsor', 'conversation', 'planb'];
+            let migratedCount = 0;
+            let combined = getHistoryFromStorage();
+
+            tools.forEach(tool => {
+                const oldKey = `promotion_history_${tool}`;
+                const rawOld = localStorage.getItem(oldKey);
+                if (rawOld) {
+                    try {
+                        const parsed = JSON.parse(rawOld);
+                        parsed.forEach(item => {
+                            combined.push({
+                                id: item.id || Date.now() + Math.random(),
+                                tool: tool,
+                                date: item.date || new Date().toLocaleDateString('id-ID'),
+                                summary: item.summary || "Analisis Lama",
+                                content: item.content || "",
+                                data: {}
+                            });
+                            migratedCount++;
+                        });
+                        localStorage.removeItem(oldKey);
+                    } catch(e) {}
+                }
+            });
+
+            if (migratedCount > 0) {
+                localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(combined));
+            }
+        }
+
+        /* RENDERER RESET PROMOSI 7 HARI */
+        function render7DayReset() {
+            const container = document.getElementById('reset7-steps-container');
+            const days = [
+                { day: 1, title: "Hari 1: Petakan Kesenjangan Strategis", desc: "Tentukan tanggung jawab serta kriteria peran saat ini vs target.", tool: 'gap' },
+                { day: 2, title: "Hari 2: Bangun Portofolio Bukti", desc: "Dokumentasikan proyek yang dipimpin, perbaikan proses, dan dampak finansial.", tool: 'impact' },
+                { day: 3, title: "Hari 3: Dokumen Satu Halaman Eksekutif", desc: "Sintesiskan pencapaian ke dalam ringkasan dokumen promosi yang ringkas.", tool: 'impact' },
+                { day: 4, title: "Hari 4: Pemetaan Sponsor", desc: "Identifikasi pengambil keputusan kunci, pendukung, dan pimpinan netral.", tool: 'sponsor' },
+                { day: 5, title: "Hari 5: Panduan Taktis Percakapan", desc: "Rancang kalimat pembuka percakapan yang disesuaikan dengan gaya atasan Anda.", tool: 'conversation' },
+                { day: 6, title: "Hari 6: Rencana B & Strategi Cadangan", desc: "Susun opsi cadangan dan alternatif gelar jabatan perantara.", tool: 'planb' },
+                { day: 7, title: "Hari 7: Meluncurkan Kampanye Promosi", desc: "Jadwalkan peninjauan resmi dan ajukan argumen eksekutif Anda.", tool: 'strategy' }
+            ];
+
+            let html = `<div style="display: flex; flex-direction: column; gap: 1rem;">`;
+            days.forEach(d => {
+                const isDone = appState.completedTools.includes(d.tool);
+                html += `
+                    <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--emerald-dark); font-size: 1rem;">${d.title}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">${d.desc}</div>
+                        </div>
+                        <button class="btn ${isDone ? 'btn-secondary' : 'btn-primary'}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="switchTool('${d.tool}')">
+                            ${isDone ? '<i class="fa-solid fa-check" style="color: var(--emerald);"></i> Tinjau' : 'Mulai Hari ' + d.day}
+                        </button>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        /* RENDERER SINTESIS STRATEGI */
+        function renderStrategySynthesis() {
+            const container = document.getElementById('strategy-synthesis-container');
+            const res = appState.toolResults;
+
+            const gapData = res.gap ? res.gap.data : null;
+            const impactData = res.impact ? res.impact.data : null;
+            const sponsorData = res.sponsor ? res.sponsor.data : null;
+            const convData = res.conversation ? res.conversation.data : null;
+            const planbData = res.planb ? res.planb.data : null;
+
+            let html = `
+                <div class="card" id="printable-strategy-brief">
+                    <div style="text-align: center; border-bottom: 2px solid var(--emerald-subtle); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h2 style="color: var(--emerald-dark); font-size: 1.75rem;">RINGKASAN STRATEGI PROMOSI EKSEKUTIF</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Rencana Pengembangan Komprehensif & Berkas Bukti</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+                        <div><strong>Jabatan Saat Ini:</strong> ${gapData ? gapData.current : 'Belum Ditentukan'}</div>
+                        <div><strong>Jabatan Target:</strong> ${gapData ? gapData.target : 'Belum Ditentukan'}</div>
+                        <div><strong>Tipe Kriteria:</strong> ${gapData ? gapData.criteria : 'Belum Ditentukan'}</div>
+                        <div><strong>Gaya Atasan:</strong> ${convData ? convData.style : 'Belum Ditentukan'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>1. ANALISIS KESENJANGAN</span></div>
+                        <div class="output-section-content">${gapData ? `Transisi dari <strong>${gapData.current}</strong> ke <strong>${gapData.target}</strong>.\nFokus Saat Ini: ${gapData.cResp}\nFokus Target: ${gapData.nResp}` : 'Modul Analisis Kesenjangan belum diselesaikan.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>2. KONTRIBUSI UTAMA & BUKTI DAMPAK</span></div>
+                        <div class="output-section-content">${impactData ? `• <strong>Kepemimpinan De Facto:</strong> ${impactData.led}\n• <strong>Optimalisasi Proses:</strong> ${impactData.process}\n• <strong>Dampak Finansial / Nilai:</strong> ${impactData.revenue}\n• <strong>Pengembangan Talenta:</strong> ${impactData.mentored}` : 'Modul Portofolio Dampak belum diselesaikan.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>3. KESELARASAN SPONSOR & PEMANGKU KEPENTINGAN</span></div>
+                        <div class="output-section-content">${sponsorData ? `• <strong>Pengambil Keputusan Kunci:</strong> ${sponsorData.deciders}\n• <strong>Pendukung Utama:</strong> ${sponsorData.supports}\n• <strong>Fokus Netral:</strong> ${sponsorData.neutral}` : 'Modul Strategi Sponsor belum diselesaikan.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>4. PANDUAN PERCAKAPAN & WAKTU</span></div>
+                        <div class="output-section-content">${convData ? `• <strong>Pendekatan:</strong> Dirancang untuk atasan tipe ${convData.style} dalam kondisi anggaran ${convData.health}.\n• <strong>Poin Posisi Tawar:</strong> ${convData.leverage}` : 'Modul Panduan Percakapan belum diselesaikan.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>5. PERLINDUNGAN RISIKO & RENCANA B</span></div>
+                        <div class="output-section-content">${planbData ? `• <strong>Konteks Umpan Balik:</strong> ${planbData.feedback}\n• <strong>Komitmen Waktu:</strong> Bersedia mengevaluasi alur selama ${planbData.wait}.\n• <strong>Prioritas Utama:</strong> ${planbData.priority}` : 'Modul Rencana B belum diselesaikan.'}</div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function copyStrategyToClipboard() {
+            const el = document.getElementById('printable-strategy-brief');
+            if (el) {
+                copyText(el.innerText);
+            }
+        }
+
+        /* RENDERER RIWAYAT TERSATU */
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unified-history-container');
+            const allHistory = getHistoryFromStorage();
+
+            if (allHistory.length === 0) {
+                container.innerHTML = `<div class="card"><p style="color: var(--text-muted); text-align: center;">Tidak ada riwayat tersimpan yang ditemukan.</p></div>`;
+                return;
+            }
+
+            let html = `<div style="display: flex; flex-direction: column; gap: 0.75rem;">`;
+            allHistory.forEach(item => {
+                html += `
+                    <div class="card" style="margin-bottom: 0; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="status-badge complete" style="margin-top: 0; margin-bottom: 0.25rem;">${item.tool.toUpperCase()}</span>
+                            <div style="font-weight: 700; color: var(--emerald-dark); font-size: 0.95rem;">${escapeHtml(item.summary)}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">${item.date}</div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="loadHistoryItem(${item.id})">Lihat Analisis</button>
+                            <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; color: #dc3545;" onclick="deleteHistoryItem(${item.id})"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        /* HELPERS & UTILITIES */
+        function getRadioVal(name) {
+            const radios = document.getElementsByName(name);
+            for (let r of radios) {
+                if (r.checked) return r.value;
+            }
+            return "";
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Berhasil disalin ke papan klip!");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Berhasil disalin ke papan klip!");
+            } catch (err) {
+                showToast("Gagal menyalin teks.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function copySectionText(btnElement) {
+            const section = btnElement.closest('.output-section') || btnElement.closest('.output-container');
+            if (section) {
+                const text = section.innerText.replace(/Salin Semua|Salin/g, '').trim();
+                copyText(text);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

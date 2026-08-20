@@ -1,0 +1,2331 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Politics Navigator™</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --burgundy: #6D2E46;
+            --burgundy-light: #8D3E5B;
+            --burgundy-dark: #4D2031;
+            --sage: #A3B18A;
+            --sage-dark: #588157;
+            --sage-light: #DAD7CD;
+            --bg-gradient: linear-gradient(135deg, #FAF3F5 0%, #F1F8E8 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --sidebar-width: 260px;
+            --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.03);
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--burgundy);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--burgundy);
+            line-height: 1.2;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-section-title {
+            padding: 0.75rem 1.5rem 0.25rem 1.5rem;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: #FAF3F5;
+            color: var(--burgundy);
+        }
+
+        .nav-item.active {
+            background: #FAF3F5;
+            color: var(--burgundy);
+            border-left-color: var(--burgundy);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            z-index: 90;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--burgundy);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+            backdrop-filter: blur(2px);
+        }
+
+        /* Cards & Elements */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .hero-card {
+            background: linear-gradient(135deg, var(--burgundy) 0%, var(--burgundy-dark) 100%);
+            color: white;
+            padding: 2.25rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            border-radius: var(--radius-xl);
+        }
+
+        .hero-card h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero-card p {
+            font-size: 1.05rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .problem-statement {
+            background: #FAF3F5;
+            border-left: 4px solid var(--burgundy);
+            padding: 1rem 1.25rem;
+            border-radius: 0 var(--radius-md) var(--radius-md) 0;
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            color: var(--burgundy-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sample-badge {
+            display: inline-block;
+            background: #FFF3CD;
+            color: #856404;
+            border: 1px solid #FFEEBA;
+            padding: 0.35rem 0.75rem;
+            border-radius: var(--radius-md);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        /* Orientation & Principles Box */
+        .orientation-box {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .orientation-box h3 {
+            color: var(--burgundy);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .orientation-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .orientation-item {
+            background: #FAFAFA;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.85rem;
+            line-height: 1.5;
+            border-left: 3px solid var(--sage-dark);
+        }
+
+        .orientation-item strong {
+            display: block;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        textarea, select, input[type="text"] {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #FAFAFA;
+            transition: all 0.2s;
+        }
+
+        textarea:focus, select:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--burgundy);
+            background-color: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(109, 46, 70, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-weight: normal;
+        }
+
+        .radio-label input {
+            accent-color: var(--burgundy);
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--burgundy);
+            color: white;
+            flex: 2;
+            min-width: 180px;
+        }
+
+        .btn-primary:hover {
+            background: var(--burgundy-light);
+            box-shadow: 0 4px 12px rgba(109, 46, 70, 0.2);
+        }
+
+        .btn-secondary {
+            background: #EAEAEA;
+            color: var(--text-main);
+            flex: 1;
+        }
+
+        .btn-secondary:hover {
+            background: #E0E0E0;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: #F8F9FA;
+            border-color: var(--text-muted);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #bd2130;
+        }
+
+        .btn-sm {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-copy {
+            background: var(--sage-dark);
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #466845;
+        }
+
+        /* Dashboard Grid */
+        .grid-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--burgundy);
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .dashboard-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background: #FAF3F5;
+            color: var(--burgundy);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.1rem;
+            color: var(--burgundy);
+        }
+
+        .dashboard-card p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Qualitative Snapshot Dashboard */
+        .snapshot-container {
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            margin-bottom: 2rem;
+        }
+
+        .snapshot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .snapshot-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 0.75rem;
+        }
+
+        .snapshot-pill {
+            background: #F8F9FA;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.75rem;
+            text-align: center;
+        }
+
+        .snapshot-pill .label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            display: block;
+            margin-bottom: 0.25rem;
+            font-weight: 500;
+        }
+
+        .snapshot-pill .value {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--burgundy);
+        }
+
+        /* Recommendations Card */
+        .recommendations-card {
+            background: #F1F8E8;
+            border: 1px solid var(--sage);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .recommendations-card h3 {
+            color: var(--sage-dark);
+            font-size: 1.1rem;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .rec-item {
+            background: white;
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            border-left: 4px solid var(--sage-dark);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .rec-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .rec-item h4 {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .rec-item p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Analysis Output Styling */
+        .output-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .output-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-card {
+            border-top: 4px solid var(--burgundy);
+            background: white;
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .output-card.sage-accent {
+            border-top-color: var(--sage-dark);
+        }
+
+        .output-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .output-header h4 {
+            color: var(--burgundy);
+            font-size: 1.05rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .output-card.sage-accent .output-header h4 {
+            color: var(--sage-dark);
+        }
+
+        .output-content {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .script-box {
+            background: #F8F9FA;
+            border: 1px dashed #CED4DA;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-family: 'Inter', sans-serif;
+            font-style: italic;
+            position: relative;
+            margin: 0.75rem 0;
+            white-space: pre-line;
+            color: #1A252C;
+        }
+
+        .diagram-box {
+            background: #FAF3F5;
+            border-radius: var(--radius-md);
+            padding: 1.25rem;
+            text-align: center;
+            margin: 1rem 0;
+        }
+
+        .diagram-node {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            background: white;
+            border: 2px solid var(--burgundy);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            color: var(--burgundy);
+            margin: 0.25rem;
+        }
+
+        .diagram-node.informal {
+            border-style: dashed;
+            border-color: var(--sage-dark);
+            color: var(--sage-dark);
+        }
+
+        .diagram-arrow {
+            display: inline-block;
+            margin: 0 0.5rem;
+            color: var(--text-muted);
+        }
+
+        /* Next Move / Priority Box */
+        .priority-box {
+            background: #FAF3F5;
+            border: 2px solid var(--burgundy);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .priority-box h4 {
+            color: var(--burgundy);
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Guided Sequence (Office Politics Reset) */
+        .reset-step-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .reset-step-card.completed {
+            border-left: 4px solid var(--sage-dark);
+        }
+
+        .reset-step-info h4 {
+            font-size: 1rem;
+            color: var(--burgundy);
+            margin-bottom: 0.25rem;
+        }
+
+        .reset-step-info p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        /* History Accordion */
+        .history-section {
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .history-header h3 {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .history-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .history-summary {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 0.875rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FAFAFA;
+        }
+
+        .history-summary:hover {
+            background: #F0F0F0;
+        }
+
+        .history-details {
+            padding: 1rem;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 0.875rem;
+            background: #FFFFFF;
+        }
+
+        .history-item.open .history-details {
+            display: block;
+        }
+
+        /* Printable View Styles */
+        .printable-container {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border-color);
+        }
+
+        .print-header {
+            border-bottom: 2px solid var(--burgundy);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .print-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .print-section h3 {
+            color: var(--burgundy);
+            font-size: 1.1rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.35rem;
+            margin-bottom: 0.75rem;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--burgundy);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-weight: 500;
+            font-size: 0.9rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            width: 100%;
+            padding: 1.5rem 0;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .footer-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 1rem;
+            line-height: 1.5;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.mobile-open {
+                display: block;
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .hero-card h2 {
+                font-size: 1.6rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar, .mobile-header, .sidebar-overlay, .btn-group, .history-section, .no-print, footer, .toast {
+                display: none !important;
+            }
+
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+
+            body {
+                background: #FFFFFF !important;
+                color: #000000 !important;
+            }
+
+            .card, .output-card, .printable-container {
+                box-shadow: none !important;
+                border: 1px solid #CCCCCC !important;
+                page-break-inside: avoid;
+            }
+
+            .script-box {
+                border: 1px solid #999999 !important;
+                background: #F9F9F9 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header no-print">
+        <div style="display: flex; align-items: center; gap: 0.5rem; font-weight: 700; color: var(--burgundy);">
+            <i class="fa-solid fa-compass"></i>
+            <span>Office Politics Navigator™</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle Navigation">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay no-print" id="sidebarOverlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar no-print" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-compass"></i>
+                <h1>Office Politics<br><span style="font-size:0.8rem; font-weight:400; color:var(--text-muted);">Navigator™</span></h1>
+            </div>
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Sistem Utama</div>
+                <a class="nav-item active" data-tool="dashboard">
+                    <i class="fa-solid fa-house"></i> Dasbor
+                </a>
+                
+                <div class="nav-section-title">Modul Peralatan</div>
+                <a class="nav-item" data-tool="politics-map">
+                    <i class="fa-solid fa-sitemap"></i> Peta Politik
+                </a>
+                <a class="nav-item" data-tool="alliance-builder">
+                    <i class="fa-solid fa-handshake"></i> Pembangun Aliansi
+                </a>
+                <a class="nav-item" data-tool="neutral-position">
+                    <i class="fa-solid fa-scale-balanced"></i> Posisi Netral
+                </a>
+                <a class="nav-item" data-tool="visibility-strategy">
+                    <i class="fa-solid fa-eye"></i> Strategi Visibilitas
+                </a>
+                <a class="nav-item" data-tool="values-guard">
+                    <i class="fa-solid fa-shield-halved"></i> Pelindung Nilai
+                </a>
+
+                <div class="nav-section-title">Panduan & Sintesis</div>
+                <a class="nav-item" data-tool="reset-guided">
+                    <i class="fa-solid fa-route"></i> Reset 7 Hari
+                </a>
+                <a class="nav-item" data-tool="printable-plan">
+                    <i class="fa-solid fa-print"></i> Rencana Politik Kantor Saya
+                </a>
+                <a class="nav-item" data-tool="history-view">
+                    <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya
+                </a>
+                <a class="nav-item" data-tool="privacy-view">
+                    <i class="fa-solid fa-lock"></i> Privasi & Data
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="content-container">
+
+                <!-- DASHBOARD VIEW -->
+                <section id="view-dashboard" class="tool-view">
+                    <div class="card hero-card">
+                        <h2>OFFICE POLITICS NAVIGATOR™</h2>
+                        <p>Pahami permaintannya tanpa mengorbankan integritas Anda.</p>
+                    </div>
+
+                    <!-- Strategic Orientation -->
+                    <div class="orientation-box">
+                        <h3><i class="fa-solid fa-compass"></i> Prinsip Operasional Utama</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                            Politik tempat kerja adalah sistem alami manusia untuk mendistribusikan sumber daya dan membuat keputusan. Tujuannya bukan untuk menjadi manipulatif, tetapi untuk membangun kesadaran strategis sekaligus melindungi integritas Anda.
+                        </p>
+                        <div class="orientation-grid">
+                            <div class="orientation-item">
+                                <strong>Kejelasan, Bukan Paranoia</strong>
+                                Perlakukan pengamatan politik sebagai hipotesis kerja, bukan fakta mutlak tentang motif seseorang.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>Aliansi Saling Menguntungkan</strong>
+                                Bangun hubungan berbasis kepercayaan yang berakar pada nilai bersama, dukungan, dan rasa hormat profesional.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>Visibilitas Otentik</strong>
+                                Pastikan pemangku kepentingan utama mengakui kontribusi Anda melalui keberhasilan tim dan metrik yang terstruktur.
+                            </div>
+                            <div class="orientation-item">
+                                <strong>Perlindungan Nilai</strong>
+                                Tetapkan batasan profesional yang jelas untuk menjaga standar etika Anda di bawah tekanan.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Qualitative Snapshot -->
+                    <div class="snapshot-container" id="dashboard-snapshot">
+                        <div class="snapshot-header">
+                            <h3 style="font-size: 1rem; color: var(--burgundy);"><i class="fa-solid fa-chart-pie"></i> Gambaran Lanskap Kualitatif Anda</h3>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);" id="snapshot-updated">Belum dievaluasi</span>
+                        </div>
+                        <div class="snapshot-grid">
+                            <div class="snapshot-pill">
+                                <span class="label">Otoritas Formal</span>
+                                <span class="value" id="snap-formal">Belum dipetakan</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Pengaruh Informal</span>
+                                <span class="value" id="snap-informal">Belum dipetakan</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Aliansi</span>
+                                <span class="value" id="snap-alliances">Belum dipetakan</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Kenetralan</span>
+                                <span class="value" id="snap-neutrality">Belum dipetakan</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Visibilitas</span>
+                                <span class="value" id="snap-visibility">Belum dipetakan</span>
+                            </div>
+                            <div class="snapshot-pill">
+                                <span class="label">Status Nilai</span>
+                                <span class="value" id="snap-values">Belum dipetakan</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Strategic Recommendations -->
+                    <div id="dashboard-recommendations" class="recommendations-card" style="display:none;">
+                        <h3><i class="fa-solid fa-lightbulb"></i> Rekomendasi Lintas Modul</h3>
+                        <div id="recommendations-list"></div>
+                    </div>
+
+                    <!-- Tool Navigation Grid -->
+                    <div class="grid-dashboard">
+                        <div class="dashboard-card" onclick="switchTool('politics-map')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-sitemap"></i></div>
+                                    <h3>Peta Politik</h3>
+                                </div>
+                                <p>Pahami bagaimana keputusan sebenarnya dibuat, otoritas formal vs pengaruh informal.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('alliance-builder')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-handshake"></i></div>
+                                    <h3>Pembangun Aliansi</h3>
+                                </div>
+                                <p>Bentuk hubungan tempat kerja yang saling menguntungkan dan melindungi tanpa merasa transaksional.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('neutral-position')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                                    <h3>Posisi Netral</h3>
+                                </div>
+                                <p>Navigasi konflik antar kubu tanpa terseret atau memihak salah satu pihak.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('visibility-strategy')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-eye"></i></div>
+                                    <h3>Strategi Visibilitas</h3>
+                                </div>
+                                <p>Pastikan pemangku kepentingan utama mengakui nilai Anda secara otentik tanpa menyombongkan diri.</p>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('values-guard')">
+                            <div>
+                                <div class="dashboard-card-header">
+                                    <div class="dashboard-card-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                                    <h3>Pelindung Nilai</h3>
+                                </div>
+                                <p>Lindungi kode etik dan reputasi karier Anda di bawah tekanan lingkungan yang toksik atau meragukan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: POLITICS MAP -->
+                <section id="view-politics-map" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Peta Politik</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"Saya tidak paham bagaimana keputusan sebenarnya dibuat di sini."</span>
+                        </div>
+
+                        <div id="sample-banner-politics-map" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Skenario contoh — ini bukan hasil pribadi Anda.</span>
+                        </div>
+
+                        <form id="form-politics-map">
+                            <div class="form-group">
+                                <label for="pm-formal">Siapa yang memiliki otoritas formal?</label>
+                                <textarea id="pm-formal" placeholder="contoh: Direktur Sarah, VP Engineering"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pm-informal">Siapa yang memiliki pengaruh informal?</label>
+                                <textarea id="pm-informal" placeholder="contoh: Senior Lead Tech Mark, Asisten Administrasi Julie"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pm-allies">Siapa bersekutu dengan siapa?</label>
+                                <textarea id="pm-allies" placeholder="contoh: Mark didengar oleh VP; Product Manager sejalan dengan Marketing"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="pm-decisions">Di mana keputusan sebenarnya terjadi?</label>
+                                <select id="pm-decisions">
+                                    <option value="In official meetings">Dalam rapat resmi</option>
+                                    <option value="In side conversations">Dalam percakapan informal / pra-rapat</option>
+                                    <option value="In leadership offsites">Dalam rapat pimpinan luar kantor (offsites)</option>
+                                    <option value="I don't know">Saya tidak tahu</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Apakah ada kubu yang saling bersaing?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="Yes"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="Maybe"> Mungkin</label>
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="No"> Tidak</label>
+                                    <label class="radio-label"><input type="radio" name="pm-rival" value="Not sure"> Tidak yakin</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('politics-map')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('politics-map')"><i class="fa-solid fa-rotate-right"></i> Mulai Ulang</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-magnifying-glass"></i> Analisis Lanskap</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-politics-map" class="output-section"></div>
+                    <div class="history-section" id="history-politics-map"></div>
+                </section>
+
+                <!-- TOOL 2: ALLIANCE BUILDER -->
+                <section id="view-alliance-builder" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Pembangun Aliansi</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"Saya membutuhkan hubungan yang melindungi saya tanpa merasa memanfaatkan orang lain."</span>
+                        </div>
+
+                        <div id="sample-banner-alliance-builder" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Skenario contoh — ini bukan hasil pribadi Anda.</span>
+                        </div>
+
+                        <form id="form-alliance-builder">
+                            <div class="form-group">
+                                <label for="ab-trust">Siapa yang Anda percayai?</label>
+                                <textarea id="ab-trust" placeholder="contoh: Rekan kerja Jane dan Dave dari Operasional"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-trusts-you">Siapa yang mempercayai Anda?</label>
+                                <textarea id="ab-trusts-you" placeholder="contoh: Manajer langsung, Analis Junior"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-need-know">Siapa yang perlu Anda kenal lebih dekat?</label>
+                                <textarea id="ab-need-know" placeholder="contoh: Kepala Keuangan, Lead Product Designer"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-offer">Apa yang bisa Anda tawarkan kepada orang lain?</label>
+                                <select id="ab-offer">
+                                    <option value="Expertise">Keahlian Teknis / Bidang</option>
+                                    <option value="Resources">Akses ke Sumber Daya / Anggaran</option>
+                                    <option value="Support">Dukungan Emosional & Operasional</option>
+                                    <option value="Information">Informasi Awal & Lintas Fungsi</option>
+                                    <option value="Connections">Jaringan / Koneksi</option>
+                                    <option value="Hard work">Kapasitas Eksekusi & Kerja Keras</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="ab-need">Apa yang Anda butuhkan dari orang lain?</label>
+                                <select id="ab-need">
+                                    <option value="Protection">Perlindungan / Naungan Politik</option>
+                                    <option value="Information">Informasi Awal & Konteks</option>
+                                    <option value="Advocacy">Dukungan Publik / Sponsor</option>
+                                    <option value="Opportunities">Peluang Pengembangan & Proyek Tantangan</option>
+                                    <option value="Validation">Validasi & Upan Balik Sesama Rekan</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('alliance-builder')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('alliance-builder')"><i class="fa-solid fa-rotate-right"></i> Mulai Ulang</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-diagram-project"></i> Buat Strategi</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-alliance-builder" class="output-section"></div>
+                    <div class="history-section" id="history-alliance-builder"></div>
+                </section>
+
+                <!-- TOOL 3: THE NEUTRAL POSITION -->
+                <section id="view-neutral-position" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Posisi Netral</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"Saya terjebak di antara dua orang/kelompok berkuasa dan saya tidak ingin memihak."</span>
+                        </div>
+
+                        <div id="sample-banner-neutral-position" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Skenario contoh — ini bukan hasil pribadi Anda.</span>
+                        </div>
+
+                        <form id="form-neutral-position">
+                            <div class="form-group">
+                                <label for="np-sides">Siapa kedua belah pihak tersebut?</label>
+                                <textarea id="np-sides" placeholder="contoh: VP Sales vs VP Product"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="np-want">Apa yang mereka inginkan dari Anda?</label>
+                                <textarea id="np-want" placeholder="contoh: Dukungan publik terhadap lini masa proyek mereka"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="np-consequence">Apa yang terjadi jika Anda memilih salah satu pihak?</label>
+                                <textarea id="np-consequence" placeholder="contoh: Kehilangan akses anggaran dari pihak yang kalah; menjauhkan tim inti"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Bisakah Anda menghindari untuk memilih?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="Yes"> Ya</label>
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="Temporarily"> Sementara</label>
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="No"> Tidak</label>
+                                    <label class="radio-label"><input type="radio" name="np-avoid" value="Not sure"> Tidak yakin</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('neutral-position')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('neutral-position')"><i class="fa-solid fa-rotate-right"></i> Mulai Ulang</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield"></i> Susun Panduan Netral</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-neutral-position" class="output-section"></div>
+                    <div class="history-section" id="history-neutral-position"></div>
+                </section>
+
+                <!-- TOOL 4: VISIBILITY STRATEGY -->
+                <section id="view-visibility-strategy" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Strategi Visibilitas</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"Kerja bagus saja tidak cukup. Saya perlu orang yang tepat mengetahui keberadaan saya."</span>
+                        </div>
+
+                        <div id="sample-banner-visibility-strategy" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Skenario contoh — ini bukan hasil pribadi Anda.</span>
+                        </div>
+
+                        <form id="form-visibility-strategy">
+                            <div class="form-group">
+                                <label for="vs-known-for">Ingin dikenal karena apa Anda?</label>
+                                <textarea id="vs-known-for" placeholder="contoh: Optimasi berbasis data, eksekusi krisis yang handal"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vs-target-audience">Siapa yang perlu tahu tentang pekerjaan Anda?</label>
+                                <textarea id="vs-target-audience" placeholder="contoh: Direktur di atas atasan langsung, Lead Engineering lintas fungsi"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vs-current-share">Bagaimana cara Anda membagikan pencapaian saat ini?</label>
+                                <select id="vs-current-share">
+                                    <option value="I don't">Saya tidak membagikannya / Hanya fokus bekerja</option>
+                                    <option value="Team meetings">Hanya dalam rapat tim</option>
+                                    <option value="One-on-ones">Sesi 1-on-1 dengan manajer langsung</option>
+                                    <option value="Email updates">Pembaruan status via email</option>
+                                    <option value="Social/Slack">Saluran publik Slack/Teams</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vs-discomfort">Apa yang membuat Anda merasa tidak nyaman dalam promosi diri?</label>
+                                <textarea id="vs-discomfort" placeholder="contoh: Merasa seperti menyombongkan diri, takut terlihat arogan atau butuh pengakuan"></textarea>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('visibility-strategy')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('visibility-strategy')"><i class="fa-solid fa-rotate-right"></i> Mulai Ulang</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bullhorn"></i> Buat Rencana Visibilitas</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-visibility-strategy" class="output-section"></div>
+                    <div class="history-section" id="history-visibility-strategy"></div>
+                </section>
+
+                <!-- TOOL 5: VALUES GUARD -->
+                <section id="view-values-guard" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Pelindung Nilai</h2>
+                        <div class="problem-statement">
+                            <i class="fa-solid fa-circle-question"></i>
+                            <span>"Tekanan politik meminta saya untuk mengorbankan jati diri saya."</span>
+                        </div>
+
+                        <div id="sample-banner-values-guard" style="display:none;">
+                            <span class="sample-badge"><i class="fa-solid fa-flask"></i> Skenario contoh — ini bukan hasil pribadi Anda.</span>
+                        </div>
+
+                        <form id="form-values-guard">
+                            <div class="form-group">
+                                <label for="vg-pressure-type">Tekanan apa yang sedang Anda hadapi?</label>
+                                <select id="vg-pressure-type">
+                                    <option value="Gossip">Terlibat dalam gosip toksik</option>
+                                    <option value="Backstabbing">Mencurangi / Mengambinghitamkan seseorang</option>
+                                    <option value="Exclusion">Mengucilkan rekan kerja secara sistematis</option>
+                                    <option value="Falsifying results">Memalsukan atau memanipulasi metrik/data</option>
+                                    <option value="Undermining a colleague">Mengecilkan otoritas pimpinan lain</option>
+                                    <option value="Hiding information">Menyembunyikan informasi penting</option>
+                                    <option value="Other">Dilema etika lainnya</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vg-source">Siapa yang memberi tekanan tersebut?</label>
+                                <select id="vg-source">
+                                    <option value="Boss">Atasan Langsung / Supervisor</option>
+                                    <option value="Peer">Rekan Kerja / Teman Tim</option>
+                                    <option value="Team culture">Budaya Tim yang Dominan</option>
+                                    <option value="Senior leader">Eksekutif Senior</option>
+                                    <option value="Myself">Kecemasan Internal / Diri Sendiri</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vg-value-risk">Nilai apa yang terancam?</label>
+                                <textarea id="vg-value-risk" placeholder="contoh: Integritas pribadi, keadilan, rasa aman secara psikologis"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="vg-fear">Apa yang Anda takutkan akan terjadi jika Anda menolak?</label>
+                                <textarea id="vg-fear" placeholder="contoh: Dilewati saat promosi, diisolasi secara sosial"></textarea>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('values-guard')"><i class="fa-solid fa-wand-magic-sparkles"></i> Muat Skenario Contoh</button>
+                                <button type="button" class="btn btn-outline" onclick="resetToolForm('values-guard')"><i class="fa-solid fa-rotate-right"></i> Mulai Ulang</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield-cat"></i> Formulasi Pertahanan</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-values-guard" class="output-section"></div>
+                    <div class="history-section" id="history-values-guard"></div>
+                </section>
+
+                <!-- GUIDED SEQUENCE: 7-DAY RESET -->
+                <section id="view-reset-guided" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Reset Politik Kantor</h2>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">
+                            Urutan terstruktur untuk mengevaluasi lingkungan kerja Anda secara sistematis dan membangun strategi politik yang proaktif.
+                        </p>
+
+                        <div class="reset-step-card" id="reset-card-1">
+                            <div class="reset-step-info">
+                                <h4>Hari 1: Petakan Lanskap</h4>
+                                <p>Pahami otoritas formal vs pusat keputusan informal menggunakan Peta Politik.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('politics-map')">Buka Peta Politik</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-2">
+                            <div class="reset-step-info">
+                                <h4>Hari 2: Perkuat Hubungan</h4>
+                                <p>Identifikasi aliansi kunci dan rencanakan hubungan timbal balik menggunakan Pembangun Aliansi.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('alliance-builder')">Buka Aliansi</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-3">
+                            <div class="reset-step-info">
+                                <h4>Hari 3: Tangani Konflik Politik</h4>
+                                <p>Tetapkan penyampaian berposisi netral untuk tuntutan bersaing dengan Posisi Netral.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('neutral-position')">Buka Kenetralan</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-4">
+                            <div class="reset-step-info">
+                                <h4>Hari 4: Tampilkan Pekerjaan Anda</h4>
+                                <p>Formulasikan pembaruan kemajuan kerja secara otentik menggunakan Strategi Visibilitas.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('visibility-strategy')">Buka Visibilitas</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-5">
+                            <div class="reset-step-info">
+                                <h4>Hari 5: Lindungi Nilai Anda</h4>
+                                <p>Tetapkan batasan tegas dan sopan terhadap tekanan toksik menggunakan Pelindung Nilai.</p>
+                            </div>
+                            <button class="btn btn-sm btn-primary" onclick="switchTool('values-guard')">Buka Pelindung Nilai</button>
+                        </div>
+
+                        <div class="reset-step-card" id="reset-card-6">
+                            <div class="reset-step-info">
+                                <h4>Hari 6 & 7: Sintesiskan Strategi</h4>
+                                <p>Hasilkan Rencana Strategi Tempat Kerja 30 Hari Anda yang konsolidatif dan lengkap.</p>
+                            </div>
+                            <button class="btn btn-sm btn-copy" onclick="switchTool('printable-plan')">Lihat Rencana Konsolidasi</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PRINTABLE PLAN VIEW -->
+                <section id="view-printable-plan" class="tool-view" style="display:none;">
+                    <div class="card no-print" style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                            <div>
+                                <h2 style="font-size: 1.3rem;">Rencana Politik Kantor Saya</h2>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Ringkasan konsolidasi dari penilaian strategis Anda yang aktif.</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
+                        </div>
+                    </div>
+
+                    <div class="printable-container" id="printable-plan-content">
+                        <!-- Dynamic printable plan content rendered via JS -->
+                    </div>
+                </section>
+
+                <!-- UNIFIED HISTORY VIEW -->
+                <section id="view-history-view" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h2>Riwayat Strategi Saya</h2>
+                            <button class="btn btn-sm btn-danger" onclick="clearGlobalHistory()"><i class="fa-solid fa-trash"></i> Hapus Semua Riwayat</button>
+                        </div>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;">Tinjau semua evaluasi politik terdahulu yang tersimpan secara lokal di peramban Anda.</p>
+                        <div id="unified-history-container"></div>
+                    </div>
+                </section>
+
+                <!-- PRIVACY & DATA VIEW -->
+                <section id="view-privacy-view" class="tool-view" style="display:none;">
+                    <div class="card">
+                        <h2>Privasi & Keamanan Data</h2>
+                        <div style="margin-top: 1rem; line-height: 1.6; font-size: 0.95rem; color: var(--text-main);">
+                            <p><strong>100% Privasi di Sisi Klien:</strong> Office Politics Navigator™ beroperasi sepenuhnya di dalam Peramban Web Anda. Tidak ada nama pribadi, catatan, atau analisis politik yang dikirimkan ke server eksternal, basis data awan, atau pihak ketiga.</p>
+                            
+                            <h3 style="font-size: 1rem; color: var(--burgundy); margin-top: 1.5rem; margin-bottom: 0.5rem;">Rincian Penyimpanan Lokal</h3>
+                            <p>Input dan analisis strategi yang Anda simpan secara eksklusif disimpan di dalam <code>localStorage</code> peramban Anda di bawah kunci versi (<code>officepolitics_v2_state</code>). Menghapus data peramban akan menghapus informasi ini.</p>
+
+                            <h3 style="font-size: 1rem; color: var(--burgundy); margin-top: 1.5rem; margin-bottom: 0.5rem;">Tindakan Kontrol Data</h3>
+                            <div class="btn-group" style="margin-top: 1rem;">
+                                <button class="btn btn-outline" onclick="exportDataJSON()"><i class="fa-solid fa-download"></i> Ekspor Data (JSON)</button>
+                                <button class="btn btn-danger" onclick="clearGlobalHistory()"><i class="fa-solid fa-trash"></i> Reset Semua Data Tersimpan</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Global Footer -->
+            <footer class="no-print">
+                <div class="footer-content">
+                    Hanya untuk strategi hubungan profesional. Bukan nasihat psikologis, hukum, atau HR. Untuk pelecehan, diskriminasi, atau tindakan melanggar hukum di tempat kerja, hubungi otoritas organisasi yang berwenang atau penasihat hukum.
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Toast Component -->
+    <div id="toast" class="toast">Berhasil disalin ke papan klip!</div>
+
+    <script>
+        /* ==========================================================================
+           CENTRAL APPLICATION STATE & UTILITIES
+           ========================================================================== */
+        const STORAGE_KEY_STATE = 'officepolitics_v2_state';
+        const STORAGE_KEY_HISTORY = 'officepolitics_v2_history';
+
+        let officePoliticsState = {
+            completedTools: [],
+            toolResults: {},
+            historyMeta: {},
+            currentInputs: {},
+            recommendations: [],
+            privacyAcknowledged: true,
+            lastUpdated: null
+        };
+
+        // Utility: HTML Escaping for XSS Prevention
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            loadAppState();
+            setupNavigation();
+            setupFormListeners();
+            loadAllHistories();
+            updateDashboardSnapshot();
+        });
+
+        function loadAppState() {
+            try {
+                const savedState = localStorage.getItem(STORAGE_KEY_STATE);
+                if (savedState) {
+                    officePoliticsState = Object.assign(officePoliticsState, JSON.parse(savedState));
+                }
+            } catch (e) {
+                console.error("Gagal memuat status lokal:", e);
+            }
+        }
+
+        function saveAppState() {
+            try {
+                officePoliticsState.lastUpdated = new Date().toISOString();
+                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(officePoliticsState));
+                updateDashboardSnapshot();
+            } catch (e) {
+                console.error("Gagal menyimpan status lokal:", e);
+            }
+        }
+
+        /* ==========================================================================
+           NAVIGATION & UI HANDLERS
+           ========================================================================== */
+        function setupNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const toolId = item.getAttribute('data-tool');
+                    switchTool(toolId);
+                    closeMobileSidebar();
+                });
+            });
+
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('mobile-open');
+            });
+
+            overlay.addEventListener('click', closeMobileSidebar);
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('sidebarOverlay').classList.remove('mobile-open');
+        }
+
+        function switchTool(toolId) {
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.toggle('active', nav.getAttribute('data-tool') === toolId);
+            });
+
+            document.querySelectorAll('.tool-view').forEach(view => {
+                view.style.display = view.id === `view-${toolId}` ? 'block' : 'none';
+            });
+
+            if (toolId === 'printable-plan') {
+                renderPrintablePlan();
+            } else if (toolId === 'history-view') {
+                renderUnifiedHistory();
+            } else if (toolId === 'reset-guided') {
+                updateGuidedResetUI();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        /* Toast & Clipboard Helpers */
+        function showToast(message = "Berhasil disalin ke papan klip!") {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Teks berhasil disalin ke papan klip!");
+                }).catch(err => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Teks berhasil disalin ke papan klip!");
+            } catch (err) {
+                showToast("Gagal menyalin secara otomatis.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        /* ==========================================================================
+           SAMPLE DATA & RESET FUNCTIONS
+           ========================================================================== */
+        const SAMPLE_DATA = {
+            'politics-map': {
+                'pm-formal': 'Direktur Sarah (Engineering) & VP James',
+                'pm-informal': 'Senior PM Mark (didengar oleh VP, gerbang informasi informal) & Asisten Eksekutif Julie',
+                'pm-allies': 'Mark bersekutu dekat dengan VP James; Tim Produk sejalan dengan Marketing melawan Operasional',
+                'pm-decisions': 'In side conversations',
+                'pm-rival': 'Yes'
+            },
+            'alliance-builder': {
+                'ab-trust': 'Jane (Tech Lead) dan Dave (Operations Lead)',
+                'ab-trusts-you': 'Manajer Langsung (VP Alex) dan Analis Junior',
+                'ab-need-know': 'Manajer Operasional Karen (mengontrol kapasitas eksekusi)',
+                'ab-offer': 'Expertise',
+                'ab-need': 'Advocacy'
+            },
+            'neutral-position': {
+                'np-sides': 'VP Alex (menginginkan pengiriman fitur lebih cepat) vs Direktur Karen (menginginkan stabilitas & kualitas tinggi)',
+                'np-want': 'Dukungan publik untuk peta jalan produk pilihan mereka pada evaluasi hari Jumat',
+                'np-consequence': 'Menjauhkan VP Alex (penghambat karier) atau Direktur Karen (penghambat operasional)',
+                'np-avoid': 'Temporarily'
+            },
+            'visibility-strategy': {
+                'vs-known-for': 'Visualisasi data & menerjemahkan metrik teknis yang rumit menjadi cerita eksekutif',
+                'vs-target-audience': 'Direktur di atas atasan langsung & Lead Business Development Lintas Fungsi',
+                'vs-current-share': 'One-on-ones',
+                'vs-discomfort': 'Terasa seperti menyombongkan diri; tidak nyaman menempatkan diri dalam sorotan'
+            },
+            'values-guard': {
+                'vg-pressure-type': 'Gossip',
+                'vg-source': 'Team culture',
+                'vg-value-risk': 'Kebaikan, rasa aman secara psikologis, dan integritas pribadi',
+                'vg-fear': 'Diisolasi secara sosial atau dicap sebagai "bukan pemain tim"'
+            }
+        };
+
+        function loadSample(toolId) {
+            const data = SAMPLE_DATA[toolId];
+            if (!data) return;
+
+            Object.keys(data).forEach(key => {
+                const element = document.getElementById(key);
+                if (element) {
+                    element.value = data[key];
+                } else {
+                    const radios = document.getElementsByName(key);
+                    radios.forEach(radio => {
+                        if (radio.value === data[key]) radio.checked = true;
+                    });
+                }
+            });
+
+            const banner = document.getElementById(`sample-banner-${toolId}`);
+            if (banner) banner.style.display = 'block';
+
+            showToast("Skenario contoh dimuat.");
+        }
+
+        function resetToolForm(toolId) {
+            if (!confirm("Mulai ulang dengan alat ini? Input formulir dan hasil Anda saat ini akan di-reset.")) return;
+
+            const form = document.getElementById(`form-${toolId}`);
+            if (form) form.reset();
+
+            const output = document.getElementById(`output-${toolId}`);
+            if (output) {
+                output.innerHTML = '';
+                output.classList.remove('active');
+            }
+
+            const banner = document.getElementById(`sample-banner-${toolId}`);
+            if (banner) banner.style.display = 'none';
+
+            showToast("Formulir di-reset.");
+        }
+
+        /* ==========================================================================
+           ANALYSIS ENGINES (DETERMINISTIC ANALYSIS LOGIC)
+           ========================================================================== */
+        function setupFormListeners() {
+            document.querySelectorAll('form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const toolId = this.id.replace('form-', '');
+                    processAnalysis(toolId);
+                });
+            });
+        }
+
+        function processAnalysis(toolId) {
+            const outputContainer = document.getElementById(`output-${toolId}`);
+            let htmlContent = '';
+            let summaryText = '';
+            let toolResultData = {};
+
+            const banner = document.getElementById(`sample-banner-${toolId}`);
+            if (banner) banner.style.display = 'none';
+
+            if (toolId === 'politics-map') {
+                const formal = document.getElementById('pm-formal').value.trim() || 'Tidak ditentukan';
+                const informal = document.getElementById('pm-informal').value.trim() || 'Tidak ditentukan';
+                const allies = document.getElementById('pm-allies').value.trim() || 'Tidak ditentukan';
+                const decisions = document.getElementById('pm-decisions').value;
+                const rival = document.querySelector('input[name="pm-rival"]:checked')?.value || 'Not sure';
+
+                const decisionsMap = {
+                    'In official meetings': 'dalam rapat resmi',
+                    'In side conversations': 'dalam percakapan informal / pra-rapat',
+                    'In leadership offsites': 'dalam rapat pimpinan luar kantor (offsites)',
+                    "I don't know": 'tidak diketahui secara pasti'
+                };
+
+                const rivalMap = {
+                    'Yes': 'Ya',
+                    'Maybe': 'Mungkin',
+                    'No': 'Tidak',
+                    'Not sure': 'Tidak yakin'
+                };
+
+                toolResultData = { formal, informal, allies, decisions, rival };
+                summaryText = `Peta: Otoritas Formal (${formal.substring(0,25)}...)`;
+
+                const primaryFormal = formal.split(',')[0] || 'Atasan Formal';
+                const primaryInformal = informal.split(',')[0] || 'Influencer Bayangan';
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-sitemap"></i> Peta Kekuasaan Kerja</h4>
+                        </div>
+                        <div class="output-content">
+                            <p><strong>Otoritas Formal:</strong> ${escapeHTML(formal)}</p>
+                            <p><strong>Pengaruh Informal:</strong> ${escapeHTML(informal)}</p>
+                            <div class="diagram-box">
+                                <span class="diagram-node">${escapeHTML(primaryFormal)}</span>
+                                <span class="diagram-arrow"><i class="fa-solid fa-arrows-left-right"></i></span>
+                                <span class="diagram-node informal">${escapeHTML(primaryInformal)}</span>
+                                <div style="margin-top:0.5rem; font-size:0.8rem; color:var(--text-muted);">
+                                    Garis Tegas = Jabatan Resmi | Garis Putus-putus = Pengaruh/Suara Nyata yang Didengar
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-filter"></i> Alur Keputusan</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Berdasarkan pengamatan Anda bahwa keputusan terjadi <strong>${escapeHTML(decisionsMap[decisions] || decisions)}</strong>, forum resmi mungkin berfungsi terutama sebagai titik konfirmasi formal saja.</p>
+                            <p style="margin-top:0.5rem;"><strong>Strategi yang Direkomendasikan:</strong> Pertimbangkan untuk memberikan pengarahan awal kepada ${escapeHTML(primaryInformal)} dan pemangku kepentingan kunci sebelum rapat umum untuk memahami keberatan lebih awal.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-eye-slash"></i> Paparan Risiko & Kubu Persaingan</h4>
+                        </div>
+                        <div class="output-content">
+                            <p><strong>Terdeteksi Kubu Persaingan:</strong> ${escapeHTML(rivalMap[rival] || rival)}</p>
+                            <p>${rival === 'Yes' ? 'Adanya kubu yang bersaingan aktif menimbulkan risiko konflik pertikaian. Jaga agar komunikasi proyek berfokus secara ketat pada KPI objektif dan persyaratan yang terdokumentasi daripada keberpihakan politik.' : 'Tidak ada persaingan kubu aktif yang terdeteksi secara jelas. Fokus pada menjaga saluran komunikasi lintas fungsi tetap terbuka.'}</p>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Langkah Prioritas Tertinggi Anda</h4>
+                        <p style="font-size: 0.9rem;">Petakan proyek Anda saat ini secara langsung ke prioritas operasional ${escapeHTML(primaryInformal)} sambil tetap mengamankan persetujuan formal dari ${escapeHTML(primaryFormal)}.</p>
+                    </div>
+                `;
+            } else if (toolId === 'alliance-builder') {
+                const trust = document.getElementById('ab-trust').value.trim() || 'Rekan Kerja';
+                const trustsYou = document.getElementById('ab-trusts-you').value.trim() || 'Tim';
+                const needKnow = document.getElementById('ab-need-know').value.trim() || 'Pemangku Kepentingan';
+                const offer = document.getElementById('ab-offer').value;
+                const need = document.getElementById('ab-need').value;
+
+                const offerMap = {
+                    'Expertise': 'Keahlian Teknis / Bidang',
+                    'Resources': 'Akses ke Sumber Daya / Anggaran',
+                    'Support': 'Dukungan Emosional & Operasional',
+                    'Information': 'Informasi Awal & Lintas Fungsi',
+                    'Connections': 'Jaringan / Koneksi',
+                    'Hard work': 'Kapasitas Eksekusi & Kerja Keras'
+                };
+
+                const needMap = {
+                    'Protection': 'Perlindungan / Naungan Politik',
+                    'Information': 'Informasi Awal & Konteks',
+                    'Advocacy': 'Dukungan Publik / Sponsor',
+                    'Opportunities': 'Peluang Pengembangan & Proyek Tantangan',
+                    'Validation': 'Validasi & Umpan Balik Sesama Rekan'
+                };
+
+                toolResultData = { trust, trustsYou, needKnow, offer, need };
+                summaryText = `Aliansi: Fokus pada ${needKnow.substring(0,25)}...`;
+
+                const outreachScript = `"Halo ${needKnow.split(',')[0] || 'rekan'}, saya sedang meninjau prioritas kita untuk bulan depan. Mengingat fokus tim Anda, saya ingin membagikan pembaruan singkat mengenai pekerjaan kami di bidang ${offerMap[offer] ? offerMap[offer].toLowerCase() : offer.toLowerCase()} dan melihat apakah ada area di mana kami dapat mendukung tujuan Anda."`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-handshake"></i> Strategi Hubungan</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Anda menawarkan <strong>${escapeHTML(offerMap[offer] || offer)}</strong> dan membutuhkan <strong>${escapeHTML(needMap[need] || need)}</strong>. Target strategis: <strong>${escapeHTML(needKnow)}</strong>.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-seedling"></i> Rencana Hubungan Timbal Balik</h4>
+                        </div>
+                        <div class="output-content">
+                            <ol style="padding-left:1.2rem; line-height:1.7;">
+                                <li><strong>Berbagi Nilai Tanpa Beban:</strong> Bagikan informasi operasional atau riset yang relevan kepada ${escapeHTML(needKnow)} tanpa meminta imbalan langsung.</li>
+                                <li><strong>Tawaran Bantuan:</strong> Tawarkan kapasitas awal dalam ${escapeHTML(offerMap[offer] || offer)} untuk membantu pencapaian target mereka yang akan datang.</li>
+                                <li><strong>Amplifikasi Pengakuan:</strong> Berikan pengakuan atas kontribusi ${escapeHTML(trustsYou)} secara publik dalam diskusi bersama.</li>
+                            </ol>
+                        </div>
+                    </div>
+
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-comment-dots"></i> Skrip Komunikasi</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${outreachScript.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Salin Skrip</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(outreachScript)}</div>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Langkah Prioritas Tertinggi Anda</h4>
+                        <p style="font-size: 0.9rem;">Jadwalkan diskusi penyelarasan singkat selama 15 menit dengan ${escapeHTML(needKnow.split(',')[0] || 'pemangku kepentingan target')} yang berfokus pada bagaimana ${escapeHTML(offerMap[offer] || offer)} Anda dapat membantu pencapaian target kuartal mereka.</p>
+                    </div>
+                `;
+            } else if (toolId === 'neutral-position') {
+                const sides = document.getElementById('np-sides').value.trim() || 'Pihak A vs Pihak B';
+                const want = document.getElementById('np-want').value.trim() || 'Komitmen';
+                const consequence = document.getElementById('np-consequence').value.trim() || 'Paparan politik';
+                const avoid = document.querySelector('input[name="np-avoid"]:checked')?.value || 'Temporarily';
+
+                toolResultData = { sides, want, consequence, avoid };
+                summaryText = `Kenetralan: ${sides.substring(0,25)}...`;
+
+                const neutralScriptText = `"Saya sangat memahami mengapa ${sides.split('vs')[0] || 'Pihak A'} memprioritaskan lini masa ini, dan saya juga menyadari kekhawatiran ${sides.split('vs')[1] || 'Pihak B'} terkait risiko eksekusi. Fokus utama saya adalah memastikan tujuan inti berhasil tanpa menimbulkan kendala teknis maupun operasional."`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-shield"></i> Skrip Penyampaian Netral</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${neutralScriptText.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Salin Skrip</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(neutralScriptText)}</div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Validasi kedua sudut pandang tanpa mendukung agenda kubu mana pun.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-language"></i> Penerjemah Operasional</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Ubah tuntutan politik yang subjektif menjadi batasan operasional yang objektif:</p>
+                            <p style="margin-top:0.5rem;"><strong>Daripada:</strong> "Mereka mencoba mengendalikan agenda."<br>
+                            <strong>Ubah menjadi:</strong> "Batasan utama mereka tampaknya adalah risiko jadwal, sedangkan batasan kita adalah jaminan kualitas."</p>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Langkah Prioritas Tertinggi Anda</h4>
+                        <p style="font-size: 0.9rem;">Sandarkan posisi formal Anda secara ketat pada metrik objektif yang terdokumentasi dan tujuan bersama organisasi.</p>
+                    </div>
+                `;
+            } else if (toolId === 'visibility-strategy') {
+                const knownFor = document.getElementById('vs-known-for').value.trim() || 'Keunggulan eksekusi';
+                const audience = document.getElementById('vs-target-audience').value.trim() || 'Pimpinan';
+                const shareMethod = document.getElementById('vs-current-share').value;
+                const discomfort = document.getElementById('vs-discomfort').value.trim() || 'Takut menyombongkan diri';
+
+                toolResultData = { knownFor, audience, shareMethod, discomfort };
+                summaryText = `Visibilitas: ${knownFor.substring(0,25)}...`;
+
+                const narrativeText = `Saya berspesialisasi dalam menerjemahkan eksekusi teknis menjadi hasil bisnis yang jelas, memastikan tim kami konsisten memberikan ${knownFor} yang berkualitas tinggi.`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-quote-left"></i> Narasi Profesional</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${narrativeText.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Salin Narasi</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(narrativeText)}</div>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-bullhorn"></i> Ritual Visibilitas Otentik</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Untuk mengatasi rasa tidak nyaman (<em>"${escapeHTML(discomfort)}"</em>):</p>
+                            <ul style="padding-left:1.2rem; margin-top:0.5rem; line-height:1.7;">
+                                <li><strong>Keberhasilan Bersama:</strong> Sampaikan keberhasilan atas nama upaya tim ("Kelompok proyek kami berhasil mencapai X; saya memimpin bagian eksekusinya").</li>
+                                <li><strong>Berbagi Wawasan:</strong> Bagikan pelajaran operasional yang dipetik daripada pujian untuk diri sendiri.</li>
+                                <li><strong>Email Pencapaian Bulanan:</strong> Kirimkan laporan kemajuan singkat berisi 3 poin utama kepada ${escapeHTML(audience)}.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Langkah Prioritas Tertinggi Anda</h4>
+                        <p style="font-size: 0.9rem;">Terapkan pembaruan ringkasan bulanan 3 poin kepada ${escapeHTML(audience)} yang berfokus pada pencapaian penting dan pengakuan atas tim.</p>
+                    </div>
+                `;
+            } else if (toolId === 'values-guard') {
+                const pressure = document.getElementById('vg-pressure-type').value;
+                const source = document.getElementById('vg-source').value;
+                const valueAtRisk = document.getElementById('vg-value-risk').value.trim() || 'Integritas Pribadi';
+                const fear = document.getElementById('vg-fear').value.trim() || 'Isolasi sosial';
+
+                const pressureMap = {
+                    'Gossip': 'terlibat dalam gosip toksik',
+                    'Backstabbing': 'mencurangi / mengambinghitamkan seseorang',
+                    'Exclusion': 'mengucilkan rekan kerja secara sistematis',
+                    'Falsifying results': 'memalsukan atau memanipulasi metrik/data',
+                    'Undermining a colleague': 'mengecilkan otoritas pimpinan lain',
+                    'Hiding information': 'menyembunyikan informasi penting',
+                    'Other': 'tindakan yang melanggar etika'
+                };
+
+                const sourceMap = {
+                    'Boss': 'Atasan Langsung / Supervisor',
+                    'Peer': 'Rekan Kerja / Teman Tim',
+                    'Team culture': 'Budaya Tim yang Dominan',
+                    'Senior leader': 'Eksekutif Senior',
+                    'Myself': 'Kecemasan Internal / Diri Sendiri'
+                };
+
+                toolResultData = { pressure, source, valueAtRisk, fear };
+                summaryText = `Pelindung Nilai: ${pressureMap[pressure] || pressure} dari ${sourceMap[source] || source}`;
+
+                const boundaryScriptText = `"Saya paham situasinya menantang, tetapi saya memiliki prinsip pribadi untuk tidak ${pressureMap[pressure] ? pressureMap[pressure].toLowerCase() : pressure.toLowerCase()}. Saya akan tetap berfokus secara ketat pada hasil proyek dan fakta yang terdokumentasi."`;
+
+                htmlContent = `
+                    <div class="output-card">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-shield-halved"></i> Skrip Penetapan Batasan</h4>
+                            <button class="btn btn-sm btn-copy" onclick="copyToClipboard(\`${boundaryScriptText.replace(/"/g, '&quot;')}\`)"><i class="fa-regular fa-copy"></i> Salin Skrip</button>
+                        </div>
+                        <div class="output-content">
+                            <div class="script-box">${escapeHTML(boundaryScriptText)}</div>
+                            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:0.5rem;">Menetapkan batasan profesional mengenai <strong>${escapeHTML(valueAtRisk)}</strong> tanpa eskalasi yang tidak perlu.</p>
+                        </div>
+                    </div>
+
+                    <div class="output-card sage-accent">
+                        <div class="output-header">
+                            <h4><i class="fa-solid fa-door-open"></i> Taktik Melepaskan Diri secara Praktis</h4>
+                        </div>
+                        <div class="output-content">
+                            <p>Saat ditekan oleh ${escapeHTML(sourceMap[source] || source)}: Gunakan pengalihan operasional yang objektif ("Saya memiliki tenggat waktu ketat dalam 5 menit," "Mari kita tinjau metrik resmi proyek") untuk mundur secara bersih.</p>
+                        </div>
+                    </div>
+
+                    <div class="priority-box">
+                        <h4><i class="fa-solid fa-compass"></i> Langkah Prioritas Tertinggi Anda</h4>
+                        <p style="font-size: 0.9rem;">Pelihara bukti terdokumentasi dari hasil kerja Anda dan pertahankan batasan Anda di sekitar ${escapeHTML(valueAtRisk)}.</p>
+                    </div>
+                `;
+            }
+
+            outputContainer.innerHTML = htmlContent;
+            outputContainer.classList.add('active');
+
+            // Update Central State
+            if (!officePoliticsState.completedTools.includes(toolId)) {
+                officePoliticsState.completedTools.push(toolId);
+            }
+            officePoliticsState.toolResults[toolId] = toolResultData;
+            
+            const historyEntry = { summary: summaryText, date: new Date().toLocaleDateString('id-ID'), data: toolResultData };
+            saveHistory(toolId, historyEntry);
+            saveAppState();
+            generateCrossModuleRecommendations();
+        }
+
+        /* ==========================================================================
+           CROSS-MODULE RECOMMENDATIONS ENGINE
+           ========================================================================== */
+        function generateCrossModuleRecommendations() {
+            const recs = [];
+            const results = officePoliticsState.toolResults;
+
+            if (results['politics-map'] && results['politics-map'].decisions === 'In side conversations') {
+                recs.push({
+                    title: "Pemicu Pengaruh Percakapan Informal Terdeteksi",
+                    text: "Peta Politik Anda menunjukkan keputusan terjadi dalam percakapan informal. Gunakan Pembangun Aliansi untuk mengidentifikasi influencer informal kunci demi penyelarasan sebelum rapat."
+                });
+            }
+
+            if (results['politics-map'] && results['politics-map'].rival === 'Yes' && results['neutral-position']) {
+                recs.push({
+                    title: "Perlindungan terhadap Persaingan Kubu Aktif",
+                    text: "Terdapat kubu yang saling bersaing. Terapkan skrip Posisi Netral Anda untuk mempertahankan pembawaan yang objektif dalam seluruh evaluasi lintas departemen."
+                });
+            }
+
+            if (results['visibility-strategy'] && results['visibility-strategy'].shareMethod === "I don't") {
+                recs.push({
+                    title: "Defisit Visibilitas Teridentifikasi",
+                    text: "Saat ini Anda tidak membagikan pencapaian kerja. Gunakan teknik Keberhasilan Bersama untuk menginformasikan pemangku kepentingan kunci tanpa merasa menyombongkan diri."
+                });
+            }
+
+            if (results['values-guard'] && results['values-guard'].pressure === 'Falsifying results') {
+                recs.push({
+                    title: "Risiko Integritas Kritis",
+                    text: "Tekanan etis terkait pemalsuan metrik terdeteksi. Dokumentasikan seluruh data sumber secara teliti dan pertimbangkan eskalasi ke saluran kepatuhan (compliance) resmi atau HR jika tekanan berlanjut."
+                });
+            }
+
+            officePoliticsState.recommendations = recs;
+            renderRecommendationsUI();
+        }
+
+        function renderRecommendationsUI() {
+            const container = document.getElementById('dashboard-recommendations');
+            const list = document.getElementById('recommendations-list');
+            if (!container || !list) return;
+
+            if (!officePoliticsState.recommendations || officePoliticsState.recommendations.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+
+            let html = '';
+            officePoliticsState.recommendations.forEach(rec => {
+                html += `
+                    <div class="rec-item">
+                        <h4>${escapeHTML(rec.title)}</h4>
+                        <p>${escapeHTML(rec.text)}</p>
+                    </div>
+                `;
+            });
+
+            list.innerHTML = html;
+            container.style.display = 'block';
+        }
+
+        /* ==========================================================================
+           QUALITATIVE SNAPSHOT RENDERER
+           ========================================================================== */
+        function updateDashboardSnapshot() {
+            const results = officePoliticsState.toolResults;
+
+            document.getElementById('snap-formal').innerText = results['politics-map'] ? (results['politics-map'].formal ? 'Dipetakan' : 'Jelas') : 'Belum dipetakan';
+            document.getElementById('snap-informal').innerText = results['politics-map'] ? (results['politics-map'].informal ? 'Teridentifikasi' : 'Belum jelas') : 'Belum dipetakan';
+            document.getElementById('snap-alliances').innerText = results['alliance-builder'] ? ' berkembang' : 'Belum dipetakan';
+            document.getElementById('snap-neutrality').innerText = results['neutral-position'] ? (results['neutral-position'].avoid === 'Yes' ? 'Stabil' : 'Terdorong') : 'Belum dipetakan';
+            document.getElementById('snap-visibility').innerText = results['visibility-strategy'] ? 'Terstruktur' : 'Belum dipetakan';
+            document.getElementById('snap-values').innerText = results['values-guard'] ? 'Terlindungi' : 'Belum dipetakan';
+
+            const updatedLabel = document.getElementById('snapshot-updated');
+            if (updatedLabel && officePoliticsState.lastUpdated) {
+                updatedLabel.innerText = `Diperbarui: ${new Date(officePoliticsState.lastUpdated).toLocaleTimeString('id-ID')}`;
+            }
+
+            renderRecommendationsUI();
+        }
+
+        /* ==========================================================================
+           PRINTABLE PLAN RENDERER
+           ========================================================================== */
+        function renderPrintablePlan() {
+            const container = document.getElementById('printable-plan-content');
+            if (!container) return;
+
+            const results = officePoliticsState.toolResults;
+            const dateStr = new Date().toLocaleDateString('id-ID');
+
+            let html = `
+                <div class="print-header">
+                    <div>
+                        <h2 style="color:var(--burgundy); font-size:1.6rem;">RENCANA STRATEGI POLITIK KANTOR</h2>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">Office Politics Navigator™ — Salinan Pribadi Rahasia</p>
+                    </div>
+                    <div style="text-align:right; font-size:0.85rem; color:var(--text-muted);">
+                        Dibuat: ${dateStr}
+                    </div>
+                </div>
+
+                <div class="print-section">
+                    <h3>1. Peta Lanskap & Otoritas</h3>
+                    <p><strong>Otoritas Formal:</strong> ${escapeHTML(results['politics-map']?.formal || 'Belum dievaluasi')}</p>
+                    <p><strong>Pengaruh Informal:</strong> ${escapeHTML(results['politics-map']?.informal || 'Belum dievaluasi')}</p>
+                    <p><strong>Pusat Keputusan:</strong> ${escapeHTML(results['politics-map']?.decisions || 'Belum dievaluasi')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>2. Target Hubungan & Aliansi</h3>
+                    <p><strong>Target Hubungan Prioritas:</strong> ${escapeHTML(results['alliance-builder']?.needKnow || 'Belum dievaluasi')}</p>
+                    <p><strong>Kontribusi Nilai:</strong> ${escapeHTML(results['alliance-builder']?.offer || 'Belum dievaluasi')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>3. Posisi Kenetralan</h3>
+                    <p><strong>Pemangku Kepentingan yang Bersaing:</strong> ${escapeHTML(results['neutral-position']?.sides || 'Belum dievaluasi')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>4. Rencana Visibilitas</h3>
+                    <p><strong>Target Reputasi Profesional Utama:</strong> ${escapeHTML(results['visibility-strategy']?.knownFor || 'Belum dievaluasi')}</p>
+                    <p><strong>Target Audiens:</strong> ${escapeHTML(results['visibility-strategy']?.audience || 'Belum dievaluasi')}</p>
+                </div>
+
+                <div class="print-section">
+                    <h3>5. Pelindung Nilai & Integritas</h3>
+                    <p><strong>Nilai yang Dilindungi:</strong> ${escapeHTML(results['values-guard']?.valueAtRisk || 'Belum dievaluasi')}</p>
+                    <p><strong>Sumber Tekanan:</strong> ${escapeHTML(results['values-guard']?.source || 'Belum dievaluasi')}</p>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        /* ==========================================================================
+           GUIDED RESET WORKFLOW
+           ========================================================================== */
+        function updateGuidedResetUI() {
+            const completed = officePoliticsState.completedTools;
+            const steps = [
+                { id: 1, tool: 'politics-map' },
+                { id: 2, tool: 'alliance-builder' },
+                { id: 3, tool: 'neutral-position' },
+                { id: 4, tool: 'visibility-strategy' },
+                { id: 5, tool: 'values-guard' }
+            ];
+
+            steps.forEach(s => {
+                const card = document.getElementById(`reset-card-${s.id}`);
+                if (card) {
+                    if (completed.includes(s.tool)) {
+                        card.classList.add('completed');
+                    } else {
+                        card.classList.remove('completed');
+                    }
+                }
+            });
+        }
+
+        /* ==========================================================================
+           LOCAL HISTORY MANAGEMENT
+           ========================================================================== */
+        function saveHistory(toolId, entry) {
+            const key = `politics_history_${toolId}`;
+            let history = JSON.parse(localStorage.getItem(key) || '[]');
+            history.unshift(entry);
+            if (history.length > 30) history = history.slice(0, 30);
+            localStorage.setItem(key, JSON.stringify(history));
+            loadHistory(toolId);
+        }
+
+        function loadHistory(toolId) {
+            const historyContainer = document.getElementById(`history-${toolId}`);
+            if (!historyContainer) return;
+
+            const key = `politics_history_${toolId}`;
+            const history = JSON.parse(localStorage.getItem(key) || '[]');
+
+            if (history.length === 0) {
+                historyContainer.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <div class="history-header">
+                    <h3><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Analisis (${history.length})</h3>
+                    <button class="btn btn-sm btn-secondary" onclick="clearHistory('${toolId}')">Hapus Riwayat Alat</button>
+                </div>
+            `;
+
+            history.forEach((item, idx) => {
+                html += `
+                    <div class="history-item" id="hist-${toolId}-${idx}">
+                        <div class="history-summary" onclick="toggleHistoryItem('${toolId}', ${idx})">
+                            <span>${escapeHTML(item.summary)}</span>
+                            <span style="color:var(--text-muted); font-size:0.8rem;">${escapeHTML(item.date)}</span>
+                        </div>
+                        <div class="history-details">
+                            <pre style="font-size:0.8rem; white-space:pre-wrap; color:var(--text-muted);">${escapeHTML(JSON.stringify(item.data, null, 2))}</pre>
+                        </div>
+                    </div>
+                `;
+            });
+
+            historyContainer.innerHTML = html;
+        }
+
+        function toggleHistoryItem(toolId, idx) {
+            const item = document.getElementById(`hist-${toolId}-${idx}`);
+            if (item) item.classList.toggle('open');
+        }
+
+        function clearHistory(toolId) {
+            if (!confirm("Hapus riwayat tersimpan untuk alat ini?")) return;
+            const key = `politics_history_${toolId}`;
+            localStorage.removeItem(key);
+            loadHistory(toolId);
+            showToast("Riwayat alat dihapus.");
+        }
+
+        function loadAllHistories() {
+            ['politics-map', 'alliance-builder', 'neutral-position', 'visibility-strategy', 'values-guard'].forEach(toolId => {
+                loadHistory(toolId);
+            });
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unified-history-container');
+            if (!container) return;
+
+            const tools = ['politics-map', 'alliance-builder', 'neutral-position', 'visibility-strategy', 'values-guard'];
+            const toolNamesInID = {
+                'politics-map': 'Peta Politik',
+                'alliance-builder': 'Pembangun Aliansi',
+                'neutral-position': 'Posisi Netral',
+                'visibility-strategy': 'Strategi Visibilitas',
+                'values-guard': 'Pelindung Nilai'
+            };
+
+            let html = '';
+
+            tools.forEach(toolId => {
+                const key = `politics_history_${toolId}`;
+                const history = JSON.parse(localStorage.getItem(key) || '[]');
+                if (history.length > 0) {
+                    html += `<h3 style="font-size:1rem; color:var(--burgundy); margin-top:1rem; margin-bottom:0.5rem;">${toolNamesInID[toolId]}</h3>`;
+                    history.forEach(item => {
+                        html += `
+                            <div class="history-item open" style="margin-bottom:0.5rem;">
+                                <div class="history-summary">
+                                    <span>${escapeHTML(item.summary)}</span>
+                                    <span style="color:var(--text-muted); font-size:0.8rem;">${escapeHTML(item.date)}</span>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+            });
+
+            container.innerHTML = html || '<p style="color:var(--text-muted); font-size:0.9rem;">Belum ada riwayat yang tercatat.</p>';
+        }
+
+        function clearGlobalHistory() {
+            if (!confirm("Apakah Anda yakin ingin menghapus SEMUA riwayat tersimpan dan status lokal di seluruh aplikasi?")) return;
+            localStorage.clear();
+            officePoliticsState = { completedTools: [], toolResults: {}, historyMeta: {}, currentInputs: {}, recommendations: [], privacyAcknowledged: true, lastUpdated: null };
+            loadAllHistories();
+            updateDashboardSnapshot();
+            showToast("Semua data lokal telah di-reset.");
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(officePoliticsState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "office_politics_navigator_data.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+    </script>
+</body>
+</html>

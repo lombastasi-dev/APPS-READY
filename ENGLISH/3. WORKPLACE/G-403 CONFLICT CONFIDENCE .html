@@ -1,0 +1,2006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conflict Confidence — Communication Framework &amp; De-escalation Playbook System</title>
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* RESET & BASE STYLES */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --deep-orange: #C2410C;
+      --deep-orange-hover: #9A3412;
+      --orange-light: #FFEDD5;
+      --orange-border: #FED7AA;
+      --slate-blue: #334155;
+      --slate-dark: #1E293B;
+      --slate-light: #F8FAFC;
+      --slate-muted: #64748B;
+      --slate-border: #E2E8F0;
+      --bg-gradient: linear-gradient(135deg, #FFF7ED 0%, #F8FAFC 100%);
+      --card-bg: #FFFFFF;
+      --radius-xl: 1rem;
+      --radius-lg: 0.75rem;
+      --radius-md: 0.5rem;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+      --transition: all 0.2s ease-in-out;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--slate-dark);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* LAYOUT STRUCTURE */
+    #app-container {
+      display: flex;
+      flex: 1;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* SIDEBAR */
+    #sidebar {
+      width: 260px;
+      background: #FFFFFF;
+      border-right: 1px solid var(--slate-border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 40;
+      transition: transform 0.3s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid var(--slate-border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-header i {
+      color: var(--deep-orange);
+      font-size: 1.5rem;
+    }
+
+    .sidebar-header h1 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+      letter-spacing: -0.02em;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 1rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .nav-item button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1rem;
+      border-radius: var(--radius-lg);
+      border: none;
+      background: transparent;
+      color: var(--slate-muted);
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: var(--transition);
+    }
+
+    .nav-item button:hover {
+      background: var(--slate-light);
+      color: var(--slate-dark);
+    }
+
+    .nav-item button.active {
+      background: var(--orange-light);
+      color: var(--deep-orange);
+      font-weight: 600;
+    }
+
+    .nav-item button i {
+      width: 18px;
+      text-align: center;
+      font-size: 0.95rem;
+    }
+
+    .sidebar-badge {
+      margin-left: auto;
+      background: var(--deep-orange);
+      color: #FFF;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.4rem;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    /* MAIN CONTENT */
+    #main-content {
+      flex: 1;
+      margin-left: 260px;
+      padding: 2rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      width: calc(100% - 260px);
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 840px;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      flex: 1;
+    }
+
+    /* MOBILE HEADER */
+    .mobile-header {
+      display: none;
+      width: 100%;
+      background: #FFFFFF;
+      padding: 1rem;
+      border-bottom: 1px solid var(--slate-border);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .mobile-hamburger {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      color: var(--slate-dark);
+      cursor: pointer;
+      padding: 0.5rem;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.4);
+      z-index: 35;
+      backdrop-filter: blur(2px);
+    }
+
+    /* CARDS & UI COMPONENTS */
+    .card {
+      background: var(--card-bg);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--slate-border);
+      transition: var(--transition);
+    }
+
+    .card:hover {
+      box-shadow: var(--shadow-md);
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--slate-dark);
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.875rem;
+      color: var(--slate-muted);
+      margin-bottom: 1.25rem;
+    }
+
+    /* FORM ELEMENTS */
+    .form-group {
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--slate-blue);
+    }
+
+    .form-control, select.form-control, textarea.form-control {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--slate-border);
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 0.875rem;
+      color: var(--slate-dark);
+      background-color: var(--slate-light);
+      transition: var(--transition);
+    }
+
+    textarea.form-control {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--deep-orange);
+      background-color: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(194, 65, 12, 0.15);
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.25rem;
+      flex-wrap: wrap;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--slate-blue);
+    }
+
+    .radio-label input[type="radio"] {
+      accent-color: var(--deep-orange);
+      width: 1rem;
+      height: 1rem;
+    }
+
+    /* BUTTONS */
+    .btn-group {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-lg);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--deep-orange);
+      color: #FFFFFF;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--deep-orange-hover);
+    }
+
+    .btn-secondary {
+      background-color: var(--slate-light);
+      color: var(--slate-blue);
+      border: 1px solid var(--slate-border);
+    }
+
+    .btn-secondary:hover {
+      background-color: #E2E8F0;
+      color: var(--slate-dark);
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.75rem;
+      font-size: 0.75rem;
+      border-radius: var(--radius-md);
+    }
+
+    .btn-copy {
+      background-color: var(--orange-light);
+      color: var(--deep-orange);
+      border: 1px solid var(--orange-border);
+    }
+
+    .btn-copy:hover {
+      background-color: #FDBA74;
+      color: #7C2D12;
+    }
+
+    /* OUTPUT SECTIONS */
+    .output-box {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px dashed var(--slate-border);
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .script-block {
+      background: var(--slate-light);
+      border-left: 4px solid var(--deep-orange);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      position: relative;
+    }
+
+    .script-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .script-step-title {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 700;
+      color: var(--deep-orange);
+    }
+
+    .script-text {
+      font-size: 0.95rem;
+      color: var(--slate-dark);
+      white-space: pre-wrap;
+    }
+
+    /* DASHBOARD & HERO */
+    .hero-card {
+      background: linear-gradient(135deg, var(--slate-dark) 0%, var(--slate-blue) 100%);
+      color: #FFFFFF;
+      border: none;
+    }
+
+    .hero-card h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      color: #FFFFFF;
+    }
+
+    .hero-card p {
+      color: #94A3B8;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .tool-card {
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      height: 100%;
+    }
+
+    .tool-card:hover {
+      border-color: var(--deep-orange);
+      transform: translateY(-2px);
+    }
+
+    .tool-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: var(--radius-lg);
+      background: var(--orange-light);
+      color: var(--deep-orange);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+    }
+
+    .tool-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--slate-dark);
+    }
+
+    .tool-card p {
+      font-size: 0.8125rem;
+      color: var(--slate-muted);
+      line-height: 1.4;
+    }
+
+    /* READINESS INDEX */
+    .readiness-container {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .readiness-question {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--slate-border);
+    }
+
+    .readiness-question:last-child {
+      border-bottom: none;
+    }
+
+    .scale-options {
+      display: flex;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .scale-btn {
+      flex: 1;
+      padding: 0.5rem;
+      border: 1px solid var(--slate-border);
+      background: var(--slate-light);
+      border-radius: var(--radius-md);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      color: var(--slate-blue);
+    }
+
+    .scale-btn:hover {
+      background: #E2E8F0;
+    }
+
+    .scale-btn.selected {
+      background: var(--deep-orange);
+      color: #FFFFFF;
+      border-color: var(--deep-orange);
+    }
+
+    .score-meter {
+      height: 12px;
+      background: var(--slate-border);
+      border-radius: 6px;
+      overflow: hidden;
+      margin: 1rem 0 0.5rem 0;
+    }
+
+    .score-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #EF4444 0%, #F59E0B 50%, #10B981 100%);
+      width: 0%;
+      transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* COMPARISON TABLE */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.5rem;
+      font-size: 0.875rem;
+    }
+
+    .comparison-table th, .comparison-table td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--slate-border);
+    }
+
+    .comparison-table th {
+      background-color: var(--slate-light);
+      color: var(--slate-blue);
+      font-weight: 600;
+    }
+
+    .passive-text {
+      color: #DC2626;
+      background-color: #FEF2F2;
+      border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .assertive-text {
+      color: #16A34A;
+      background-color: #F0FDF4;
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-weight: 600;
+    }
+
+    /* 7-DAY CONFLICT COURAGE RESET */
+    .reset-timeline {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .reset-day-card {
+      border: 1px solid var(--slate-border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      background: var(--slate-light);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: var(--transition);
+    }
+
+    .reset-day-card:hover {
+      border-color: var(--deep-orange);
+      background: #FFFFFF;
+    }
+
+    .reset-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .reset-day-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--deep-orange);
+      background: var(--orange-light);
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-md);
+    }
+
+    /* ACCORDION / HISTORY */
+    .history-section {
+      margin-top: 1rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .history-item {
+      border: 1px solid var(--slate-border);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1rem;
+      background: var(--slate-light);
+      font-size: 0.8125rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .history-item:hover {
+      background: #FFFFFF;
+      border-color: var(--deep-orange);
+    }
+
+    /* TOAST */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--slate-dark);
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-lg);
+      font-size: 0.875rem;
+      font-weight: 500;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      pointer-events: none;
+      z-index: 100;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* FOOTER */
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 1.5rem 1rem;
+      font-size: 0.75rem;
+      color: var(--slate-muted);
+      border-top: 1px solid var(--slate-border);
+      margin-top: auto;
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      #sidebar {
+        transform: translateX(-100%);
+      }
+
+      #sidebar.open {
+        transform: translateX(0);
+      }
+
+      .mobile-header {
+        display: flex;
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      #main-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+      }
+
+      .tool-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #toast {
+        bottom: 1rem;
+        right: 1rem;
+        left: 1rem;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- MOBILE HEADER -->
+  <header class="mobile-header">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <i class="fa-solid fa-shield-halved" style="color: var(--deep-orange); font-size: 1.25rem;"></i>
+      <span style="font-weight: 700; color: var(--slate-dark);">Conflict Confidence™</span>
+    </div>
+    <button class="mobile-hamburger" id="hamburger-btn" aria-label="Open Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div id="app-container">
+    <!-- SIDEBAR NAVIGATION -->
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-shield-halved"></i>
+        <h1>Conflict Confidence™</h1>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <button class="nav-btn active" data-target="dashboard">
+            <i class="fa-solid fa-house"></i>
+            Dashboard &amp; Readiness
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool1">
+            <i class="fa-solid fa-comments"></i>
+            1. Conversation Architect
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool2">
+            <i class="fa-solid fa-brain"></i>
+            2. Threat Dismantler
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool3">
+            <i class="fa-solid fa-shield-heart"></i>
+            3. De-escalation Playbook
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool4">
+            <i class="fa-solid fa-bolt"></i>
+            4. Assertive Translator
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool5">
+            <i class="fa-solid fa-clipboard-check"></i>
+            5. Post-Conflict Debrief
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool6">
+            <i class="fa-solid fa-calendar-days"></i>
+            6. 7-Day Conflict Reset
+            <span class="sidebar-badge">Plan</span>
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool7">
+            <i class="fa-solid fa-folder-open"></i>
+            7. My Conflict Plan
+          </button>
+        </li>
+        <li class="nav-item">
+          <button class="nav-btn" data-target="tool8">
+            <i class="fa-solid fa-shield-cat"></i>
+            8. Privacy &amp; Safety
+          </button>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="main-content">
+      <div class="content-wrapper">
+
+        <!-- VIEW: DASHBOARD -->
+        <section id="dashboard" class="view-section">
+          <div class="card hero-card">
+            <h2>Conflict Confidence™</h2>
+            <p>Transform terrifying arguments into productive, calm conversations. Designed for conflict-avoidant adults seeking clear, grounded communication and emotional self-trust.</p>
+          </div>
+
+          <!-- ORIENTATION & CORE PRINCIPLE -->
+          <div class="card" style="background: var(--slate-light); border-left: 4px solid var(--deep-orange);">
+            <div class="section-title" style="font-size: 1.1rem; margin-bottom: 0.25rem;">
+              <i class="fa-solid fa-compass" style="color: var(--deep-orange);"></i> Orientation &amp; Core Operating Principle
+            </div>
+            <p style="font-size: 0.875rem; color: var(--slate-muted); line-height: 1.5; margin-bottom: 0.5rem;">
+              <strong>The Core Rule:</strong> Conflict is not the end of a relationship; unaddressed boundary violations and explosive reactions are. Focus your energy on your opening 60 seconds and calm de-escalation boundaries rather than scripting an entire multi-hour debate.
+            </p>
+            <p style="font-size: 0.8125rem; color: var(--deep-orange); font-weight: 600;">
+              <i class="fa-solid fa-triangle-exclamation"></i> Safety First: If a situation involves domestic violence, physical threats, severe emotional abuse, or stalking, scripts alone are insufficient. Prioritize physical safety and professional intervention.
+            </p>
+          </div>
+
+          <div class="tool-grid">
+            <div class="card tool-card" onclick="switchTab('tool1')">
+              <div class="tool-icon"><i class="fa-solid fa-comments"></i></div>
+              <h3>1. Conversation Architect</h3>
+              <p>Build an objective 4-part script and strip out accusatory trigger words automatically.</p>
+            </div>
+            <div class="card tool-card" onclick="switchTab('tool2')">
+              <div class="tool-icon"><i class="fa-solid fa-brain"></i></div>
+              <h3>2. Threat Dismantler</h3>
+              <p>Deconstruct worst-case anxiety and reframe relational tension as protection.</p>
+            </div>
+            <div class="card tool-card" onclick="switchTab('tool3')">
+              <div class="tool-icon"><i class="fa-solid fa-shield-heart"></i></div>
+              <h3>3. De-escalation Playbook</h3>
+              <p>Master calm deflections, tactical 15-min time-outs, and the broken-record response.</p>
+            </div>
+            <div class="card tool-card" onclick="switchTab('tool4')">
+              <div class="tool-icon"><i class="fa-solid fa-bolt"></i></div>
+              <h3>4. Assertive Translator</h3>
+              <p>Convert passive, overly apologetic drafts into firm, clear, respectful assertions.</p>
+            </div>
+            <div class="card tool-card" onclick="switchTab('tool5')">
+              <div class="tool-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+              <h3>5. Post-Talk Debrief</h3>
+              <p>Release post-talk physical adrenaline, score your courage, and log self-trust insights.</p>
+            </div>
+            <div class="card tool-card" onclick="switchTab('tool6')">
+              <div class="tool-icon"><i class="fa-solid fa-calendar-days"></i></div>
+              <h3>6. 7-Day Conflict Reset</h3>
+              <p>Follow a structured step-by-step guided transformation workflow.</p>
+            </div>
+          </div>
+
+          <!-- READINESS INDEX -->
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-gauge-high" style="color: var(--deep-orange);"></i>
+              Conflict Readiness Index
+            </div>
+            <p class="section-subtitle">Assess your baseline tendency between passive avoidance and calm assertion.</p>
+            
+            <div class="readiness-container">
+              <div class="readiness-question">
+                <label>1. When a boundary is crossed, how quickly do you bring it up?</label>
+                <div class="scale-options" data-q="1">
+                  <button class="scale-btn" data-val="1" type="button">Avoid completely</button>
+                  <button class="scale-btn" data-val="2" type="button">Wait days/weeks</button>
+                  <button class="scale-btn" data-val="3" type="button">Address within 24h</button>
+                </div>
+              </div>
+
+              <div class="readiness-question">
+                <label>2. How do you feel physically when anticipating a difficult conversation?</label>
+                <div class="scale-options" data-q="2">
+                  <button class="scale-btn" data-val="1" type="button">Severe dread/shaking</button>
+                  <button class="scale-btn" data-val="2" type="button">Moderate nervous energy</button>
+                  <button class="scale-btn" data-val="3" type="button">Calm &amp; centered</button>
+                </div>
+              </div>
+
+              <div class="readiness-question">
+                <label>3. What is your reaction if the other person gets defensive?</label>
+                <div class="scale-options" data-q="3">
+                  <button class="scale-btn" data-val="1" type="button">Back down &amp; apologize</button>
+                  <button class="scale-btn" data-val="2" type="button">Get flustered / lose focus</button>
+                  <button class="scale-btn" data-val="3" type="button">Hold steady boundary</button>
+                </div>
+              </div>
+
+              <button class="btn btn-primary" onclick="calculateReadiness()" type="button" style="width: 100%; margin-top: 0.5rem;">
+                Calculate My Readiness Index &amp; Get Recommendations
+              </button>
+
+              <div id="readiness-result" style="display: none; margin-top: 1rem; padding-top: 1rem; border-top: 1px dashed var(--slate-border);">
+                <div style="display: flex; justify-content: space-between; align-items: baseline;">
+                  <span style="font-weight: 700; font-size: 1rem; color: var(--slate-dark);" id="readiness-level">Readiness Level</span>
+                  <span style="font-weight: 700; font-size: 1.25rem; color: var(--deep-orange);" id="readiness-score">0%</span>
+                </div>
+                <div class="score-meter">
+                  <div class="score-fill" id="readiness-bar"></div>
+                </div>
+                <p id="readiness-feedback" style="font-size: 0.875rem; color: var(--slate-muted); margin-top: 0.5rem;"></p>
+                <div id="readiness-recommendation" style="margin-top: 0.75rem; font-size: 0.85rem; font-weight: 600; color: var(--deep-orange);"></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 1: CONVERSATION ARCHITECT -->
+        <section id="tool1" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-comments" style="color: var(--deep-orange);"></i>
+              Difficult Conversation Architect
+            </div>
+            <p class="section-subtitle">Problem: "I need to address an issue, but I panic, freeze up, or stumble over my words."</p>
+
+            <form id="tool1-form" onsubmit="event.preventDefault(); generateTool1();">
+              <div class="form-group">
+                <label for="t1-person">Who is the conversation with?</label>
+                <select id="t1-person" class="form-control" required>
+                  <option value="Partner">Partner</option>
+                  <option value="Roommate">Roommate</option>
+                  <option value="Manager">Manager</option>
+                  <option value="Friend">Friend</option>
+                  <option value="Family">Family Member</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-behavior">The specific behavior/issue to address (Facts only):</label>
+                <textarea id="t1-behavior" class="form-control" placeholder="e.g., You've paid your share of the utilities 5 to 10 days late for the past three months." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-impact">The impact it has on you:</label>
+                <textarea id="t1-impact" class="form-control" placeholder="e.g., I have to cover the bill upfront out of my savings, which causes financial anxiety." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="t1-solution">Your proposed solution/request:</label>
+                <textarea id="t1-solution" class="form-control" placeholder="e.g., Set up an automatic transfer on the 1st of every month." required></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Build 4-Part Script
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+              </div>
+            </form>
+
+            <div id="t1-output" class="output-box" style="display: none;">
+              <h4 style="font-weight: 700; color: var(--slate-dark);">Generated 4-Part Script</h4>
+              
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">1. Observation (Facts Only)</span>
+                </div>
+                <div class="script-text" id="t1-out-obs"></div>
+              </div>
+
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">2. Impact (Cost / Feeling)</span>
+                </div>
+                <div class="script-text" id="t1-out-imp"></div>
+              </div>
+
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">3. Request (Clear Action)</span>
+                </div>
+                <div class="script-text" id="t1-out-req"></div>
+              </div>
+
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">4. Outcome (Positive Collaboration)</span>
+                </div>
+                <div class="script-text" id="t1-out-out"></div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end; gap: 0.5rem;">
+                <button class="btn btn-copy" onclick="copyFullScript('t1')">
+                  <i class="fa-solid fa-copy"></i> Copy Full Script
+                </button>
+                <button class="btn btn-secondary" onclick="switchTab('tool3')" style="font-size: 0.8125rem;">
+                  <i class="fa-solid fa-arrow-right"></i> Next: De-escalation Playbook
+                </button>
+              </div>
+
+              <!-- OFFENSIVE PHRASE STRIPPER -->
+              <div style="background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-lg); padding: 1rem; margin-top: 1rem;">
+                <h5 style="font-weight: 700; color: #991B1B; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                  <i class="fa-solid fa-filter"></i> Offensive Phrase Stripper Audit
+                </h5>
+                <div id="t1-stripper-result" style="font-size: 0.85rem; color: #7F1D1D;"></div>
+              </div>
+
+              <!-- PRE-CONVERSATION CHECKLIST -->
+              <div style="background: var(--slate-light); border: 1px solid var(--slate-border); border-radius: var(--radius-lg); padding: 1rem;">
+                <h5 style="font-weight: 700; color: var(--slate-dark); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                  <i class="fa-solid fa-heart-pulse" style="color: var(--deep-orange);"></i> Pre-Conversation Grounding Steps
+                </h5>
+                <ul style="font-size: 0.85rem; color: var(--slate-muted); padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                  <li><strong>Physiological Sigh:</strong> Take two quick inhales through your nose, followed by one long, slow exhale to drop your heart rate.</li>
+                  <li><strong>Physical Release:</strong> Unclench your jaw, drop your shoulders away from your ears, and plant both feet firmly on the floor.</li>
+                  <li><strong>Objective Anchor:</strong> Remind yourself: "I am delivering objective facts, not attacking their character."</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="history-section" id="t1-history-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 2: CONFLICT THREAT DISMANTLER -->
+        <section id="tool2" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-brain" style="color: var(--deep-orange);"></i>
+              Conflict Threat Dismantler
+            </div>
+            <p class="section-subtitle">Problem: "Any disagreement feels like an existential threat that will ruin the relationship forever."</p>
+
+            <form id="tool2-form" onsubmit="event.preventDefault(); generateTool2();">
+              <div class="form-group">
+                <label for="t2-conflict">What conflict are you avoiding?</label>
+                <textarea id="t2-conflict" class="form-control" placeholder="e.g., Asking my manager to adjust my project deadline because of workload overflow." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="t2-worst">What is your worst-case scenario projection?</label>
+                <textarea id="t2-worst" class="form-control" placeholder="e.g., They will think I'm incompetent, yell at me, and fire me on the spot." required></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="t2-history">History with this person:</label>
+                <select id="t2-history" class="form-control" required>
+                  <option value="Reasonable">Generally reasonable &amp; professional</option>
+                  <option value="Volatile">High drama / Volatile reactions in past</option>
+                  <option value="Unknown">Unknown / New relationship</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-shield-halved"></i> Dismantle Threat
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+              </div>
+            </form>
+
+            <div id="t2-output" class="output-box" style="display: none;">
+              <!-- PROBABILITY VS FEAR AUDIT -->
+              <div style="background: var(--slate-light); border-radius: var(--radius-lg); padding: 1rem; border: 1px solid var(--slate-border);">
+                <h4 style="font-weight: 700; color: var(--slate-dark); margin-bottom: 0.5rem;">Probability vs. Fear Audit</h4>
+                <div style="display: flex; gap: 1rem; margin-bottom: 0.75rem; flex-wrap: wrap;">
+                  <div style="flex: 1; min-width: 240px; background: #FEF2F2; padding: 0.75rem; border-radius: var(--radius-md); border-left: 3px solid #EF4444;">
+                    <div style="font-size: 0.75rem; color: #991B1B; font-weight: 700;">PROJECTED FEAR</div>
+                    <div style="font-size: 0.875rem; color: #7F1D1D;" id="t2-fear-out"></div>
+                  </div>
+                  <div style="flex: 1; min-width: 240px; background: #F0FDF4; padding: 0.75rem; border-radius: var(--radius-md); border-left: 3px solid #10B981;">
+                    <div style="font-size: 0.75rem; color: #166534; font-weight: 700;">LOGICAL PROBABILITY</div>
+                    <div style="font-size: 0.875rem; color: #14532D;" id="t2-prob-out"></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RELATIONSHIP STABILITY SCORE -->
+              <div style="background: #FFFFFF; border: 1px solid var(--slate-border); border-radius: var(--radius-lg); padding: 1rem;">
+                <h4 style="font-weight: 700; color: var(--slate-dark); margin-bottom: 0.5rem;">Relationship Stability &amp; Resilience Evaluation</h4>
+                <p style="font-size: 0.875rem; color: var(--slate-muted);" id="t2-stability-out"></p>
+              </div>
+
+              <!-- CONFLICT BENIGNITY RE-FRAME -->
+              <div style="background: var(--orange-light); border: 1px solid var(--orange-border); border-radius: var(--radius-lg); padding: 1rem;">
+                <h4 style="font-weight: 700; color: #7C2D12; margin-bottom: 0.25rem;">Conflict Benignity Re-frame</h4>
+                <p style="font-size: 0.875rem; color: #9A3412;" id="t2-reframe-out"></p>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="switchTab('tool1')" style="font-size: 0.8125rem;">
+                  <i class="fa-solid fa-arrow-right"></i> Next: Build Script in Tool 1
+                </button>
+              </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="history-section" id="t2-history-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 3: DE-ESCALATION PLAYBOOK -->
+        <section id="tool3" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-shield-heart" style="color: var(--deep-orange);"></i>
+              De-escalation &amp; Deflection Playbook
+            </div>
+            <p class="section-subtitle">Problem: "What do I say if the other person becomes defensive, loud, or starts arguing back?"</p>
+
+            <form id="tool3-form" onsubmit="event.preventDefault(); generateTool3();">
+              <div class="form-group">
+                <label for="t3-reaction">Anticipated defensive reaction:</label>
+                <select id="t3-reaction" class="form-control" required>
+                  <option value="deflection">Deflection / Counter-accusing ("Well, you do this too!")</option>
+                  <option value="shutdown">Shutting down / Silent treatment</option>
+                  <option value="voice">Raising voice / Loud argument</option>
+                  <option value="tears">Emotional tears / Guilt trip ("I'm just a terrible person then")</option>
+                </select>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-book-open"></i> Get De-escalation Tactics
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+              </div>
+            </form>
+
+            <div id="t3-output" class="output-box" style="display: none;">
+              <h4 style="font-weight: 700; color: var(--slate-dark);">3 Tactical De-escalation Responses</h4>
+
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">Response 1: Validation + Pivot back</span>
+                  <button class="btn btn-sm btn-copy" type="button" onclick="copyText('t3-resp1')">Copy</button>
+                </div>
+                <div class="script-text" id="t3-resp1"></div>
+              </div>
+
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">Response 2: Calm Boundary Anchor</span>
+                  <button class="btn btn-sm btn-copy" type="button" onclick="copyText('t3-resp2')">Copy</button>
+                </div>
+                <div class="script-text" id="t3-resp2"></div>
+              </div>
+
+              <div class="script-block">
+                <div class="script-header">
+                  <span class="script-step-title">Response 3: De-escalation Softener</span>
+                  <button class="btn btn-sm btn-copy" type="button" onclick="copyText('t3-resp3')">Copy</button>
+                </div>
+                <div class="script-text" id="t3-resp3"></div>
+              </div>
+
+              <!-- TIME-OUT SCRIPT -->
+              <div style="background: var(--slate-light); border-radius: var(--radius-lg); padding: 1rem; border: 1px solid var(--slate-border);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <h5 style="font-weight: 700; color: var(--slate-dark);">Emergency 15-Minute Time-Out Script</h5>
+                  <button class="btn btn-sm btn-copy" type="button" onclick="copyText('t3-timeout')">Copy Script</button>
+                </div>
+                <p style="font-size: 0.875rem; color: var(--slate-dark); font-style: italic;" id="t3-timeout"></p>
+              </div>
+
+              <!-- BROKEN RECORD TECHNIQUE -->
+              <div style="background: #F8FAFC; border-left: 4px solid var(--slate-blue); padding: 1rem; border-radius: 0 var(--radius-lg) var(--radius-lg) 0;">
+                <h5 style="font-weight: 700; color: var(--slate-blue); margin-bottom: 0.25rem;">"Broken Record" Technique Instructions</h5>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);" id="t3-brokenrecord"></p>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="switchTab('tool4')" style="font-size: 0.8125rem;">
+                  <i class="fa-solid fa-arrow-right"></i> Next: Assertive Translator
+                </button>
+              </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="history-section" id="t3-history-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 4: PASSIVE TO ASSERTIVE TRANSLATOR -->
+        <section id="tool4" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-bolt" style="color: var(--deep-orange);"></i>
+              Passive to Assertive Translator
+            </div>
+            <p class="section-subtitle">Problem: "I tend to use weak, passive language that makes people ignore my concerns."</p>
+
+            <form id="tool4-form" onsubmit="event.preventDefault(); generateTool4();">
+              <div class="form-group">
+                <label for="t4-draft">Your draft message or thought:</label>
+                <textarea id="t4-draft" class="form-control" placeholder="e.g., Sorry to bother you, but if you have a second maybe we could talk about the noise?" required></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-arrow-up-right-dots"></i> Upgrade to Assertive
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+              </div>
+            </form>
+
+            <div id="t4-output" class="output-box" style="display: none;">
+              <!-- ASSERTIVE UPGRADE SCRIPT -->
+              <div class="script-block" style="border-left-color: #10B981; background: #F0FDF4;">
+                <div class="script-header">
+                  <span class="script-step-title" style="color: #059669;">Assertive Upgrade Script</span>
+                  <button class="btn btn-sm btn-copy" type="button" onclick="copyText('t4-upgraded')">Copy Assertive Version</button>
+                </div>
+                <div class="script-text" id="t4-upgraded" style="font-weight: 600; color: #065F46;"></div>
+              </div>
+
+              <!-- SIDE BY SIDE COMPARISON TABLE -->
+              <div style="overflow-x: auto;">
+                <h5 style="font-weight: 700; color: var(--slate-dark); margin-bottom: 0.5rem;">Side-by-Side Comparison</h5>
+                <table class="comparison-table">
+                  <thead>
+                    <tr>
+                      <th style="width: 50%;">Passive Draft</th>
+                      <th style="width: 50%;">Assertive Upgrade</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><span class="passive-text" id="t4-comp-passive"></span></td>
+                      <td><span class="assertive-text" id="t4-comp-assertive"></span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- TONAL GUIDANCE -->
+              <div style="background: var(--slate-light); border: 1px solid var(--slate-border); border-radius: var(--radius-lg); padding: 1rem;">
+                <h5 style="font-weight: 700; color: var(--slate-dark); font-size: 0.875rem; margin-bottom: 0.5rem;">
+                  <i class="fa-solid fa-sliders" style="color: var(--deep-orange);"></i> Tonal &amp; Delivery Guidance
+                </h5>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; font-size: 0.85rem; color: var(--slate-muted);">
+                  <div><strong>Pitch &amp; Pace:</strong> Speak with a downward inflection at sentence ends. Slow down your delivery by 15%.</div>
+                  <div><strong>Body Language:</strong> Keep shoulders back and maintain steady, soft eye contact.</div>
+                  <div><strong>Zero Apologies:</strong> Do not apologize for introducing an important subject.</div>
+                </div>
+              </div>
+
+              <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-secondary" onclick="switchTab('tool5')" style="font-size: 0.8125rem;">
+                  <i class="fa-solid fa-arrow-right"></i> Next: Post-Conflict Debrief
+                </button>
+              </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="history-section" id="t4-history-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 5: POST-CONFLICT DEBRIEF -->
+        <section id="tool5" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-clipboard-check" style="color: var(--deep-orange);"></i>
+              Post-Conflict Debrief &amp; Learning Log
+            </div>
+            <p class="section-subtitle">Problem: "After a hard conversation, I shake and analyze every single word I said."</p>
+
+            <form id="tool5-form" onsubmit="event.preventDefault(); generateTool5();">
+              <div class="form-group">
+                <label for="t5-topic">Conversation topic / context:</label>
+                <input type="text" id="t5-topic" class="form-control" placeholder="e.g., Workload reallocation discussion with manager" required>
+              </div>
+
+              <div class="form-group">
+                <label>Did you state your main request clearly?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-request" value="Yes" checked> Yes</label>
+                  <label class="radio-label"><input type="radio" name="t5-request" value="Partially"> Partially</label>
+                  <label class="radio-label"><input type="radio" name="t5-request" value="No"> No</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label>Was the relationship destroyed?</label>
+                <div class="radio-group">
+                  <label class="radio-label"><input type="radio" name="t5-destroyed" value="No" checked> No (Intact / Improved)</label>
+                  <label class="radio-label"><input type="radio" name="t5-destroyed" value="Yes"> Yes</label>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="t5-courage">What did you learn about your courage today?</label>
+                <textarea id="t5-courage" class="form-control" placeholder="e.g., I survived my discomfort, my hands shook but I still spoke my truth." required></textarea>
+              </div>
+
+              <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                  <i class="fa-solid fa-square-check"></i> Process Debrief
+                </button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()">
+                  <i class="fa-solid fa-flask"></i> Load Sample Scenario
+                </button>
+              </div>
+            </form>
+
+            <div id="t5-output" class="output-box" style="display: none;">
+              <!-- COURAGE METRIC SCORE -->
+              <div style="background: var(--orange-light); border-radius: var(--radius-lg); padding: 1.25rem; text-align: center; border: 1px solid var(--orange-border);">
+                <div style="font-size: 0.875rem; font-weight: 700; color: #9A3412; text-transform: uppercase;">Courage Metric Score</div>
+                <div style="font-size: 2.5rem; font-weight: 800; color: var(--deep-orange);" id="t5-score-num">85 / 100</div>
+                <p style="font-size: 0.875rem; color: #7C2D12;" id="t5-score-msg"></p>
+              </div>
+
+              <!-- SHAKE-OFF EXERCISE -->
+              <div style="background: var(--slate-light); border: 1px solid var(--slate-border); border-radius: var(--radius-lg); padding: 1rem;">
+                <h5 style="font-weight: 700; color: var(--slate-dark); margin-bottom: 0.5rem;">
+                  <i class="fa-solid fa-person-running" style="color: var(--deep-orange);"></i> 2-Minute Physical Shake-Off Guided Exercise
+                </h5>
+                <ol style="font-size: 0.85rem; color: var(--slate-muted); padding-left: 1.25rem; display: flex; flex-direction: column; gap: 0.4rem;">
+                  <li><strong>Shake your hands &amp; arms:</strong> Stand up and physically shake your hands out for 30 seconds to release trapped adrenaline.</li>
+                  <li><strong>Exhale completely:</strong> Inhale deeply through your nose, then open your mouth wide and sigh out all the air.</li>
+                  <li><strong>Self-Compassion Check:</strong> Place a hand over your heart and silently say: "I did something hard today to protect my well-being."</li>
+                </ol>
+              </div>
+
+              <!-- LESSON LOG -->
+              <div style="background: #FFFFFF; border: 1px solid var(--slate-border); border-radius: var(--radius-lg); padding: 1rem;">
+                <h5 style="font-weight: 700; color: var(--slate-dark); margin-bottom: 0.25rem;">Saved Lesson Entry</h5>
+                <p style="font-size: 0.875rem; color: var(--slate-muted);" id="t5-log-summary"></p>
+              </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div class="history-section" id="t5-history-wrapper"></div>
+          </div>
+        </section>
+
+        <!-- TOOL 6: 7-DAY CONFLICT RESET -->
+        <section id="tool6" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-calendar-days" style="color: var(--deep-orange);"></i>
+              7-Day Conflict Courage Reset
+            </div>
+            <p class="section-subtitle">Your step-by-step guided transformation workflow to build lasting interpersonal resilience.</p>
+
+            <div class="reset-timeline">
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 1</span>
+                  <button class="btn btn-sm btn-primary" onclick="switchTab('dashboard')">Take Readiness Index</button>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Assess Baseline &amp; Reframe Threat</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Calculate your readiness index on the dashboard and use Tool 2 to examine your catastrophic fears.</p>
+              </div>
+
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 2</span>
+                  <button class="btn btn-sm btn-primary" onclick="switchTab('tool1')">Open Tool 1</button>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Architect Your Opening Script</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Draft your 4-part objective statement (Observation, Impact, Request, Outcome) and check for accusatory trigger words.</p>
+              </div>
+
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 3</span>
+                  <button class="btn btn-sm btn-primary" onclick="switchTab('tool4')">Open Tool 4</button>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Upgrade Language to Assertive</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Run your draft through the Passive-to-Assertive Translator to eliminate weak apologies and qualifiers.</p>
+              </div>
+
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 4</span>
+                  <button class="btn btn-sm btn-primary" onclick="switchTab('tool3')">Open Tool 3</button>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Prepare De-escalation Deflections</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Review tactical responses for defensive reactions, shutdowns, or raised voices so you aren't caught off guard.</p>
+              </div>
+
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 5</span>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Somatic Grounding &amp; Practice Delivery</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Practice reading your script aloud twice in front of a mirror while maintaining a slow pace and downward vocal inflection.</p>
+              </div>
+
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 6</span>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Conduct Conversation &amp; Execute Time-Out</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Deliver your opening 60 seconds. If emotions spike, use the 15-minute time-out script and return calm.</p>
+              </div>
+
+              <div class="reset-day-card">
+                <div class="reset-day-header">
+                  <span class="reset-day-badge">Day 7</span>
+                  <button class="btn btn-sm btn-primary" onclick="switchTab('tool5')">Open Tool 5</button>
+                </div>
+                <h4 style="font-size: 1rem; color: var(--slate-dark);">Post-Talk Debrief &amp; Physical Shake-Off</h4>
+                <p style="font-size: 0.85rem; color: var(--slate-muted);">Release residual adrenaline with physical shaking, log your courage score, and celebrate your self-trust.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 7: MY CONFLICT PLAN -->
+        <section id="tool7" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-folder-open" style="color: var(--deep-orange);"></i>
+              My Conflict Plan (Master Synthesis)
+            </div>
+            <p class="section-subtitle">Review all your saved scripts, threat dismantlings, and debrief logs in one unified workspace.</p>
+
+            <div id="master-plan-container" style="display: flex; flex-direction: column; gap: 1rem;">
+              <!-- Populated dynamically via JS -->
+            </div>
+
+            <div class="btn-group" style="margin-top: 1.5rem;">
+              <button class="btn btn-primary" onclick="window.print()">
+                <i class="fa-solid fa-print"></i> Print / Export My Plan
+              </button>
+              <button class="btn btn-secondary" onclick="clearAllData()">
+                <i class="fa-solid fa-trash-can"></i> Clear All Saved Data
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- TOOL 8: PRIVACY & SAFETY -->
+        <section id="tool8" class="view-section" style="display: none;">
+          <div class="card">
+            <div class="section-title">
+              <i class="fa-solid fa-shield-cat" style="color: var(--deep-orange);"></i>
+              Privacy, Safety &amp; Disclaimer
+            </div>
+            <p class="section-subtitle">Your personal data stays entirely on your device.</p>
+
+            <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.875rem; color: var(--slate-muted);">
+              <div style="background: var(--slate-light); padding: 1rem; border-radius: var(--radius-lg); border: 1px solid var(--slate-border);">
+                <h4 style="color: var(--slate-dark); font-weight: 700; margin-bottom: 0.35rem;"><i class="fa-solid fa-lock" style="color: var(--deep-orange);"></i> 100% Client-Side Storage</h4>
+                <p>All scripts, threat analyses, and debrief logs are saved exclusively in your browser's local storage (`localStorage`). No information is ever transmitted to external servers, cloud databases, or third parties.</p>
+              </div>
+
+              <div style="background: var(--slate-light); padding: 1rem; border-radius: var(--radius-lg); border: 1px solid var(--slate-border);">
+                <h4 style="color: var(--slate-dark); font-weight: 700; margin-bottom: 0.35rem;"><i class="fa-solid fa-triangle-exclamation" style="color: var(--deep-orange);"></i> Clinical &amp; Safety Disclaimer</h4>
+                <p>Conflict Confidence™ is an interpersonal communication and de-escalation practice toolkit. It is <strong>not</strong> a substitute for formal psychotherapy, legal mediation, couples counseling, or domestic violence crisis intervention. If you or someone you know is facing physical danger, abuse, or crisis, please contact local emergency services immediately.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- FOOTER ON EVERY VIEW -->
+      <footer>
+        Conflict Confidence™ — For interpersonal communication practice. Not legal mediation, domestic violence crisis response, or formal therapy.
+      </footer>
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast">
+    <i class="fa-solid fa-check-circle" style="color: #10B981;"></i>
+    <span id="toast-message">Copied to clipboard!</span>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    // CENTRAL DATA MODEL & STATE MANAGEMENT (V2)
+    const conflictConfidenceState = {
+      readinessScores: { q1: 0, q2: 0, q3: 0 },
+      completedTools: [],
+      toolResults: {},
+      historyMeta: {},
+      currentInputs: {},
+      recommendations: [],
+      lastUpdated: null
+    };
+
+    // NAVIGATION SYSTEM
+    function switchTab(targetId) {
+      document.querySelectorAll('.view-section').forEach(sec => sec.style.display = 'none');
+      document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+      const targetSection = document.getElementById(targetId);
+      if (targetSection) targetSection.style.display = 'block';
+
+      const activeBtn = document.querySelector(`.nav-btn[data-target="${targetId}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (targetId.startsWith('tool') && targetId !== 'tool6' && targetId !== 'tool7' && targetId !== 'tool8') {
+        renderHistory(targetId);
+      } else if (targetId === 'tool7') {
+        renderMasterPlan();
+      }
+    }
+
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget.getAttribute('data-target');
+        switchTab(target);
+      });
+    });
+
+    // MOBILE SIDEBAR HANDLERS
+    const hamburgerBtn = document.getElementById('hamburger-btn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+
+    function openMobileSidebar() {
+      sidebar.classList.add('open');
+      overlay.classList.add('open');
+    }
+
+    function closeMobileSidebar() {
+      sidebar.classList.remove('open');
+      overlay.classList.remove('open');
+    }
+
+    if (hamburgerBtn) hamburgerBtn.addEventListener('click', openMobileSidebar);
+    if (overlay) overlay.addEventListener('click', closeMobileSidebar);
+
+    // TOAST NOTIFICATION SYSTEM
+    function showToast(message = "Copied to clipboard!") {
+      const toast = document.getElementById('toast');
+      const msgSpan = document.getElementById('toast-message');
+      if (!toast || !msgSpan) return;
+      msgSpan.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function copyText(elementId) {
+      const el = document.getElementById(elementId);
+      if (!el) return;
+      const text = el.innerText;
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Copied to clipboard!");
+      });
+    }
+
+    function copyFullScript(toolPrefix) {
+      if (toolPrefix === 't1') {
+        const obs = document.getElementById('t1-out-obs').innerText;
+        const imp = document.getElementById('t1-out-imp').innerText;
+        const req = document.getElementById('t1-out-req').innerText;
+        const out = document.getElementById('t1-out-out').innerText;
+        const full = `${obs}\n\n${imp}\n\n${req}\n\n${out}`;
+        navigator.clipboard.writeText(full).then(() => {
+          showToast("Full script copied!");
+        });
+      }
+    }
+
+    // LOCAL STORAGE HISTORY SYSTEM & V2 COMPATIBILITY
+    function getHistoryKey(toolId) {
+      return `conflictconfidence_history_${toolId}`;
+    }
+
+    function saveHistory(toolId, data) {
+      const key = getHistoryKey(toolId);
+      let history = JSON.parse(localStorage.getItem(key) || "[]");
+      data.timestamp = new Date().toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      history.unshift(data);
+      if (history.length > 30) history = history.slice(0, 30);
+      localStorage.setItem(key, JSON.stringify(history));
+      
+      // Update V2 State
+      if (!conflictConfidenceState.completedTools.includes(toolId)) {
+        conflictConfidenceState.completedTools.push(toolId);
+      }
+      conflictConfidenceState.lastUpdated = new Date().toISOString();
+      localStorage.setItem('conflictconfidence_v2_state', JSON.stringify(conflictConfidenceState));
+
+      renderHistory(toolId);
+    }
+
+    function clearHistory(toolId) {
+      const key = getHistoryKey(toolId);
+      localStorage.removeItem(key);
+      renderHistory(toolId);
+      showToast("History cleared.");
+    }
+
+    function clearAllData() {
+      if (confirm("Are you sure you want to clear all saved conflict plans and history?")) {
+        for (let i = 1; i <= 5; i++) {
+          localStorage.removeItem(getHistoryKey(`tool${i}`));
+        }
+        localStorage.removeItem('conflictconfidence_v2_state');
+        renderMasterPlan();
+        showToast("All data cleared.");
+      }
+    }
+
+    function renderHistory(toolId) {
+      const wrapper = document.getElementById(`${toolId}-history-wrapper`);
+      if (!wrapper) return;
+
+      const key = getHistoryKey(toolId);
+      const history = JSON.parse(localStorage.getItem(key) || "[]");
+
+      if (history.length === 0) {
+        wrapper.innerHTML = ``;
+        return;
+      }
+
+      let itemsHtml = history.map((item, idx) => `
+        <div class="history-item" onclick="loadHistoryItem('${toolId}', ${idx})">
+          <div>
+            <strong>${escapeHTML(item.title || 'Saved Entry')}</strong>
+            <div style="color: var(--slate-muted); font-size: 0.75rem;">${item.timestamp}</div>
+          </div>
+          <i class="fa-solid fa-chevron-right" style="color: var(--slate-muted);"></i>
+        </div>
+      `).join('');
+
+      wrapper.innerHTML = `
+        <div style="margin-top: 1.5rem; border-top: 1px solid var(--slate-border); padding-top: 1rem;">
+          <div class="history-header">
+            <h5 style="font-weight: 700; color: var(--slate-dark); font-size: 0.875rem;">
+              <i class="fa-solid fa-clock-rotate-left"></i> Previous Saved Entries
+            </h5>
+            <button class="btn btn-sm btn-secondary" onclick="clearHistory('${toolId}')" type="button">Clear History</button>
+          </div>
+          <div class="history-list">${itemsHtml}</div>
+        </div>
+      `;
+    }
+
+    function loadHistoryItem(toolId, index) {
+      const key = getHistoryKey(toolId);
+      const history = JSON.parse(localStorage.getItem(key) || "[]");
+      const item = history[index];
+      if (!item) return;
+
+      if (toolId === 'tool1') {
+        document.getElementById('t1-person').value = item.person;
+        document.getElementById('t1-behavior').value = item.behavior;
+        document.getElementById('t1-impact').value = item.impact;
+        document.getElementById('t1-solution').value = item.solution;
+        generateTool1(false);
+      } else if (toolId === 'tool2') {
+        document.getElementById('t2-conflict').value = item.conflict;
+        document.getElementById('t2-worst').value = item.worst;
+        document.getElementById('t2-history').value = item.historyVal;
+        generateTool2(false);
+      } else if (toolId === 'tool3') {
+        document.getElementById('t3-reaction').value = item.reaction;
+        generateTool3(false);
+      } else if (toolId === 'tool4') {
+        document.getElementById('t4-draft').value = item.draft;
+        generateTool4(false);
+      } else if (toolId === 'tool5') {
+        document.getElementById('t5-topic').value = item.topic;
+        document.getElementById('t5-courage').value = item.courage;
+        generateTool5(false);
+      }
+      showToast("Loaded entry from history.");
+    }
+
+    // HTML SANITIZATION & SECURITY HELPER
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    // DASHBOARD: READINESS INDEX LOGIC & CROSS-MODULE RECOMMENDATION ENGINE
+    document.querySelectorAll('.scale-options').forEach(group => {
+      const qNum = group.getAttribute('data-q');
+      group.querySelectorAll('.scale-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          conflictConfidenceState.readinessScores[`q${qNum}`] = parseInt(btn.getAttribute('data-val'));
+        });
+      });
+    });
+
+    function calculateReadiness() {
+      const scores = conflictConfidenceState.readinessScores;
+      if (!scores.q1 || !scores.q2 || !scores.q3) {
+        alert("Please answer all 3 readiness questions first.");
+        return;
+      }
+
+      const total = scores.q1 + scores.q2 + scores.q3;
+      const maxScore = 9;
+      const percentage = Math.round((total / maxScore) * 100);
+
+      const resultBox = document.getElementById('readiness-result');
+      const scoreVal = document.getElementById('readiness-score');
+      const levelVal = document.getElementById('readiness-level');
+      const bar = document.getElementById('readiness-bar');
+      const feedback = document.getElementById('readiness-feedback');
+      const recommendationBox = document.getElementById('readiness-recommendation');
+
+      resultBox.style.display = 'block';
+      scoreVal.textContent = `${percentage}%`;
+      bar.style.width = `${percentage}%`;
+
+      let recommendationText = "";
+      if (percentage <= 45) {
+        levelVal.textContent = "High Avoidance Mode";
+        feedback.textContent = "You currently experience strong anxiety around friction and tend to keep silent to preserve immediate peace.";
+        recommendationText = "💡 Recommendation: Start with Tool 1 (Conversation Architect) & Tool 2 (Threat Dismantler) to build structured safety.";
+      } else if (percentage <= 75) {
+        levelVal.textContent = "Developing Assertive";
+        feedback.textContent = "You are aware of necessary boundaries but may stumble during unexpected defensiveness.";
+        recommendationText = "💡 Recommendation: Focus on Tool 3 (De-escalation Playbook) and Tool 4 (Passive to Assertive Upgrades).";
+      } else {
+        levelVal.textContent = "Conflict Resilient";
+        feedback.textContent = "You have strong baseline confidence in delivering difficult feedback.";
+        recommendationText = "💡 Recommendation: Use Tool 1 & Tool 4 to refine precision, and Tool 5 to maintain emotional self-trust.";
+      }
+      recommendationBox.textContent = recommendationText;
+    }
+
+    // TOOL 1 LOGIC
+    function loadSampleTool1() {
+      document.getElementById('t1-person').value = 'Roommate';
+      document.getElementById('t1-behavior').value = 'You have paid your share of the electric and wifi bills late by 7 to 10 days for the last three consecutive months.';
+      document.getElementById('t1-impact').value = 'I have to pay the utility company out of my personal savings to avoid late fees, which creates unwanted financial stress for me.';
+      document.getElementById('t1-solution').value = 'Set up an automated calendar reminder or auto-pay transfer on the 1st of every month.';
+      generateTool1();
+    }
+
+    function generateTool1(shouldSave = true) {
+      const person = document.getElementById('t1-person').value;
+      const behavior = document.getElementById('t1-behavior').value;
+      const impact = document.getElementById('t1-impact').value;
+      const solution = document.getElementById('t1-solution').value;
+
+      document.getElementById('t1-out-obs').innerText = `"${person}, I noticed that over the past few weeks: ${behavior}"`;
+      document.getElementById('t1-out-imp').innerText = `"When this happens, the effect on me is that ${impact}"`;
+      document.getElementById('t1-out-req').innerText = `"Going forward, I would like to ask that ${solution}"`;
+      document.getElementById('t1-out-out').innerText = `"This will ensure everything stays clear and stress-free between us."`;
+
+      // Stripper Audit
+      const accusatoryWords = ["you always", "you never", "obviously", "your fault", "you should", "why can't you"];
+      const combinedInput = `${behavior} ${impact} ${solution}`.toLowerCase();
+      let foundWords = accusatoryWords.filter(w => combinedInput.includes(w));
+
+      const stripperBox = document.getElementById('t1-stripper-result');
+      if (foundWords.length > 0) {
+        stripperBox.innerHTML = `<strong>Accusatory triggers detected:</strong> ${foundWords.map(w => `"${w}"`).join(', ')}. <br><em>Stripper action:</em> Automatically reframed into factual, non-judgmental observations above to reduce defensive blowback.`;
+      } else {
+        stripperBox.innerHTML = `<strong>Clean script!</strong> No high-risk trigger words ("you always", "you never") detected in your inputs.`;
+      }
+
+      document.getElementById('t1-output').style.display = 'flex';
+
+      if (shouldSave) {
+        saveHistory('tool1', {
+          title: `Script for ${person}`,
+          person, behavior, impact, solution
+        });
+      }
+    }
+
+    // TOOL 2 LOGIC
+    function loadSampleTool2() {
+      document.getElementById('t2-conflict').value = 'Informing my manager that I cannot take on the new project assignment due to current bandwidth.';
+      document.getElementById('t2-worst').value = 'They will think I am lazy, scream at me, and take me off path for promotion.';
+      document.getElementById('t2-history').value = 'Reasonable';
+      generateTool2();
+    }
+
+    function generateTool2(shouldSave = true) {
+      const conflict = document.getElementById('t2-conflict').value;
+      const worst = document.getElementById('t2-worst').value;
+      const historyVal = document.getElementById('t2-history').value;
+
+      document.getElementById('t2-fear-out').innerText = worst;
+
+      let probabilityText = "";
+      let stabilityText = "";
+      let reframeText = "";
+
+      if (historyVal === 'Reasonable') {
+        probabilityText = "Less than 5% likelihood of catastrophic loss. Reasonable individuals may show brief disappointment, but appreciate professional boundary clarity.";
+        stabilityText = "High Resilience: This relationship has a solid foundation. Healthy tension will actually increase their respect for your professional self-awareness.";
+      } else if (historyVal === 'Volatile') {
+        probabilityText = "15-25% likelihood of emotional noise/pushback. However, their emotional volatility is a reflection of their regulation capacity, not your worth.";
+        stabilityText = "Caution / Guarded: The relationship is prone to emotional drama. Clear objective documentation is essential.";
+      } else {
+        probabilityText = "10% unknown probability. Starting with calm facts tests and sets the standard for how they treat you.";
+        stabilityText = "Baseline Assessment Stage: Setting a firm, polite boundary now sets the pattern for future respect.";
+      }
+
+      reframeText = `Avoiding this topic ("${conflict.slice(0, 35)}...") breeds silent resentment and burnout. Bringing it up cleanly isn't creating trouble—it is actively preventing catastrophic burnout down the road.`;
+
+      document.getElementById('t2-prob-out').innerText = probabilityText;
+      document.getElementById('t2-stability-out').innerText = stabilityText;
+      document.getElementById('t2-reframe-out').innerText = reframeText;
+
+      document.getElementById('t2-output').style.display = 'flex';
+
+      if (shouldSave) {
+        saveHistory('tool2', {
+          title: `Threat Dismantled: ${conflict.slice(0, 25)}...`,
+          conflict, worst, historyVal
+        });
+      }
+    }
+
+    // TOOL 3 LOGIC
+    function loadSampleTool3() {
+      document.getElementById('t3-reaction').value = 'deflection';
+      generateTool3();
+    }
+
+    function generateTool3(shouldSave = true) {
+      const reaction = document.getElementById('t3-reaction').value;
+
+      let r1 = "", r2 = "", r3 = "", timeout = "", broken = "";
+
+      if (reaction === 'deflection') {
+        r1 = `"I hear that you have concerns about that too, but right now I am talking about this specific issue. Can we stay focused on this first?"`;
+        r2 = `"We can definitely set aside time to address your points afterwards, but I need us to resolve this item first."`;
+        r3 = `"I'm not looking to point fingers or play blame games. I just want us to find a practical fix for this."`;
+        timeout = `"I want to have a productive conversation with you, but I feel us moving into counter-arguments. Let's take a 15-minute break to cool off and reconnect at 3:15 PM."`;
+        broken = `Calmly repeat: "I understand your point, and my core request remains [state request]." Do not take side-baits.`;
+      } else if (reaction === 'shutdown') {
+        r1 = `"I notice you're quiet. I don't need an immediate answer, but I do need us to address this together."`;
+        r2 = `"It's okay if you need a moment to process this. When would be a good time today to continue?"`;
+        r3 = `"I'm bringing this up because I care about our working relationship, not to put you on the spot."`;
+        timeout = `"I see you might need space to digest this. Let's hit pause and talk for 5 minutes after lunch."`;
+        broken = `Repeat softly: "I am ready to listen when you are ready to share."`;
+      } else if (reaction === 'voice') {
+        r1 = `"I'm speaking in a calm tone, and I need you to lower your voice so we can actually solve this."`;
+        r2 = `"I cannot continue this conversation while you are raising your voice at me."`;
+        r3 = `"We are on the same team here. Raising voices won't change the facts we need to deal with."`;
+        timeout = `"I am going to step away for 15 minutes until we can both speak calmly. I will be back in the kitchen at 2:30 PM."`;
+        broken = `Lower your own voice volume by 20% and lower your pitch. Repeat the boundary calmly.`;
+      } else if (reaction === 'tears') {
+        r1 = `"I see this is emotional, and that's okay. My intention isn't to make you feel bad, but to fix the situation."`;
+        r2 = `"Take a breath. I'm not attacking you as a person; I'm addressing a specific behavior."`;
+        r3 = `"We can take a quick break if you need a glass of water, and then finish up."`;
+        timeout = `"Let's pause for 15 minutes so you can grab some water and breathe. I'll check back in shortly."`;
+        broken = `Acknowledge the feeling without retracting your request: "I know it feels heavy, but we still need to set this boundary."`;
+      }
+
+      document.getElementById('t3-resp1').innerText = r1;
+      document.getElementById('t3-resp2').innerText = r2;
+      document.getElementById('t3-resp3').innerText = r3;
+      document.getElementById('t3-timeout').innerText = timeout;
+      document.getElementById('t3-brokenrecord').innerText = broken;
+
+      document.getElementById('t3-output').style.display = 'flex';
+
+      if (shouldSave) {
+        saveHistory('tool3', {
+          title: `Playbook: Defensive Reaction (${reaction})`,
+          reaction
+        });
+      }
+    }
+
+    // TOOL 4 LOGIC
+    function loadSampleTool4() {
+      document.getElementById('t4-draft').value = 'Sorry to bother you, but if you have a second maybe we could talk about the noise late at night? It is just kind of hard to sleep sometimes.';
+      generateTool4();
+    }
+
+    function generateTool4(shouldSave = true) {
+      const draft = document.getElementById('t4-draft').value;
+
+      let upgraded = draft;
+      const weakPhrases = [
+        /sorry to bother you,?\s*/gi,
+        /if you have a second,?\s*/gi,
+        /maybe\s*/gi,
+        /just\s*/gi,
+        /kind of\s*/gi,
+        /sort of\s*/gi,
+        /i was wondering if\s*/gi,
+        /does that make sense\?/gi
+      ];
+
+      weakPhrases.forEach(regex => {
+        upgraded = upgraded.replace(regex, '');
+      });
+
+      upgraded = upgraded.trim();
+      upgraded = upgraded.charAt(0).toUpperCase() + upgraded.slice(1);
+
+      if (upgraded === draft) {
+        upgraded = "I need to talk to you directly about the noise late at night. I need quiet after 10 PM to sleep.";
+      }
+
+      document.getElementById('t4-upgraded').innerText = `"${upgraded}"`;
+      document.getElementById('t4-comp-passive').innerText = draft;
+      document.getElementById('t4-comp-assertive').innerText = upgraded;
+
+      document.getElementById('t4-output').style.display = 'flex';
+
+      if (shouldSave) {
+        saveHistory('tool4', {
+          title: `Assertive Upgrade: ${draft.slice(0, 25)}...`,
+          draft
+        });
+      }
+    }
+
+    // TOOL 5 LOGIC
+    function loadSampleTool5() {
+      document.getElementById('t5-topic').value = 'Requested workload rebalancing from senior director';
+      document.getElementById('t5-courage').value = 'Even though my heart was pounding, I held my ground and clearly stated my limits without apologizing for my workload.';
+      generateTool5();
+    }
+
+    function generateTool5(shouldSave = true) {
+      const topic = document.getElementById('t5-topic').value;
+      const reqVal = document.querySelector('input[name="t5-request"]:checked').value;
+      const destVal = document.querySelector('input[name="t5-destroyed"]:checked').value;
+      const courage = document.getElementById('t5-courage').value;
+
+      let score = 70;
+      if (reqVal === 'Yes') score += 20;
+      if (reqVal === 'Partially') score += 10;
+      if (destVal === 'No') score += 10;
+
+      document.getElementById('t5-score-num').innerText = `${score} / 100`;
+
+      let msg = "";
+      if (score >= 90) {
+        msg = "Outstanding courage! You stated your boundaries directly and realized the sky didn't fall.";
+      } else if (score >= 70) {
+        msg = "Great progress! Courage is a muscle—speaking up despite physical discomfort builds long-term self-trust.";
+      } else {
+        msg = "Valuable learning experience. Every uncomfortable conversation teaches your nervous system that you survive.";
+      }
+
+      document.getElementById('t5-score-msg').innerText = msg;
+      document.getElementById('t5-log-summary').innerText = `Topic: "${topic}" | Stated Request: ${reqVal} | Relationship Intact: ${destVal === 'No' ? 'Yes' : 'No'}. Insight: "${courage}"`;
+
+      document.getElementById('t5-output').style.display = 'flex';
+
+      if (shouldSave) {
+        saveHistory('tool5', {
+          title: `Debrief: ${topic}`,
+          topic, courage
+        });
+      }
+    }
+
+    // TOOL 7: MASTER SYNTHESIS PLAN
+    function renderMasterPlan() {
+      const container = document.getElementById('master-plan-container');
+      if (!container) return;
+
+      let htmlContent = '';
+      let hasData = false;
+
+      for (let i = 1; i <= 5; i++) {
+        const key = getHistoryKey(`tool${i}`);
+        const history = JSON.parse(localStorage.getItem(key) || "[]");
+        if (history.length > 0) {
+          hasData = true;
+          let toolNames = ['', 'Conversation Architect', 'Threat Dismantler', 'De-escalation Playbook', 'Assertive Translator', 'Post-Conflict Debrief'];
+          htmlContent += `<h4 style="font-weight: 700; color: var(--slate-dark); margin-top: 0.5rem; border-bottom: 2px solid var(--orange-border); padding-bottom: 0.25rem;">Module ${i}: ${toolNames[i]}</h4>`;
+          htmlContent += history.map(item => `
+            <div style="background: var(--slate-light); border: 1px solid var(--slate-border); border-radius: var(--radius-md); padding: 0.75rem 1rem; margin-bottom: 0.5rem;">
+              <div style="font-weight: 600; color: var(--slate-dark); font-size: 0.9rem;">${escapeHTML(item.title || 'Entry')} <span style="font-size: 0.75rem; color: var(--slate-muted); font-weight: normal;">(${item.timestamp})</span></div>
+              <div style="font-size: 0.8125rem; color: var(--slate-muted); margin-top: 0.25rem;">${escapeHTML(JSON.stringify(item).slice(0, 120))}...</div>
+            </div>
+          `).join('');
+        }
+      }
+
+      if (!hasData) {
+        container.innerHTML = `<p style="color: var(--slate-muted); font-size: 0.875rem;">No saved entries found yet. Complete exercises across the modules to compile your Master Conflict Plan.</p>`;
+      } else {
+        container.innerHTML = htmlContent;
+      }
+    }
+
+    // INITIALIZATION ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      switchTab('dashboard');
+    });
+  </script>
+</body>
+</html>

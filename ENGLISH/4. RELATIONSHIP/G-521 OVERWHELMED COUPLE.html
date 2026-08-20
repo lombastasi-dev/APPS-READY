@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OverwhelmedCouple — Friction-Reduction Toolkit</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS RESET & VARIABLES */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary-teal: #264653;
+            --primary-teal-light: #2A9D8F;
+            --warm-amber: #E9C46A;
+            --warm-amber-dark: #D4A373;
+            --coral: #F4A261;
+            --terracotta: #E76F51;
+            --bg-gradient-start: #F8F9FA;
+            --bg-gradient-end: #FFF3E0;
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --sidebar-width: 260px;
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --transition-fast: 0.2s ease;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start), var(--bg-gradient-end));
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* LAYOUT */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform var(--transition-fast);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--primary-teal);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            line-height: 1.2;
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            border: none;
+            background: none;
+            width: 100%;
+            text-align: left;
+        }
+
+        .nav-item:hover {
+            background-color: #F1F5F9;
+            color: var(--primary-teal);
+        }
+
+        .nav-item.active {
+            background-color: var(--primary-teal);
+            color: white;
+        }
+
+        .nav-item i {
+            font-size: 1.1rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* MOBILE HEADER & OVERLAY */
+        .mobile-header {
+            display: none;
+            background-color: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--primary-teal);
+            cursor: pointer;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(0,0,0,0.4);
+            z-index: 95;
+            opacity: 0;
+            transition: opacity var(--transition-fast);
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: calc(100% - var(--sidebar-width));
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 850px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* FOOTER */
+        .app-footer {
+            text-align: center;
+            padding: 1.5rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            border-top: 1px solid rgba(0,0,0,0.05);
+            background-color: rgba(255,255,255,0.4);
+            margin-top: auto;
+        }
+
+        /* UI CARDS & PANELS */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .view-panel {
+            display: none;
+        }
+
+        .view-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* TYPOGRAPHY & HEADINGS */
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--primary-teal);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .hero-tagline {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            font-weight: 400;
+        }
+
+        .section-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 1.5rem;
+            color: var(--primary-teal);
+            margin-bottom: 0.25rem;
+        }
+
+        .section-header p.problem-statement {
+            font-size: 0.95rem;
+            color: var(--terracotta);
+            font-weight: 500;
+            background-color: #FDF2E9;
+            padding: 0.5rem 0.75rem;
+            border-radius: var(--radius-md);
+            display: inline-block;
+        }
+
+        /* DASHBOARD GRID */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dash-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-fast);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-teal-light);
+        }
+
+        .dash-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background-color: #E8F1F2;
+            color: var(--primary-teal);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .dash-card h3 {
+            font-size: 1.1rem;
+            color: var(--primary-teal);
+        }
+
+        .dash-card p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* FORMS & INPUTS */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 0.35rem;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            font-size: 0.9rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            color: var(--text-main);
+            background-color: #FAFAFA;
+            transition: border-color var(--transition-fast);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-teal-light);
+            background-color: #FFF;
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .grid-2col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            padding: 0.35rem 0;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-fast);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-teal);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #1D3557;
+        }
+
+        .btn-secondary {
+            background-color: #E9ECEF;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background-color: #DEE2E6;
+        }
+
+        .btn-amber {
+            background-color: var(--warm-amber);
+            color: #4A3E10;
+        }
+
+        .btn-amber:hover {
+            background-color: var(--warm-amber-dark);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.65rem;
+            font-size: 0.8rem;
+        }
+
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        /* TASK MATRIX (LOAD SPLITTER) */
+        .task-matrix {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .task-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.65rem 0.85rem;
+            background-color: #F8F9FA;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+        }
+
+        .task-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .task-options {
+            display: flex;
+            gap: 0.25rem;
+            background: #E9ECEF;
+            padding: 0.2rem;
+            border-radius: var(--radius-md);
+        }
+
+        .task-opt-btn {
+            padding: 0.3rem 0.55rem;
+            font-size: 0.75rem;
+            border: none;
+            background: none;
+            border-radius: calc(var(--radius-md) - 2px);
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-muted);
+            transition: all 0.15s;
+        }
+
+        .task-opt-btn.selected {
+            background-color: var(--primary-teal);
+            color: white;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* OUTPUT CONTAINERS & RESULTS */
+        .results-panel {
+            display: none;
+            background: #FFFFFF;
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--primary-teal-light);
+            margin-top: 2rem;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .results-panel.active {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #F1F5F9;
+        }
+
+        .results-header h3 {
+            color: var(--primary-teal);
+            font-size: 1.25rem;
+        }
+
+        .output-block {
+            margin-bottom: 1.5rem;
+            background-color: #F8F9FA;
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            border-left: 4px solid var(--primary-teal);
+        }
+
+        .output-block h4 {
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary-teal);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .output-block p, .output-block ul {
+            font-size: 0.92rem;
+            color: var(--text-main);
+        }
+
+        .output-block ul {
+            padding-left: 1.25rem;
+        }
+
+        .output-block li {
+            margin-bottom: 0.35rem;
+        }
+
+        /* CUSTOM VISUALIZERS */
+        /* Progress/Split Bar */
+        .split-bar-container {
+            margin: 1rem 0;
+        }
+
+        .split-bar {
+            height: 24px;
+            width: 100%;
+            background-color: #E9ECEF;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+        }
+
+        .split-bar-segment {
+            height: 100%;
+            transition: width 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .seg-me { background-color: var(--primary-teal); }
+        .seg-partner { background-color: var(--coral); }
+        .seg-split { background-color: var(--warm-amber-dark); }
+        .seg-nobody { background-color: #94A3B8; }
+
+        .split-legend {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0.5rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Script Box with Copy Button */
+        .script-box {
+            background-color: #282C34;
+            color: #ABB2BF;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            font-family: monospace;
+            font-size: 0.88rem;
+            position: relative;
+            margin-top: 0.5rem;
+            white-space: pre-wrap;
+        }
+
+        .btn-copy {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255,255,255,0.15);
+            color: #FFF;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-copy:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #2B2D42;
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-size: 0.875rem;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* ACCORDION / HISTORY */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+
+        .history-header h4 {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .history-item {
+            background: #F8F9FA;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.75rem 1rem;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .history-item:hover {
+            background: #EDF2F7;
+        }
+
+        /* SLIDER COMPONENT */
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .slider-container input[type="range"] {
+            flex: 1;
+            accent-color: var(--primary-teal);
+        }
+
+        .slider-val {
+            font-weight: 700;
+            width: 28px;
+            text-align: center;
+            color: var(--primary-teal);
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+                opacity: 1;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 1rem;
+            }
+
+            .grid-2col {
+                grid-template-columns: 1fr;
+            }
+
+            .task-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .task-options {
+                width: 100%;
+                justify-content: space-between;
+            }
+
+            .task-opt-btn {
+                flex: 1;
+                text-align: center;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+<style>.muted{color:#6C757D}.tag{display:inline-block;background:#E8F1F2;color:#264653;padding:.2rem .55rem;border-radius:99px;font-size:.75rem;font-weight:700}.results-panel{display:block;background:#fff}.script-box{background:#282C34;color:#fff;padding:1rem;border-radius:.5rem;position:relative;white-space:pre-wrap}.btn-copy{position:absolute;right:.5rem;top:.5rem;background:#ffffff22;color:#fff;border:0;padding:.3rem .55rem;border-radius:4px;cursor:pointer}.output-block{overflow-wrap:anywhere}.nav-item:focus-visible,.btn:focus-visible,.dash-card:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid rgba(42,157,143,.35);outline-offset:2px}@media print{.sidebar,.mobile-header,.sidebar-overlay,.actions-bar,.app-footer,.toast,.no-print{display:none!important}.main-wrapper{margin-left:0!important;width:100%!important}.main-content{max-width:none!important}.view-panel{display:none!important}.view-panel#plan{display:block!important}.card{box-shadow:none!important;border:0!important}}</style></head>
+<body>
+<header class="mobile-header"><strong style="color:#264653">Overwhelmed Couple™</strong><button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle menu"><i class="fa-solid fa-bars"></i></button></header><div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div class="app-container"><aside class="sidebar" id="sidebar"><div class="sidebar-header"><i class="fa-solid fa-hands-holding-circle"></i><h1>Overwhelmed<br>Couple™</h1></div><nav class="sidebar-nav" aria-label="Main navigation">
+<button class="nav-item active" data-target="dashboard">⌂ Dashboard</button><button class="nav-item" data-target="tool1">⚖ Load Splitter</button><button class="nav-item" data-target="tool2">◷ Time Negotiator</button><button class="nav-item" data-target="tool3">▣ Money Meeting</button><button class="nav-item" data-target="tool4">▤ Career Check</button><button class="nav-item" data-target="tool5">◌ Argument Decoder</button><button class="nav-item" data-target="reset">↻ 7-Day Overwhelm Reset</button><button class="nav-item" data-target="plan">▦ My Couple Operating Plan</button><button class="nav-item" data-target="history">◴ My History</button><button class="nav-item" data-target="privacy">⌕ Privacy & Safety</button></nav></aside>
+<div class="main-wrapper"><main class="main-content">
+<section id="dashboard" class="view-panel active"><div style="text-align:center;margin:1rem 0 2rem"><h1 class="hero-title">The Overwhelmed Couple</h1><p class="hero-tagline">Make your relationship work in real life, not just in theory.</p></div><div class="card"><h3 style="color:#264653">What feels heaviest right now?</h3><p class="muted">Start with the friction closest to today's problem. One agreement or experiment is better than ten recommendations.</p><div id="dash-focus" class="output-block" style="margin-top:1rem"><p>No current focus yet. Run one tool to create a practical next step.</p></div></div><div class="dash-grid">
+<div class="dash-card" data-target="tool1"><div class="dash-card-icon">⚖</div><h3>Load Splitter</h3><p>Make invisible labor and ownership visible.</p></div><div class="dash-card" data-target="tool2"><div class="dash-card-icon">◷</div><h3>Time Negotiator</h3><p>Protect scarce connection time.</p></div><div class="dash-card" data-target="tool3"><div class="dash-card-icon">▣</div><h3>Money Meeting</h3><p>Create a calm financial sync.</p></div><div class="dash-card" data-target="tool4"><div class="dash-card-icon">▤</div><h3>Career Check</h3><p>Coordinate competing career seasons.</p></div><div class="dash-card" data-target="tool5"><div class="dash-card-icon">◌</div><h3>Argument Decoder</h3><p>Find the need beneath recurring fights.</p></div><div class="dash-card" data-target="reset"><div class="dash-card-icon">↻</div><h3>7-Day Overwhelm Reset</h3><p>I don't know where to start.</p></div></div></section>
+<section id="tool1" class="view-panel"><div class="section-header"><h2>Load Splitter</h2><p class="problem-statement">Problem: “The mental load is crushing one of us.”</p></div><div class="card"><div class="actions-bar"><span class="muted">Assign ownership for all 12 operational and emotional tasks.</span><button class="btn btn-amber btn-sm" onclick="sample(1)">Load Sample Scenario</button></div><div id="tasks"></div><div class="grid-2col"><div class="form-group"><label>Split-task primary ownership rule</label><select id="t1rule" class="form-control"><option>Choose a primary owner before starting</option><option>Partner A owns planning; both may execute</option><option>Partner B owns planning; both may execute</option><option>Alternate primary ownership by week</option></select></div><div class="form-group"><label>Review date</label><input id="t1review" type="date" class="form-control"></div></div><button class="btn btn-primary" style="width:100%" onclick="run(1)">Analyze Mental Load & Build One Handoff</button></div><div id="r1" class="results-panel"></div></section>
+<section id="tool2" class="view-panel"><div class="section-header"><h2>Time Negotiator</h2><p class="problem-statement">Problem: “We live together but never actually spend time together.”</p></div><div class="card"><div class="actions-bar"><span class="muted">Map availability, energy, dependents and connection quality.</span><button class="btn btn-amber btn-sm" onclick="sample(2)">Load Sample Scenario</button></div><div class="grid-2col"><div class="form-group"><label>Partner A work hours</label><input id="t2a" class="form-control" placeholder="7:30 AM - 6:30 PM"></div><div class="form-group"><label>Partner B work hours</label><input id="t2b" class="form-control" placeholder="8:30 AM - 7:00 PM"></div><div class="form-group"><label>Partner A energy peak</label><select id="t2ea" class="form-control"><option>Morning</option><option>Midday</option><option>Evening</option></select></div><div class="form-group"><label>Partner B energy peak</label><select id="t2eb" class="form-control"><option>Morning</option><option>Midday</option><option>Evening</option></select></div><div class="form-group"><label>Children/dependents?</label><select id="t2dep" class="form-control"><option>No</option><option>Yes</option></select></div><div class="form-group"><label>Preferred connection duration</label><select id="t2dur" class="form-control"><option>10 minutes</option><option>15 minutes</option><option>30 minutes</option><option>1 hour</option></select></div></div><div class="form-group"><label>What recharges you both?</label><textarea id="t2recharge" class="form-control"></textarea></div><div class="grid-2col"><div class="form-group"><label>Deeper connection day</label><select id="t2day" class="form-control"><option>Saturday</option><option>Sunday</option><option>Friday</option><option>Flexible</option></select></div><div class="form-group"><label>Review date</label><input id="t2review" type="date" class="form-control"></div></div><button class="btn btn-primary" style="width:100%" onclick="run(2)">Build Connection Plan</button></div><div id="r2" class="results-panel"></div></section>
+<section id="tool3" class="view-panel"><div class="section-header"><h2>Money Meeting</h2><p class="problem-statement">Problem: “We fight about money because we never actually look at it together.”</p></div><div class="card"><div class="actions-bar"><span class="muted">User-provided planning numbers only — not financial advice.</span><button class="btn btn-amber btn-sm" onclick="sample(3)">Load Sample Scenario</button></div><div class="grid-2col"><div class="form-group"><label>Combined monthly net income</label><input id="t3income" type="number" min="0" class="form-control"></div><div class="form-group"><label>Fixed expenses</label><input id="t3fixed" type="number" min="0" class="form-control"></div><div class="form-group"><label>Variable expenses</label><input id="t3var" type="number" min="0" class="form-control"></div><div class="form-group"><label>Partner A personal spending</label><input id="t3a" type="number" min="0" class="form-control"></div><div class="form-group"><label>Partner B personal spending</label><input id="t3b" type="number" min="0" class="form-control"></div><div class="form-group"><label>Debt / irregular expenses per month</label><input id="t3debt" type="number" min="0" value="0" class="form-control"></div></div><div class="grid-2col"><div class="form-group"><label>Shared savings goal</label><input id="t3goal" class="form-control"></div><div class="form-group"><label>Optional surplus planning percentage</label><input id="t3pct" type="number" min="0" max="100" value="70" class="form-control"></div></div><button class="btn btn-primary" style="width:100%" onclick="run(3)">Run Money Snapshot</button></div><div id="r3" class="results-panel"></div></section>
+<section id="tool4" class="view-panel"><div class="section-header"><h2>Career Check</h2><p class="problem-statement">Problem: “Whose career matters more right now?”</p></div><div class="card"><div class="actions-bar"><span class="muted">Compare trade-offs; the tool never chooses a winner.</span><button class="btn btn-amber btn-sm" onclick="sample(4)">Load Sample Scenario</button></div><div class="grid-2col"><div class="form-group"><label>Partner A work hours/week</label><input id="t4ha" type="number" min="0" max="100" class="form-control"></div><div class="form-group"><label>Partner B work hours/week</label><input id="t4hb" type="number" min="0" max="100" class="form-control"></div><div class="form-group"><label>Partner A ambition (1–10)</label><input id="t4aa" type="range" min="1" max="10" value="5" class="form-control"></div><div class="form-group"><label>Partner B ambition (1–10)</label><input id="t4ab" type="range" min="1" max="10" value="5" class="form-control"></div><div class="form-group"><label>Frequent travel?</label><select id="t4travel" class="form-control"><option>Neither</option><option>Partner A</option><option>Partner B</option><option>Both</option></select></div><div class="form-group"><label>Promotion/raise expected in 12 months?</label><select id="t4promo" class="form-control"><option>Neither</option><option>Partner A</option><option>Partner B</option><option>Both</option></select></div><div class="form-group"><label>Domestic/caregiving impact</label><select id="t4dom" class="form-control"><option>Low</option><option>Moderate</option><option>High</option></select></div><div class="form-group"><label>Temporary career season?</label><select id="t4season" class="form-control"><option>Neither</option><option>Partner A</option><option>Partner B</option><option>Both</option></select></div></div><div class="grid-2col"><div class="form-group"><label>Biggest career frustration</label><textarea id="t4frust" class="form-control"></textarea></div><div class="form-group"><label>Review date</label><input id="t4review" type="date" class="form-control"></div></div><button class="btn btn-primary" style="width:100%" onclick="run(4)">Build Career Season Options</button></div><div id="r4" class="results-panel"></div></section>
+<section id="tool5" class="view-panel"><div class="section-header"><h2>Argument Decoder</h2><p class="problem-statement">Problem: “We keep fighting about the same things but never resolve them.”</p></div><div class="card"><div class="actions-bar"><span class="muted">Interpret the cycle as a possibility, not a diagnosis.</span><button class="btn btn-amber btn-sm" onclick="sample(5)">Load Sample Scenario</button></div><div class="form-group"><label>Surface trigger</label><input id="t5trigger" class="form-control"></div><div class="form-group"><label>What did each person say or do?</label><textarea id="t5said" class="form-control"></textarea></div><div class="grid-2col"><div class="form-group"><label>Partner A hurt</label><input id="t5hurtA" class="form-control"></div><div class="form-group"><label>Partner B hurt</label><input id="t5hurtB" class="form-control"></div><div class="form-group"><label>Partner A need</label><input id="t5needA" class="form-control"></div><div class="form-group"><label>Partner B need</label><input id="t5needB" class="form-control"></div></div><div class="form-group"><label>How did it end?</label><select id="t5end" class="form-control"><option>Someone walked away</option><option>We dropped it / cold silence</option><option>One apologized</option><option>We repaired genuinely</option><option>Still unresolved and tense</option></select></div><div class="form-group"><label>Threats, coercion, intimidation, violence, or fear of retaliation?</label><select id="t5safe" class="form-control"><option>No</option><option>Yes</option><option>Unsure</option></select></div><button class="btn btn-primary" style="width:100%" onclick="run(5)">Decode & Build Repair Experiment</button></div><div id="r5" class="results-panel"></div></section>
+<section id="reset" class="view-panel"><div class="section-header"><h2>7-Day Overwhelm Reset</h2><p class="problem-statement">A guided journey using the five existing modules, not a sixth assessment.</p></div><div class="card" id="resetDays"></div></section>
+<section id="plan" class="view-panel"><div class="section-header"><h2>My Couple Operating Plan</h2><p class="problem-statement">Synthesize repeated constraints into one agreement, one experiment and one review.</p></div><div id="planContent"></div></section>
+<section id="history" class="view-panel"><div class="section-header"><h2>My History</h2><p class="problem-statement">Saved analyses are stored locally in this browser.</p></div><div class="card"><div class="actions-bar"><select id="historyFilter" class="form-control" style="max-width:260px"><option value="all">All tools</option><option value="tool1">Load Splitter</option><option value="tool2">Time Negotiator</option><option value="tool3">Money Meeting</option><option value="tool4">Career Check</option><option value="tool5">Argument Decoder</option></select><button class="btn btn-danger btn-sm" onclick="clearAll()">Clear All Saved Data</button></div><div id="historyList"></div></div></section>
+<section id="privacy" class="view-panel"><div class="section-header"><h2>Privacy & Safety</h2><p class="problem-statement">Local-first planning with clear boundaries.</p></div><div class="card"><h3>What is stored</h3><p class="muted">Structured inputs, outputs, experiments and review dates are stored in browser localStorage. No account or backend is required by the core application.</p><div class="output-block" style="margin-top:1rem"><strong>Safety first:</strong> If threats, coercion, violence or fear of retaliation are present, prioritize safety and appropriate real-world support over relationship optimization. Do not force confrontation because an app suggests it.</div><ul style="padding-left:1.2rem;margin-top:1rem;color:var(--text-muted)"><li>No relationship-quality score.</li><li>No diagnosis.</li><li>No individualized financial, employment or legal advice.</li><li>No surveillance or fidelity verdicts.</li><li>Outputs are structured reflection and planning prompts.</li></ul></div></section>
+<section id="print-plan" class="view-panel"><div id="printContent"></div></section>
+</main><footer class="app-footer">A calmer way to run real life together. For reflection and planning; not therapy, clinical diagnosis, or individualized financial/legal advice.</footer></div></div><div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script>
+const TASKS=["Meal planning","Cooking","Grocery shopping","Cleaning","Laundry","Bill paying","Appointment scheduling","Home repairs","Social planning","Car/transport logistics","Childcare/school","Emotional labor (checking in, remembering dates)"], LABEL={tool1:"Load Splitter",tool2:"Time Negotiator",tool3:"Money Meeting",tool4:"Career Check",tool5:"Argument Decoder"}, STATE="overwhelmed_v2_state",HISTORY="overwhelmed_v2_history";
+let S=loadState();function safeParse(x,d){try{return x?JSON.parse(x):d}catch(e){return d}}function loadState(){let x=safeParse(localStorage.getItem(STATE),{});return {completedTools:x.completedTools||[],toolResults:x.toolResults||{},currentInputs:x.currentInputs||{},currentFocus:x.currentFocus||null,experiments:x.experiments||[],reviewDates:x.reviewDates||[],lastUpdated:x.lastUpdated||null}}function saveState(){S.lastUpdated=new Date().toISOString();try{localStorage.setItem(STATE,JSON.stringify(S))}catch(e){}}function H(){let x=safeParse(localStorage.getItem(HISTORY),[]);return Array.isArray(x)?x:[]}function saveHistory(id,r){let h=H();h.unshift({moduleId:id,timestamp:new Date().toISOString(),inputs:r.inputs,outputs:r.outputs,summary:r.summary,experiment:r.experiment||"",reviewDate:r.reviewDate||""});try{localStorage.setItem(HISTORY,JSON.stringify(h.slice(0,150)))}catch(e){}renderHistory()}
+function esc(x){return String(x??"").replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function toast(x){let e=document.getElementById('toast');e.textContent=x;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}async function copyText(x){try{if(navigator.clipboard&&window.isSecureContext)await navigator.clipboard.writeText(x);else fallback(x);toast('Copied to clipboard!')}catch(e){try{fallback(x);toast('Copied to clipboard!')}catch(z){toast('Copy failed — select the text manually.')}}}function fallback(x){let t=document.createElement('textarea');t.value=x;t.style.position='fixed';t.style.opacity='0';document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}function go(id){document.querySelectorAll('.view-panel').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav-item').forEach(x=>x.classList.toggle('active',x.dataset.target===id));document.getElementById('sidebar').classList.remove('mobile-open');document.getElementById('sidebarOverlay').classList.remove('active');if(id==='plan')renderPlan();if(id==='history')renderHistory();window.scrollTo({top:0,behavior:'smooth'})}document.querySelectorAll('.nav-item').forEach(x=>x.addEventListener('click',()=>go(x.dataset.target)));document.querySelectorAll('.dash-card').forEach(x=>x.addEventListener('click',()=>go(x.dataset.target)));document.getElementById('mobileMenuBtn').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('mobile-open');document.getElementById('sidebarOverlay').classList.toggle('active')});document.getElementById('sidebarOverlay').addEventListener('click',()=>go('dashboard'));
+function d7(){let d=new Date();d.setDate(d.getDate()+7);return d.toISOString().slice(0,10)}function val(id,v){document.getElementById(id).value=v}function money(n){return (n<0?'-':'')+'$'+Math.abs(n).toLocaleString(undefined,{maximumFractionDigits:0})}function box(title,body){return '<div class="output-block"><h4>'+esc(title)+'</h4>'+body+'</div>'}function script(s){return '<div class="script-box"><button class="btn-copy" onclick="copyText('+JSON.stringify(s)+')">Copy</button>'+esc(s)+'</div>'}
+function initTasks(){let e=document.getElementById('tasks');e.innerHTML=TASKS.map((t,i)=>'<div class="task-row" data-i="'+i+'"><span class="task-name">'+esc(t)+'</span><div class="task-options">'+['Me','Partner','Split','Nobody'].map(v=>'<button type="button" class="task-opt-btn '+(v==='Split'?'selected':'')+'" data-v="'+v+'">'+v+'</button>').join('')+'</div></div>').join('');e.querySelectorAll('.task-opt-btn').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('button').forEach(x=>x.classList.remove('selected'));b.classList.add('selected')}))}
+function sample(n){if(n===1){let a=['Me','Partner','Me','Me','Me','Me','Me','Partner','Me','Partner','Me','Me'];document.querySelectorAll('.task-row').forEach((r,i)=>r.querySelectorAll('button').forEach(b=>b.classList.toggle('selected',b.dataset.v===a[i])));val('t1review',d7())}if(n===2){val('t2a','7:30 AM - 6:30 PM');val('t2b','8:30 AM - 7:00 PM');val('t2ea','Morning');val('t2eb','Evening');val('t2dep','Yes');val('t2dur','15 minutes');val('t2recharge','Quiet coffee together, walking the dog, short TV show without phones.');val('t2day','Saturday');val('t2review',d7())}if(n===3){val('t3income',8500);val('t3fixed',4600);val('t3var',2400);val('t3a',350);val('t3b',350);val('t3debt',0);val('t3goal','House downpayment & $10k safety cushion');val('t3pct',70)}if(n===4){val('t4ha',55);val('t4hb',42);val('t4aa',9);val('t4ab',7);val('t4travel','Partner A');val('t4promo','Partner A');val('t4dom','High');val('t4season','Partner A');val('t4frust','Partner A is up for a promotion requiring relocation; Partner B feels anchored by local support and career stability.');val('t4review',d7())}if(n===5){val('t5trigger','Unwashed dishes left in the sink overnight');val('t5said','Partner A: “I do everything around here!” Partner B: “Nothing I do is ever good enough!”');val('t5hurtA','Feeling unappreciated and overwhelmed');val('t5hurtB','Feeling criticized and unable to satisfy expectations');val('t5needA','Acknowledgment and reliable teamwork');val('t5needB','A clear request and appreciation for effort');val('t5end','Still unresolved and tense');val('t5safe','No')}toast('Sample loaded — not saved until you run the tool')}
+function run(n){try{let r=window['analyze'+n]();S.completedTools=[...new Set([...S.completedTools,'tool'+n])];S.toolResults['tool'+n]=r.outputs;S.currentInputs['tool'+n]=r.inputs;S.currentFocus=r.focus;S.experiments=[r.experiment,...S.experiments.filter(x=>x!==r.experiment)].slice(0,5);if(r.reviewDate)S.reviewDates=[r.reviewDate,...S.reviewDates.filter(x=>x!==r.reviewDate)];saveState();saveHistory('tool'+n,r);document.getElementById('r'+n).classList.add('active');document.getElementById('r'+n).scrollIntoView({behavior:'smooth'});renderDashboard();renderPlan();toast("You've got your next step.")}catch(e){console.error(e);toast("Something didn't calculate correctly. Your answers are still here. Please try again.")}}
+function analyze1(){let a=[...document.querySelectorAll('.task-row')].map(r=>r.querySelector('.selected')?.dataset.v||'Split'),c={Me:0,Partner:0,Split:0,Nobody:0};a.forEach(x=>c[x]++);let p=Object.fromEntries(Object.entries(c).map(([k,v])=>[k,Math.round(v/a.length*100)])),heavy=p.Me>60?'Me':p.Partner>60?'Partner':null,none=p.Nobody>25,focus=heavy?`Review one high-load task carried by ${heavy==='Me'?'Partner A':'Partner B'} and transfer full ownership for seven days.`:none?'Decide what to drop, automate, outsource or explicitly assign.':'Make one ambiguous task fully owned by one partner.';let exp=`For 7 days, transfer full ownership of ${TASKS[a.findIndex(x=>x!=='Split'&&x!=='Nobody')]||'one recurring task'} to the other partner. Agree what “done” means before starting and review it on the chosen date.`;let review=document.getElementById('t1review').value||d7();let alert=heavy?`${heavy==='Me'?'Partner A':'Partner B'} carries more than 60% of assigned task ownership. This is a product heuristic, not a scientific burnout predictor.`:none?'More than 25% of tasks are unassigned. Decide whether they should be dropped, automated, outsourced or assigned.':'No single-person concentration exceeds the product heuristic. Check cognitive-load ownership, not just percentages.';let html=box('THE LOAD SPLIT','<p>Me '+p.Me+'% · Partner '+p.Partner+'% · Split '+p.Split+'% · Nobody '+p.Nobody+'%</p><div class="split-bar-container"><div class="split-bar"><div class="split-bar-segment seg-me" style="width:'+p.Me+'%"></div><div class="split-bar-segment seg-partner" style="width:'+p.Partner+'%"></div><div class="split-bar-segment seg-split" style="width:'+p.Split+'%"></div><div class="split-bar-segment seg-nobody" style="width:'+p.Nobody+'%"></div></div></div>')+box('MENTAL LOAD ALERT','<p>'+esc(alert)+'</p>')+box('FAIR REDISTRIBUTION','<ul><li>Prefer full ownership transfers for planning, remembering, scheduling and completion.</li><li>Give “Split” tasks a named primary owner.</li><li>Review high-cognitive-load tasks before arguing about equal minutes.</li></ul>')+box('ONE EXPERIMENT','<p>'+esc(exp)+'</p>')+box('REVIEW DATE','<p>'+esc(review)+'</p>');document.getElementById('r1').innerHTML=html;return {inputs:{assignments:a},outputs:{distribution:p,category:heavy?'Concentrated':none?'Unassigned':'Balanced',alert},summary:`Load: ${heavy?'Concentrated':none?'Unassigned':'Balanced'}`,experiment:exp,reviewDate:review,focus}}
+function parseTime(s){let m=String(s).match(/(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?\s*-\s*(\d{1,2})(?::(\d{2}))?\s*(AM|PM)?/i);if(!m)return null;let a=+m[1]*60+(+(m[2]||0)),b=+m[4]*60+(+(m[5]||0));let ap=(m[3]||'').toUpperCase(),bp=(m[6]||ap).toUpperCase();if(ap==='PM'&&a<720)a+=720;if(ap==='AM'&&a>=720)a-=720;if(bp==='PM'&&b<720)b+=720;if(bp==='AM'&&b>=720)b-=720;return {s:a,e:b}}
+function analyze2(){let a=parseTime(document.getElementById('t2a').value),b=parseTime(document.getElementById('t2b').value),ea=document.getElementById('t2ea').value,eb=document.getElementById('t2eb').value,d=document.getElementById('t2dur').value,re=document.getElementById('t2recharge').value||'a low-pressure shared activity',day=document.getElementById('t2day').value,review=document.getElementById('t2review').value||d7(),ov=a&&b?Math.max(0,Math.min(a.e,b.e)-Math.max(a.s,b.s)):null,energy=ea===eb?'Aligned':'Different',plan=[`Mon — ${d} check-in.`,`Tue — short transition connection.`,`Wed — one good thing + one pressure point.`,`Thu — recharge together: ${re}`,`Fri — work-to-home transition ritual.`,`Sat — deeper connection window on ${day}.`,`Sun — calendar and energy review.`],exp=`Test the connection rhythm for seven days. On chaotic days, use a 5–10 minute micro-connection instead of treating the week as failed.`;document.getElementById('r2').innerHTML=box('SCHEDULE OVERLAP MAP','<p>'+(ov===null?'One or both work windows could not be parsed. Refine them before relying on the overlap.':ov+' minutes of estimated shared availability.')+'</p>')+box('ENERGY COMPATIBILITY','<p>'+energy+' energy peaks. Protect higher-energy windows for connection rather than logistics.</p>')+box('7-DAY CONNECTION PLAN','<ul>'+plan.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>')+box('NO-GO ZONES','<p>Avoid high-stakes relationship conversations in predictable exhaustion windows. Dependents and household duties should be accounted for rather than silently consuming connection time.</p>')+box('ONE SACRED RULE','<p>Choose an editable rule such as “the first 15 minutes together are connection, not logistics.”</p>')+box('BACKUP PLAN','<p>When the planned window collapses, use a short intentional check-in rather than adding guilt.</p>')+box('REVIEW DATE','<p>'+esc(review)+'</p>');return {inputs:{a:document.getElementById('t2a').value,b:document.getElementById('t2b').value,ea,eb,d,re,day},outputs:{overlap:ov,energy,plan},summary:`Time: ${ov===null?'needs cleaner inputs':ov+' min overlap'}`,experiment:exp,reviewDate:review,focus:'Protect one reliable connection window before adding more logistics.'}}
+function num(id){let n=Number(document.getElementById(id).value);return Number.isFinite(n)&&n>=0?n:null}function analyze3(){let ids=['t3income','t3fixed','t3var','t3a','t3b','t3debt'],v=ids.map(num);if(v.some(x=>x===null))throw Error('bad number');let [income,fixed,variable,a,b,debt]=v,out=fixed+variable+a+b+debt,rem=income-out,goal=document.getElementById('t3goal').value||'shared goal',pct=Math.max(0,Math.min(100,Number(document.getElementById('t3pct').value)||0)),cat=rem>0?'Stable':rem===0?'Zero-surplus':'Deficit',review=d7(),exp='Hold one 15-minute money meeting, identify one upcoming irregular expense, and make one explicit adjustment together.';document.getElementById('r3').innerHTML=box('MONEY SNAPSHOT','<p><strong>'+esc(cat)+'</strong>. Income '+money(income)+' · Outflow '+money(out)+' · Remaining '+money(rem)+'.</p>')+box('WHERE THE MONEY GOES','<p>Fixed '+(income?Math.round(fixed/income*100):0)+'% · Variable '+(income?Math.round(variable/income*100):0)+'% · Personal '+(income?Math.round((a+b)/income*100):0)+'% · Debt/irregular '+(income?Math.round(debt/income*100):0)+'%.</p>')+box('WHAT IS PRESSURING THE SYSTEM','<p>'+esc(rem<0?'The entered planning numbers show a deficit. Focus on visibility and trade-offs rather than blame.':rem===0?'There is no remaining monthly cash flow in the entered categories.':'There is remaining cash flow after the entered categories.')+'</p>')+box('3 ACTION ITEMS','<ul><li>Review recurring and variable costs together.</li><li>Name one temporary trade-off if needed.</li><li>Decide what the shared goal means for the next review period.</li></ul>')+box('NEXT MONEY MEETING AGENDA','<p>3 min reality check · 4 min upcoming irregular costs · 4 min shared goal “'+esc(goal)+'” · 4 min one adjustment.</p>')+box('ONE AGREEMENT','<p>'+esc(rem>0?money(rem*pct/100)+' may be used as an adjustable planning target toward “'+goal+'”.':'Agree on one temporary change and review it before making broader cuts.')+'</p>')+box('SAFETY','<p>This tool uses your planning numbers; it is not individualized financial advice and does not recommend debt or investment products.</p>');return {inputs:Object.fromEntries(ids.map((x,i)=>[x,v[i]])),outputs:{category:cat,remaining:rem,goal},summary:`Money: ${cat}; remaining ${money(rem)}`,experiment:exp,reviewDate:review,focus:rem<0?'Understand the monthly gap together before making spending changes.':'Give remaining cash a shared purpose before it disappears into friction.'}}
+function analyze4(){let ha=+document.getElementById('t4ha').value||0,hb=+document.getElementById('t4hb').value||0,aa=+document.getElementById('t4aa').value||5,ab=+document.getElementById('t4ab').value||5,tr=document.getElementById('t4travel').value,pr=document.getElementById('t4promo').value,dom=document.getElementById('t4dom').value,se=document.getElementById('t4season').value,fr=document.getElementById('t4frust').value||'competing career and home demands',review=document.getElementById('t4review').value||d7(),exp=`Run a defined career-season agreement through ${review}, then keep, change or stop it.`;let diff=Math.abs(ha-hb);document.getElementById('r4').innerHTML=box('CAREER TENSION SUMMARY','<p>Work hours differ by '+diff+' hours/week; travel: '+esc(tr)+'; promotion timing: '+esc(pr)+'; domestic impact: '+esc(dom)+'.</p>')+box('WHAT EACH PERSON IS PROTECTING','<p>Partner A: '+aa+'/10 stated ambition, '+ha+' work hours. Partner B: '+ab+'/10 stated ambition, '+hb+' work hours. These are preferences and demands, not objective worth.</p>')+box('WHERE THE TRADE-OFF IS','<p>Time/presence, career momentum, travel, domestic work and financial/stability considerations may pull in different directions. The tool does not decide whose career matters more.</p>')+box('3 POSSIBLE COMPROMISES','<ul><li>Define a temporary seasonal priority with an explicit end/review date.</li><li>Protect schedules and recovery time for both careers.</li><li>Consider outsourcing or simplifying household load if financially feasible rather than making one partner absorb it.</li></ul>')+box('ONE SEASON AGREEMENT','<p>Temporary priority: '+esc(se)+'. Define what changes at home and review on '+esc(review)+'.</p>')+box('CONVERSATION OPENER',script(`Observation: “Our work demands are affecting home life.” Impact: “I’m feeling the pressure around ${fr}.” Need: “I want both careers and our shared life to have a workable season.” Request: “Can we compare the next review period and choose one temporary trade-off together?” Agreement: “We’ll review it on ${review}.”`));return {inputs:{ha,hb,aa,ab,tr,pr,dom,se,fr},outputs:{hours:{ha,hb},tension:diff>=10?'High trade-off':'Manageable trade-off',season:se},summary:`Career: ${diff>=10?'High trade-off':'Manageable trade-off'}`,experiment:exp,reviewDate:review,focus:'Make the career trade-off explicit and temporary rather than an invisible default.'}}
+function analyze5(){let trigger=document.getElementById('t5trigger').value||'a recurring disagreement',said=document.getElementById('t5said').value||'the interaction became tense',ha=document.getElementById('t5hurtA').value||'feeling hurt or overwhelmed',hb=document.getElementById('t5hurtB').value||'feeling hurt or criticized',na=document.getElementById('t5needA').value||'acknowledgment and support',nb=document.getElementById('t5needB').value||'respect and a clear request',end=document.getElementById('t5end').value,safe=document.getElementById('t5safe').value,scriptText=safe==='No'?`Observation: “The fight about ${trigger} got tense.” Impact: “I think we both left feeling hurt.” Need: “I want us to feel like a team.” Request: “Can we each name what we needed and one concrete change for next time?” Agreement: “Let’s test that change once and review it.”`:'Pause the optimization exercise. If there are threats, coercion, violence, intimidation, or fear of retaliation, prioritize safety and appropriate real-world support. Do not force confrontation because an app suggests it.';document.getElementById('r5').innerHTML=box('WHAT THIS FIGHT MAY BE ABOUT','<p>The surface trigger was “'+esc(trigger)+'”. Based only on what you entered, a possible underlying issue is the gap between the event and the needs each person describes. This is an interpretation, not certainty.</p>')+box('WHAT EACH PERSON MAY NEED','<p>Partner A: “'+esc(ha)+'” → “'+esc(na)+'”. Partner B: “'+esc(hb)+'” → “'+esc(nb)+'”.</p>')+box('POSSIBLE RECURRING PATTERN','<p>Trigger → hurt/need → protective response → partner hurt/need → unresolved ending (“'+esc(end)+'”). Test changing the sequence rather than proving who was right.</p>')+box('MICRO COMMITMENTS','<ul><li>Use one specific request instead of a global accusation.</li><li>Reflect the other partner request before defending intent.</li></ul>')+box("TONIGHT'S 5-MINUTE REPAIR SCRIPT",script(scriptText))+box('ONE THING TO CHANGE NEXT TIME','<p>'+esc(safe==='No'?'Use observation → impact → need → request before defending or solving.':'Do not prioritize repair timing over safety.')+'</p>')+(safe==='No'?'':'<div class="output-block"><strong>SAFETY SIGNAL:</strong> Prioritize safety over optimization.</div>');return {inputs:{trigger,said,ha,hb,na,nb,end,safe},outputs:{possibleAbout:'needs and interaction cycle',pattern:end,script:scriptText,safety:safe},summary:`Argument: ${trigger.slice(0,70)}`,experiment:safe==='No'?'Test one new repair sequence the next time this disagreement appears.':'Pause relationship optimization and prioritize safety.',reviewDate:'',focus:safe==='No'?`Change the response sequence around “${trigger}”.`:'Prioritize safety before repair.'}}
+function renderDashboard(){document.getElementById('dash-focus').innerHTML='<p>'+esc(S.currentFocus||'No current focus yet. Run one tool to create a practical next step.')+'</p><p class="muted">Completed: '+esc(S.completedTools.map(x=>LABEL[x]).join(' · ')||'none')+'</p>'}function renderPlan(){let r=S.toolResults,c=[['Current Friction',S.currentFocus||'Run a tool first.'],['Load Agreement',r.tool1?.alert||'Not yet created.'],['Connection Agreement',r.tool2?.energy?`Energy compatibility: ${r.tool2.energy}.`:'Not yet created.'],['Money Agreement',r.tool3?.goal?`Goal: ${r.tool3.goal}; category: ${r.tool3.category}.`:'Not yet created.'],['Career Season Agreement',r.tool4?.season?`Temporary season: ${r.tool4.season}.`:'Not yet created.'],['Conflict Repair Agreement',r.tool5?.script||'Not yet created.'],['One Active Experiment',S.experiments[0]||'Run a tool to create one.'],['Review Date',S.reviewDates[0]||'Choose one in the relevant module.']];document.getElementById('planContent').innerHTML='<div class="card">'+c.map(x=>box(x[0],'<p>'+esc(x[1])+'</p>')).join('')+'<div class="actions-bar no-print"><button class="btn btn-primary" onclick="printPlan()">Print / Save Plan</button><button class="btn btn-secondary" onclick="go(\'reset\')">Continue Reset</button></div></div>'}function renderHistory(){let list=document.getElementById('historyList'),f=document.getElementById('historyFilter')?.value||'all',h=H().filter(x=>f==='all'||x.moduleId===f);if(!h.length){list.innerHTML='<p class="muted">No saved entries yet.</p>';return}list.innerHTML=h.map((x,i)=>'<div class="history-item"><span><strong>'+esc(LABEL[x.moduleId]||x.moduleId)+'</strong><br><small>'+esc(new Date(x.timestamp).toLocaleString())+' · '+esc(x.summary)+'</small></span><button class="btn btn-danger btn-sm" data-i="'+i+'">Delete</button></div>').join('');list.querySelectorAll('[data-i]').forEach((b,i)=>b.onclick=()=>{if(confirm('Delete this saved entry?')){let all=H(),target=h[i],p=all.indexOf(target);if(p>-1)all.splice(p,1);localStorage.setItem(HISTORY,JSON.stringify(all));renderHistory();toast('History entry deleted')}})}function clearAll(){if(!confirm('Clear all saved analyses and operating-plan data?'))return;localStorage.removeItem(HISTORY);localStorage.removeItem(STATE);S=loadState();renderDashboard();renderPlan();renderHistory();toast('All saved data cleared')}
+const days=[['Day 1','See the load','tool1'],['Day 2','Protect connection','tool2'],['Day 3','Look at money together','tool3'],['Day 4','Align the career season','tool4'],['Day 5','Decode the recurring fight','tool5'],['Day 6','Build the couple snapshot','plan'],['Day 7','Choose one operating experiment','plan']];document.getElementById('resetDays').innerHTML=days.map((d,i)=>'<div class="card"><span class="tag">DAY '+(i+1)+'</span><h3 style="color:#264653;margin:.4rem 0">'+esc(d[1])+'</h3><p class="muted">Use the existing '+esc(LABEL[d[2]]||'synthesis plan')+'; no relationship score is created.</p><button class="btn btn-secondary btn-sm" onclick="go(\''+d[2]+'\')">Open</button></div>').join('');document.getElementById('historyFilter').onchange=renderHistory;function printPlan(){renderPlan();let p=document.getElementById('printContent'),plan=document.getElementById('planContent');p.innerHTML=plan.innerHTML;document.querySelectorAll('.view-panel').forEach(x=>x.classList.remove('active'));document.getElementById('print-plan').classList.add('active');window.print();setTimeout(()=>{document.getElementById('print-plan').classList.remove('active');document.getElementById('plan').classList.add('active')},500)}initTasks();renderDashboard();renderPlan();renderHistory();
+</script></body></html>

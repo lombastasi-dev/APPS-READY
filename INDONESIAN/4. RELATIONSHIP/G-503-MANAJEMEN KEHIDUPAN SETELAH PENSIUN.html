@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RETIREMENT LIFE OS™ V2 — Sistem Operasi Kehidupan Pasca-Kerja</title>
+  
+  <!-- Google Fonts & Font Awesome Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* CSS Variables & Base Styles */
+    :root {
+      --midnight: #1B1B3A;
+      --mint: #4ECDC4;
+      --mint-dark: #3bbaa3;
+      --mint-light: #e6faf8;
+      --bg-gradient: linear-gradient(135deg, #F8F9FF 0%, #F0FFFE 100%);
+      --card-bg: #FFFFFF;
+      --text-main: #2D3748;
+      --text-muted: #718096;
+      --border-color: #E2E8F0;
+      --danger: #E53E3E;
+      --danger-light: #FFF5F5;
+      --warning: #DD6B20;
+      --warning-light: #FFFAF0;
+      --success: #38A169;
+      --success-light: #F0FFF4;
+      --sidebar-width: 270px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.02);
+      transition: transform 0.3s ease;
+    }
+
+    .sidebar-header {
+      padding: 24px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .sidebar-header i {
+      font-size: 24px;
+      color: var(--mint-dark);
+    }
+
+    .sidebar-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--midnight);
+      line-height: 1.2;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      border-radius: 10px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 13.5px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-item-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-item:hover {
+      background: #F7FAFC;
+      color: var(--midnight);
+    }
+
+    .nav-item.active {
+      background: var(--midnight);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active i {
+      color: var(--mint);
+    }
+
+    .nav-item i {
+      font-size: 15px;
+      width: 18px;
+      text-align: center;
+    }
+
+    .nav-badge {
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Mobile Header & Overlay */
+    .mobile-header {
+      display: none;
+      background: var(--card-bg);
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .mobile-header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--midnight);
+    }
+
+    .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--midnight);
+      cursor: pointer;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(27, 27, 58, 0.4);
+      z-index: 95;
+    }
+
+    /* Main Content Area */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .content-wrapper {
+      width: 100%;
+      max-width: 840px;
+    }
+
+    .view-panel {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .view-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Card Utilities */
+    .card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 28px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      border: 1px solid var(--border-color);
+      margin-bottom: 24px;
+    }
+
+    /* Typography Helpers */
+    .hero-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 8px;
+      letter-spacing: -0.5px;
+    }
+
+    .hero-subtitle {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tool-problem {
+      background: var(--mint-light);
+      border-left: 4px solid var(--mint-dark);
+      padding: 16px 20px;
+      border-radius: 0 12px 12px 0;
+      font-size: 15px;
+      color: var(--midnight);
+      font-weight: 500;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Form UI Elements */
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--midnight);
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      background: #FAFAFA;
+      transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+      outline: none;
+      border-color: var(--mint-dark);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(78, 205, 196, 0.2);
+    }
+
+    textarea.form-control {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .checkbox-group, .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .checkbox-label, .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--text-main);
+      cursor: pointer;
+    }
+
+    .checkbox-label input, .radio-label input {
+      accent-color: var(--mint-dark);
+      width: 16px;
+      height: 16px;
+    }
+
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .slider-container input[type="range"] {
+      flex: 1;
+      accent-color: var(--mint-dark);
+    }
+
+    .slider-val {
+      font-weight: 700;
+      color: var(--midnight);
+      width: 28px;
+      text-align: right;
+    }
+
+    /* Buttons */
+    .button-row {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary { background: var(--midnight); color: #FFFFFF; }
+    .btn-primary:hover { background: #2a2a57; }
+    .btn-secondary { background: #EDF2F7; color: var(--midnight); }
+    .btn-secondary:hover { background: #E2E8F0; }
+    .btn-danger { background: var(--danger); color: #FFFFFF; }
+    .btn-danger:hover { background: #c53030; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border-radius: 6px; }
+
+    /* Results Card Layout */
+    .output-container {
+      margin-top: 28px;
+      display: none;
+    }
+
+    .output-container.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .output-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+    }
+
+    .output-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .output-headline {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--midnight);
+      margin-bottom: 8px;
+    }
+
+    .script-box {
+      background: #1B1B3A;
+      color: #F8F9FF;
+      padding: 18px;
+      border-radius: 12px;
+      font-family: monospace, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.5;
+      position: relative;
+      margin-top: 8px;
+      white-space: pre-wrap;
+    }
+
+    .script-copy-btn {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .script-copy-btn:hover { background: rgba(255, 255, 255, 0.25); }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--midnight);
+      color: #FFFFFF;
+      padding: 12px 20px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .dash-card {
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 24px;
+      border: 1px solid var(--border-color);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+
+    .dash-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      border-color: var(--mint);
+    }
+
+    .dash-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: var(--mint-light);
+      color: var(--mint-dark);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .dash-card h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--midnight);
+    }
+
+    .dash-card p {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .status-badge {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Score Badge */
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+    .badge-danger { background: var(--danger-light); color: var(--danger); }
+    .badge-warning { background: var(--warning-light); color: var(--warning); }
+    .badge-success { background: var(--success-light); color: var(--success); }
+
+    /* History & Tables */
+    .history-section {
+      margin-top: 32px;
+      border-top: 1px solid var(--border-color);
+      padding-top: 20px;
+    }
+
+    .history-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .history-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-list {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .history-item {
+      background: #FAFAFA;
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .history-item:hover { background: #F0F4F8; }
+
+    .history-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin-top: 10px;
+    }
+
+    .history-table th, .history-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .history-table th {
+      background: #F7FAFC;
+      color: var(--midnight);
+      font-weight: 600;
+    }
+
+    .reset-step-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: auto;
+      border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    /* Print Styles */
+    @media print {
+      .sidebar, .mobile-header, .sidebar-overlay, footer, .button-row, .btn, .script-copy-btn, .history-section {
+        display: none !important;
+      }
+      .main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+      }
+      .content-wrapper {
+        max-width: 100% !important;
+      }
+      .card, .output-card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+        break-inside: avoid;
+      }
+    }
+
+    /* Responsive Queries */
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .mobile-header { display: flex; }
+      .main-content { margin-left: 0; padding: 20px 16px; }
+      .hero-title { font-size: 24px; }
+      .card { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Seluler -->
+  <header class="mobile-header">
+    <h1>RETIREMENT LIFE OS™</h1>
+    <button class="menu-toggle" id="menuToggle" aria-label="Buka/Tutup Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="app-container">
+    <!-- Navigasi Bilah Samping -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <i class="fa-solid fa-compass"></i>
+        <h1>RETIREMENT<br>LIFE OS™</h1>
+      </div>
+      <ul class="nav-list">
+        <li>
+          <a class="nav-item active" data-target="home">
+            <span class="nav-item-content"><i class="fa-solid fa-house"></i> Beranda</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="start-here">
+            <span class="nav-item-content"><i class="fa-solid fa-flag"></i> Mulai Di Sini</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-finances">
+            <span class="nav-item-content"><i class="fa-solid fa-wallet"></i> Keuangan Pensiun</span>
+            <span class="nav-badge" id="badge-money">○</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-purpose">
+            <span class="nav-item-content"><i class="fa-solid fa-bullseye"></i> Pencari Tujuan Hidup</span>
+            <span class="nav-badge" id="badge-purpose">○</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-social">
+            <span class="nav-item-content"><i class="fa-solid fa-users"></i> Lingkaran Sosial</span>
+            <span class="nav-badge" id="badge-social">○</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-health">
+            <span class="nav-item-content"><i class="fa-solid fa-heart-pulse"></i> Kesehatan & Energi</span>
+            <span class="nav-badge" id="badge-health">○</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="tool-legacy">
+            <span class="nav-item-content"><i class="fa-solid fa-seedling"></i> Warisan & Kontribusi</span>
+            <span class="nav-badge" id="badge-legacy">○</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="reset-7day">
+            <span class="nav-item-content"><i class="fa-solid fa-calendar-check"></i> Penataan Ulang 7 Hari</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="life-map">
+            <span class="nav-item-content"><i class="fa-solid fa-map"></i> Peta Kehidupan</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="history-view">
+            <span class="nav-item-content"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya</span>
+          </a>
+        </li>
+        <li>
+          <a class="nav-item" data-target="privacy-view">
+            <span class="nav-item-content"><i class="fa-solid fa-shield-halved"></i> Privasi & Keamanan</span>
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- Area Konten Utama -->
+    <main class="main-content">
+      <div class="content-wrapper">
+
+        <!-- TAMPILAN BERANDA -->
+        <section id="home" class="view-panel active">
+          <h2 class="hero-title">PEMBERHENTIAN KERJA SESEUNGGUHNYA MEWARDAHKAN HIDUP BARU.<br>KEHIDUPAN BARU SAJA DIMULAI.</h2>
+          <p class="hero-subtitle">Uang memang penting. Namun, masa pensiun yang memuaskan juga membutuhkan tujuan, relasi, energi, dan sesuatu yang membuat Anda bersemangat bangun di pagi hari.</p>
+          
+          <div id="home-progress-banner" class="card" style="display:none; background: var(--mint-light); border-color: var(--mint);">
+            <h3 style="font-size:16px; color:var(--midnight); margin-bottom:8px;" id="home-progress-title">Anda telah merancang sebagian dari peta kehidupan pensiun Anda.</h3>
+            <div id="home-progress-indicators" style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; font-weight:600; font-size:13px;"></div>
+            <button class="btn btn-primary btn-sm" onclick="switchTab('life-map')">Lanjutkan Peta Kehidupan Pensiun Anda <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+
+          <h3 class="section-title">APA YANG PALING ANDA BUTUHKAN SAAT INI?</h3>
+          <div class="dashboard-grid">
+            <div class="dash-card" onclick="switchTab('tool-finances')">
+              <div class="dash-icon"><i class="fa-solid fa-wallet"></i></div>
+              <h3>💰 KEUANGAN</h3>
+              <p>Saya khawatir apakah uang saya cukup untuk menopang kebutuhan hidup.</p>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-purpose')">
+              <div class="dash-icon"><i class="fa-solid fa-bullseye"></i></div>
+              <h3>🎯 TUJUAN HIDUP</h3>
+              <p>Saya tidak tahu apa yang ingin saya tuju setelah pensiun.</p>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-social')">
+              <div class="dash-icon"><i class="fa-solid fa-users"></i></div>
+              <h3>👥 RELASI & SOSIAL</h3>
+              <p>Dunia sosial saya berubah drastis setelah berhenti bekerja.</p>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-health')">
+              <div class="dash-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+              <h3>❤️ ENERGI & KESEHATAN</h3>
+              <p>Saya ingin tetap aktif, bugar, dan berenergi.</p>
+            </div>
+            <div class="dash-card" onclick="switchTab('tool-legacy')">
+              <div class="dash-icon"><i class="fa-solid fa-seedling"></i></div>
+              <h3>🌱 KONTRIBUSI</h3>
+              <p>Saya ingin tahun-tahun mendatang dalam hidup saya terasa bermakna.</p>
+            </div>
+            <div class="dash-card" onclick="switchTab('reset-7day')" style="border-color: var(--mint);">
+              <div class="dash-icon" style="background:var(--midnight); color:#fff;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+              <h3>✨ PENATAAN ULANG TOTAL</h3>
+              <p>Saya ingin merancang ulang seluruh gambaran hidup saya langkah demi langkah.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN MULAI DI SINI -->
+        <section id="start-here" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">PENSIUN ADALAH TRANSISI KEHIDUPAN</h2>
+            <p style="font-size:15px; line-height:1.6; color:var(--text-main); margin-bottom:20px;">
+              Gaji bulanan memberi struktur pada pekan Anda.<br>
+              Tempat kerja menyediakan kontak sosial secara otomatis.<br>
+              Karier memberikan identitas dan peran.<br>
+              Pekerjaan secara tidak langsung memberi rasa memiliki tujuan harian.<br><br>
+              Ketika pekerjaan selesai atau hilang, hal-hal tersebut tidak secara otomatis tergantikan.
+              Oleh karena itu, perencanaan pensiun perlu mencakup lebih dari sekadar urusan uang.
+            </p>
+            <h3 class="section-title">LIMA PERTANYAAN UTAMA</h3>
+            <ol style="padding-left:20px; font-size:14px; line-height:1.8; color:var(--midnight); margin-bottom:24px;">
+              <li><strong>Apakah keuangan saya sanggup menopang gaya hidup yang saya inginkan?</strong></li>
+              <li><strong>Apa yang memberi arti pada hari-hari saya sekarang?</strong></li>
+              <li><strong>Siapa saja orang-orang yang ingin saya miliki di sekitar saya?</strong></li>
+              <li><strong>Bagaimana cara saya menjaga energi dan kemandirian saya?</strong></li>
+              <li><strong>Apa yang ingin saya tinggalkan, bangun, atau berikan kepada sesama?</strong></li>
+            </ol>
+            <button class="btn btn-primary" onclick="switchTab('tool-finances')">Mari susun jawaban Anda <i class="fa-solid fa-arrow-right"></i></button>
+          </div>
+        </section>
+
+        <!-- MODUL 1: KEUANGAN PENSIUN -->
+        <section id="tool-finances" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-wallet" style="color:var(--mint-dark)"></i> Keuangan Pensiun</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Gaji bulanan saya telah berhenti. Bagaimana saya tahu gaya hidup seperti apa yang sanggup saya jalani dengan nyaman sekarang?"</span>
+            </div>
+
+            <form id="form-finances">
+              <div class="form-group">
+                <label for="fin-fixed-inc">Pemasukan bulanan tetap (pensiun, jaminan sosial, anuitas) (Rp):</label>
+                <input type="number" id="fin-fixed-inc" class="form-control" placeholder="cth. 5000000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-portfolio-inc">Rencana penarikan investasi/portofolio bulanan (Rp):</label>
+                <input type="number" id="fin-portfolio-inc" class="form-control" placeholder="cth. 3000000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-core-exp">Pengeluaran pokok tetap (tempat tinggal, utilitas, makanan) (Rp):</label>
+                <input type="number" id="fin-core-exp" class="form-control" placeholder="cth. 4500000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-flex-exp">Pengeluaran gaya hidup fleksibel (hobi, bepergian, makan di luar) (Rp):</label>
+                <input type="number" id="fin-flex-exp" class="form-control" placeholder="cth. 1500000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-health-exp">Estimasi biaya kesehatan & asuransi bulanan (Rp):</label>
+                <input type="number" id="fin-health-exp" class="form-control" placeholder="cth. 800000" required min="0">
+              </div>
+              <div class="form-group">
+                <label for="fin-reserves">Likitiditas dana darurat saat ini (Rp):</label>
+                <input type="number" id="fin-reserves" class="form-control" placeholder="cth. 50000000" required min="0">
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Hitung Arus Kas</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleFinances()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-finances" class="output-container"></div>
+        </section>
+
+        <!-- MODUL 2: PENCARI TUJUAN HIDUP -->
+        <section id="tool-purpose" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-bullseye" style="color:var(--mint-dark)"></i> Pencari Tujuan Hidup</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Saya telah pensiun dari pekerjaan. Namun saya tidak ingin pensiun dari memiliki alasan untuk bangun setiap pagi."</span>
+            </div>
+
+            <form id="form-purpose">
+              <div class="form-group">
+                <label for="pur-career">Karier atau peran utama Anda sebelumnya:</label>
+                <input type="text" id="pur-career" class="form-control" placeholder="cth. Guru SMA, Insinyur Sipil, Pegawai Negeri..." required>
+              </div>
+              <div class="form-group">
+                <label for="pur-loved">Apa yang paling Anda sukai dari pekerjaan Anda dulu?</label>
+                <textarea id="pur-loved" class="form-control" placeholder="cth. Menjelaskan hal rumit, membimbing rekan muda, menyelesaikan masalah..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="pur-disliked">Hal apa yang paling Anda syukuri karena sudah tidak perlu melakukannya lagi?</label>
+                <textarea id="pur-disliked" class="form-control" placeholder="cth. Macet pagi hari, evaluasi kinerja, politik kantor..."></textarea>
+              </div>
+              <div class="form-group">
+                <label for="pur-wanted">Hal-hal yang selalu ingin Anda coba tetapi dulu kekurangan waktu:</label>
+                <textarea id="pur-wanted" class="form-control" placeholder="cth. Pertukangan kayu, menulis cerita, berkebun di lingkungan rumah..."></textarea>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Temukan Jalur Tujuan</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSamplePurpose()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-purpose" class="output-container"></div>
+        </section>
+
+        <!-- MODUL 3: LINGKARAN SOSIAL -->
+        <section id="tool-social" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-users" style="color:var(--mint-dark)"></i> Lingkaran Sosial</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Ketika pekerjaan berhenti, kontak sosial otomatis ikut menghilang. Kehidupan sosial Anda kini membutuhkan struktur baru."</span>
+            </div>
+
+            <form id="form-social">
+              <div class="form-group">
+                <label for="soc-contact">Frekuensi interaksi sosial yang bermakna saat ini:</label>
+                <select id="soc-contact" class="form-control">
+                  <option value="Setiap hari">Setiap hari</option>
+                  <option value="3-4x seminggu">3-4 kali seminggu</option>
+                  <option value="1-2x seminggu">1-2 kali seminggu</option>
+                  <option value="Jarang">Jarang</option>
+                  <option value="Hampir tidak pernah">Hampir tidak pernah</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="soc-source">Darimana sebagian besar hubungan Anda berasal sebelumnya?</label>
+                <select id="soc-source" class="form-control">
+                  <option value="Pekerjaan / Karier">Pekerjaan / Karier</option>
+                  <option value="Keluarga">Keluarga</option>
+                  <option value="Lingkungan Rumah">Lingkungan Rumah</option>
+                  <option value="Hobi & Klub">Hobi & Klub</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="soc-barrier">Hambatan utama untuk terhubung saat ini:</label>
+                <select id="soc-barrier" class="form-control">
+                  <option value="Mobilitas / Transportasi">Mobilitas / Transportasi</option>
+                  <option value="Kecemasan Sosial">Kecemasan Sosial</option>
+                  <option value="Keterbatasan Waktu / Bentrok Jadwal">Keterbatasan Waktu / Bentrok Jadwal</option>
+                  <option value="Pindah ke daerah baru">Pindah ke daerah baru</option>
+                  <option value="Bingung harus mulai dari mana">Bingung harus mulai dari mana</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="soc-missing">Bentuk hubungan seperti apa yang paling Anda rindukan?</label>
+                <select id="soc-missing" class="form-control">
+                  <option value="Percakapan mendalam">Percakapan mendalam</option>
+                  <option value="Teman ngobrol santai">Teman ngobrol santai</option>
+                  <option value="Rasa memiliki komunitas">Rasa memiliki komunitas</option>
+                  <option value="Merasa berguna bagi orang lain">Merasa berguna bagi orang lain</option>
+                  <option value="Hobi aktif bersama">Hobi aktif bersama</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-user-plus"></i> Rancang Rencana Sosial</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleSocial()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-social" class="output-container"></div>
+        </section>
+
+        <!-- MODUL 4: KESEHATAN & ENERGI -->
+        <section id="tool-health" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-heart-pulse" style="color:var(--mint-dark)"></i> Kesehatan & Energi</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Bagaimana cara membangun rutinitas penopang energi yang benar-benar bisa saya pertahankan berkelanjutan?"</span>
+            </div>
+
+            <form id="form-health">
+              <div class="form-group">
+                <label for="hea-activity">Tingkat aktivitas fisik harian saat ini:</label>
+                <select id="hea-activity" class="form-control">
+                  <option value="Pasif (Banyak duduk)">Pasif (Banyak duduk)</option>
+                  <option value="Ringan (Jalan santai harian singkat)">Ringan (Jalan santai harian singkat)</option>
+                  <option value="Sedang (Hobi aktif yang rutin)">Sedang (Hobi aktif yang rutin)</option>
+                  <option value="Tinggi (Rutinitas olahraga terstruktur)">Tinggi (Rutinitas olahraga terstruktur)</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="hea-sleep">Kualitas tidur saat ini:</label>
+                <select id="hea-sleep" class="form-control">
+                  <option value="Nyenyak dan konsisten">Nyenyak dan konsisten</option>
+                  <option value="Terkadang sulit tidur / terbangun">Terkadang sulit tidur / terbangun</option>
+                  <option value="Sering terganggu / Kurang energi">Sering terganggu / Kurang energi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="hea-preferred">Aktivitas fisik yang benar-benar Anda nikmati:</label>
+                <input type="text" id="hea-preferred" class="form-control" placeholder="cth. Jalan kaki, berenang, berkebun, yoga..." required>
+              </div>
+              <div class="form-group">
+                <label for="hea-checkup">Kapan pemeriksaan kesehatan rutin menyeluruh terakhir Anda?</label>
+                <select id="hea-checkup" class="form-control">
+                  <option value="Dalam 6 bulan terakhir">Dalam 6 bulan terakhir</option>
+                  <option value="Dalam 1 tahun terakhir">Dalam 1 tahun terakhir</option>
+                  <option value="Lebih dari 1 tahun lalu">Lebih dari 1 tahun lalu</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Bangun Rutinitas Energi</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleHealth()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-health" class="output-container"></div>
+        </section>
+
+        <!-- MODUL 5: WARISAN & KONTRIBUSI -->
+        <section id="tool-legacy" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-seedling" style="color:var(--mint-dark)"></i> Warisan & Kontribusi</h2>
+            <div class="tool-problem">
+              <i class="fa-solid fa-circle-info"></i>
+              <span>"Makna apa yang ingin saya berikan pada tahun-tahun hidup saya selanjutnya?"</span>
+            </div>
+
+            <form id="form-legacy">
+              <div class="form-group">
+                <label for="leg-remembered">Nilai atau kualitas apa yang Anda harapkan dikenang orang lain dari diri Anda?</label>
+                <input type="text" id="leg-remembered" class="form-control" placeholder="cth. Kebaikan, rasa ingin tahu, ketangguhan, kedermawanan..." required>
+              </div>
+              <div class="form-group">
+                <label for="leg-stories">Kisah, pelajaran, atau keterampilan yang ingin Anda bagikan kepada generasi penerus:</label>
+                <textarea id="leg-stories" class="form-control" placeholder="cth. Sejarah keluarga, wawasan karier, kerajinan tangan..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="leg-impact">Siapa yang ingin Anda beri dampak positif secara langsung?</label>
+                <select id="leg-impact" class="form-control">
+                  <option value="Cucu & Keluarga Inti">Cucu & Keluarga Inti</option>
+                  <option value="Profesional Muda / Mentee">Profesional Muda / Mentee</option>
+                  <option value="Komunitas Lokal & Tetangga">Komunitas Lokal & Tetangga</option>
+                  <option value="Kegiatan Sosial / Lingkungan Hidup">Kegiatan Sosial / Lingkungan Hidup</option>
+                </select>
+              </div>
+
+              <div class="button-row">
+                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-hand-holding-heart"></i> Buat Rencana Kontribusi</button>
+                <button type="button" class="btn btn-secondary" onclick="loadSampleLegacy()"><i class="fa-solid fa-flask"></i> Lihat Contoh</button>
+              </div>
+            </form>
+          </div>
+
+          <div id="out-legacy" class="output-container"></div>
+        </section>
+
+        <!-- TAMPILAN PENATAAN ULANG 7 HARI -->
+        <section id="reset-7day" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title">PENATAAN ULANG PENSIUN 7 HARI</h2>
+            <p class="hero-subtitle">Transformasi bertahap dan terpandu untuk merancang seluruh sistem operasi kehidupan Anda.</p>
+
+            <div id="reset-steps-container"></div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN PETA KEHIDUPAN -->
+        <section id="life-map" class="view-panel">
+          <div class="card">
+            <h2 class="hero-title"><i class="fa-solid fa-map" style="color:var(--mint-dark)"></i> PETA KEHIDUPAN PENSIUN SAYA</h2>
+            <p class="hero-subtitle">Sintesis menyeluruh dari dimensi keuangan, tujuan, relasi, energi, dan kontribusi Anda.</p>
+            <div class="button-row" style="margin-bottom:20px;">
+              <button class="btn btn-secondary btn-sm" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Peta Kehidupan</button>
+            </div>
+
+            <div id="life-map-content"></div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN RIWAYAT -->
+        <section id="history-view" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Saya</h2>
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:16px;">Lihat hasil analisis yang pernah disimpan dari semua modul.</p>
+            <div id="full-history-table-container"></div>
+          </div>
+        </section>
+
+        <!-- TAMPILAN PRIVASI & KEAMANAN -->
+        <section id="privacy-view" class="view-panel">
+          <div class="card">
+            <h2 class="section-title"><i class="fa-solid fa-shield-halved"></i> Privasi & Keamanan</h2>
+            <div style="font-size:14px; line-height:1.6; color:var(--text-main); margin-bottom:24px;">
+              <p style="margin-bottom:12px;"><strong>Data Anda tidak pernah meninggalkan perangkat Anda.</strong></p>
+              <p style="margin-bottom:12px;">RETIREMENT LIFE OS™ beroperasi sepenuhnya secara lokal di dalam browser Anda menggunakan <code>localStorage</code>. Tidak ada akun, pendaftaran, basis data eksternal, pelacakan, maupun analitik yang digunakan.</p>
+              
+              <div style="background:var(--warning-light); border-left:4px solid var(--warning); padding:14px; border-radius:0 8px 8px 0; margin-bottom:20px;">
+                <strong>Penafian Perencanaan:</strong> Aplikasi ini menyediakan panduan refleksi mandiri dan estimasi perhitungan sederhana. Ini bukan merupakan saran keuangan, hukum, pajak, atau medis profesional.
+              </div>
+            </div>
+
+            <button class="btn btn-danger" onclick="clearAllData()"><i class="fa-solid fa-trash"></i> HAPUS SEMUA DATA KEHIDUPAN PENSIUN SAYA</button>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Catatan Kaki (Footer) -->
+  <footer>
+    RETIREMENT LIFE OS™ — Hanya untuk tujuan perencanaan dan refleksi pribadi. Bukan merupakan saran keuangan, hukum, atau medis.
+  </footer>
+
+  <!-- Notifikasi Toast -->
+  <div id="toast" class="toast">
+    <i class="fa-solid fa-check-circle" style="color:var(--mint)"></i>
+    <span id="toast-msg">Berhasil disalin ke papan klip!</span>
+  </div>
+
+  <!-- Logika Aplikasi JavaScript -->
+  <script>
+    // --- MANAJEMEN STATUS (STATE MANAGEMENT) ---
+    const STATE_KEY = 'retirementlife_v2_state';
+    const HISTORY_KEY = 'retirementlife_v2_history';
+
+    let retirementLifeState = {
+      version: 2,
+      completedTools: [],
+      toolResults: {
+        money: null,
+        purpose: null,
+        social: null,
+        health: null,
+        legacy: null
+      },
+      resetProgress: {
+        currentDay: 1,
+        completedDays: []
+      },
+      lastUpdated: null
+    };
+
+    function saveState() {
+      retirementLifeState.lastUpdated = new Date().toISOString();
+      localStorage.setItem(STATE_KEY, JSON.stringify(retirementLifeState));
+      updateNavigationBadges();
+      renderHomeProgress();
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem(STATE_KEY);
+      if (saved) {
+        try {
+          retirementLifeState = JSON.parse(saved);
+        } catch(e) {
+          console.error("Gagal membaca status tersimpan", e);
+        }
+      }
+      updateNavigationBadges();
+      renderHomeProgress();
+    }
+
+    function updateNavigationBadges() {
+      const tools = ['money', 'purpose', 'social', 'health', 'legacy'];
+      tools.forEach(t => {
+        const badge = document.getElementById(`badge-${t}`);
+        if(badge) {
+          if (retirementLifeState.completedTools.includes(t)) {
+            badge.innerText = '✓';
+            badge.style.background = 'var(--mint-dark)';
+            badge.style.color = '#fff';
+          } else {
+            badge.innerText = '○';
+            badge.style.background = 'rgba(255,255,255,0.2)';
+            badge.style.color = 'inherit';
+          }
+        }
+      });
+    }
+
+    // --- UTILITAS & SANITASI ---
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function formatRupiah(number) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Berhasil disalin ke papan klip!");
+      }).catch(() => {
+        showToast("Gagal menyalin teks.");
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-msg');
+      toastMsg.innerText = message;
+      toast.classList.add('show');
+      setTimeout(() => { toast.classList.remove('show'); }, 2000);
+    }
+
+    // --- NAVIGASI ---
+    function switchTab(targetId) {
+      document.querySelectorAll('.nav-item').forEach(el => {
+        if(el.getAttribute('data-target') === targetId) {
+          el.classList.add('active');
+        } else {
+          el.classList.remove('active');
+        }
+      });
+
+      document.querySelectorAll('.view-panel').forEach(panel => {
+        panel.classList.remove('active');
+      });
+
+      const activePanel = document.getElementById(targetId);
+      if(activePanel) {
+        activePanel.classList.add('active');
+      }
+
+      if (targetId === 'life-map') renderLifeMap();
+      if (targetId === 'reset-7day') render7DayReset();
+      if (targetId === 'history-view') renderFullHistoryTable();
+
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').classList.remove('open');
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('.nav-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const target = item.getAttribute('data-target');
+        switchTab(target);
+      });
+    });
+
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+      sidebarOverlay.classList.toggle('open');
+    });
+
+    sidebarOverlay.addEventListener('click', () => {
+      sidebar.classList.remove('open');
+      sidebarOverlay.classList.remove('open');
+    });
+
+    // --- BANNER PROGRES BERANDA ---
+    function renderHomeProgress() {
+      const banner = document.getElementById('home-progress-banner');
+      const indicators = document.getElementById('home-progress-indicators');
+      if (!banner || !indicators) return;
+
+      if (retirementLifeState.completedTools.length > 0) {
+        banner.style.display = 'block';
+        const map = { money: 'KEUANGAN', purpose: 'TUJUAN', social: 'RELASI', health: 'ENERGI', legacy: 'KONTRIBUSI' };
+        indicators.innerHTML = Object.keys(map).map(k => `
+          <span>${map[k]} ${retirementLifeState.completedTools.includes(k) ? '✓' : '○'}</span>
+        `).join('<span style="color:var(--text-muted)">|</span>');
+      } else {
+        banner.style.display = 'none';
+      }
+    }
+
+    // --- MANAJEMEN RIWAYAT ---
+    function saveHistoryItem(toolId, summary, fullData) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      const newItem = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        toolId: toolId,
+        summary: summary,
+        data: fullData
+      };
+      history.unshift(newItem);
+      if (history.length > 50) history = history.slice(0, 50);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+    }
+
+    function renderFullHistoryTable() {
+      const container = document.getElementById('full-history-table-container');
+      if (!container) return;
+
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      if (history.length === 0) {
+        container.innerHTML = `<p style="font-size:13px; color:var(--text-muted);">Belum ada riwayat analisis yang tersimpan.</p>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th>Tanggal</th>
+              <th>Modul</th>
+              <th>Ringkasan</th>
+              <th>Tindakan</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${history.map(item => `
+              <tr>
+                <td>${escapeHTML(item.date)}</td>
+                <td><strong>${escapeHTML(item.toolId.toUpperCase())}</strong></td>
+                <td>${escapeHTML(item.summary)}</td>
+                <td><button class="btn btn-secondary btn-sm" onclick="loadHistoryRecord('${item.toolId}', ${item.id})">Lihat</button></td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    function loadHistoryRecord(toolId, id) {
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]");
+      const match = history.find(i => i.id === id);
+      if (match) {
+        switchTab(`tool-${toolId}`);
+        if (toolId === 'finances') renderFinancesOutput(match.data);
+        if (toolId === 'purpose') renderPurposeOutput(match.data);
+        if (toolId === 'social') renderSocialOutput(match.data);
+        if (toolId === 'health') renderHealthOutput(match.data);
+        if (toolId === 'legacy') renderLegacyOutput(match.data);
+        showToast("Riwayat berhasil dimuat");
+      }
+    }
+
+    function clearAllData() {
+      if (confirm("Tindakan ini akan menghapus seluruh data tersimpan Retirement Life OS dari browser ini. Langkah ini tidak dapat dibatalkan.")) {
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(HISTORY_KEY);
+        retirementLifeState = {
+          version: 2,
+          completedTools: [],
+          toolResults: { money: null, purpose: null, social: null, health: null, legacy: null },
+          resetProgress: { currentDay: 1, completedDays: [] },
+          lastUpdated: null
+        };
+        saveState();
+        location.reload();
+      }
+    }
+
+
+    // ==========================================
+    // MODUL 1: KEUANGAN PENSIUN
+    // ==========================================
+    function loadSampleFinances() {
+      document.getElementById('fin-fixed-inc').value = 5000000;
+      document.getElementById('fin-portfolio-inc').value = 3000000;
+      document.getElementById('fin-core-exp').value = 4500000;
+      document.getElementById('fin-flex-exp').value = 1800000;
+      document.getElementById('fin-health-exp').value = 800000;
+      document.getElementById('fin-reserves').value = 60000000;
+      showToast("Contoh skenario keuangan berhasil dimuat");
+    }
+
+    document.getElementById('form-finances').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fixedInc = parseFloat(document.getElementById('fin-fixed-inc').value) || 0;
+      const portInc = parseFloat(document.getElementById('fin-portfolio-inc').value) || 0;
+      const coreExp = parseFloat(document.getElementById('fin-core-exp').value) || 0;
+      const flexExp = parseFloat(document.getElementById('fin-flex-exp').value) || 0;
+      const healthExp = parseFloat(document.getElementById('fin-health-exp').value) || 0;
+      const reserves = parseFloat(document.getElementById('fin-reserves').value) || 0;
+
+      const data = { fixedInc, portInc, coreExp, flexExp, healthExp, reserves };
+      
+      // Update Central State
+      retirementLifeState.toolResults.money = data;
+      if (!retirementLifeState.completedTools.includes('money')) {
+        retirementLifeState.completedTools.push('money');
+      }
+      saveState();
+      
+      renderFinancesOutput(data);
+      
+      const totalInc = fixedInc + portInc;
+      const totalExp = coreExp + flexExp + healthExp;
+      const net = totalInc - totalExp;
+      saveHistoryItem('finances', `Pemasukan: ${formatRupiah(totalInc)} | Bersih: ${formatRupiah(net)}`, data);
+    });
+
+    function renderFinancesOutput(data) {
+      const { fixedInc, portInc, coreExp, flexExp, healthExp, reserves } = data;
+      const totalInc = fixedInc + portInc;
+      const totalExp = coreExp + flexExp + healthExp;
+      const margin = totalInc - totalExp;
+
+      let statusLabel = "SURPLUS POSITIF";
+      let badgeClass = "badge-success";
+      if (margin < 0) {
+        statusLabel = "DEFISIT/NEGATIF";
+        badgeClass = "badge-danger";
+      } else if (margin < 500000) {
+        statusLabel = "MARGIN TIPIS";
+        badgeClass = "badge-warning";
+      }
+
+      const container = document.getElementById('out-finances');
+      container.innerHTML = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-chart-pie"></i> Ringkasan Arus Kas Bulanan Anda</div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <div class="output-headline" style="margin-bottom:0;">${margin >= 0 ? '+' : ''}${formatRupiah(margin)} / bulan</div>
+            <span class="badge ${badgeClass}">${statusLabel}</span>
+          </div>
+          <p style="font-size:14px; color:var(--text-muted);">
+            Total Pemasukan Bulanan: ${formatRupiah(totalInc)} (Tetap: ${formatRupiah(fixedInc)}, Portofolio: ${formatRupiah(portInc)})<br>
+            Total Pengeluaran Bulanan: ${formatRupiah(totalExp)} (Pokok: ${formatRupiah(coreExp)}, Fleksibel: ${formatRupiah(flexExp)}, Kesehatan: ${formatRupiah(healthExp)})
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-coins"></i> Dana Gaya Hidup Fleksibel</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Ini adalah estimasi arus kas bulanan yang tersedia untuk pengeluaran opsional berdasarkan data yang Anda masukkan (${formatRupiah(flexExp)} yang saat ini dialokasikan). Ini bukan jaminan kepastian keuangan jangka panjang.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-shield-halved"></i> Gambaran Dana Cadangan Anda</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Cadangan Likuid Saat Ini: <strong>${formatRupiah(reserves)}</strong>.<br>
+            Pengeluaran mendadak dan biaya kesehatan dapat bervariasi secara signifikan. Pertimbangkan apakah cadangan dana cair Anda saat ini sudah sesuai dengan kebutuhan mendatang.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-user-doctor"></i> Kapan Bantuan Profesional Diperlukan</div>
+          <ul style="padding-left:20px; font-size:14px; line-height:1.6; color:var(--text-main); margin-bottom:12px;">
+            <li>Proyeksi pengeluaran melebihi sumber pendapatan saat ini.</li>
+            <li>Rencana penarikan dana investasi bulanan tergolong besar.</li>
+            <li>Rencana pengeluaran besar dalam waktu dekat dapat menguras cadangan darurat.</li>
+            <li>Strategi pajak atau warisan membutuhkan peninjauan terstruktur.</li>
+          </ul>
+          <p style="font-size:13px; color:var(--text-muted); font-style:italic;">
+            Catatan perencanaan: Alat ini menyediakan gambaran sederhana berdasarkan data yang Anda masukkan dan bukan merupakan saran keuangan, investasi, atau pajak profesional.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-vial"></i> Satu Eksperimen Kecil</div>
+          <p style="font-size:14px; color:var(--text-main);"><strong>Pencatatan Pengeluaran Fleksibel:</strong> Catat setiap pembelian non-pokok selama 30 hari ke depan tanpa perlu membatasi diri, cukup untuk memahami realitas acuan belanja harian Anda.</p>
+        </div>
+
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="switchTab('tool-purpose')">Lanjut: Pencari Tujuan Hidup <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    // ==========================================
+    // MODUL 2: PENCARI TUJUAN HIDUP
+    // ==========================================
+    function loadSamplePurpose() {
+      document.getElementById('pur-career').value = "Guru Sains SMA";
+      document.getElementById('pur-loved').value = "Menjelaskan konsep rumit dengan sederhana, mendorong siswa yang penuh rasa ingin tahu, melihat orang tumbuh.";
+      document.getElementById('pur-disliked').value = "Koreksi ujian standar, birokrasi administratif, bel masuk pagi hari.";
+      document.getElementById('pur-wanted').value = "Menulis cerita pendek, pelestarian alam lokal, membimbing pemuda.";
+      showToast("Contoh skenario tujuan hidup berhasil dimuat");
+    }
+
+    document.getElementById('form-purpose').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const career = document.getElementById('pur-career').value;
+      const loved = document.getElementById('pur-loved').value;
+      const disliked = document.getElementById('pur-disliked').value;
+      const wanted = document.getElementById('pur-wanted').value;
+
+      const data = { career, loved, disliked, wanted };
+      
+      retirementLifeState.toolResults.purpose = data;
+      if (!retirementLifeState.completedTools.includes('purpose')) {
+        retirementLifeState.completedTools.push('purpose');
+      }
+      saveState();
+
+      renderPurposeOutput(data);
+      saveHistoryItem('purpose', `Karier: ${career}`, data);
+    });
+
+    function renderPurposeOutput(data) {
+      const { career, loved, disliked, wanted } = data;
+
+      const identityStmt = `Pekerjaan saya sebagai ${career} adalah apa yang saya lakukan, bukan keseluruhan identitas saya. Dalam babak baru ini, saya membawa serta kekuatan saya dalam ${loved.slice(0,50)}...`;
+
+      const container = document.getElementById('out-purpose');
+      container.innerHTML = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-user-tie"></i> Peran Yang Anda Tinggalkan vs. Apa Yang Anda Cintai</div>
+          <div class="output-headline">${escapeHTML(career)}</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Di balik jabatan pekerjaan Anda, nilai inti kemanusiaan yang paling Anda cintai adalah: <em>"${escapeHTML(loved)}"</em>.<br>
+            Masa pensiun yang bermakna mampu memisahkan profesi formal dari nilai dasar manusianya.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-route"></i> Tiga Jalur Tujuan Hidup</div>
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px;">
+              <strong>1. BERKONTRIBUSI:</strong> Menjadi mentor, relawan, atau pelayanan masyarakat memanfaatkan pengalaman Anda.
+            </div>
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px;">
+              <strong>2. BERKARYA:</strong> Menekuni ${escapeHTML(wanted || 'proyek kreatif pribadi')} tanpa tuntutan komersialisasi.
+            </div>
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px;">
+              <strong>3. TERHUBUNG:</strong> Bergabung dalam kelompok hobi bersama atau mengadakan lokakarya informal.
+            </div>
+          </div>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-vial"></i> Eksperimen Tujuan 2 Jam</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5; margin-bottom:8px;">
+            Uji coba satu aktivitas yang berkaitan dengan <em>${escapeHTML(wanted || 'minat baru')}</em> selama tepat 2 jam minggu ini.
+          </p>
+          <ul style="padding-left:20px; font-size:13px; color:var(--text-muted);">
+            <li>Tidak ada komitmen jangka panjang.</li>
+            <li>Tidak ada keharusan menghasilkan uang.</li>
+            <li>Tidak ada tuntutan untuk langsung mahir. Amati energi Anda setelahnya.</li>
+          </ul>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-id-card"></i> Pernyataan Identitas Anda</div>
+          <div class="script-box">
+            <button class="script-copy-btn" onclick="copyToClipboard(\`${identityStmt.replace(/`/g, '\\`')}\`)"><i class="fa-regular fa-copy"></i> Salin</button>
+            ${escapeHTML(identityStmt)}
+          </div>
+        </div>
+
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="switchTab('tool-social')">Lanjut: Lingkaran Sosial <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    // ==========================================
+    // MODUL 3: LINGKARAN SOSIAL
+    // ==========================================
+    function loadSampleSocial() {
+      document.getElementById('soc-contact').value = "1-2x seminggu";
+      document.getElementById('soc-source').value = "Pekerjaan / Karier";
+      document.getElementById('soc-barrier').value = "Keterbatasan Waktu / Bentrok Jadwal";
+      document.getElementById('soc-missing').value = "Teman ngobrol santai";
+      showToast("Contoh skenario sosial berhasil dimuat");
+    }
+
+    document.getElementById('form-social').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const contact = document.getElementById('soc-contact').value;
+      const source = document.getElementById('soc-source').value;
+      const barrier = document.getElementById('soc-barrier').value;
+      const missing = document.getElementById('soc-missing').value;
+
+      const data = { contact, source, barrier, missing };
+      
+      retirementLifeState.toolResults.social = data;
+      if (!retirementLifeState.completedTools.includes('social')) {
+        retirementLifeState.completedTools.push('social');
+      }
+      saveState();
+
+      renderSocialOutput(data);
+      saveHistoryItem('social', `Interaksi: ${contact} | Hambatan: ${barrier}`, data);
+    });
+
+    function renderSocialOutput(data) {
+      const { contact, source, barrier, missing } = data;
+
+      const reachoutScript = `Halo [Nama], saya sedang memikirkan betapa berbedanya rutinitas setelah ritme kerja berubah. Saya ingin sekali mengobrol atau bertemu lagi kapan-kapan. Apakah ada waktu luang untuk minum kopi atau telepon singkat minggu depan?`;
+
+      const container = document.getElementById('out-social');
+      container.innerHTML = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-users"></i> Realitas Sosial Anda</div>
+          <div class="output-headline">Interaksi Saat Ini: ${escapeHTML(contact)}</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Dunia kerja menyediakan kontak sosial otomatis. Pensiun menuntut hubungan yang dibangun dengan sengaja.
+            Anda mencatat paling merindukan <strong>${escapeHTML(missing.toLowerCase())}</strong>.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-circle-nodes"></i> Rencana Aksi Berdasarkan Hambatan</div>
+          <p style="font-size:14px; color:var(--text-main); margin-bottom:8px;">Hambatan Utama: <strong>${escapeHTML(barrier)}</strong></p>
+          <p style="font-size:13.5px; color:var(--text-muted); line-height:1.5;">
+            ${barrier.includes('Mobilitas') ? 'Fokus pada aktivitas rutin lokal yang mudah dijangkau, komunikasi telepon/video, atau komunitas terdekat.' :
+              barrier.includes('Kecemasan') ? 'Fokus pada kelompok kecil rutin dengan peran terstruktur (seperti menjadi relawan) di mana percakapan mengalir alami.' :
+              'Tetapkan jadwal sosial rutin mingguan tetap untuk menghilangkan kerumitan penyesuaian waktu.'}
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-rotate"></i> Aturan Hubungan Rutin-Berulang</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Acara sesekali memang baik, tetapi lingkungan rutin (hari yang sama, jam yang sama, tempat yang sama) menciptakan kesempatan berulang untuk rasa keakraban dan hubungan organik.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-paper-plane"></i> Naskah Menyapa Teman/Relasi</div>
+          <div class="script-box">
+            <button class="script-copy-btn" onclick="copyToClipboard(\`${reachoutScript.replace(/`/g, '\\`')}\`)"><i class="fa-regular fa-copy"></i> Salin</button>
+            ${escapeHTML(reachoutScript)}
+          </div>
+        </div>
+
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="switchTab('tool-health')">Lanjut: Kesehatan & Energi <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    // ==========================================
+    // MODUL 4: KESEHATAN & ENERGI
+    // ==========================================
+    function loadSampleHealth() {
+      document.getElementById('hea-activity').value = "Ringan (Jalan santai harian singkat)";
+      document.getElementById('hea-sleep').value = "Terkadang sulit tidur / terbangun";
+      document.getElementById('hea-preferred').value = "Berkebun, jalan santai di taman, peregangan pagi";
+      document.getElementById('hea-checkup').value = "Dalam 1 tahun terakhir";
+      showToast("Contoh skenario kesehatan berhasil dimuat");
+    }
+
+    document.getElementById('form-health').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const activity = document.getElementById('hea-activity').value;
+      const sleep = document.getElementById('hea-sleep').value;
+      const preferred = document.getElementById('hea-preferred').value;
+      const checkup = document.getElementById('hea-checkup').value;
+
+      const data = { activity, sleep, preferred, checkup };
+      
+      retirementLifeState.toolResults.health = data;
+      if (!retirementLifeState.completedTools.includes('health')) {
+        retirementLifeState.completedTools.push('health');
+      }
+      saveState();
+
+      renderHealthOutput(data);
+      saveHistoryItem('health', `Aktivitas: ${activity} | Tidur: ${sleep}`, data);
+    });
+
+    function renderHealthOutput(data) {
+      const { activity, sleep, preferred, checkup } = data;
+
+      const container = document.getElementById('out-health');
+      container.innerHTML = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-bolt"></i> Profil Energi Anda</div>
+          <div class="output-headline">Aktivitas Dasar: ${escapeHTML(activity)}</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Aktivitas favorit: <em>"${escapeHTML(preferred)}"</em>. Membangun energi yang berkelanjutan membutuhkan pergerakan alami yang terintegrasi ke dalam ritme harian Anda.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-person-walking"></i> Latihan Awal Ringan</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Komitmenkan tiga sesi 10 menit untuk <em>${escapeHTML(preferred.split(',')[0])}</em> minggu ini. Pilihlah aktivitas yang sesuai dengan kemampuan fisik Anda.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-moon"></i> Dukungan Kualitas Tidur</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Pola tidur: ${escapeHTML(sleep)}. Pertahankan waktu bangun yang konsisten dan dapatkan paparan sinar matahari pagi untuk memperkuat irama sirkadian tubuh Anda.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-clipboard-check"></i> Daftar Periksa Diskusi Dokter/Medis</div>
+          <p style="font-size:13.5px; color:var(--text-main); margin-bottom:8px;">Pemeriksaan terakhir: ${escapeHTML(checkup)}.</p>
+          <ul style="padding-left:20px; font-size:13px; color:var(--text-muted); line-height:1.5;">
+            <li>Peninjauan skrining pencegahan rutin</li>
+            <li>Evaluasi suplemen atau obat-obatan rutin</li>
+            <li>Diskusi kesehatan sendi dan mobilitas fisik</li>
+          </ul>
+          <p style="font-size:12px; color:var(--text-muted); margin-top:8px; font-style:italic;">
+            Catatan kesehatan: Alat ini menyediakan panduan umum perencanaan, bukan diagnosis atau perawatan medis profesional.
+          </p>
+        </div>
+
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="switchTab('tool-legacy')">Lanjut: Warisan & Kontribusi <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    // ==========================================
+    // MODUL 5: WARISAN & KONTRIBUSI
+    // ==========================================
+    function loadSampleLegacy() {
+      document.getElementById('leg-remembered').value = "Kedermawanan, kesabaran, rasa ingin tahu sepanjang hayat";
+      document.getElementById('leg-stories').value = "Kisah sejarah keluarga, pelajaran saat memulai karier, teknik berkebun";
+      document.getElementById('leg-impact').value = "Cucu & Keluarga Inti";
+      showToast("Contoh skenario kontribusi berhasil dimuat");
+    }
+
+    document.getElementById('form-legacy').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const remembered = document.getElementById('leg-remembered').value;
+      const stories = document.getElementById('leg-stories').value;
+      const impact = document.getElementById('leg-impact').value;
+
+      const data = { remembered, stories, impact };
+      
+      retirementLifeState.toolResults.legacy = data;
+      if (!retirementLifeState.completedTools.includes('legacy')) {
+        retirementLifeState.completedTools.push('legacy');
+      }
+      saveState();
+
+      renderLegacyOutput(data);
+      saveHistoryItem('legacy', `Dampak: ${impact}`, data);
+    });
+
+    function renderLegacyOutput(data) {
+      const { remembered, stories, impact } = data;
+
+      const container = document.getElementById('out-legacy');
+      container.innerHTML = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-seedling"></i> Visi Warisan Anda</div>
+          <div class="output-headline">Jejak Yang Tertinggal Dari Kehadiran Anda</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Nilai utama: <strong>${escapeHTML(remembered)}</strong>.<br>
+            Fokus sasaran: <strong>${escapeHTML(impact)}</strong>.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-microphone"></i> Proyek Dokumentasi Cerita Hidup</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            Rekam satu rekaman suara 10 menit atau tuliskan satu kenangan setiap minggu mengenai: <em>"${escapeHTML(stories.slice(0,60))}..."</em>
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-list-check"></i> Tiga Langkah Tindakan Kontribusi</div>
+          <ol style="padding-left:20px; font-size:14px; line-height:1.6; color:var(--text-main);">
+            <li><strong>DOKUMENTASIKAN:</strong> Abadikan satu cerita, pelajaran hidup, atau keterampilan.</li>
+            <li><strong>BAGIKAN:</strong> Salurkan secara langsung kepada seseorang di lingkaran sasaran Anda.</li>
+            <li><strong>BERKONTRIBUSI:</strong> Luangkan waktu secara teratur untuk kegiatan sosial komunitas yang bermakna.</li>
+          </ol>
+        </div>
+
+        <div style="text-align:right;">
+          <button class="btn btn-primary" onclick="switchTab('life-map')">Lihat Peta Kehidupan Lengkap <i class="fa-solid fa-map"></i></button>
+        </div>
+      `;
+      container.classList.add('active');
+      container.scrollIntoView({ behavior: 'smooth' });
+    }
+
+
+    // ==========================================
+    // MESIN PENATAAN ULANG 7 HARI
+    // ==========================================
+    function render7DayReset() {
+      const container = document.getElementById('reset-steps-container');
+      if (!container) return;
+
+      const days = [
+        { id: 1, key: 'money', title: 'HARI 1: PAHAMI KEUANGAN ANDA', desc: 'Evaluasi arus kas dan gambaran cadangan dana.', tab: 'tool-finances' },
+        { id: 2, key: 'purpose', title: 'HARI 2: TEMUKAN HAL BERMAKNA', desc: 'Gali kekuatan utama dan jalur tujuan baru.', tab: 'tool-purpose' },
+        { id: 3, key: 'social', title: 'HARI 3: BANGUN RELASI SOSIAL', desc: 'Strukturkan hubungan sosial dewasa secara terencana.', tab: 'tool-social' },
+        { id: 4, key: 'health', title: 'HARI 4: JAGA ENERGI TUBUH', desc: 'Bangun rutinitas fisik dan pola tidur yang sehat.', tab: 'tool-health' },
+        { id: 5, key: 'legacy', title: 'HARI 5: TENTUKAN WARISAN ANDA', desc: 'Perjelas kontribusi non-finansial dan jejak makna.', tab: 'tool-legacy' },
+        { id: 6, key: 'week', title: 'HARI 6: RANCANG MINGGU IDEAL', desc: 'Padukan wawasan menjadi ritme mingguan seimbang.', tab: 'life-map' },
+        { id: 7, key: 'map', title: 'HARI 7: FINALSISASI PETA KEHIDUPAN', desc: 'Rampungkan rencana 30 hari dan prioritas utama.', tab: 'life-map' }
+      ];
+
+      container.innerHTML = days.map(d => {
+        const isDone = retirementLifeState.completedTools.includes(d.key) || (d.id >= 6 && retirementLifeState.completedTools.length === 5);
+        return `
+          <div class="reset-step-card">
+            <div>
+              <h3 style="font-size:15px; color:var(--midnight); margin-bottom:4px;">${d.title}</h3>
+              <p style="font-size:13px; color:var(--text-muted);">${d.desc}</p>
+            </div>
+            <div>
+              ${isDone ? `<span class="badge badge-success" style="margin-right:8px;">Selesai</span>` : ''}
+              <button class="btn btn-secondary btn-sm" onclick="switchTab('${d.tab}')">${isDone ? 'Tinjau' : 'Mulai'}</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+
+    // ==========================================
+    // MESIN PETA KEHIDUPAN & SINTESIS
+    // ==========================================
+    function renderLifeMap() {
+      const container = document.getElementById('life-map-content');
+      if (!container) return;
+
+      const res = retirementLifeState.toolResults;
+      const completed = retirementLifeState.completedTools;
+
+      if (completed.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:40px 20px;">
+            <i class="fa-solid fa-map-location-dot" style="font-size:48px; color:var(--text-muted); margin-bottom:16px;"></i>
+            <h3 style="font-size:18px; color:var(--midnight); margin-bottom:8px;">Peta Kehidupan Anda Masih Kosong</h3>
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Selesaikan modul apa saja untuk mulai menyusun sistem operasi pensiun Anda.</p>
+            <button class="btn btn-primary" onclick="switchTab('tool-finances')">Mulai Modul Keuangan</button>
+          </div>
+        `;
+        return;
+      }
+
+      // Rekomendasi Lintas Modul (Cross-Module Recommendations)
+      let crossInsights = [];
+      if (res.money && res.purpose) {
+        crossInsights.push("Eksperimen tujuan hidup Anda sebaiknya tetap berada dalam batas anggaran arus kas bulanan Anda. Fokuslah pada aktivitas berbiaya rendah dengan dampak energi tinggi.");
+      }
+      if (res.purpose && res.social) {
+        crossInsights.push("Pertimbangkan untuk bergabung dengan kelompok pelayanan atau kegiatan sosial relawan untuk memenuhi kebutuhan tujuan dan hubungan sosial secara bersamaan.");
+      }
+      if (res.social && res.health) {
+        crossInsights.push("Padukan aktivitas fisik dengan interaksi sosial melalui kegiatan jalan pagi bersama atau rekreasi luar ruangan rutin.");
+      }
+
+      container.innerHTML = `
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-chart-line"></i> Ringkasan Status Sistem</div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap:12px; margin-top:10px;">
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px; text-align:center;">
+              <div style="font-size:11px; color:var(--text-muted);">KEUANGAN</div>
+              <strong>${res.money ? 'Tersusun ✓' : 'Belum'}</strong>
+            </div>
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px; text-align:center;">
+              <div style="font-size:11px; color:var(--text-muted);">TUJUAN</div>
+              <strong>${res.purpose ? 'Tersusun ✓' : 'Belum'}</strong>
+            </div>
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px; text-align:center;">
+              <div style="font-size:11px; color:var(--text-muted);">RELASI</div>
+              <strong>${res.social ? 'Tersusun ✓' : 'Belum'}</strong>
+            </div>
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px; text-align:center;">
+              <div style="font-size:11px; color:var(--text-muted);">ENERGI</div>
+              <strong>${res.health ? 'Tersusun ✓' : 'Belum'}</strong>
+            </div>
+            <div style="background:#F7FAFC; padding:12px; border-radius:8px; text-align:center;">
+              <div style="font-size:11px; color:var(--text-muted);">KONTRIBUSI</div>
+              <strong>${res.legacy ? 'Tersusun ✓' : 'Belum'}</strong>
+            </div>
+          </div>
+        </div>
+
+        ${crossInsights.length > 0 ? `
+          <div class="output-card" style="border-left:4px solid var(--mint-dark);">
+            <div class="output-title"><i class="fa-solid fa-puzzle-piece"></i> Sintesis Lintas Modul</div>
+            <ul style="padding-left:20px; font-size:14px; line-height:1.6; color:var(--midnight);">
+              ${crossInsights.map(i => `<li style="margin-bottom:6px;">${escapeHTML(i)}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-calendar-week"></i> Ritme Mingguan Pensiun Ideal</div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:10px; font-size:13px;">
+            <div style="background:#F7FAFC; padding:10px; border-radius:6px;"><strong>SENIN:</strong> Tujuan & Pembelajaran</div>
+            <div style="background:#F7FAFC; padding:10px; border-radius:6px;"><strong>SELASA:</strong> Kesehatan & Olahraga</div>
+            <div style="background:#F7FAFC; padding:10px; border-radius:6px;"><strong>RABU:</strong> Interaksi Sosial</div>
+            <div style="background:#F7FAFC; padding:10px; border-radius:6px;"><strong>KAMIS:</strong> Proyek Kreatif</div>
+            <div style="background:#F7FAFC; padding:10px; border-radius:6px;"><strong>JUMAT:</strong> Kontribusi & Pelayanan</div>
+            <div style="background:#F7FAFC; padding:10px; border-radius:6px;"><strong>SABTU-MINGGU:</strong> Istirahat & Keluarga</div>
+          </div>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-sun"></i> Rencana Pagi Hari Saya</div>
+          <p style="font-size:14px; color:var(--text-main); line-height:1.5;">
+            <strong>07:30:</strong> Menikmati udara pagi & pergerakan fisik tanpa terburu-buru.<br>
+            <strong>09:00:</strong> 2 jam didedikasikan untuk proyek kreatif atau pembelajaran.<br>
+            <strong>11:30:</strong> Interaksi sosial atau kegiatan kemasyarakatan.
+          </p>
+        </div>
+
+        <div class="output-card">
+          <div class="output-title"><i class="fa-solid fa-list-check"></i> Target 30 Hari Ke Depan</div>
+          <div style="font-size:13.5px; line-height:1.6;">
+            <strong>Minggu 1:</strong> Jalankan satu eksperimen tujuan hidup selama 2 jam.<br>
+            <strong>Minggu 2:</strong> Kirimkan satu pesan ajakan bersilaturahmi.<br>
+            <strong>Minggu 3:</strong> Rutinkan tiga sesi latihan fisik 10 menit seminggu.<br>
+            <strong>Minggu 4:</strong> Rekam satu kenangan/cerita keluarga berdurasi 10 menit.
+          </div>
+        </div>
+      `;
+    }
+
+    // --- INISIALISASI ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+    });
+  </script>
+</body>
+</html>

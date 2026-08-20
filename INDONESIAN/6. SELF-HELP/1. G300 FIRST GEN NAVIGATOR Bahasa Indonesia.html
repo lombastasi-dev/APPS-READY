@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FirstGen Navigator™ — Perangkat Panduan Universitas Komersial V2</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #7C3AED;
+            --primary-light: #DDD6FE;
+            --primary-dark: #6D28D9;
+            --teal: #0D9488;
+            --teal-light: #CCFBF1;
+            --teal-dark: #0F766E;
+            --bg-gradient: linear-gradient(135deg, #F5F3FF 0%, #F0FDFA 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* App Container Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: #FFFFFF;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 24px;
+            color: var(--primary);
+        }
+
+        .sidebar-header h1 {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-dark);
+            line-height: 1.2;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .nav-section-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--text-muted);
+            padding: 8px 16px 4px 16px;
+            margin-top: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 16px;
+            border-radius: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+            font-size: 13.5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .nav-item:hover {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .nav-item.active {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .nav-item i {
+            width: 18px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        /* Main Content Styling */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 32px 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .content-container {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+
+        /* Mobile Header & Overlay */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 20px;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 90;
+        }
+
+        .mobile-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* UI Cards & Elements */
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(229, 231, 235, 0.8);
+            margin-bottom: 24px;
+        }
+
+        .grid-responsive {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        /* Form Controls */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            background: #F9FAFB;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            background: #FFFFFF;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: #F3F4F6;
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: #E5E7EB;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: #F9FAFB;
+            border-color: #D1D5DB;
+        }
+
+        /* Output & Result Boxes */
+        .output-box {
+            background: #FAFAFA;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid var(--primary);
+            margin-top: 16px;
+        }
+
+        .output-box.teal {
+            border-left-color: var(--teal);
+        }
+
+        .output-title {
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .output-box.teal .output-title {
+            color: var(--teal-dark);
+        }
+
+        .script-box {
+            background: #1E293B;
+            color: #F8FAFC;
+            padding: 16px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            position: relative;
+            margin-top: 8px;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255,255,255,0.15);
+            color: #FFFFFF;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Accordion / History */
+        .history-section {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 24px;
+        }
+
+        .accordion-item {
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            background: #FFFFFF;
+        }
+
+        .accordion-header {
+            padding: 14px 18px;
+            background: #F9FAFB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .accordion-content {
+            padding: 18px;
+            display: none;
+            border-top: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #10B981;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: auto;
+            text-align: center;
+            padding: 24px;
+            color: var(--text-muted);
+            font-size: 13px;
+            border-top: 1px solid rgba(229, 231, 235, 0.5);
+            width: 100%;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .overlay.open {
+                display: block;
+            }
+            .main-content {
+                margin-left: 0;
+                padding-top: 80px;
+            }
+        }
+
+        /* Utility classes */
+        .hidden { display: none !important; }
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: var(--teal-light);
+            color: var(--teal-dark);
+            margin-bottom: 8px;
+        }
+
+        /* Print styles for synthesized plan */
+        @media print {
+            .sidebar, .mobile-header, .btn-group, .nav-links, footer, .copy-btn, .history-section, form {
+                display: none !important;
+            }
+            .main-content {
+                margin-left: 0 !important;
+                padding: 0 !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Seluler -->
+    <div class="mobile-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-compass" style="color: var(--primary); font-size: 20px;"></i>
+            <span style="font-weight: 700; color: var(--primary-dark);">FirstGen Navigator™</span>
+        </div>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="Buka/tutup menu navigasi">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Overlay untuk sidebar seluler -->
+    <div class="overlay" id="overlay"></div>
+
+    <div class="app-container">
+        <!-- Navigasi Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-compass"></i>
+                <h1>FirstGen Navigator™<br><span style="font-size: 11px; font-weight: 500; color: var(--text-muted);">OS Komersial V2</span></h1>
+            </div>
+            <ul class="nav-links">
+                <div class="nav-section-title">Perangkat Utama</div>
+                <li>
+                    <a class="nav-item active" data-tool="dashboard">
+                        <i class="fa-solid fa-house"></i>
+                        Dasbor & Pencapaian
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool1">
+                        <i class="fa-solid fa-book-open"></i>
+                        Penerjemah Akademik
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool2">
+                        <i class="fa-solid fa-shield-heart"></i>
+                        Peredam Imposter Syndrome
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool3">
+                        <i class="fa-solid fa-people-roof"></i>
+                        Penerjemah Ekspektasi Keluarga
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool4">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                        Pencari Layanan Kampus
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="tool5">
+                        <i class="fa-solid fa-briefcase"></i>
+                        Jembatan Jurusan-ke-Karier
+                    </a>
+                </li>
+
+                <div class="nav-section-title">Paket Navigasi</div>
+                <li>
+                    <a class="nav-item" data-tool="view7day">
+                        <i class="fa-solid fa-calendar-week"></i>
+                        Navigasi 7 Hari
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="viewPlan">
+                        <i class="fa-solid fa-file-contract"></i>
+                        Rencana First-Gen Saya
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="viewHistory">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                        Riwayat Saya
+                    </a>
+                </li>
+                <li>
+                    <a class="nav-item" data-tool="viewPrivacy">
+                        <i class="fa-solid fa-shield-halved"></i>
+                        Privasi & Tentang
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Tampilan Konten Utama -->
+        <main class="main-content">
+            <div class="content-container">
+
+                <!-- TAMPILAN DASBOR -->
+                <section id="dashboard" class="tool-view">
+                    <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--teal-dark) 100%); color: white;">
+                        <span class="tag" style="background: rgba(255,255,255,0.2); color: white;">Beranda Perangkat</span>
+                        <h2 style="font-size: 28px; font-weight: 800; margin-bottom: 8px;">First-Gen Navigator™</h2>
+                        <p style="font-size: 16px; opacity: 0.9; max-width: 600px; margin-bottom: 16px;">
+                            Kuasai budaya perguruan tinggi, atasi rasa tidak percaya diri (imposter syndrome), dan petakan jalan Anda tanpa preseden keluarga.
+                        </p>
+                        <div style="font-size: 13.5px; background: rgba(0,0,0,0.15); padding: 12px 16px; border-radius: 10px; border-left: 3px solid #FFF;">
+                            <strong>Wawasan Utama:</strong> Ketidakfamiliaran dengan budaya kampus adalah kesenjangan informasi, bukan kesenjangan kemampuan. Mulailah dengan perangkat yang mengatasi hambatan terdekat Anda.
+                        </div>
+                    </div>
+
+                    <!-- Pelacak Pencapaian -->
+                    <div class="card">
+                        <h3 style="font-size: 18px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-list-check" style="color: var(--teal);"></i> Pelacak Pencapaian Generasi Pertama
+                        </h3>
+                        <div id="milestonesList" style="display: flex; flex-direction: column; gap: 12px;">
+                            <!-- Pencapaian dimuat secara dinamis -->
+                        </div>
+                    </div>
+
+                    <!-- Grid Tautan Cepat Perangkat -->
+                    <div class="grid-responsive">
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool1')">
+                            <i class="fa-solid fa-book-open" style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Penerjemah Akademik</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Pahami istilah akademis, silabus, dan protokol jam konsultasi dosen.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool2')">
+                            <i class="fa-solid fa-shield-heart" style="font-size: 24px; color: var(--teal); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Peredam Imposter</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Ubah keraguan diri menjadi kekuatan strategis yang diakui.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool3')">
+                            <i class="fa-solid fa-people-roof" style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Penerjemah Keluarga</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Komunikasikan tuntutan akademis secara penuh kasih kepada keluarga.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool4')">
+                            <i class="fa-solid fa-map-location-dot" style="font-size: 24px; color: var(--teal); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Pencari Layanan</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Temukan dan akses kantor bantuan darurat & dukungan kampus.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer;" onclick="switchTool('tool5')">
+                            <i class="fa-solid fa-briefcase" style="font-size: 24px; color: var(--primary); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px;">Jurusan-ke-Karier</h4>
+                            <p style="font-size: 13px; color: var(--text-muted);">Hubungkan jurusan akademis Anda dengan jalur karier bernilai tinggi.</p>
+                        </div>
+                        <div class="card" style="cursor: pointer; background: var(--primary-light); border-color: var(--primary);" onclick="switchTool('view7day')">
+                            <i class="fa-solid fa-calendar-week" style="font-size: 24px; color: var(--primary-dark); margin-bottom: 12px;"></i>
+                            <h4 style="font-size: 16px; margin-bottom: 4px; color: var(--primary-dark);">Navigasi 7 Hari</h4>
+                            <p style="font-size: 13px; color: var(--text-main);">Ikuti alur terstruktur melalui semua modul utama.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- PERANGKAT 1: PENERJEMAH AKADEMIK -->
+                <section id="tool1" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Perangkat 1</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Penerjemah Peraturan Akademik Tersirat</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Pahami aturan tak tertulis perguruan tinggi, terminologi, dan langkah sukses yang tidak terucapkan.
+                        </p>
+                        <form id="form1">
+                            <div class="form-group">
+                                <label for="t1_term">Istilah atau situasi yang membingungkan:</label>
+                                <select id="t1_term" class="form-control" required>
+                                    <option value="Office Hours">Office Hours (Jam Konsultasi Dosen)</option>
+                                    <option value="Syllabus">Syllabus (Silabus Kuliah)</option>
+                                    <option value="Add-Drop">Add-Drop Period (Masa Tambah-Batal Matakuliah)</option>
+                                    <option value="Prerequisites">Prerequisites (Mata Kuliah Prasyarat)</option>
+                                    <option value="TA vs Professor">TA vs Professor (Asisten Dosen vs Dosen)</option>
+                                    <option value="FAFSA Verification">FAFSA / Verifikasi Beasiswa & Bantuan Keuangan</option>
+                                    <option value="Credit Hours">Credit Hours (SKS / Satuan Kredit Semester)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t1_year">Tahun akademik saat ini:</label>
+                                <select id="t1_year" class="form-control" required>
+                                    <option value="Freshman">Tahun Pertama (Maba)</option>
+                                    <option value="Sophomore">Tahun Kedua</option>
+                                    <option value="Junior">Tahun Ketiga</option>
+                                    <option value="Senior">Tahun Keempat (Akhir)</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-bolt"></i> Terjemahkan Istilah</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(1)"><i class="fa-solid fa-flask"></i> Muat Contoh Skenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output1" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Panduan Hasil Terjemahan</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-lightbulb"></i> Penjelasan & Fakta Lapangan</div>
+                            <div id="t1_res_trans" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-list-check"></i> Protokol Tindakan</div>
+                            <div id="t1_res_action" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-envelope"></i> Draf Pesan ke Dosen</div>
+                            <div class="script-box" id="t1_res_script"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool2')">Berikutnya: Peredam Imposter <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Riwayat Terjemahan Tersimpan</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool1')">Hapus Riwayat</button>
+                        </div>
+                        <div id="history1"></div>
+                    </div>
+                </section>
+
+                <!-- PERANGKAT 2: PEREDAM IMPOSTER SYNDROME -->
+                <section id="tool2" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Perangkat 2</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Peredam Imposter Syndrome</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Evaluasi pikiran negatif Anda dan ubah latar belakang sebagai mahasiswa generasi pertama menjadi keunggulan strategis.
+                        </p>
+                        <form id="form2">
+                            <div class="form-group">
+                                <label for="t2_trigger">Situasi pemicu:</label>
+                                <select id="t2_trigger" class="form-control" required>
+                                    <option value="Class discussion">Diskusi kelas</option>
+                                    <option value="Receiving a low grade">Mendapatkan nilai rendah</option>
+                                    <option value="Hearing peers talk about internships">Mendengar teman membicarakan magang</option>
+                                    <option value="Social events">Acara sosial kampus</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_thought">Pikiran negatif berulang:</label>
+                                <textarea id="t2_thought" class="form-control" placeholder="Contoh: Saya tidak pantas di sini, orang lain sudah paham materi ini sejak lama." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t2_strengths">Kekuatan dari latar belakang pribadi:</label>
+                                <textarea id="t2_strengths" class="form-control" placeholder="Contoh: Etos kerja kuat, mandiri, mudah beradaptasi, memiliki ikatan komunitas yang erat." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-rotate-right"></i> Reset Pola Pikir</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(2)"><i class="fa-solid fa-flask"></i> Muat Contoh Skenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output2" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Analisis Pembentukan Pola Pikir Baru</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-magnifying-glass"></i> Evaluasi Realita Berbasis Bukti</div>
+                            <div id="t2_res_audit" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-gem"></i> Keunggulan Diri Baru</div>
+                            <div id="t2_res_reframe" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-anchor"></i> 3 Pernyataan Penguat Diri</div>
+                            <div id="t2_res_statements" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool3')">Berikutnya: Penerjemah Keluarga <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Riwayat Reset Tersimpan</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool2')">Hapus Riwayat</button>
+                        </div>
+                        <div id="history2"></div>
+                    </div>
+                </section>
+
+                <!-- PERANGKAT 3: PENERJEMAH EKSPEKTASI KELUARGA -->
+                <section id="tool3" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Perangkat 3</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Penerjemah Ekspektasi Keluarga</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Jembatani rasa kasih/kekhawatiran keluarga dengan komitmen dunia akademik yang ketat.
+                        </p>
+                        <form id="form3">
+                            <div class="form-group">
+                                <label for="t3_friction">Poin kesalahpahaman dengan keluarga:</label>
+                                <select id="t3_friction" class="form-control" required>
+                                    <option value="Time commitment">Komitmen waktu / Belajar hingga larut</option>
+                                    <option value="Major choice">Pilihan jurusan / Arah karier</option>
+                                    <option value="Cost & money">Kekhawatiran biaya & uang</option>
+                                    <option value="Distance from home">Jarak dari rumah / Jarang pulang</option>
+                                    <option value="Unrealistic job expectations">Ekspektasi kerja langsung yang tidak realistis</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_asking">Apa yang dikatakan/diharapkan keluarga:</label>
+                                <textarea id="t3_asking" class="form-control" placeholder="Contoh: Mengapa kamu tidak bisa pulang akhir pekan ini? Kuliah bukan segalanya." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="t3_reality">Apa yang dituntut oleh realita akademis:</label>
+                                <textarea id="t3_reality" class="form-control" placeholder="Contoh: Butuh waktu 15 jam untuk belajar menghadapi ujian tengah semester Kimia Organik." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Terjemahkan & Buat Draf</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(3)"><i class="fa-solid fa-flask"></i> Muat Contoh Skenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output3" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Strategi Komunikasi</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-heart"></i> Pendekatan Empati</div>
+                            <div id="t3_res_reframe" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-comment-dots"></i> Skrip Percakapan dengan Keluarga</div>
+                            <div class="script-box" id="t3_res_script"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-shield"></i> Panduan Menetapkan Batasan</div>
+                            <div id="t3_res_boundary" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool4')">Berikutnya: Pencari Layanan <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Riwayat Skrip Percakapan Tersimpan</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool3')">Hapus Riwayat</button>
+                        </div>
+                        <div id="history3"></div>
+                    </div>
+                </section>
+
+                <!-- PERANGKAT 4: PENCARI LAYANAN KAMPUS -->
+                <section id="tool4" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Perangkat 4</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Pencari Layanan & Bantuan Kampus</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Temukan departemen kampus yang tepat untuk membantu Anda dan dapatkan skrip untuk menyampaikan kebutuhan Anda secara mandiri.
+                        </p>
+                        <form id="form4">
+                            <div class="form-group">
+                                <label for="t4_need">Kebutuhan utama saat ini:</label>
+                                <select id="t4_need" class="form-control" required>
+                                    <option value="Financial emergency">Kebutuhan dana darurat / Beli buku teks</option>
+                                    <option value="Academic tutoring">Bimbingan belajar / Bantuan penulisan tugas</option>
+                                    <option value="Mental health">Kesehatan mental & konseling stres</option>
+                                    <option value="Career & Resume">Karier, pembuatan CV / Informasi magang</option>
+                                    <option value="Housing & Food insecurity">Bantuan tempat tinggal & krisis pangan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t4_urgency">Tingkat urgensi:</label>
+                                <select id="t4_urgency" class="form-control" required>
+                                    <option value="Emergency">Darurat (Sangat Segera)</option>
+                                    <option value="High">Tinggi (Dalam minggu ini)</option>
+                                    <option value="Moderate">Sedang (Perencanaan umum)</option>
+                                </select>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Cari Layanan Bantuan</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(4)"><i class="fa-solid fa-flask"></i> Muat Contoh Skenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output4" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Rencana Tindakan Navigasi</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-building"></i> Departemen Kampus Tujuan</div>
+                            <div id="t4_res_dept" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-clipboard-user"></i> Skrip Saat Datang Langsung</div>
+                            <div class="script-box" id="t4_res_script"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-folder-open"></i> Daftar Dokumen yang Perlu Dibawa</div>
+                            <div id="t4_res_docs" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-secondary" onclick="switchTool('tool5')">Berikutnya: Jurusan-ke-Karier <i class="fa-solid fa-arrow-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Riwayat Pencarian Layanan Tersimpan</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool4')">Hapus Riwayat</button>
+                        </div>
+                        <div id="history4"></div>
+                    </div>
+                </section>
+
+                <!-- PERANGKAT 5: PERENCANA JEMBATAN JURUSAN-KE-KARIER -->
+                <section id="tool5" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Perangkat 5</span>
+                        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">Perencana Jembatan Jurusan-ke-Karier</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Ubah ilmu perkuliahan Anda menjadi keterampilan dunia kerja dan langkah awal membangun jaringan profesional.
+                        </p>
+                        <form id="form5">
+                            <div class="form-group">
+                                <label for="t5_major">Jurusan saat ini:</label>
+                                <input type="text" id="t5_major" class="form-control" placeholder="Contoh: Psikologi, Sosiologi, Biologi, Sastra Indonesia" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_goal">Tujuan karier utama:</label>
+                                <select id="t5_goal" class="form-control" required>
+                                    <option value="High income">Penghasilan tinggi / Stabilitas finansial</option>
+                                    <option value="Helping community">Membantu masyarakat / Dampak sosial</option>
+                                    <option value="Job stability">Kepastian kerja / Risiko rendah</option>
+                                    <option value="Creative autonomy">Otonomi kreatif / Fleksibilitas</option>
+                                    <option value="Not sure">Belum yakin / Ingin menjelajah opsi</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="t5_exp">Pengalaman kerja atau organisasi sejauh ini:</label>
+                                <textarea id="t5_exp" class="form-control" placeholder="Contoh: Petugas perpustakaan kampus, kasir minimarket, mengajar les privat SMA." required></textarea>
+                            </div>
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-map"></i> Buat Jembatan Karier</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample(5)"><i class="fa-solid fa-flask"></i> Muat Contoh Skenario</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output5" class="card hidden">
+                        <h3 style="font-size: 18px; margin-bottom: 16px;">Peta Jalan Jalur Karier</h3>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-route"></i> Peta Jalur Karier</div>
+                            <div id="t5_res_map" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box teal">
+                            <div class="output-title"><i class="fa-solid fa-wand-magic-sparkles"></i> Penerjemah Keterampilan ke CV</div>
+                            <div id="t5_res_skills" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div class="output-box">
+                            <div class="output-title"><i class="fa-solid fa-network-wired"></i> Langkah Awal Membangun Jaringan</div>
+                            <div id="t5_res_sprint" style="font-size: 14px; line-height: 1.6;"></div>
+                        </div>
+                        <div style="margin-top: 20px; display: flex; gap: 12px;">
+                            <button class="btn btn-primary" onclick="switchTool('viewPlan')">Lihat Rencana First-Gen Lengkap <i class="fa-solid fa-file-contract"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="history-section card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <h3 style="font-size: 16px;">Riwayat Rencana Karier Tersimpan</h3>
+                            <button class="btn btn-outline" style="padding: 6px 12px; font-size: 12px;" onclick="clearHistory('tool5')">Hapus Riwayat</button>
+                        </div>
+                        <div id="history5"></div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN: NAVIGASI 7 HARI -->
+                <section id="view7day" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Panduan Berurutan</span>
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 8px;">Navigasi 7 Hari Mahasiswa Generasi Pertama</h2>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                            Panduan langkah demi langkah terstruktur melalui kehidupan perkuliahan tanpa membuat pikiran kewalahan. Ikuti satu hari demi satu hari.
+                        </p>
+                        
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-1"></i> Hari 1: Memahami Aturan Perkuliahan</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Gunakan <strong>Penerjemah Akademik</strong> untuk memahami jam konsultasi dosen dan silabus. Buang mitos bahwa bertanya berarti Anda tidak pintar.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool1')">Buka Penerjemah Akademik</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--teal);">
+                                <div class="output-title"><i class="fa-solid fa-2"></i> Hari 2: Memperkuat Kepercayaan Diri Akademis</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Gunakan <strong>Peredam Imposter</strong> untuk mengubah rasa ragu saat diskusi kelas atau ketika menerima nilai menjadi kekuatan strategis.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool2')">Buka Peredam Imposter</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-3"></i> Hari 3: Berkomunikasi dengan Keluarga</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Gunakan <strong>Penerjemah Keluarga</strong> untuk menjembatani rasa sayang keluarga dengan kebutuhan waktu belajar Anda lewat kalimat yang tepat.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool3')">Buka Penerjemah Keluarga</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--teal);">
+                                <div class="output-title"><i class="fa-solid fa-4"></i> Hari 4: Temukan Sistem Bantuan di Kampus</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Gunakan <strong>Pencari Layanan Kampus</strong> untuk menemukan dana bantuan darurat, pusat bimbingan belajar, atau kantor layanan mahasiswa.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool4')">Buka Pencari Layanan Kampus</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-5"></i> Hari 5: Bangun Jembatan Karier Anda</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Gunakan <strong>Jurusan-ke-Karier</strong> untuk menerjemahkan jurusan dan pengalaman Anda menjadi bahasa keterampilan profesional serta jejaring alumni.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('tool5')">Buka Jurusan-ke-Karier</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--teal);">
+                                <div class="output-title"><i class="fa-solid fa-6"></i> Hari 6: Tinjau Pencapaian & Gambaran Umum</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Centang tindakan dasar yang telah Anda selesaikan di pelacak pencapaian Dasbor dan tinjau rangkuman rencana Anda.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('dashboard')">Lihat Pencapaian Dasbor</button>
+                            </div>
+
+                            <div class="output-box" style="border-left-color: var(--primary);">
+                                <div class="output-title"><i class="fa-solid fa-7"></i> Hari 7: Buat Rencana Tindakan 30 Hari</div>
+                                <p style="font-size: 14px; line-height: 1.6; margin-bottom: 12px;">Kumpulkan wawasan Anda ke dalam halaman <strong>Rencana First-Gen Saya</strong>, cetak daftar Anda, dan tentukan target evaluasi 30 hari.</p>
+                                <button class="btn btn-secondary" style="font-size: 13px; padding: 8px 14px;" onclick="switchTool('viewPlan')">Lihat Rencana First-Gen Saya</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN: RENCANA FIRST-GEN SAYA -->
+                <section id="viewPlan" class="tool-view hidden">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+                            <div>
+                                <span class="tag">Rangkuman Rencana</span>
+                                <h2 style="font-size: 24px; font-weight: 700;">Rencana Navigasi First-Gen Saya</h2>
+                            </div>
+                            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Simpan PDF</button>
+                        </div>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 24px;">
+                            Halaman ini menyatukan hasil analisis terbaru Anda, kemajuan pencapaian, dan prioritas utama ke dalam format yang rapi dan siap dicetak.
+                        </p>
+
+                        <div id="synthesizedPlanContent" style="display: flex; flex-direction: column; gap: 16px;">
+                            <!-- Diisi secara dinamis melalui JavaScript -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN: RIWAYAT SAYA -->
+                <section id="viewHistory" class="tool-view hidden">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                            <div>
+                                <span class="tag">Rekam Jejak</span>
+                                <h2 style="font-size: 24px; font-weight: 700;">Semua Analisis Tersimpan</h2>
+                            </div>
+                            <button class="btn btn-outline" style="padding: 8px 14px; font-size: 13px;" onclick="clearAllHistories()">Hapus Semua Riwayat</button>
+                        </div>
+                        <p style="font-size: 14px; color: var(--text-muted); margin-bottom: 20px;">
+                            Tinjau kembali semua hasil terjemahan, reset pola pikir, skrip percakapan, dan rencana karier yang tersimpan aman di penyimpanan lokal peramban Anda.
+                        </p>
+
+                        <div id="unifiedHistoryContainer">
+                            <!-- Diisi secara dinamis -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAMPILAN: PRIVASI & TENTANG -->
+                <section id="viewPrivacy" class="tool-view hidden">
+                    <div class="card">
+                        <span class="tag">Privasi & Keamanan</span>
+                        <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 12px;">Tentang FirstGen Navigator™</h2>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--text-main); margin-bottom: 16px;">
+                            FirstGen Navigator™ dirancang sebagai sistem operasi mandiri lokal untuk mahasiswa. Sistem ini menerjemahkan ketidakjelasan birokrasi kampus menjadi langkah-langkah nyata dan jelas bagi mahasiswa generasi pertama.
+                        </p>
+                        
+                        <h3 style="font-size: 16px; margin-top: 20px; margin-bottom: 8px; color: var(--primary-dark);">Penyimpanan Lokal & Jaminan Privasi</h3>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted); margin-bottom: 16px;">
+                            Semua riwayat, centang pencapaian, dan pengaturan disimpan sepenuhnya di dalam <code>localStorage</code> peramban Anda. Tidak ada data pribadi, isian formulir, atau skrip yang dihasilkan yang dikirimkan ke server luar atau pihak ketiga.
+                        </p>
+
+                        <h3 style="font-size: 16px; margin-top: 20px; margin-bottom: 8px; color: var(--primary-dark);">Pernyataan Penyangkalan (Disclaimer)</h3>
+                        <p style="font-size: 14px; line-height: 1.6; color: var(--text-muted); margin-bottom: 16px;">
+                            Hanya untuk panduan edukasi dan pengembangan diri. Alat ini bukan penasihat akademis resmi, konseling psikologis, bantuan hukum, atau keputusan bantuan keuangan resmi. Selalu verifikasi kebijakan resmi kampus Anda dengan bagian akademik, dosen pembimbing, atau kantor kemahasiswaan universitas Anda.
+                        </p>
+                    </div>
+                </section>
+
+            </div>
+
+            <!-- Footer Standar -->
+            <footer>
+                Hanya untuk panduan edukasi dan pengembangan pribadi. Bukan penasihat akademis resmi. FirstGen Navigator™ Commercial V2.
+            </footer>
+        </main>
+    </div>
+
+    <!-- Elemen Notifikasi Toast -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toastMsg">Teks berhasil disalin!</span>
+    </div>
+
+    <!-- JavaScript Aplikasi -->
+    <script>
+        // Logika Navigasi & UI Global dengan Keamanan dan Manajemen Status
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initMilestones();
+            loadAllHistories();
+            setupFormListeners();
+        });
+
+        // Toggle Sidebar Seluler
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+
+        function toggleMobileMenu() {
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('open');
+        }
+
+        if (mobileToggle) mobileToggle.addEventListener('click', toggleMobileMenu);
+        if (overlay) overlay.addEventListener('click', toggleMobileMenu);
+
+        // Pembantu Keamanan: Escape HTML untuk mencegah XSS
+        function escapeHTML(str) {
+            if (typeof str !== 'string') return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+            );
+        }
+
+        // Beralih tampilan perangkat yang aktif
+        function switchTool(toolId) {
+            document.querySelectorAll('.tool-view').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+
+            const targetView = document.getElementById(toolId);
+            if (targetView) targetView.classList.remove('hidden');
+
+            const activeNav = document.querySelector(`.nav-item[data-tool="${toolId}"]`);
+            if (activeNav) activeNav.classList.add('active');
+
+            if (toolId === 'viewPlan') {
+                renderSynthesizedPlan();
+            } else if (toolId === 'viewHistory') {
+                renderUnifiedHistory();
+            }
+
+            if (sidebar.classList.contains('open')) {
+                toggleMobileMenu();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initNavigation() {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const tool = e.currentTarget.getAttribute('data-tool');
+                    switchTool(tool);
+                });
+            });
+        }
+
+        // Fungsi Toast Notifikasi
+        function showToast(message = "Teks berhasil disalin!") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            if (toast && toastMsg) {
+                toastMsg.innerText = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+        }
+
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Skrip berhasil disalin!");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Skrip berhasil disalin!");
+            } catch (err) {
+                showToast("Gagal menyalin secara otomatis.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Pelacak Pencapaian Dasbor dengan Penyimpanan Terstruktur
+        const defaultMilestones = [
+            { id: 1, text: "Hadir pada Jam Konsultasi Dosen (Office Hours) pertama kali", completed: false },
+            { id: 2, text: "Menemukan lokasi Bantuan Pangan Kampus & Layanan Darurat", completed: false },
+            { id: 3, text: "Membaca silabus mata kuliah dan mencatat tanggal penting", completed: false },
+            { id: 4, text: "Melakukan diskusi batas waktu belajar bersama keluarga", completed: false },
+            { id: 5, text: "Terhubung dengan Alumni Generasi Pertama di LinkedIn", completed: false }
+        ];
+
+        function initMilestones() {
+            try {
+                let saved = JSON.parse(localStorage.getItem('firstgen_v2_milestones'));
+                if (!saved) {
+                    const legacy = JSON.parse(localStorage.getItem('firstgen_milestones'));
+                    saved = legacy || defaultMilestones;
+                    localStorage.setItem('firstgen_v2_milestones', JSON.stringify(saved));
+                }
+                renderMilestones(saved);
+            } catch (e) {
+                renderMilestones(defaultMilestones);
+            }
+        }
+
+        function renderMilestones(milestones) {
+            const container = document.getElementById('milestonesList');
+            if (!container) return;
+            container.innerHTML = '';
+            milestones.forEach(m => {
+                const item = document.createElement('div');
+                item.style.display = 'flex';
+                item.style.alignItems = 'center';
+                item.style.gap = '10px';
+                item.style.fontSize = '14px';
+                
+                const safeText = escapeHTML(m.text);
+                item.innerHTML = `
+                    <input type="checkbox" id="m_${m.id}" ${m.completed ? 'checked' : ''} onchange="toggleMilestone(${m.id})" style="width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer;" aria-label="${safeText}">
+                    <label for="m_${m.id}" style="cursor: pointer; ${m.completed ? 'text-decoration: line-through; color: var(--text-muted);' : ''}">${safeText}</label>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function toggleMilestone(id) {
+            try {
+                let saved = JSON.parse(localStorage.getItem('firstgen_v2_milestones')) || defaultMilestones;
+                saved = saved.map(m => m.id === id ? { ...m, completed: !m.completed } : m);
+                localStorage.setItem('firstgen_v2_milestones', JSON.stringify(saved));
+                renderMilestones(saved);
+            } catch (e) {
+                console.error("Kesalahan toggle pencapaian", e);
+            }
+        }
+
+        // Pengelola LocalStorage untuk Riwayat
+        function saveHistory(toolId, data) {
+            try {
+                const key = `firstgen_v2_history_${toolId}`;
+                let history = JSON.parse(localStorage.getItem(key)) || [];
+                history.unshift({ timestamp: new Date().toLocaleString('id-ID'), data });
+                if (history.length > 30) history = history.slice(0, 30);
+                localStorage.setItem(key, JSON.stringify(history));
+                renderHistory(toolId);
+            } catch (e) {
+                console.error("Kesalahan menyimpan riwayat", e);
+            }
+        }
+
+        function clearHistory(toolId) {
+            try {
+                const key = `firstgen_v2_history_${toolId}`;
+                localStorage.removeItem(key);
+                localStorage.removeItem(`firstgen_history_${toolId}`);
+                renderHistory(toolId);
+                showToast("Riwayat telah dihapus");
+            } catch (e) {
+                console.error("Kesalahan menghapus riwayat", e);
+            }
+        }
+
+        function clearAllHistories() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua riwayat tersimpan di seluruh perangkat?")) {
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(t => {
+                    localStorage.removeItem(`firstgen_v2_history_${t}`);
+                    localStorage.removeItem(`firstgen_history_${t}`);
+                });
+                loadAllHistories();
+                renderUnifiedHistory();
+                showToast("Semua riwayat dihapus");
+            }
+        }
+
+        function renderHistory(toolId) {
+            const num = toolId.replace('tool', '');
+            const container = document.getElementById(`history${num}`);
+            if (!container) return;
+            
+            try {
+                const key = `firstgen_v2_history_${toolId}`;
+                let history = JSON.parse(localStorage.getItem(key));
+                if (!history) {
+                    history = JSON.parse(localStorage.getItem(`firstgen_history_${toolId}`)) || [];
+                }
+
+                if (history.length === 0) {
+                    container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Belum ada riwayat tersimpan.</p>`;
+                    return;
+                }
+
+                container.innerHTML = history.map((item, index) => {
+                    const title = escapeHTML(item.data.summaryTitle || 'Skenario Tersimpan');
+                    const time = escapeHTML(item.timestamp);
+                    const htmlContent = item.data.renderedHTML || '';
+                    return `
+                        <div class="accordion-item">
+                            <div class="accordion-header" onclick="toggleAccordion('${toolId}_${index}')">
+                                <span>${title}</span>
+                                <span style="font-size: 12px; color: var(--text-muted);">${time}</span>
+                            </div>
+                            <div class="accordion-content" id="${toolId}_${index}">
+                                ${htmlContent}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted);">Gagal memuat riwayat.</p>`;
+            }
+        }
+
+        function toggleAccordion(id) {
+            const el = document.getElementById(id);
+            if (el) {
+                el.style.display = el.style.display === 'block' ? 'none' : 'block';
+            }
+        }
+
+        function loadAllHistories() {
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(renderHistory);
+        }
+
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unifiedHistoryContainer');
+            if (!container) return;
+
+            let allItems = [];
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+                try {
+                    const key = `firstgen_v2_history_${toolId}`;
+                    let history = JSON.parse(localStorage.getItem(key)) || JSON.parse(localStorage.getItem(`firstgen_history_${toolId}`)) || [];
+                    history.forEach(item => {
+                        allItems.push({ toolId, ...item });
+                    });
+                } catch (e) {}
+            });
+
+            if (allItems.length === 0) {
+                container.innerHTML = `<p style="font-size: 14px; color: var(--text-muted);">Tidak ada riwayat tersimpan dari perangkat mana pun.</p>`;
+                return;
+            }
+
+            container.innerHTML = allItems.map((item, index) => {
+                const title = escapeHTML(item.data.summaryTitle || 'Item Tersimpan');
+                const time = escapeHTML(item.timestamp);
+                const toolName = escapeHTML(item.toolId.toUpperCase());
+                return `
+                    <div class="accordion-item">
+                        <div class="accordion-header" onclick="toggleAccordion('uni_${index}')">
+                            <div>
+                                <span class="tag" style="margin-bottom: 0; margin-right: 8px; font-size: 10px;">${toolName}</span>
+                                <span>${title}</span>
+                            </div>
+                            <span style="font-size: 12px; color: var(--text-muted);">${time}</span>
+                        </div>
+                        <div class="accordion-content" id="uni_${index}">
+                            ${item.data.renderedHTML}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderSynthesizedPlan() {
+            const container = document.getElementById('synthesizedPlanContent');
+            if (!container) return;
+
+            let summaryHTML = '';
+            const tools = ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'];
+            let hasData = false;
+
+            tools.forEach(toolId => {
+                try {
+                    const key = `firstgen_v2_history_${toolId}`;
+                    let history = JSON.parse(localStorage.getItem(key)) || JSON.parse(localStorage.getItem(`firstgen_history_${toolId}`)) || [];
+                    if (history.length > 0) {
+                        hasData = true;
+                        const latest = history[0];
+                        summaryHTML += `
+                            <div class="output-box">
+                                <div class="output-title"><i class="fa-solid fa-check-circle"></i> ${escapeHTML(toolId.toUpperCase())} — ${escapeHTML(latest.data.summaryTitle || 'Hasil Terbaru')}</div>
+                                <div style="font-size: 14px; line-height: 1.6; margin-top: 8px;">
+                                    ${latest.data.renderedHTML}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (e) {}
+            });
+
+            if (!hasData) {
+                summaryHTML = `<p style="font-size: 14px; color: var(--text-muted);">Belum ada analisis perangkat yang diselesaikan. Selesaikan minimal satu perangkat (Penerjemah Akademik, Peredam Imposter, dll.) untuk menampilkan rangkuman rencana Anda di sini.</p>`;
+            }
+
+            container.innerHTML = summaryHTML;
+        }
+
+        // Logika Pengisian Contoh Skenario
+        function loadSample(toolNum) {
+            if (toolNum === 1) {
+                document.getElementById('t1_term').value = 'Office Hours';
+                document.getElementById('t1_year').value = 'Freshman';
+            } else if (toolNum === 2) {
+                document.getElementById('t2_trigger').value = 'Class discussion';
+                document.getElementById('t2_thought').value = "Orang lain menggunakan istilah akademis yang tinggi dan sepertinya sudah paham materi sejak dulu. Saya merasa seperti salah diterima di perguruan tinggi ini.";
+                document.getElementById('t2_strengths').value = "Bekerja 20 jam/minggu saat sekolah, sangat mudah beradaptasi, tangguh memecahkan masalah, dan terbiasa menghadapi tekanan.";
+            } else if (toolNum === 3) {
+                document.getElementById('t3_friction').value = 'Time commitment';
+                document.getElementById('t3_asking').value = "Mengapa kamu tidak bisa pulang untuk makan malam keluarga minggu ini? Kamu lebih mementingkan buku dibanding keluarga sendiri.";
+                document.getElementById('t3_reality').value = "Ujian Tengah Semester (UTS) dilaksanakan minggu depan. Saya butuh waktu belajar 12 jam tanpa gangguan dan akses ke perpustakaan kampus agar lulus mata kuliah Kimia.";
+            } else if (toolNum === 4) {
+                document.getElementById('t4_need').value = 'Financial emergency';
+                document.getElementById('t4_urgency').value = 'High';
+            } else if (toolNum === 5) {
+                document.getElementById('t5_major').value = 'Sosiologi';
+                document.getElementById('t5_goal').value = 'Job stability';
+                document.getElementById('t5_exp').value = 'Staf pelayanan pelanggan, mentor sebaya di sekolah, mengurus administrasi dokumen keluarga.';
+            }
+            showToast("Contoh skenario berhasil dimuat!");
+        }
+
+        // Pengolah Formulir dan Mesin Logika
+        function setupFormListeners() {
+            // PERANGKAT 1
+            const form1 = document.getElementById('form1');
+            if (form1) {
+                form1.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const term = escapeHTML(document.getElementById('t1_term').value);
+                    const year = escapeHTML(document.getElementById('t1_year').value);
+
+                    let trans = "", action = "", script = "";
+
+                    if (term === "Office Hours") {
+                        trans = "<strong>Aturan Tak Tertulis:</strong> Jam konsultasi (Office Hours) BUKAN tempat untuk mahasiswa yang bermasalah. Jam ini adalah waktu khusus yang disediakan dosen agar Anda dapat bertanya, memperjelas materi, atau berkonsultasi mengenai karier.";
+                        action = "1. Pilih slot waktu 15 menit selama jam konsultasi terdaftar.<br>2. Siapkan 1-2 pertanyaan spesifik atau catatan kuliah Anda.<br>3. Perkenalkan diri Anda sebagai mahasiswa " + year + " di kelas beliau.";
+                        script = `Subjek: Pertanyaan Jam Konsultasi - [Nama Mata Kuliah] - [Nama Anda]
+
+Yth. Bapak/Ibu Dosen [Nama Belakang/Lengkap],
+
+Saya [Nama Anda], mahasiswa ${year} di kelas [Nama Mata Kuliah] Anda. Saya sedang mempelajari kembali materi kuliah tentang [Topik] dan memiliki pertanyaan singkat mengenai [Konsep Spesifik].
+
+Saya berencana hadir pada jam konsultasi Anda pada hari [Hari] pukul [Jam]. Saya sangat berharap dapat berdiskusi dengan Bapak/Ibu.
+
+Hormat saya,
+[Nama Anda]`;
+                    } else if (term === "Syllabus") {
+                        trans = "<strong>Aturan Tak Tertulis:</strong> Silabus adalah kontrak akademis resmi antara dosen dan mahasiswa. Silabus berisi setiap batas waktu tugas, kebijakan penilaian, dan aturan kehadiran.";
+                        action = "1. Unduh dan baca seluruh silabus pada minggu pertama perkuliahan.<br>2. Catat semua tanggal ujian dan tenggat tugas ke dalam kalender pribadi Anda.<br>3. Cek silabus TERLEBIH DAHULU sebelum bertanya kepada dosen 'apa materi yang ketinggalan?'";
+                        script = `Subjek: Konfirmasi Kebijakan Silabus - [Nama Mata Kuliah]
+
+Yth. Bapak/Ibu Dosen [Nama Belakang/Lengkap],
+
+Saya sedang membaca kembali silabus untuk mata kuliah [Nama Mata Kuliah] dan ingin mengonfirmasi detail mengenai petunjuk pengumpulan tugas [Nama Tugas].
+
+Apakah pengumpulan dalam format [Format, misal: PDF] yang lebih disarankan? Terima kasih atas waktu dan arahan Bapak/Ibu.
+
+Salam,
+[Nama Anda]`;
+                    } else {
+                        trans = `<strong>Aturan Tak Tertulis:</strong> ${term} adalah proses standar di universitas untuk mengatur alur akademis, namun teknis pelaksanaannya bervariasi di tiap jurusan/prodi.`;
+                        action = "1. Cek halaman resmi bagian akademik atau BAK/Registrar kampus.<br>2. Pastikan tanggal penting di kalender akademis.<br>3. Konsultasikan dengan Dosen Pembimbing Akademik (DPA) Anda.";
+                        script = `Subjek: Pertanyaan Mengenai Prosedur ${term} - [Nama Anda]
+
+Yth. Tim Tim Layanan Akademik / Dosen Pembimbing,
+
+Saya mahasiswa ${year} yang ingin menanyakan prosedur terkait ${term}. Mohon arahannya mengenai langkah atau formulir yang perlu saya selesaikan?
+
+Terima kasih,
+[Nama Anda]`;
+                    }
+
+                    document.getElementById('t1_res_trans').innerHTML = trans;
+                    document.getElementById('t1_res_action').innerHTML = action;
+                    const safeScript = escapeHTML(script);
+                    document.getElementById('t1_res_script').innerHTML = `${safeScript} <br><button class="copy-btn" onclick="copyToClipboard(decodeURIComponent(\`${encodeURIComponent(script)}\`))"><i class="fa-regular fa-copy"></i> Salin</button>`;
+                    
+                    document.getElementById('output1').classList.remove('hidden');
+
+                    saveHistory('tool1', {
+                        summaryTitle: `Terjemahan: ${term} (${year})`,
+                        renderedHTML: trans + "<br><br>" + action
+                    });
+                });
+            }
+
+            // PERANGKAT 2
+            const form2 = document.getElementById('form2');
+            if (form2) {
+                form2.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const trigger = escapeHTML(document.getElementById('t2_trigger').value);
+                    const thought = escapeHTML(document.getElementById('t2_thought').value);
+                    const strengths = escapeHTML(document.getElementById('t2_strengths').value);
+
+                    const audit = `Pikiran Anda ("${thought}") adalah reaksi psikologis yang alami saat berada dalam situasi <strong>${trigger}</strong>. Perasaan imposter sering memuncak ketika berada di lingkungan baru. Namun, keberadaan Anda di kampus ini adalah bukti bahwa Anda telah memenuhi standar seleksi yang ketat; merasa asing bukan berarti Anda tidak mampu.`;
+                    
+                    const reframe = `Meskipun mahasiswa lain mungkin lebih familiar dengan dunia kampus, latar belakang Anda telah membentuk kekuatan nyata: <strong>${strengths}</strong>. Dalam dunia profesional dan akademik, ketangguhan, kemandirian, dan daya tanggap jauh lebih menentukan kesuksesan jangka panjang.`;
+
+                    const statements = `1. "Saya mendapatkan posisi di kampus ini karena kemampuan nyata yang saya miliki."<br>
+2. "Ketidaktahuan akan budaya kampus adalah kesenjangan informasi, bukan kesenjangan kecerdasan."<br>
+3. "Latar belakang unik saya memberikan daya tahan dan sudut pandang yang kuat dalam memecahkan masalah."`;
+
+                    document.getElementById('t2_res_audit').innerHTML = audit;
+                    document.getElementById('t2_res_reframe').innerHTML = reframe;
+                    document.getElementById('t2_res_statements').innerHTML = statements;
+
+                    document.getElementById('output2').classList.remove('hidden');
+
+                    saveHistory('tool2', {
+                        summaryTitle: `Reset: ${trigger}`,
+                        renderedHTML: `<strong>Evaluasi:</strong> ${audit}<br><br><strong>Kekuatan Baru:</strong> ${reframe}`
+                    });
+                });
+            }
+
+            // PERANGKAT 3
+            const form3 = document.getElementById('form3');
+            if (form3) {
+                form3.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const friction = escapeHTML(document.getElementById('t3_friction').value);
+                    const asking = escapeHTML(document.getElementById('t3_asking').value);
+                    const reality = escapeHTML(document.getElementById('t3_reality').value);
+
+                    const reframe = `Permintaan keluarga Anda ("${asking}") lahir dari rasa kepedulian yang dalam dan rasa takut kehilangan kebersamaan. Mereka mungkin belum memahami bahwa perkuliahan membutuhkan waktu belajar mandiri di luar jam kelas.`;
+
+                    const scriptText = `Halo Ibu/Bapak/Keluarga, saya sangat sayang dan berterima kasih atas semua dukungan yang diberikan. Saya tahu keluarga ingin kita menghabiskan waktu bersama. Namun saat ini, tuntutan kuliah mengharuskan saya untuk ${reality}. Jika saya tidak fokus menyelesaikan ini sekarang, nilai dan kelulusan saya bisa terganggu. Bagaimana kalau kita jadwalkan waktu khusus untuk menelepon/bertemu pada [Hari/Jam Spesifik] setelah tugas saya selesai?`;
+
+                    const boundary = `1. Tunjukkan rasa sayang dan empati terlebih dahulu sebelum menolak.<br>2. Berikan kepastian tanggal/waktu spesifik kapan Anda benar-benar bisa meluangkan waktu.<br>3. Gunakan bahasa yang sederhana tanpa menggunakan istilah akademis yang rumit.`;
+
+                    document.getElementById('t3_res_reframe').innerHTML = reframe;
+                    const safeScript3 = escapeHTML(scriptText);
+                    document.getElementById('t3_res_script').innerHTML = `${safeScript3} <br><button class="copy-btn" onclick="copyToClipboard(decodeURIComponent(\`${encodeURIComponent(scriptText)}\`))"><i class="fa-regular fa-copy"></i> Salin</button>`;
+                    document.getElementById('t3_res_boundary').innerHTML = boundary;
+
+                    document.getElementById('output3').classList.remove('hidden');
+
+                    saveHistory('tool3', {
+                        summaryTitle: `Skrip Percakapan: ${friction}`,
+                        renderedHTML: `<strong>Pendekatan:</strong> ${reframe}<br><br><strong>Skrip:</strong> ${scriptText}`
+                    });
+                });
+            }
+
+            // PERANGKAT 4
+            const form4 = document.getElementById('form4');
+            if (form4) {
+                form4.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const need = escapeHTML(document.getElementById('t4_need').value);
+                    const urgency = escapeHTML(document.getElementById('t4_urgency').value);
+
+                    let dept = "", script = "", docs = "";
+
+                    if (need === "Financial emergency") {
+                        dept = "<strong>Kantor Bantuan Keuangan / Kemahasiswaan</strong> atau <strong>Pusat Layanan Mahasiswa</strong>. Cari di situs kampus istilah 'Dana Bantuan Darurat' atau 'Beasiswa Keringanan'.";
+                        script = `"Halo Bapak/Ibu, saya mahasiswa generasi pertama yang sedang mengalami kesulitan finansial tidak terduga terkait buku teks/biaya hidup. Saya ingin menanyakan prosedur pengajuan bantuan dana darurat mahasiswa di kantor ini."`;
+                        docs = "• Kartu Tanda Mahasiswa (KTM)<br>• Bukti pengeluaran darurat (nota, tagihan, atau rincian buku wajib di silabus)<br>• Ringkasan status beasiswa/bantuan keuangan saat ini";
+                    } else if (need === "Academic tutoring") {
+                        dept = "<strong>Pusat Pembelajaran Mahasiswa</strong> atau <strong>Klinik Bahasa / Menulis</strong>. Biasanya berada di gedung perpustakaan utama.";
+                        script = `"Halo, saya ingin mendaftar program bimbingan belajar/tutoring untuk mata kuliah saya. Saya ingin memperkuat metode belajar sebelum jadwal ujian mendatang."`;
+                        docs = "• Silabus Mata Kuliah<br>• Petunjuk Tugas<br>• Draf tulisan atau hasil kuis sebelumnya";
+                    } else {
+                        dept = "<strong>Bagian Kemahasiswaan</strong>, <strong>Pusat Konseling Mahasiswa</strong>, atau <strong>Pusat Pengembangan Karier (Career Center)</strong>.";
+                        script = `"Halo, saya ingin berkonsultasi mengenai layanan dukungan yang tersedia untuk kebutuhan ${need}."`;
+                        docs = "• Kartu Tanda Mahasiswa (KTM)<br>• Catatan pertanyaan atau tujuan yang ingin dicapai";
+                    }
+
+                    document.getElementById('t4_res_dept').innerHTML = `<strong>Tingkat Prioritas (${urgency}):</strong> ${dept}`;
+                    const safeScript4 = escapeHTML(script);
+                    document.getElementById('t4_res_script').innerHTML = `${safeScript4} <br><button class="copy-btn" onclick="copyToClipboard(decodeURIComponent(\`${encodeURIComponent(script)}\`))"><i class="fa-regular fa-copy"></i> Salin</button>`;
+                    document.getElementById('t4_res_docs').innerHTML = docs;
+
+                    document.getElementById('output4').classList.remove('hidden');
+
+                    saveHistory('tool4', {
+                        summaryTitle: `Layanan Kampus: ${need}`,
+                        renderedHTML: `<strong>Departemen:</strong> ${dept}<br><br><strong>Skrip:</strong> ${script}`
+                    });
+                });
+            }
+
+            // PERANGKAT 5
+            const form5 = document.getElementById('form5');
+            if (form5) {
+                form5.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const major = escapeHTML(document.getElementById('t5_major').value);
+                    const goal = escapeHTML(document.getElementById('t5_goal').value);
+                    const exp = escapeHTML(document.getElementById('t5_exp').value);
+
+                    const map = `Berdasarkan jurusan Anda di <strong>${major}</strong> dan tujuan karier <strong>${goal}</strong>, berikut 3 pilihan jalur yang dapat dipertimbangkan:<br>
+1. <strong>Dukungan Proyek & Operasional:</strong> Menerjemahkan pemikiran analitis dari perkuliahan ke dalam manajemen alur kerja industri.<br>
+2. <strong>Koordinasi Program Komunitas:</strong> Mengelola program pemberdayaan masyarakat, LSM, atau instansi publik.<br>
+3. <strong>Analisis Data & Perilaku:</strong> Menggunakan pemahaman perilaku manusia untuk posisi HR, riset pasar, atau UX research.`;
+
+                    const skills = `Tuliskan kembali pengalaman Anda ("${exp}") di CV menggunakan kata kerja aksi yang kuat:<br>
+• <strong>Komunikasi Pemangku Kepentingan:</strong> Menyampaikan informasi kompleks secara jelas kepada berbagai kelompok.<br>
+• <strong>Manajemen Sumber Daya:</strong> Menjaga ketelitian dan penyelesaian masalah di bawah tekanan dan keterbatasan waktu.<br>
+• <strong>Pemikiran Analitis:</strong> Menerapkan analisis terstruktur dari studi ${major} ke dalam tantangan praktis.`;
+
+                    const sprint = `1. Cari di LinkedIn alumni dari universitas Anda dengan filter kata kunci <em>"First-Gen"</em> atau <em>"${major}"</em>.<br>
+2. Kirimkan pesan singkat: <em>"Halo Kak [Nama], saya mahasiswa generasi pertama di [Nama Kampus] jurusan ${major}. Saya melihat perjalanan karier Kakak dan ingin bertanya singkat mengenai transisi dari perkuliahan ke dunia kerja."</em><br>
+3. Kunjungi Pusat Karier kampus untuk memeriksa dan memperbaiki CV Anda sebelum melamar pekerjaan.`;
+
+                    document.getElementById('t5_res_map').innerHTML = map;
+                    document.getElementById('t5_res_skills').innerHTML = skills;
+                    document.getElementById('t5_res_sprint').innerHTML = sprint;
+
+                    document.getElementById('output5').classList.remove('hidden');
+
+                    saveHistory('tool5', {
+                        summaryTitle: `Rencana Karier: ${major}`,
+                        renderedHTML: map + "<br><br>" + skills
+                    });
+                });
+            }
+        }
+    </script>
+</body>
+</html>

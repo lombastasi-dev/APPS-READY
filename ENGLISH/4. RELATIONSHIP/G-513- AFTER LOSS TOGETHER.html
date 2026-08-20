@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFTER LOSS TOGETHER™ — Couple Recovery Toolkit</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --sage: #7B9C8C;
+            --sage-light: #D4E4D9;
+            --sage-dark: #5A7A6A;
+            --stone: #B8A99A;
+            --stone-light: #E8DDD4;
+            --warm-amber: #D4A373;
+            --warm-amber-light: #F5E6D3;
+            --bg-start: #F9F7F4;
+            --bg-end: #F0EEE9;
+            --card-bg: #FFFFFF;
+            --text-main: #2C3E3F;
+            --text-muted: #6B7A7A;
+            --border-color: #E8E3DE;
+            --success: #7B9C8C;
+            --warning: #D4A373;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body { font-family: var(--font); background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%); background-attachment: fixed; color: var(--text-main); display: flex; min-height: 100vh; line-height: 1.6; }
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        .sidebar { width: var(--sidebar-width); background-color: var(--card-bg); border-right: 1px solid var(--border-color); position: fixed; top:0; bottom:0; left:0; z-index:1000; display:flex; flex-direction:column; box-shadow:var(--shadow-sm); transition:transform 0.3s ease; }
+        .sidebar-header { padding:1.5rem; display:flex; align-items:center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--sage); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--sage-dark); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item { display:flex; align-items:center; gap:0.85rem; padding:0.85rem 1rem; color:var(--text-muted); text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem; font-size:0.95rem; font-weight:500; cursor:pointer; transition:all 0.2s ease; }
+        .nav-item:hover { background-color:rgba(123,156,140,0.1); color:var(--sage-dark); }
+        .nav-item.active { background-color:var(--sage); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        .mobile-header { display:none; position:fixed; top:0; left:0; right:0; height:60px; background-color:var(--card-bg); border-bottom:1px solid var(--border-color); padding:0 1.25rem; align-items:center; justify-content:space-between; z-index:900; box-shadow:var(--shadow-sm); }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--sage-dark); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--sage); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.3); z-index:950; }
+        .main-content { margin-left:var(--sidebar-width); flex-grow:1; padding:2.5rem 1.5rem; display:flex; flex-direction:column; align-items:center; width:calc(100% - var(--sidebar-width)); }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid var(--border-color); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--sage-dark); margin-bottom:0.25rem; line-height:1.2; }
+        .hero-subtitle { font-size:1.1rem; font-weight:500; color:var(--sage); margin-bottom:0.5rem; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--sage); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(123,156,140,0.12); color:var(--sage); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(212,163,115,0.12); color:var(--warm-amber); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--sage-dark); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--sage-dark); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--sage); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:80px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--sage); }
+        .slider-value { font-weight:700; color:var(--sage); min-width:2.5rem; text-align:center; background:rgba(123,156,140,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--sage); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--sage-dark); }
+        .btn-secondary { background-color:rgba(212,163,115,0.15); color:var(--warm-amber); }
+        .btn-secondary:hover { background-color:rgba(212,163,115,0.25); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:#c0392b; color:#fff; }
+        .btn-danger:hover { background-color:#a93226; }
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.7rem; font-weight:700; text-transform:uppercase; letter-spacing:0.06em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(123,156,140,0.12); color:var(--sage-dark); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--sage); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--warm-amber); }
+        .result-block.success { border-left-color:var(--sage); }
+        .result-block.accent { border-left-color:var(--warm-amber); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--sage-dark); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--sage); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--sage-dark); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid var(--border-color); }
+        .problem-frame { background-color:rgba(212,163,115,0.08); border-left:3px solid var(--warm-amber); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--sage-dark); margin-bottom:1.5rem; font-weight:500; }
+        .partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+        .partner-box { background:#FAFAFA; padding:1rem; border-radius:0.5rem; border:1px solid var(--border-color); }
+        .partner-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--sage); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+        .checkbox-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.5rem; }
+        .checkbox-grid label { font-size:0.9rem; display:flex; align-items:center; gap:0.4rem; cursor:pointer; }
+        .connection-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; align-items:center; }
+        .connection-grid .dimension-label { font-weight:500; color:var(--text-main); }
+        .connection-grid .slider-container { width:100%; }
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .partner-grid { grid-template-columns:1fr; }
+            .checkbox-grid { grid-template-columns:1fr; }
+            .connection-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-solid fa-leaf" style="color:var(--sage);"></i><span>After Loss Together</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-leaf"></i><h1>After Loss Together</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dashboard</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-map"></i><span>Grief Map</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-compass"></i><span>The Next Step</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-heart"></i><span>Intimacy Repair</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-shield-halved"></i><span>Social Shield</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-link"></i><span>Connection Check</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>My History</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privacy</span></a>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <p class="hero-subtitle">A PRACTICAL RECOVERY TOOLKIT</p>
+                    <h2 class="hero-title">After Loss Together</h2>
+                    <p class="hero-tagline">Grieve together so you don't grow apart.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        Practical structure for navigating life, decisions, and intimacy after pregnancy loss. Understand different grieving styles, decide what's next, protect your connection, and choose one manageable step at a time.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-map"></i></div><h3>Grief Map</h3><p>Understand conflicting grief styles, translate unspoken feelings, and stay connected without changing how either partner grieves.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-compass"></i></div><h3>The Next Step</h3><p>Decide whether to try again, pause, or stop without panic or ultimatum. Translate fear into protection.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-heart"></i></div><h3>Intimacy Repair</h3><p>Rebuild non-clinical physical connection when sex feels terrifying, mechanical, or triggering.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-shield-halved"></i></div><h3>Social Shield</h3><p>Protect yourself from insensitive comments and social overload with gentle boundaries and scripts.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-link"></i></div><h3>Connection Check</h3><p>Assess relationship connection across key grief domains and identify one targeted action.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: GRIEF MAP -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Grief Map</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "We grieve so differently—I feel like we're speaking different languages."</div>
+                    <form id="form-tool1">
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Partner A</div>
+                                <div class="form-group"><label class="form-label">Grief style</label><select id="t1_style_a"><option value="Emotional">Emotional — feels deeply, needs to talk</option><option value="Practical">Practical — processes through action and logistics</option><option value="Silent">Silent — grieves quietly, needs space</option><option value="Cycles rapidly">Cycles rapidly — intense waves of grief</option></select></div>
+                                <div class="form-group"><label class="form-label">How are you feeling right now?</label><textarea id="t1_feel_a" placeholder="What's present for you?"></textarea></div>
+                            </div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Partner B</div>
+                                <div class="form-group"><label class="form-label">Grief style</label><select id="t1_style_b"><option value="Emotional">Emotional — feels deeply, needs to talk</option><option value="Practical">Practical — processes through action and logistics</option><option value="Silent">Silent — grieves quietly, needs space</option><option value="Cycles rapidly">Cycles rapidly — intense waves of grief</option></select></div>
+                                <div class="form-group"><label class="form-label">How are you feeling right now?</label><textarea id="t1_feel_b" placeholder="What's present for you?"></textarea></div>
+                            </div>
+                        </div>
+                        <div class="form-group"><label class="form-label">How often do you talk about the loss together?</label><select id="t1_talk"><option value="Often">Often — we talk about it regularly</option><option value="Sometimes">Sometimes — we check in but not always</option><option value="Rarely">Rarely — we avoid the topic</option><option value="Never">Never — we don't talk about it</option></select></div>
+                        <div class="form-group"><label class="form-label">Is there something unspoken you wish you could say?</label><textarea id="t1_wish" placeholder="Something you haven't shared..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-map"></i> Map Grief</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Grief Map</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-map"></i> Grief Style Snapshot</div><p id="t1-out-styles">Your grief styles...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-arrows-left-right"></i> Where Distance Can Form</div><p id="t1-out-distance">The misalignment pattern...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-user"></i> What Partner A May Need</div><p id="t1-out-need_a">Partner A's needs...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-user"></i> What Partner B May Need</div><p id="t1-out-need_b">Partner B's needs...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-handshake"></i> The Bridge — Witnessing Without Matching</div><div class="script-box"><span id="t1-out-bridge">Bridge statement...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t1-out-bridge')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-candle"></i> A Shared Ritual</div><p id="t1-out-ritual">Quiet remembrance practice...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Previous Grief Maps</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Clear History</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: THE NEXT STEP -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">The Next Step</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "We don't know if we should try again, pause, or stop—and we're afraid to talk about it."</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">Number of losses</label><select id="t2_losses"><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4+">4+</option></select></div>
+                        <div class="form-group"><label class="form-label">Medical guidance received</label><select id="t2_medical"><option value="Clear path forward">Clear path forward from clinicians</option><option value="Uncertain">Uncertain / waiting for answers</option><option value="No answers">No clear answers received</option><option value="Conflicting advice">Conflicting advice from different clinicians</option><option value="Haven't sought">Haven't sought specialist advice yet</option></select></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Partner A</div><div class="form-group"><label class="form-label">Current leaning</label><select id="t2_lean_a"><option value="Try again soon">Try again soon</option><option value="Try again later">Try again later</option><option value="Pause indefinitely">Pause indefinitely</option><option value="Stop trying">Stop trying</option><option value="Unsure">Unsure</option></select></div></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Partner B</div><div class="form-group"><label class="form-label">Current leaning</label><select id="t2_lean_b"><option value="Try again soon">Try again soon</option><option value="Try again later">Try again later</option><option value="Pause indefinitely">Pause indefinitely</option><option value="Stop trying">Stop trying</option><option value="Unsure">Unsure</option></select></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">What scares you about trying again?</label><textarea id="t2_fear_yes" placeholder="e.g., Another loss, medical trauma, emotional toll..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What scares you about not trying?</label><textarea id="t2_fear_no" placeholder="e.g., Regret, never having a child, losing hope..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-compass"></i> Navigate Next Step</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">The Next Step</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrows-left-right"></i> The Leaning Gap</div><p id="t2-out-gap">Where you each stand...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-stethoscope"></i> Medical Reality Check</div><p id="t2-out-medical">Medical context and clinician guidance...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-face-frown"></i> Fear Translation</div><p id="t2-out-fears">What fear may be protecting...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-arrows-split-up-and-left"></i> The Pause / Proceed / Stop Framework</div><p id="t2-out-framework">A non-ultimatum conversation structure...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> The Next Conversation</div><p id="t2-out-conversation">What to clarify before a final decision...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> A Joint Next Step</div><p id="t2-out-next">A small reversible action...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Previous Next Step Analyses</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Clear History</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: INTIMACY REPAIR -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Intimacy Repair</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "Sex feels terrifying, mechanical, or triggering—and we don't know how to get back to each other."</div>
+                    <form id="form-tool3">
+                        <div class="form-group"><label class="form-label">What intimacy used to feel like between you?</label><textarea id="t3_past" placeholder="What was your connection like before loss?"></textarea></div>
+                        <div class="form-group"><label class="form-label">What intimacy feels like now?</label><textarea id="t3_present" placeholder="What is present now—distance, fear, pressure, avoidance?"></textarea></div>
+                        <div class="partner-grid">
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user"></i> Partner A</div><div class="form-group"><label class="form-label">How are you feeling about intimacy right now?</label><textarea id="t3_feel_a" placeholder="Your experience..."></textarea></div></div>
+                            <div class="partner-box"><div class="partner-title"><i class="fa-solid fa-user-gear"></i> Partner B</div><div class="form-group"><label class="form-label">How are you feeling about intimacy right now?</label><textarea id="t3_feel_b" placeholder="Your experience..."></textarea></div></div>
+                        </div>
+                        <div class="form-group"><label class="form-label">Current medical considerations:</label><textarea id="t3_medical" placeholder="e.g., Healing time, medical restrictions, fertility treatment, medications..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-heart"></i> Repair Intimacy</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Intimacy Repair</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gap"></i> The Intimacy Gap</div><p id="t3-out-gap">What was lost and why...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-hand"></i> The Pressure Release</div><p id="t3-out-pressure">Removing goal-oriented sex...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-stairs"></i> A Gentle Reentry Plan</div><p id="t3-out-reentry">3 non-sexual touch steps...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-stethoscope"></i> The Medical Boundary</div><p id="t3-out-medical">Clinical requirements vs. personal intimacy...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> The Connection Script</div><div class="script-box"><span id="t3-out-script">Connection script...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t3-out-script')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-lock"></i> The No-Pressure Principle</div><p id="t3-out-nopressure">Consent-based intimacy...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Previous Intimacy Repairs</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Clear History</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: SOCIAL SHIELD -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Social Shield</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "People say the most hurtful things—and I never know what to say back."</div>
+                    <form id="form-tool4">
+                        <div class="form-group"><label class="form-label">What comment or question was said?</label><textarea id="t4_comment" placeholder="e.g., 'You can always try again,' 'Everything happens for a reason,' 'When are you going to have kids?'"></textarea></div>
+                        <div class="form-group"><label class="form-label">Who said it?</label><textarea id="t4_who" placeholder="e.g., Family member, friend, coworker, acquaintance"></textarea></div>
+                        <div class="form-group"><label class="form-label">Your emotional/social tolerance right now (1-10):</label><div class="slider-container"><input type="range" id="t4_tolerance" min="1" max="10" value="5" oninput="document.getElementById('tol_val').innerText=this.value"><span class="slider-value" id="tol_val">5</span></div></div>
+                        <div class="form-group"><label class="form-label">What you wish you could say:</label><textarea id="t4_wish" placeholder="What you'd ideally want to communicate..."></textarea></div>
+                        <div class="form-group"><label class="form-label">What you actually said (if anything):</label><textarea id="t4_actual" placeholder="Your actual response..."></textarea></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-shield-halved"></i> Build Shield</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Social Shield</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment-dots"></i> Comment Decoder</div><p id="t4-out-decoder">Understanding the comment...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-hand-holding-heart"></i> Option A — Gentle / Educational</div><div class="script-box"><span id="t4-out-gentle">Gentle response...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-gentle')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-shield"></i> Option B — Firm Boundary</div><div class="script-box"><span id="t4-out-firm">Firm response...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-firm')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> Option C — Quick Deflection</div><div class="script-box"><span id="t4-out-deflect">Deflection response...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-deflect')"><i class="fa-regular fa-copy"></i> Copy</button></div></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-user-check"></i> Safe Person List</div><p id="t4-out-safe">People who can listen without unsolicited silver linings...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-door-open"></i> The Self-Care Exit</div><p id="t4-out-exit">A signal to leave without lengthy explanation...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> The Partner Debrief</div><p id="t4-out-debrief">Post-event conversation prompt...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Previous Social Shields</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Clear History</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: CONNECTION CHECK -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Connection Check</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem;"></i><strong>Problem:</strong> "We need to know where we're strong and where we need gentle attention."</div>
+                    <form id="form-tool5">
+                        <div style="margin-bottom:1.5rem;">
+                            <p style="font-weight:600; color:var(--sage-dark); margin-bottom:0.75rem;">Rate each statement from 1 (strongly disagree) to 10 (strongly agree)</p>
+                            <div class="connection-grid">
+                                <div class="dimension-label">1. My partner understands my grief.</div>
+                                <div class="slider-container"><input type="range" id="t5_q1" min="1" max="10" value="5" oninput="document.getElementById('q1_val').innerText=this.value"><span class="slider-value" id="q1_val">5</span></div>
+                                <div class="dimension-label">2. I feel supported by my partner right now.</div>
+                                <div class="slider-container"><input type="range" id="t5_q2" min="1" max="10" value="5" oninput="document.getElementById('q2_val').innerText=this.value"><span class="slider-value" id="q2_val">5</span></div>
+                                <div class="dimension-label">3. We can talk about our loss without shutting down or fighting.</div>
+                                <div class="slider-container"><input type="range" id="t5_q3" min="1" max="10" value="5" oninput="document.getElementById('q3_val').innerText=this.value"><span class="slider-value" id="q3_val">5</span></div>
+                                <div class="dimension-label">4. We make space for connection outside of grief/medical logistics.</div>
+                                <div class="slider-container"><input type="range" id="t5_q4" min="1" max="10" value="5" oninput="document.getElementById('q4_val').innerText=this.value"><span class="slider-value" id="q4_val">5</span></div>
+                                <div class="dimension-label">5. I feel hopeful about our future family.</div>
+                                <div class="slider-container"><input type="range" id="t5_q5" min="1" max="10" value="5" oninput="document.getElementById('q5_val').innerText=this.value"><span class="slider-value" id="q5_val">5</span></div>
+                                <div class="dimension-label">6. I am taking care of myself individually.</div>
+                                <div class="slider-container"><input type="range" id="t5_q6" min="1" max="10" value="5" oninput="document.getElementById('q6_val').innerText=this.value"><span class="slider-value" id="q6_val">5</span></div>
+                            </div>
+                        </div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-link"></i> Check Connection</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Load Sample</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Start Over</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Connection Check</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-gauge-high"></i> Connection Dashboard</div><p id="t5-out-dashboard">Your connection snapshot...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-circle-check"></i> Alignment Zones</div><p id="t5-out-strengths">Areas of relative strength...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Gentle Attention Zones</div><p id="t5-out-risks">Areas needing care...</p></div>
+                        <div class="result-block accent"><div class="section-header-pill"><i class="fa-solid fa-comment"></i> Weekly Conversation Topic</div><p id="t5-out-topic">Your suggested focus...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-arrow-right"></i> One Small Action</div><p id="t5-out-action">A gentle next step...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Self-Care Reminder</div><p id="t5-out-selfcare">Protect individual recovery...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Previous Connection Checks</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Clear History</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">My History</h2><p class="hero-tagline">All your saved After Loss Together analyses.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Clear All History</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privacy</h2>
+                    <p style="margin-bottom:1rem;">Your grief and relationship data stays on your device. Nothing is sent to any server.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>All inputs and results are stored only in your browser's local storage.</li>
+                        <li>No account, no login, no tracking, no analytics.</li>
+                        <li>You can clear history at any time using the tools above.</li>
+                        <li>This application is for reflection and planning—not therapy, grief counseling, or medical advice.</li>
+                        <li>If you are in crisis, please reach out to a qualified professional or local support service.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Clear All Stored Data</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">For reflection and support purposes only. Not therapy or medical advice. If you are in crisis or experiencing severe distress, please reach out to a qualified professional or local support service.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:var(--sage-light);"></i><span id="toast-message">Copied!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Copied!')).catch(() => fallbackCopy(text));
+        } else { fallbackCopy(text); }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Copied!'); } catch(e) { showToast('Could not copy'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); overlay.classList.toggle('mobile-open'); });
+    overlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); overlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE ---
+    function getHistory(toolId) {
+        const key = `afterloss_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `afterloss_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Delete all history for this tool?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('History cleared');
+    }
+    function clearAllHistory() {
+        if (!confirm('Delete ALL After Loss Together history?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('All history cleared');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">No saved history.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">No saved history.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Clear current inputs and results for this tool?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset complete');
+    }
+
+    // ========================================
+    // TOOL 1: GRIEF MAP
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_style_a').value = 'Emotional';
+        document.getElementById('t1_feel_a').value = 'I feel like I need to talk about it all the time. I\'m scared we\'re growing apart.';
+        document.getElementById('t1_style_b').value = 'Silent';
+        document.getElementById('t1_feel_b').value = 'I need space to process. Talking makes me feel worse. I still love them.';
+        document.getElementById('t1_talk').value = 'Sometimes';
+        document.getElementById('t1_wish').value = 'I wish I could tell them I\'m not angry at them—I just don\'t know what to say.';
+        showToast('Sample loaded: Different grieving styles');
+    }
+
+    function analyzeTool1() {
+        const styleA = document.getElementById('t1_style_a').value;
+        const styleB = document.getElementById('t1_style_b').value;
+        const feelA = document.getElementById('t1_feel_a').value || 'Partner A feeling described';
+        const feelB = document.getElementById('t1_feel_b').value || 'Partner B feeling described';
+        const talk = document.getElementById('t1_talk').value;
+        const wish = document.getElementById('t1_wish').value;
+
+        const styles = `Partner A: ${styleA}. Partner B: ${styleB}.`;
+        let distance = '';
+        if (styleA === styleB) {
+            distance = `You share a ${styleA} grief style. This can create deep understanding, but be cautious—if you both withdraw, you may amplify each other's silence. If you both become emotional, you may overwhelm each other. Gentle check-ins can help.`;
+        } else {
+            distance = `You have different grief styles (${styleA} vs ${styleB}). This can feel like distance, but it's not a sign of disconnection—it's a difference in processing. Partner A may need to talk to process; Partner B may need space. The goal is witnessing without matching.`;
+        }
+
+        let needA = `Partner A may need to feel that their grief is seen and that their need to talk is not a burden.`;
+        let needB = `Partner B may need to feel that their need for space is respected and that silence is not interpreted as lack of love.`;
+        if (styleA === 'Silent') { needA = `Partner A may need to feel that their silence is respected and that they are not being pressured to talk.`; }
+        if (styleB === 'Emotional') { needB = `Partner B may need to feel that their emotional expression is welcome and that they are not being asked to 'move on.'`; }
+
+        const bridge = `"I see you grieving in your own way. I don't need you to grieve like me—I just need to know we're still connected."`;
+        const ritual = `Consider a quiet 10-minute remembrance practice together: light a candle, sit together, or simply hold space in silence. No words required.`;
+
+        document.getElementById('t1-out-styles').innerHTML = styles;
+        document.getElementById('t1-out-distance').innerHTML = distance;
+        document.getElementById('t1-out-need_a').innerHTML = needA;
+        document.getElementById('t1-out-need_b').innerHTML = needB;
+        document.getElementById('t1-out-bridge').innerText = bridge;
+        document.getElementById('t1-out-ritual').innerHTML = ritual;
+        document.getElementById('output-tool1').classList.add('active');
+        saveToHistory('tool1', 'Grief Map', `<p>${styles}</p><br><code>${bridge}</code>`);
+    }
+
+    // ========================================
+    // TOOL 2: THE NEXT STEP
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_losses').value = '2';
+        document.getElementById('t2_medical').value = 'Conflicting advice';
+        document.getElementById('t2_lean_a').value = 'Try again soon';
+        document.getElementById('t2_lean_b').value = 'Pause indefinitely';
+        document.getElementById('t2_fear_yes').value = 'Another loss, medical trauma, the emotional toll on our relationship.';
+        document.getElementById('t2_fear_no').value = 'Regret, never having a child, losing hope for our future family.';
+        showToast('Sample loaded: Conflicting leanings after multiple losses');
+    }
+
+    function analyzeTool2() {
+        const losses = document.getElementById('t2_losses').value;
+        const medical = document.getElementById('t2_medical').value;
+        const leanA = document.getElementById('t2_lean_a').value;
+        const leanB = document.getElementById('t2_lean_b').value;
+        const fearYes = document.getElementById('t2_fear_yes').value || 'Fear of trying again described';
+        const fearNo = document.getElementById('t2_fear_no').value || 'Fear of not trying described';
+
+        const gap = `Partner A is leaning: ${leanA}. Partner B is leaning: ${leanB}. This is a negotiation, not a winner/loser decision.`;
+        const medicalText = `Medical guidance: ${medical}. Please clarify medical decisions with qualified clinicians. This tool is for reflection, not medical advice.`;
+        const fears = `Fear of trying again may be protecting: ${escapeHTML(fearYes)}. Fear of not trying may be protecting: ${escapeHTML(fearNo)}. Both fears are valid.`;
+        const framework = `Use a non-ultimatum framework: <br>1. What do we each need to feel safe? <br>2. What information do we still need? <br>3. Can we agree on a time-limited pause to gather more clarity?`;
+        const conversation = `Before a final decision, clarify: what would make each of you feel more certain? What support do you need to have this conversation without fear of blame?`;
+        const next = `A small reversible action: schedule a non-decision conversation—just to share feelings, not to decide. Or, if appropriate, seek a second medical opinion together.`;
+
+        document.getElementById('t2-out-gap').innerHTML = gap;
+        document.getElementById('t2-out-medical').innerHTML = medicalText;
+        document.getElementById('t2-out-fears').innerHTML = fears;
+        document.getElementById('t2-out-framework').innerHTML = framework;
+        document.getElementById('t2-out-conversation').innerHTML = conversation;
+        document.getElementById('t2-out-next').innerHTML = next;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', 'The Next Step', `<p>${gap}</p><br>${framework}`);
+    }
+
+    // ========================================
+    // TOOL 3: INTIMACY REPAIR
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_past').value = 'We were playful, spontaneous, and connected. Sex was an expression of love, not a goal.';
+        document.getElementById('t3_present').value = 'It feels mechanical, pressured, and tied to trying to conceive. I avoid it.';
+        document.getElementById('t3_feel_a').value = 'I miss us. I feel like I\'ve lost my body.';
+        document.getElementById('t3_feel_b').value = 'I feel rejected, but I understand why. I don\'t know how to reconnect.';
+        document.getElementById('t3_medical').value = 'Still healing, and we\'ve been told to wait before trying again.';
+        showToast('Sample loaded: Intimacy pressure after loss');
+    }
+
+    function analyzeTool3() {
+        const past = document.getElementById('t3_past').value || 'Past intimacy described';
+        const present = document.getElementById('t3_present').value || 'Present intimacy described';
+        const feelA = document.getElementById('t3_feel_a').value || 'Partner A feeling described';
+        const feelB = document.getElementById('t3_feel_b').value || 'Partner B feeling described';
+        const medical = document.getElementById('t3_medical').value || 'Medical considerations described';
+
+        const gap = `What intimacy used to feel like: ${escapeHTML(past)}. What it feels like now: ${escapeHTML(present)}.`;
+        const pressure = `Consider temporarily removing goal-oriented sex from the picture. This is not forever—it's creating space to rebuild safety.`;
+        const reentry = `<strong>1. Non-sexual touch:</strong> Hold hands, hug, or sit close without it leading anywhere.<br><strong>2. Eye contact and presence:</strong> Spend 5 minutes looking at each other without speaking.<br><strong>3. Verbal connection:</strong> Share what you appreciate about each other without any physical expectation.`;
+        const medicalText = `Medical considerations: ${escapeHTML(medical)}. Clinical restrictions must be respected. Keep medical and personal intimacy time separate.`;
+        const script = `"I miss you. I'm not ready for sex right now, but I want to stay close to you. Can we just hold each other for a few minutes?"`;
+        const nopressure = `No partner owes sexual contact because of grief, relationship status, or future-family goals. Intimacy should be consent-based, gentle, and reversible.`;
+
+        document.getElementById('t3-out-gap').innerHTML = gap;
+        document.getElementById('t3-out-pressure').innerHTML = pressure;
+        document.getElementById('t3-out-reentry').innerHTML = reentry;
+        document.getElementById('t3-out-medical').innerHTML = medicalText;
+        document.getElementById('t3-out-script').innerText = script;
+        document.getElementById('t3-out-nopressure').innerHTML = nopressure;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', 'Intimacy Repair', `<p>${gap}</p><br><code>${script}</code>`);
+    }
+
+    // ========================================
+    // TOOL 4: SOCIAL SHIELD
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_comment').value = '"Everything happens for a reason. You can always try again."';
+        document.getElementById('t4_who').value = 'My mother-in-law';
+        document.getElementById('t4_tolerance').value = '3'; document.getElementById('tol_val').innerText = '3';
+        document.getElementById('t4_wish').value = 'I wish I could say, "That doesn\'t help. Please don\'t say that."';
+        document.getElementById('t4_actual').value = 'I just smiled and changed the subject.';
+        showToast('Sample loaded: Insensitive family comment');
+    }
+
+    function analyzeTool4() {
+        const comment = document.getElementById('t4_comment').value || 'Comment described';
+        const who = document.getElementById('t4_who').value || 'Person described';
+        const tolerance = parseInt(document.getElementById('t4_tolerance').value) || 5;
+        const wish = document.getElementById('t4_wish').value || 'Wish described';
+        const actual = document.getElementById('t4_actual').value || 'Actual response described';
+
+        const decoder = `Comment: "${escapeHTML(comment)}" from ${escapeHTML(who)}. This type of comment often comes from helplessness or social awkwardness—but its impact is still real.`;
+        const gentle = `"I know you mean well, but that kind of comment is actually really hard for us right now. We're just taking it day by day."`;
+        const firm = `"That's not helpful to us right now. We'd prefer not to talk about it."`;
+        const deflect = `"We're just focusing on healing right now. How are things with you?"`;
+        const safe = `Name one or two people who can listen without offering silver linings. Consider limiting time with those who don't.`;
+        const exit = `Create a pre-agreed signal with your partner: a word, touch, or text that means "I need to leave" without lengthy explanation.`;
+        const debrief = `After a social event: "Do you want to vent about what happened, or do you want to distract and move on?"`;
+
+        document.getElementById('t4-out-decoder').innerHTML = decoder;
+        document.getElementById('t4-out-gentle').innerText = gentle;
+        document.getElementById('t4-out-firm').innerText = firm;
+        document.getElementById('t4-out-deflect').innerText = deflect;
+        document.getElementById('t4-out-safe').innerHTML = safe;
+        document.getElementById('t4-out-exit').innerHTML = exit;
+        document.getElementById('t4-out-debrief').innerHTML = debrief;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', 'Social Shield', `<p>${decoder}</p><br><code>${gentle}</code>`);
+    }
+
+    // ========================================
+    // TOOL 5: CONNECTION CHECK
+    // ========================================
+    function loadSampleTool5() {
+        const values = [6, 5, 4, 7, 3, 5];
+        const ids = ['t5_q1','t5_q2','t5_q3','t5_q4','t5_q5','t5_q6'];
+        const valIds = ['q1_val','q2_val','q3_val','q4_val','q5_val','q6_val'];
+        ids.forEach((id, i) => {
+            document.getElementById(id).value = values[i];
+            document.getElementById(valIds[i]).innerText = values[i];
+        });
+        showToast('Sample loaded: Mixed connection scores');
+    }
+
+    function analyzeTool5() {
+        const scores = [
+            parseInt(document.getElementById('t5_q1').value) || 5,
+            parseInt(document.getElementById('t5_q2').value) || 5,
+            parseInt(document.getElementById('t5_q3').value) || 5,
+            parseInt(document.getElementById('t5_q4').value) || 5,
+            parseInt(document.getElementById('t5_q5').value) || 5,
+            parseInt(document.getElementById('t5_q6').value) || 5
+        ];
+        const labels = [
+            'Understanding your grief',
+            'Feeling supported',
+            'Talking about loss without conflict',
+            'Connection outside grief logistics',
+            'Hopeful about future family',
+            'Taking care of yourself'
+        ];
+        const avg = scores.reduce((a,b) => a + b, 0) / scores.length;
+        let label = '';
+        if (avg >= 7) label = 'Strong Alignment';
+        else if (avg >= 4) label = 'Moderate Alignment';
+        else label = 'Needs Gentle Attention';
+
+        let dashboard = `Overall Average: ${avg.toFixed(1)}/10 — ${label}`;
+        let strengths = scores.filter(s => s >= 7).map((s,i) => `<li>${labels[i]}: ${s}/10</li>`).join('');
+        if (!strengths) strengths = '<p>No scores above 7 right now. That\'s okay—this is a hard season.</p>';
+        let risks = scores.filter(s => s <= 3).map((s,i) => `<li>${labels[i]}: ${s}/10</li>`).join('');
+        if (!risks) risks = '<p>No scores below 4. Keep communicating gently.</p>';
+
+        const minVal = Math.min(...scores);
+        const minIdx = scores.indexOf(minVal);
+        const topic = `Consider talking about: <strong>${labels[minIdx]}</strong> (${minVal}/10). Start with: "I've been thinking about this—can we check in about it?"`;
+
+        let action = '';
+        if (minIdx === 0) action = 'Ask your partner: "What would help you feel more understood right now?"';
+        else if (minIdx === 1) action = 'Ask your partner: "What would make you feel more supported this week?"';
+        else if (minIdx === 2) action = 'Set aside 15 minutes this week to talk about the loss—no distractions.';
+        else if (minIdx === 3) action = 'Plan one non-grief, non-medical activity together this week.';
+        else if (minIdx === 4) action = 'Have a conversation about hope—what does each of you need to feel more hopeful?';
+        else if (minIdx === 5) action = 'Identify one small thing you can do for yourself this week.';
+
+        const selfcare = `Individual recovery supports couple recovery. Taking care of yourself is not selfish—it's necessary.`;
+
+        document.getElementById('t5-out-dashboard').innerHTML = dashboard;
+        document.getElementById('t5-out-strengths').innerHTML = `<ul>${strengths}</ul>`;
+        document.getElementById('t5-out-risks').innerHTML = `<ul>${risks}</ul>`;
+        document.getElementById('t5-out-topic').innerHTML = topic;
+        document.getElementById('t5-out-action').innerHTML = action;
+        document.getElementById('t5-out-selfcare').innerHTML = selfcare;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', 'Connection Check', `<p>${dashboard}</p><br><p>${topic}</p>`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

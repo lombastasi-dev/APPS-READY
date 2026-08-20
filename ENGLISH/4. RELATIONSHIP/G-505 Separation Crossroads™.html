@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Separation Crossroads™ - Decision & Survival Operating System</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        charcoal: {
+                            DEFAULT: '#4A5568',
+                            dark: '#2D3748',
+                            light: '#718096'
+                        },
+                        sage: {
+                            DEFAULT: '#9CAF88',
+                            dark: '#7A8C67',
+                            light: '#C2D1B2'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #F5F7F5 0%, #EEF0EB 100%);
+            min-height: 100vh;
+            color: #2D3748;
+        }
+        .toast {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F1F1F1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #CBD5E0;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #A0AEC0;
+        }
+        @media print {
+            aside, header, footer, button, .no-print {
+                display: none !important;
+            }
+            main {
+                margin: 0 !important;
+                padding: 0 !important;
+                max-width: 100% !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+    </style>
+</head>
+<body class="font-sans antialiased flex flex-col min-h-screen">
+
+    <!-- Safety First Modal/Banner Header -->
+    <div id="safety-modal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl border border-red-100">
+            <div class="flex items-center space-x-3 text-red-600">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h3 class="text-xl font-bold">Safety First Assessment</h3>
+            </div>
+            <p class="text-sm text-gray-700 leading-relaxed">
+                Is there any current threat of violence, intimidation, coercion, stalking, or fear that communicating directly with your spouse could put you or your children at risk?
+            </p>
+            <div class="flex flex-col space-y-2 pt-2">
+                <button onclick="handleSafetyResponse('YES')" class="w-full py-2.5 px-4 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-xl text-sm transition-colors">
+                    YES — I have safety concerns
+                </button>
+                <button onclick="handleSafetyResponse('NO')" class="w-full py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-charcoal font-semibold rounded-xl text-sm transition-colors">
+                    NO — I feel physically safe
+                </button>
+                <button onclick="handleSafetyResponse('UNSURE')" class="w-full py-2.5 px-4 text-gray-500 hover:text-gray-700 font-medium text-xs text-center pt-1">
+                    I'm not sure / Prefer not to say
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Header -->
+    <header class="md:hidden bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center sticky top-0 z-30 shadow-sm no-print">
+        <div class="flex items-center space-x-2 text-charcoal font-semibold text-base">
+            <i class="fa-solid fa-compass text-sage"></i>
+            <span>SEPARATION CROSSROADS™</span>
+        </div>
+        <button id="mobile-menu-btn" aria-label="Open menu" class="text-charcoal focus:outline-none p-2 rounded-lg hover:bg-gray-100">
+            <i class="fa-solid fa-bars text-xl"></i>
+        </button>
+    </header>
+
+    <div class="flex flex-1 relative">
+        <!-- Sidebar Navigation -->
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out flex flex-col justify-between shadow-sm no-print">
+            <div class="overflow-y-auto max-h-screen pb-6">
+                <!-- Sidebar Header -->
+                <div class="p-5 border-b border-gray-100 flex items-center justify-between">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-xl bg-sage flex items-center justify-center text-white text-lg font-bold shadow-sm">
+                            <i class="fa-solid fa-compass"></i>
+                        </div>
+                        <div>
+                            <h1 class="font-bold text-charcoal text-sm leading-tight tracking-tight">CROSSROADS™</h1>
+                            <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider">Operating System</p>
+                        </div>
+                    </div>
+                    <button id="close-sidebar-btn" aria-label="Close menu" class="md:hidden text-gray-400 hover:text-gray-600">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+
+                <!-- Nav Items -->
+                <nav class="p-3 space-y-1">
+                    <button data-nav="home" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-xs transition-colors text-white bg-charcoal">
+                        <i class="fa-solid fa-house w-4"></i>
+                        <span>HOME</span>
+                    </button>
+                    <button data-nav="start-here" class="nav-btn w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-flag w-4 text-sage-dark"></i>
+                        <span>START HERE</span>
+                    </button>
+                    
+                    <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Five Tools</div>
+                    
+                    <button data-nav="tool1" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-calculator w-4 text-sage-dark"></i>
+                        <span>MONEY: Two-Household</span>
+                    </button>
+                    <button data-nav="tool2" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-cloud-sun-rain w-4 text-sage-dark"></i>
+                        <span>EMOTIONS: Weather</span>
+                    </button>
+                    <button data-nav="tool3" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-comments w-4 text-sage-dark"></i>
+                        <span>CONTACT: Compass</span>
+                    </button>
+                    <button data-nav="tool4" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-children w-4 text-sage-dark"></i>
+                        <span>CHILDREN: Kids Middle</span>
+                    </button>
+                    <button data-nav="tool5" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-scale-balanced w-4 text-sage-dark"></i>
+                        <span>DECISION: The Window</span>
+                    </button>
+
+                    <div class="pt-3 pb-1 px-3 text-[10px] font-bold text-gray-400 uppercase tracking-wider">Guided & Synthesis</div>
+
+                    <button data-nav="reset-30" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-calendar-check w-4 text-sage-dark"></i>
+                        <span>30-DAY RESET</span>
+                    </button>
+                    <button data-nav="separation-map" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-map w-4 text-sage-dark"></i>
+                        <span>MY SEPARATION MAP</span>
+                    </button>
+                    <button data-nav="history" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-gray-600 hover:bg-gray-100 transition-colors">
+                        <i class="fa-solid fa-clock-rotate-left w-4 text-sage-dark"></i>
+                        <span>MY HISTORY</span>
+                    </button>
+                    <button data-nav="safety-privacy" class="nav-btn w-full flex items-center space-x-3 px-3 py-2 rounded-xl font-medium text-xs text-red-600 hover:bg-red-50 transition-colors">
+                        <i class="fa-solid fa-shield-halved w-4"></i>
+                        <span>SAFETY & PRIVACY</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-gray-100 bg-gray-50/50 text-[10px] text-gray-400 space-y-1">
+                <div class="flex items-center space-x-2 text-sage-dark font-medium">
+                    <i class="fa-solid fa-lock"></i>
+                    <span>100% Private & Local Storage</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar Backdrop for Mobile -->
+        <div id="sidebar-backdrop" class="fixed inset-0 bg-black/30 z-30 hidden md:hidden no-print"></div>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 md:ml-64 p-4 md:p-8 flex flex-col justify-between max-w-5xl mx-auto w-full">
+            <div id="view-container">
+
+                <!-- SAFETY WARNING BANNER IF TRIGGERED -->
+                <div id="safety-alert-banner" class="hidden mb-6 bg-red-50 border border-red-200 rounded-2xl p-4 text-sm text-red-900 space-y-2 shadow-sm">
+                    <div class="flex items-center space-x-2 font-bold text-red-700">
+                        <i class="fa-solid fa-shield-cat text-lg"></i>
+                        <span>YOUR SAFETY COMES FIRST</span>
+                    </div>
+                    <p class="text-xs leading-relaxed text-red-800">
+                        This toolkit cannot assess physical safety or risk. Direct contact or informal negotiation is not recommended when violence, coercive control, or fear is present. Please contact a local domestic violence service, legal advocate, or emergency helpline to create a safety plan with a professional.
+                    </p>
+                </div>
+
+                <!-- VIEW 1: HOME -->
+                <div id="home-view" class="view-panel space-y-8">
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10 text-center space-y-4">
+                        <span class="inline-block px-3 py-1 bg-sage-light/30 text-sage-dark rounded-full text-xs font-semibold tracking-wider uppercase">SEPARATION CROSSROADS™ SYSTEM</span>
+                        <h2 class="text-3xl md:text-5xl font-bold text-charcoal leading-tight">
+                            YOU DON'T HAVE TO KNOW THE ENDING YET.<br/>
+                            <span class="text-sage-dark">YOU JUST NEED THE NEXT RIGHT STEP.</span>
+                        </h2>
+                        <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+                            Separation can make money, emotions, communication, children and the future feel tangled together. This toolkit helps you work through them one piece at a time.
+                        </p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider px-1">WHAT FEELS MOST URGENT RIGHT NOW?</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div onclick="switchView('tool1')" class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start space-x-4 group">
+                                <div class="w-10 h-10 rounded-xl bg-sage-light/30 text-sage-dark flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-sage group-hover:text-white transition-colors">💰</div>
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-charcoal text-base">We're suddenly supporting two households.</h4>
+                                    <p class="text-xs text-gray-500">Calculate post-separation cash flow, identify margin, and stabilize finances.</p>
+                                    <span class="inline-block pt-2 text-xs font-semibold text-sage-dark group-hover:underline">Start Two-Household Reset →</span>
+                                </div>
+                            </div>
+
+                            <div onclick="switchView('tool2')" class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start space-x-4 group">
+                                <div class="w-10 h-10 rounded-xl bg-sage-light/30 text-sage-dark flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-sage group-hover:text-white transition-colors">❤️</div>
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-charcoal text-base">I feel grief, anger, hope and regret all at once.</h4>
+                                    <p class="text-xs text-gray-500">Name what you are experiencing without making impulsive life decisions.</p>
+                                    <span class="inline-block pt-2 text-xs font-semibold text-sage-dark group-hover:underline">Start Emotional Weather →</span>
+                                </div>
+                            </div>
+
+                            <div onclick="switchView('tool3')" class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start space-x-4 group">
+                                <div class="w-10 h-10 rounded-xl bg-sage-light/30 text-sage-dark flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-sage group-hover:text-white transition-colors">💬</div>
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-charcoal text-base">I don't know how much contact with my spouse is healthy.</h4>
+                                    <p class="text-xs text-gray-500">Map communication patterns, set boundaries, and copy clear scripts.</p>
+                                    <span class="inline-block pt-2 text-xs font-semibold text-sage-dark group-hover:underline">Start Contact Compass →</span>
+                                </div>
+                            </div>
+
+                            <div onclick="switchView('tool4')" class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start space-x-4 group">
+                                <div class="w-10 h-10 rounded-xl bg-sage-light/30 text-sage-dark flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-sage group-hover:text-white transition-colors">👨‍👩‍👧</div>
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-charcoal text-base">I'm worried about what this is doing to our children.</h4>
+                                    <p class="text-xs text-gray-500">Get age-appropriate scripts and build a child-centric stability framework.</p>
+                                    <span class="inline-block pt-2 text-xs font-semibold text-sage-dark group-hover:underline">Start Kids in the Middle →</span>
+                                </div>
+                            </div>
+
+                            <div onclick="switchView('tool5')" class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start space-x-4 group">
+                                <div class="w-10 h-10 rounded-xl bg-sage-light/30 text-sage-dark flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-sage group-hover:text-white transition-colors">⚖️</div>
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-charcoal text-base">I don't know whether to repair the relationship or move on.</h4>
+                                    <p class="text-xs text-gray-500">Evaluate patterns, assess fear vs reality, and design a decision window.</p>
+                                    <span class="inline-block pt-2 text-xs font-semibold text-sage-dark group-hover:underline">Start The Decision Window →</span>
+                                </div>
+                            </div>
+
+                            <div onclick="switchView('reset-30')" class="bg-sage-light/20 rounded-2xl p-5 border border-sage-light/50 shadow-sm hover:shadow-md transition-all cursor-pointer flex items-start space-x-4 group">
+                                <div class="w-10 h-10 rounded-xl bg-sage text-white flex items-center justify-center text-lg font-bold shrink-0">🧭</div>
+                                <div class="space-y-1">
+                                    <h4 class="font-bold text-charcoal text-base">Everything feels tangled. I need the complete reset.</h4>
+                                    <p class="text-xs text-gray-600">Walk through a guided 30-day sequence across all five dimensions.</p>
+                                    <span class="inline-block pt-2 text-xs font-semibold text-sage-dark group-hover:underline">Start 30-Day Separation Reset →</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 2: START HERE (ORIENTATION) -->
+                <div id="start-here-view" class="view-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-4">
+                        <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">Orientation & Guidance</span>
+                        <h2 class="text-2xl md:text-3xl font-bold text-charcoal">SEPARATION IS NOT ONE PROBLEM</h2>
+                        <p class="text-sm text-gray-600 leading-relaxed">
+                            When a relationship separates, several systems change at once. It is normal to feel overwhelmed when trying to process all of them simultaneously.
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-5 gap-3 pt-2">
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center space-y-1">
+                                <span class="text-lg">💰</span>
+                                <h4 class="font-bold text-xs text-charcoal">Money</h4>
+                                <p class="text-[10px] text-gray-500">Cash flow & expenses</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center space-y-1">
+                                <span class="text-lg">❤️</span>
+                                <h4 class="font-bold text-xs text-charcoal">Emotions</h4>
+                                <p class="text-[10px] text-gray-500">Grief, fear & calm</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center space-y-1">
+                                <span class="text-lg">💬</span>
+                                <h4 class="font-bold text-xs text-charcoal">Contact</h4>
+                                <p class="text-[10px] text-gray-500">Boundaries & scripts</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center space-y-1">
+                                <span class="text-lg">👨‍👩‍👧</span>
+                                <h4 class="font-bold text-xs text-charcoal">Children</h4>
+                                <p class="text-[10px] text-gray-500">Stability & safety</p>
+                            </div>
+                            <div class="p-3 bg-gray-50 rounded-xl border border-gray-100 text-center space-y-1">
+                                <span class="text-lg">⚖️</span>
+                                <h4 class="font-bold text-xs text-charcoal">Future</h4>
+                                <p class="text-[10px] text-gray-500">Repair or exit</p>
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-sage-light/20 rounded-xl border border-sage-light/30 text-xs text-charcoal leading-relaxed font-medium">
+                            <i class="fa-solid fa-circle-info text-sage-dark mr-1"></i> You don't have to solve all five today. Start with the piece that is most unstable right now.
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100 space-y-3">
+                            <h3 class="font-bold text-sm text-charcoal">The Five Central Questions</h3>
+                            <ol class="list-decimal list-inside text-xs text-gray-600 space-y-2 leading-relaxed">
+                                <li><b>Can my current finances support the transition?</b> (Two-Household Reset)</li>
+                                <li><b>What is happening emotionally—and what do I need right now?</b> (Emotional Weather)</li>
+                                <li><b>What kind of contact with my spouse is helping rather than destabilizing me?</b> (Contact Compass)</li>
+                                <li><b>How can we reduce the emotional burden on our children?</b> (Kids in the Middle)</li>
+                                <li><b>What information do I need before making a major decision about the relationship?</b> (The Decision Window)</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 1: TWO-HOUSEHOLD RESET -->
+                <div id="tool1-view" class="view-panel hidden space-y-6">
+                    <div class="flex justify-between items-start flex-wrap gap-4 border-b border-gray-200 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 1</span>
+                            <h2 class="text-2xl font-bold text-charcoal">Two-Household Reset</h2>
+                            <p class="text-xs text-gray-500">"Separation changed the math. What does my current month actually look like?"</p>
+                        </div>
+                        <button onclick="loadSampleScenario(1)" class="px-3 py-1.5 bg-sage-light/30 text-sage-dark hover:bg-sage-light/50 font-medium text-xs rounded-xl transition-colors flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>SEE A SAMPLE</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                        <form id="form-tool1" onsubmit="event.preventDefault(); processTool1();" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Your monthly after-tax income:</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-income" required min="0" placeholder="0" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Support received (+) or paid (-):</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-support" placeholder="0 (use negative if paying)" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Your housing cost (rent/mortgage):</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-housing" required min="0" placeholder="0" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Other household housing contribution:</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-their-housing" min="0" placeholder="0" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Shared bills & debts:</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-shared-bills" min="0" placeholder="0" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Legal / Professional expenses:</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-legal" min="0" placeholder="0" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Other solo transition expenses:</label>
+                                <div class="relative">
+                                    <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">$</span>
+                                    <input type="number" id="t1-other" min="0" placeholder="0" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                            </div>
+                            <div class="md:col-span-2 text-right pt-2">
+                                <button type="submit" class="px-6 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors shadow-sm text-sm">
+                                    Generate Monthly Snapshot
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="output-tool1" class="hidden space-y-4">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-6">
+                            <div class="flex items-center justify-between border-b pb-4">
+                                <div>
+                                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">ESTIMATED MONTHLY CASH FLOW</span>
+                                    <h3 id="t1-real-number" class="text-3xl font-bold text-charcoal">$0 / mo</h3>
+                                </div>
+                                <div id="t1-margin-badge" class="px-3 py-1.5 rounded-full font-bold text-xs uppercase">
+                                    SNAPSHOT MARGIN
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-gray-50 rounded-xl text-[11px] text-gray-500 italic">
+                                Note: This is a simple cash-flow snapshot based on the numbers entered. It is not a determination of financial security, legal entitlement, support eligibility, or long-term affordability.
+                            </div>
+
+                            <div class="space-y-3">
+                                <h4 class="font-bold text-charcoal text-sm uppercase tracking-wider">WHAT DESERVES ATTENTION</h4>
+                                <ul id="t1-attention-list" class="space-y-2 text-xs text-gray-600 list-disc list-inside leading-relaxed"></ul>
+                            </div>
+
+                            <div class="bg-sage-light/15 p-4 rounded-xl space-y-2 border border-sage-light/30">
+                                <h5 class="font-bold text-sage-dark text-xs uppercase tracking-wider"><i class="fa-solid fa-flask mr-1"></i> ONE SMALL EXPERIMENT</h5>
+                                <p id="t1-experiment" class="text-xs text-gray-700 leading-relaxed">Track every separation-related spending item for 7 days in a single note without making major adjustments yet.</p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl space-y-2">
+                                <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">WHEN PROFESSIONAL INPUT MAY HELP</h5>
+                                <p id="t1-legal-advice" class="text-xs text-gray-600 leading-relaxed"></p>
+                            </div>
+
+                            <div class="pt-2 flex justify-between items-center border-t border-gray-100 text-xs">
+                                <span class="text-gray-500 italic">You've stabilized one piece of the transition.</span>
+                                <button onclick="switchView('separation-map')" class="px-4 py-2 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors">
+                                    CONTINUE TO MY SEPARATION MAP →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 2: EMOTIONAL WEATHER REPORT -->
+                <div id="tool2-view" class="view-panel hidden space-y-6">
+                    <div class="flex justify-between items-start flex-wrap gap-4 border-b border-gray-200 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 2</span>
+                            <h2 class="text-2xl font-bold text-charcoal">Emotional Weather Reset</h2>
+                            <p class="text-xs text-gray-500">"You can miss someone and still know the relationship was hurting you."</p>
+                        </div>
+                        <button onclick="loadSampleScenario(2)" class="px-3 py-1.5 bg-sage-light/30 text-sage-dark hover:bg-sage-light/50 font-medium text-xs rounded-xl transition-colors flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>SEE A SAMPLE</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                        <form id="form-tool2" onsubmit="event.preventDefault(); processTool2();" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Primary emotion today:</label>
+                                    <select id="t2-emotion" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Grief">Grief</option>
+                                        <option value="Anger">Anger</option>
+                                        <option value="Hope">Hope</option>
+                                        <option value="Regret">Regret</option>
+                                        <option value="Fear">Fear</option>
+                                        <option value="Relief">Relief</option>
+                                        <option value="Confusion">Confusion</option>
+                                        <option value="Numbness">Numbness</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Sleep quality last week:</label>
+                                    <select id="t2-sleep" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Good">Good</option>
+                                        <option value="Broken">Broken</option>
+                                        <option value="Barely sleeping">Barely sleeping</option>
+                                        <option value="Sleeping too much">Sleeping too much</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Support system:</label>
+                                    <select id="t2-support" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Strong">Strong</option>
+                                        <option value="Okay">Okay</option>
+                                        <option value="Weak">Weak</option>
+                                        <option value="Isolated">Isolated</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Therapy / Counseling status:</label>
+                                    <select id="t2-therapy" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Yes">Currently seeing someone</option>
+                                        <option value="No">Not currently</option>
+                                        <option value="Considering it">Considering it</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What do you miss right now?</label>
+                                <textarea id="t2-miss" rows="2" required placeholder="Specific memories, routines, feelings..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What do you resent right now?</label>
+                                <textarea id="t2-resent" rows="2" required placeholder="Specific actions, broken expectations..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="px-6 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors shadow-sm text-sm">
+                                    Generate Emotional Weather Report
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Output Panel -->
+                    <div id="output-tool2" class="hidden space-y-4">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
+                            <div>
+                                <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">YOUR EMOTIONAL WEATHER</span>
+                                <h3 id="t2-weather-title" class="text-xl font-bold text-charcoal mt-1">Grief & Disrupted Sleep</h3>
+                            </div>
+
+                            <p class="text-xs text-gray-500 italic">
+                                Note: Strong and conflicting emotions can occur during major relationship transitions. Your experience is personal, and this tool is for reflection rather than diagnosis.
+                            </p>
+
+                            <div class="space-y-2">
+                                <h4 class="font-bold text-charcoal text-xs uppercase tracking-wider">WHAT YOU MAY BE EXPERIENCING</h4>
+                                <p id="t2-experiencing" class="text-xs text-gray-600 leading-relaxed bg-gray-50 p-4 rounded-xl"></p>
+                            </div>
+
+                            <div class="space-y-2">
+                                <h4 class="font-bold text-charcoal text-xs uppercase tracking-wider">WHAT DESERVES ATTENTION</h4>
+                                <p id="t2-attention" class="text-xs text-gray-700 leading-relaxed bg-amber-50/60 border border-amber-100 p-4 rounded-xl"></p>
+                            </div>
+
+                            <!-- Grounding Box -->
+                            <div class="bg-sage-light/20 p-4 rounded-xl space-y-2 border border-sage-light/30">
+                                <h5 class="font-bold text-sage-dark text-xs uppercase tracking-wider"><i class="fa-solid fa-anchor mr-1"></i> WHEN EVERYTHING FEELS TOO LOUD</h5>
+                                <p class="text-xs text-gray-700 leading-relaxed">
+                                    Try pausing for 60 seconds: Name <b>5</b> things you can see, <b>4</b> things you can touch, <b>3</b> things you can hear, <b>2</b> things you can smell, and take <b>1</b> slow breath out. The goal is simply to pause and reconnect with the present moment.
+                                </p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl space-y-2">
+                                <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">WHEN EXTRA SUPPORT MAY HELP</h5>
+                                <p id="t2-professional" class="text-xs text-gray-600 leading-relaxed"></p>
+                            </div>
+
+                            <div class="pt-2 flex justify-between items-center border-t border-gray-100 text-xs">
+                                <span class="text-gray-500 italic">One step toward emotional stability.</span>
+                                <button onclick="switchView('separation-map')" class="px-4 py-2 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors">
+                                    CONTINUE TO MY SEPARATION MAP →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 3: CONTACT COMPASS -->
+                <div id="tool3-view" class="view-panel hidden space-y-6">
+                    <div class="flex justify-between items-start flex-wrap gap-4 border-b border-gray-200 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 3</span>
+                            <h2 class="text-2xl font-bold text-charcoal">Contact Compass</h2>
+                            <p class="text-xs text-gray-500">"Create contact that is clearer, calmer and appropriate for this stage."</p>
+                        </div>
+                        <button onclick="loadSampleScenario(3)" class="px-3 py-1.5 bg-sage-light/30 text-sage-dark hover:bg-sage-light/50 font-medium text-xs rounded-xl transition-colors flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>SEE A SAMPLE</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                        <form id="form-tool3" onsubmit="event.preventDefault(); processTool3();" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Current contact frequency:</label>
+                                    <select id="t3-frequency" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Daily">Daily</option>
+                                        <option value="Several times a week">Several times a week</option>
+                                        <option value="Weekly">Weekly</option>
+                                        <option value="Only when necessary">Only when necessary</option>
+                                        <option value="None">None</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Who usually initiates?</label>
+                                    <select id="t3-initiator" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Me">Me</option>
+                                        <option value="Them">Them</option>
+                                        <option value="Equal">Equal</option>
+                                        <option value="They reach out, I respond">They reach out, I respond</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Common trigger for contact:</label>
+                                    <select id="t3-trigger" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Logistics">Logistics</option>
+                                        <option value="Loneliness">Loneliness</option>
+                                        <option value="Anger / Conflict">Anger / Conflict</option>
+                                        <option value="Reconciliation testing">Reconciliation testing</option>
+                                        <option value="Children">Children</option>
+                                        <option value="Habit">Habit</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Physical intimacy since separating?</label>
+                                    <select id="t3-intimacy" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Yes">Yes</option>
+                                        <option value="No">No</option>
+                                        <option value="Prefer not to say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Desired level of contact:</label>
+                                <select id="t3-desired" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                    <option value="Less contact">Less contact</option>
+                                    <option value="More structured contact">More structured contact</option>
+                                    <option value="Logistics only">Logistics only</option>
+                                    <option value="Unsure">Unsure</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">One boundary you need right now:</label>
+                                <textarea id="t3-boundary" rows="2" required placeholder="e.g., No texting after 8 PM, email only for household items..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="px-6 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors shadow-sm text-sm">
+                                    Map Contact Pattern & Generate Script
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-tool3" class="hidden space-y-4">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
+                            <div>
+                                <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">YOUR CURRENT CONTACT PATTERN</span>
+                                <h3 id="t3-pattern-title" class="text-xl font-bold text-charcoal mt-1">EMOTIONALLY ENTANGLED PATTERN</h3>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl space-y-2">
+                                <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">WHAT MAY BE DRIVING THIS PATTERN</h5>
+                                <p id="t3-driving" class="text-xs text-gray-600 leading-relaxed"></p>
+                            </div>
+
+                            <div class="bg-sage-light/20 p-4 rounded-xl space-y-2 border border-sage-light/30">
+                                <h5 class="font-bold text-sage-dark text-xs uppercase tracking-wider">ONE CONTACT BOUNDARY TO TRY</h5>
+                                <p id="t3-recommended-boundary" class="text-xs text-gray-700 leading-relaxed font-medium"></p>
+                            </div>
+
+                            <!-- Script Box -->
+                            <div class="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-charcoal uppercase tracking-wider"><i class="fa-solid fa-message mr-1 text-sage"></i> YOUR CONTACT SCRIPT</span>
+                                    <button onclick="copyToClipboard('t3-script-text')" class="px-3 py-1 bg-white border border-gray-200 text-charcoal text-xs rounded-lg hover:bg-gray-100 flex items-center space-x-1 shadow-sm font-medium">
+                                        <i class="fa-solid fa-copy text-xs"></i> <span>COPY SCRIPT</span>
+                                    </button>
+                                </div>
+                                <p id="t3-script-text" class="text-xs font-mono text-gray-800 bg-white p-3 rounded-lg border border-gray-200 leading-relaxed italic"></p>
+                            </div>
+
+                            <div class="pt-2 flex justify-between items-center border-t border-gray-100 text-xs">
+                                <span class="text-gray-500 italic">Clearer communication boundaries mapped.</span>
+                                <button onclick="switchView('separation-map')" class="px-4 py-2 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors">
+                                    CONTINUE TO MY SEPARATION MAP →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 4: KIDS IN THE MIDDLE -->
+                <div id="tool4-view" class="view-panel hidden space-y-6">
+                    <div class="flex justify-between items-start flex-wrap gap-4 border-b border-gray-200 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 4</span>
+                            <h2 class="text-2xl font-bold text-charcoal">Kids in the Middle</h2>
+                            <p class="text-xs text-gray-500">"The relationship may be changing. Your children's need for safety and predictability isn't."</p>
+                        </div>
+                        <button onclick="loadSampleScenario(4)" class="px-3 py-1.5 bg-sage-light/30 text-sage-dark hover:bg-sage-light/50 font-medium text-xs rounded-xl transition-colors flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>SEE A SAMPLE</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                        <form id="form-tool4" onsubmit="event.preventDefault(); processTool4();" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Children's ages:</label>
+                                    <input type="text" id="t4-ages" required placeholder="e.g., 6 and 10" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Current living arrangement:</label>
+                                    <select id="t4-living" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                        <option value="Kids with me">Kids with me</option>
+                                        <option value="Kids with them">Kids with them</option>
+                                        <option value="Split time">Split time</option>
+                                        <option value="Inconsistent / Transitioning">Inconsistent / Transitioning</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What do they currently know?</label>
+                                <textarea id="t4-know" rows="2" required placeholder="What information has been shared so far?" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Co-parenting friction / conflict area:</label>
+                                <textarea id="t4-conflict" rows="2" required placeholder="Schedules, messaging, discipline, boundaries..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Observed child behavior / questions:</label>
+                                <textarea id="t4-showing" rows="2" required placeholder="Behavioral changes, emotional reactions, direct questions..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="px-6 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors shadow-sm text-sm">
+                                    Build Child Stability Plan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-tool4" class="hidden space-y-4">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
+                            <div>
+                                <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">CHILD STABILITY PLAN</span>
+                                <h3 id="t4-roadmap-title" class="text-xl font-bold text-charcoal mt-1">PROTECTING PREDICTABILITY FOR AGES (<span id="t4-out-ages"></span>)</h3>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl space-y-2">
+                                <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">WHAT YOUR CHILDREN NEED MOST RIGHT NOW</h5>
+                                <p id="t4-need-most" class="text-xs text-gray-600 leading-relaxed"></p>
+                            </div>
+
+                            <div class="bg-red-50/60 p-4 rounded-xl space-y-2 border border-red-100">
+                                <h5 class="font-bold text-red-900 text-xs uppercase tracking-wider">STATEMENTS TO AVOID (EXAMPLES)</h5>
+                                <ul id="t4-avoid-phrases" class="text-xs text-red-800 space-y-1 list-disc list-inside leading-relaxed"></ul>
+                            </div>
+
+                            <!-- Script Box -->
+                            <div class="bg-sage-light/10 border border-sage-light/30 rounded-xl p-4 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-sage-dark uppercase tracking-wider"><i class="fa-solid fa-child-reaching mr-1"></i> AGE-APPROPRIATE CHILD SCRIPT</span>
+                                    <button onclick="copyToClipboard('t4-script-text')" class="px-3 py-1 bg-white border border-gray-200 text-charcoal text-xs rounded-lg hover:bg-gray-100 flex items-center space-x-1 shadow-sm font-medium">
+                                        <i class="fa-solid fa-copy text-xs"></i> <span>COPY SCRIPT</span>
+                                    </button>
+                                </div>
+                                <p id="t4-script-text" class="text-xs font-mono text-gray-800 bg-white p-3 rounded-lg border border-gray-200 leading-relaxed italic"></p>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl space-y-2">
+                                <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">IF CO-PARENTING CONFLICT ESCALATES</h5>
+                                <p id="t4-escalation" class="text-xs text-gray-600 leading-relaxed"></p>
+                            </div>
+
+                            <div class="pt-2 flex justify-between items-center border-t border-gray-100 text-xs">
+                                <span class="text-gray-500 italic">Child stability framework generated.</span>
+                                <button onclick="switchView('separation-map')" class="px-4 py-2 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors">
+                                    CONTINUE TO MY SEPARATION MAP →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 5: THE DECISION WINDOW -->
+                <div id="tool5-view" class="view-panel hidden space-y-6">
+                    <div class="flex justify-between items-start flex-wrap gap-4 border-b border-gray-200 pb-4">
+                        <div>
+                            <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 5</span>
+                            <h2 class="text-2xl font-bold text-charcoal">The Decision Window</h2>
+                            <p class="text-xs text-gray-500">"You don't need to make a permanent decision while you're still trying to understand what is happening."</p>
+                        </div>
+                        <button onclick="loadSampleScenario(5)" class="px-3 py-1.5 bg-sage-light/30 text-sage-dark hover:bg-sage-light/50 font-medium text-xs rounded-xl transition-colors flex items-center space-x-1">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>SEE A SAMPLE</span>
+                        </button>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                        <form id="form-tool5" onsubmit="event.preventDefault(); processTool5();" class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Why did you separate?</label>
+                                <textarea id="t5-why" rows="2" required placeholder="Core issues, breakdown points..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What has actually changed since separation?</label>
+                                <textarea id="t5-changed" rows="2" required placeholder="Observable changes in behavior, communication, therapy..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What would still need to change to consider reconciliation?</label>
+                                <textarea id="t5-need-change" rows="2" required placeholder="Non-negotiable conditions, required patterns..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What do you fear about ending the relationship?</label>
+                                    <textarea id="t5-fear-divorce" rows="2" required placeholder="Finances, loneliness, children's impact..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">What do you fear about staying together?</label>
+                                    <textarea id="t5-fear-stay" rows="2" required placeholder="Repeating cycles, emotional drain..." class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage"></textarea>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 uppercase mb-1">Current intuition / gut direction:</label>
+                                <select id="t5-gut" class="w-full p-2 border border-gray-300 rounded-lg text-sm focus:ring-sage focus:border-sage">
+                                    <option value="Explore repair">Explore repair</option>
+                                    <option value="Probably end it">Probably end it</option>
+                                    <option value="Completely torn">Completely torn</option>
+                                    <option value="Too soon to know">Too soon to know</option>
+                                </select>
+                            </div>
+                            <div class="text-right">
+                                <button type="submit" class="px-6 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors shadow-sm text-sm">
+                                    Generate Decision Landscape
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-tool5" class="hidden space-y-4">
+                        <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-5">
+                            <div>
+                                <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">DECISION LANDSCAPE ASSESSMENT</span>
+                                <h3 id="t5-landscape-title" class="text-xl font-bold text-charcoal mt-1">YOUR CURRENT DECISION LANDSCAPE</h3>
+                            </div>
+
+                            <p class="text-xs text-gray-500 italic">
+                                Note: This app does not tell you whether to divorce or reconcile. The decision belongs entirely to you.
+                            </p>
+
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
+                                    <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">PATH A: EXPLORE REPAIR</h5>
+                                    <p class="text-[11px] text-gray-600 leading-relaxed">Requires mutual accountability, observable behavioral changes over time, and structured counseling.</p>
+                                </div>
+                                <div class="bg-gray-50 p-3 rounded-xl border border-gray-100 space-y-1">
+                                    <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">PATH B: CONTINUE SEPARATION</h5>
+                                    <p class="text-[11px] text-gray-600 leading-relaxed">Focuses on independent stabilization, financial untangling, and long-term peace over temporary comfort.</p>
+                                </div>
+                                <div class="bg-sage-light/20 p-3 rounded-xl border border-sage-light/30 space-y-1">
+                                    <h5 class="font-bold text-sage-dark text-xs uppercase tracking-wider">PATH C: DECISION WINDOW</h5>
+                                    <p class="text-[11px] text-gray-700 leading-relaxed">Set a defined period (30–90 days) to observe patterns rather than promises before making an irreversible choice.</p>
+                                </div>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-xl space-y-2">
+                                <h5 class="font-bold text-charcoal text-xs uppercase tracking-wider">LOOK FOR PATTERNS, NOT PROMISES</h5>
+                                <p class="text-xs text-gray-600 leading-relaxed">
+                                    Ask: Has actual behavior changed consistently over time? Are boundaries respected when tension arises? Are promises backed by verifiable action?
+                                </p>
+                            </div>
+
+                            <!-- Script Box -->
+                            <div class="bg-sage-light/10 border border-sage-light/30 rounded-xl p-4 space-y-3">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs font-bold text-sage-dark uppercase tracking-wider"><i class="fa-solid fa-comments mr-1"></i> PROPOSAL CONVERSATION SCRIPT</span>
+                                    <button onclick="copyToClipboard('t5-script-text')" class="px-3 py-1 bg-white border border-gray-200 text-charcoal text-xs rounded-lg hover:bg-gray-100 flex items-center space-x-1 shadow-sm font-medium">
+                                        <i class="fa-solid fa-copy text-xs"></i> <span>COPY SCRIPT</span>
+                                    </button>
+                                </div>
+                                <p id="t5-script-text" class="text-xs font-mono text-gray-800 bg-white p-3 rounded-lg border border-gray-200 leading-relaxed italic"></p>
+                            </div>
+
+                            <div class="pt-2 flex justify-between items-center border-t border-gray-100 text-xs">
+                                <span class="text-gray-500 italic">Decision landscape structured.</span>
+                                <button onclick="switchView('separation-map')" class="px-4 py-2 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors">
+                                    CONTINUE TO MY SEPARATION MAP →
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 3: 30-DAY SEPARATION RESET (PRODUCT 6) -->
+                <div id="reset-30-view" class="view-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-4">
+                        <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 6</span>
+                        <h2 class="text-2xl md:text-3xl font-bold text-charcoal">30-DAY SEPARATION RESET</h2>
+                        <p class="text-xs text-gray-600 leading-relaxed">
+                            A guided, step-by-step sequence to stabilize your life across all five dimensions without forcing an immediate decision on the marriage.
+                        </p>
+
+                        <div class="space-y-4 pt-2">
+                            <h3 class="font-bold text-sm text-charcoal uppercase tracking-wider">WEEK 1 — STABILIZE</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-5 gap-2 text-xs">
+                                <div onclick="switchView('tool1')" class="p-3 bg-gray-50 hover:bg-sage-light/20 rounded-xl border border-gray-100 cursor-pointer space-y-1">
+                                    <span class="font-bold text-sage-dark">DAY 1</span>
+                                    <p class="font-medium text-charcoal">KNOW YOUR MONEY</p>
+                                </div>
+                                <div onclick="switchView('tool2')" class="p-3 bg-gray-50 hover:bg-sage-light/20 rounded-xl border border-gray-100 cursor-pointer space-y-1">
+                                    <span class="font-bold text-sage-dark">DAY 2</span>
+                                    <p class="font-medium text-charcoal">EMOTIONAL WEATHER</p>
+                                </div>
+                                <div onclick="switchView('tool3')" class="p-3 bg-gray-50 hover:bg-sage-light/20 rounded-xl border border-gray-100 cursor-pointer space-y-1">
+                                    <span class="font-bold text-sage-dark">DAY 3</span>
+                                    <p class="font-medium text-charcoal">CONTACT BOUNDARIES</p>
+                                </div>
+                                <div onclick="switchView('tool4')" class="p-3 bg-gray-50 hover:bg-sage-light/20 rounded-xl border border-gray-100 cursor-pointer space-y-1">
+                                    <span class="font-bold text-sage-dark">DAY 4</span>
+                                    <p class="font-medium text-charcoal">PROTECT CHILDREN</p>
+                                </div>
+                                <div onclick="switchView('tool5')" class="p-3 bg-gray-50 hover:bg-sage-light/20 rounded-xl border border-gray-100 cursor-pointer space-y-1">
+                                    <span class="font-bold text-sage-dark">DAY 5</span>
+                                    <p class="font-medium text-charcoal">CLARIFY DECISION</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4 border-t border-gray-100 text-xs">
+                            <div class="p-4 bg-gray-50 rounded-xl space-y-1">
+                                <h4 class="font-bold text-charcoal">WEEK 2 — OBSERVE</h4>
+                                <p class="text-gray-500">Track behavior, review margin, and note whether boundaries are being respected.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-xl space-y-1">
+                                <h4 class="font-bold text-charcoal">WEEK 3 — ADJUST</h4>
+                                <p class="text-gray-500">Refine contact rules, address financial friction points, and support child routines.</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-xl space-y-1">
+                                <h4 class="font-bold text-charcoal">WEEK 4 — REVIEW</h4>
+                                <p class="text-gray-500">Assess clarity, review patterns vs promises, and determine next right step.</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 text-right">
+                            <button onclick="switchView('separation-map')" class="px-6 py-2.5 bg-charcoal text-white rounded-xl font-medium hover:bg-charcoal-dark transition-colors shadow-sm text-sm">
+                                View Integrated Separation Map →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 4: MY SEPARATION MAP (PRODUCT 7 / SYNTHESIS) -->
+                <div id="separation-map-view" class="view-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-6">
+                        <div class="flex justify-between items-start flex-wrap gap-4 border-b border-gray-200 pb-4">
+                            <div>
+                                <span class="text-xs font-bold text-sage-dark uppercase tracking-wider">PRODUCT 7 — FLAGSHIP</span>
+                                <h2 class="text-2xl md:text-3xl font-bold text-charcoal">MY SEPARATION MAP</h2>
+                                <p class="text-xs text-gray-500">Unified reflection and stabilization dashboard across all completed modules.</p>
+                            </div>
+                            <button onclick="window.print()" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-charcoal font-medium text-xs rounded-xl transition-colors no-print flex items-center space-x-1">
+                                <i class="fa-solid fa-print"></i>
+                                <span>PRINT SEPARATION MAP</span>
+                            </button>
+                        </div>
+
+                        <!-- Cross-Module Synthesis Warning / Insights -->
+                        <div id="map-synthesis-box" class="p-4 bg-sage-light/20 rounded-xl border border-sage-light/40 space-y-2 text-xs text-charcoal">
+                            <h4 class="font-bold text-sage-dark uppercase tracking-wider"><i class="fa-solid fa-diagram-project mr-1"></i> CROSS-MODULE SYSTEM INSIGHT</h4>
+                            <p id="map-synthesis-text" class="leading-relaxed">Complete interactive tools to generate personalized system insights connecting money, emotions, contact, children, and decisions.</p>
+                        </div>
+
+                        <!-- Grid Summary of 5 Tools -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Money Card -->
+                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-xs text-charcoal uppercase"><i class="fa-solid fa-calculator text-sage mr-1"></i> MONEY SNAPSHOT</span>
+                                    <span id="map-money-status" class="text-[10px] font-bold px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">NOT STARTED</span>
+                                </div>
+                                <p id="map-money-desc" class="text-xs text-gray-500">No calculation data available.</p>
+                            </div>
+
+                            <!-- Emotions Card -->
+                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-xs text-charcoal uppercase"><i class="fa-solid fa-cloud-sun-rain text-sage mr-1"></i> EMOTIONAL WEATHER</span>
+                                    <span id="map-emotions-status" class="text-[10px] font-bold px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">NOT STARTED</span>
+                                </div>
+                                <p id="map-emotions-desc" class="text-xs text-gray-500">No emotional log data available.</p>
+                            </div>
+
+                            <!-- Contact Card -->
+                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-xs text-charcoal uppercase"><i class="fa-solid fa-comments text-sage mr-1"></i> CONTACT COMPASS</span>
+                                    <span id="map-contact-status" class="text-[10px] font-bold px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">NOT STARTED</span>
+                                </div>
+                                <p id="map-contact-desc" class="text-xs text-gray-500">No boundary data available.</p>
+                            </div>
+
+                            <!-- Children Card -->
+                            <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-xs text-charcoal uppercase"><i class="fa-solid fa-children text-sage mr-1"></i> CHILDREN STABILITY</span>
+                                    <span id="map-children-status" class="text-[10px] font-bold px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">NOT STARTED</span>
+                                </div>
+                                <p id="map-children-desc" class="text-xs text-gray-500">No child framework available.</p>
+                            </div>
+                        </div>
+
+                        <!-- Decision Card -->
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-xs text-charcoal uppercase"><i class="fa-solid fa-scale-balanced text-sage mr-1"></i> DECISION LANDSCAPE</span>
+                                <span id="map-decision-status" class="text-[10px] font-bold px-2 py-0.5 bg-gray-200 text-gray-600 rounded-full">NOT STARTED</span>
+                            </div>
+                            <p id="map-decision-desc" class="text-xs text-gray-500">No decision landscape data available.</p>
+                        </div>
+
+                        <!-- Next Morning Feature -->
+                        <div class="p-5 bg-sage-light/10 border border-sage-light/30 rounded-xl space-y-3">
+                            <h4 class="font-bold text-xs text-sage-dark uppercase tracking-wider"><i class="fa-solid fa-sun mr-1"></i> MY NEXT MORNING VISION</h4>
+                            <p class="text-xs text-gray-600 leading-relaxed italic">
+                                "Imagine waking up tomorrow and the immediate chaos of separation is quieter. You have your cash flow snapshot, one contact boundary, and a child stability routine in place. You don't have to solve your entire life today—just focus on your next right move."
+                            </p>
+                        </div>
+
+                        <!-- One Priority Output -->
+                        <div class="bg-charcoal text-white p-5 rounded-2xl space-y-2">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-sage-light">YOUR ONE NEXT MOVE</span>
+                            <h4 id="map-priority-action" class="text-base font-bold">Complete at least one tool to receive your single priority recommendation.</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 5: HISTORY -->
+                <div id="history-view" class="view-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 space-y-4">
+                        <div class="flex justify-between items-center border-b pb-4">
+                            <div>
+                                <h2 class="text-2xl font-bold text-charcoal">MY HISTORY</h2>
+                                <p class="text-xs text-gray-500">Saved entries stored 100% locally on your browser device.</p>
+                            </div>
+                            <button onclick="clearAllHistory()" class="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 font-medium text-xs rounded-xl transition-colors">
+                                CLEAR ALL HISTORY
+                            </button>
+                        </div>
+
+                        <div id="history-table-container" class="overflow-x-auto">
+                            <table class="w-full text-left text-xs text-gray-600">
+                                <thead class="bg-gray-50 text-gray-400 font-bold uppercase border-b border-gray-100">
+                                    <tr>
+                                        <th class="p-3">DATE</th>
+                                        <th class="p-3">TOOL</th>
+                                        <th class="p-3">SNAPSHOT SUMMARY</th>
+                                        <th class="p-3 text-right">ACTION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="history-tbody" class="divide-y divide-gray-100">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- VIEW 6: SAFETY & PRIVACY -->
+                <div id="safety-privacy-view" class="view-panel hidden space-y-6">
+                    <div class="bg-white rounded-2xl p-6 md:p-8 shadow-sm border border-gray-100 space-y-5">
+                        <div class="flex items-center space-x-3 text-red-600 border-b pb-4">
+                            <i class="fa-solid fa-shield-halved text-2xl"></i>
+                            <h2 class="text-2xl font-bold text-charcoal">SAFETY & PRIVACY GUARANTEE</h2>
+                        </div>
+
+                        <div class="space-y-3 text-xs text-gray-600 leading-relaxed">
+                            <h3 class="font-bold text-sm text-charcoal">100% Private & Local Storage Architecture</h3>
+                            <p>
+                                Separation Crossroads™ operates entirely inside your web browser. No accounts are created, no personal data is transmitted to remote servers, and no external tracking databases are used. All history entries remain stored exclusively on your current device using local browser memory (<code class="bg-gray-100 px-1 rounded text-gray-700">localStorage</code>).
+                            </p>
+
+                            <h3 class="font-bold text-sm text-charcoal pt-2">Safety Disclaimer & Limitations</h3>
+                            <p>
+                                This toolkit is a self-guided reflection, stabilization, and planning system. It is <b>NOT</b> legal advice, financial advice, custody determination, psychotherapy, clinical diagnosis, or domestic violence intervention.
+                            </p>
+                            <p>
+                                If your relationship involves coercion, threats, stalking, physical abuse, or severe financial control, standard communication scripts and direct negotiations are unsafe. Please disengage from direct contact and reach out to appropriate local safeguarding services or legal representatives.
+                            </p>
+
+                            <div class="p-4 bg-red-50 border border-red-100 rounded-xl space-y-1 text-red-900 font-medium">
+                                <div>Emergency Support Resources:</div>
+                                <ul class="list-disc list-inside space-y-0.5 text-[11px] text-red-800">
+                                    <li>National Domestic Violence Hotline: Call 1-800-799-SAFE (7233) or Text "START" to 88788</li>
+                                    <li>988 Suicide & Crisis Lifeline: Call or Text 988</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <footer class="mt-12 pt-6 border-t border-gray-200 text-center text-xs text-gray-400 space-y-1 no-print">
+                <p class="font-medium text-gray-500">SEPARATION CROSSROADS™ — For reflection and planning purposes only. Not therapy, legal, or financial advice.</p>
+                <p>Data stays 100% on your device.</p>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast fixed bottom-5 right-5 bg-charcoal text-white px-4 py-2.5 rounded-xl shadow-lg text-xs font-medium opacity-0 pointer-events-none z-50 flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-sage"></i>
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+
+    <!-- JAVASCRIPT SYSTEM LOGIC -->
+    <script>
+        // --- CENTRAL STATE ARCHITECTURE (V2 NAMESPACED) ---
+        const STORAGE_KEY_STATE = 'separationcrossroads_v2_state';
+        const STORAGE_KEY_HIST = 'separationcrossroads_v2_history';
+
+        let separationState = {
+            completedTools: [],
+            toolResults: {
+                money: null,
+                emotions: null,
+                contact: null,
+                children: null,
+                decision: null
+            },
+            safety: {
+                status: null,
+                acknowledged: false
+            },
+            lastUpdated: null
+        };
+
+        // --- UTILITY FUNCTIONS ---
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 2200);
+        }
+
+        function copyToClipboard(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return;
+            const text = el.innerText || el.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Script copied to clipboard!");
+            }).catch(err => {
+                showToast("Unable to copy.");
+            });
+        }
+
+        function saveState() {
+            separationState.lastUpdated = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(separationState));
+            updateSeparationMap();
+        }
+
+        function loadState() {
+            const raw = localStorage.getItem(STORAGE_KEY_STATE);
+            if (raw) {
+                try {
+                    separationState = JSON.parse(raw);
+                } catch(e) {
+                    console.error("Error loading state", e);
+                }
+            }
+        }
+
+        function saveHistoryEntry(toolName, summaryText, detailData) {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HIST) || '[]');
+            const newEntry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                tool: toolName,
+                summary: summaryText,
+                data: detailData
+            };
+            history.unshift(newEntry);
+            if (history.length > 50) history = history.slice(0, 50);
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            renderHistoryTable();
+        }
+
+        function clearAllHistory() {
+            if (confirm("Are you sure you want to clear all locally saved history?")) {
+                localStorage.removeItem(STORAGE_KEY_HIST);
+                renderHistoryTable();
+                showToast("History cleared.");
+            }
+        }
+
+        // --- NAVIGATION & SIDEBAR ---
+        const sidebar = document.getElementById('sidebar');
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const closeSidebarBtn = document.getElementById('close-sidebar-btn');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const viewPanels = document.querySelectorAll('.view-panel');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('-translate-x-full');
+            sidebarBackdrop.classList.toggle('hidden');
+        }
+
+        mobileMenuBtn.addEventListener('click', toggleSidebar);
+        closeSidebarBtn.addEventListener('click', toggleSidebar);
+        sidebarBackdrop.addEventListener('click', toggleSidebar);
+
+        function switchView(targetNav) {
+            viewPanels.forEach(panel => panel.classList.add('hidden'));
+
+            const targetView = document.getElementById(`${targetNav}-view`) || document.getElementById(`${targetNav}1-view`);
+            if (targetView) {
+                targetView.classList.remove('hidden');
+            } else {
+                const altView = document.getElementById(`${targetNav}`);
+                if (altView) altView.classList.remove('hidden');
+            }
+
+            navBtns.forEach(btn => {
+                if (btn.getAttribute('data-nav') === targetNav) {
+                    btn.classList.add('bg-charcoal', 'text-white');
+                    btn.classList.remove('text-gray-600', 'hover:bg-gray-100');
+                } else {
+                    btn.classList.remove('bg-charcoal', 'text-white');
+                    btn.classList.add('text-gray-600', 'hover:bg-gray-100');
+                }
+            });
+
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 768) {
+                toggleSidebar();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                switchView(btn.getAttribute('data-nav'));
+            });
+        });
+
+        // --- SAFETY GATE LOGIC ---
+        function handleSafetyResponse(response) {
+            separationState.safety.status = response;
+            separationState.safety.acknowledged = true;
+            saveState();
+
+            document.getElementById('safety-modal').classList.add('hidden');
+
+            const banner = document.getElementById('safety-alert-banner');
+            if (response === 'YES') {
+                banner.classList.remove('hidden');
+            } else {
+                banner.classList.add('hidden');
+            }
+        }
+
+        // --- SAMPLE SCENARIOS DATA ---
+        const sampleScenarios = {
+            1: { income: 4200, support: -400, housing: 1800, theirHousing: 600, sharedBills: 500, legal: 750, other: 350 },
+            2: { emotion: "Grief", sleep: "Barely sleeping", support: "Isolated", therapy: "No", miss: "Sunday mornings, sharing daily routines.", resent: "Sudden coldness and unaddressed promises." },
+            3: { frequency: "Daily", initiator: "They reach out, I respond", trigger: "Loneliness", intimacy: "Yes", desired: "Less contact", boundary: "No texting past 8 PM, email for financial items." },
+            4: { ages: "7 and 11", living: "Split time", know: "Told dad is in a temporary apartment.", conflict: "Inconsistent bedtime rules creating stress.", showing: "Older child acting out at school." },
+            5: { why: "Chronic communication breakdown.", changed: "I started individual therapy.", needChange: "Mutual commitment to counseling.", fearDivorce: "Financial destruction and missing kids.", fearStay: "Repeating painful emotional neglect.", gut: "Completely torn" }
+        };
+
+        function loadSampleScenario(toolId) {
+            const data = sampleScenarios[toolId];
+            if (!data) return;
+
+            if (toolId === 1) {
+                document.getElementById('t1-income').value = data.income;
+                document.getElementById('t1-support').value = data.support;
+                document.getElementById('t1-housing').value = data.housing;
+                document.getElementById('t1-their-housing').value = data.theirHousing;
+                document.getElementById('t1-shared-bills').value = data.sharedBills;
+                document.getElementById('t1-legal').value = data.legal;
+                document.getElementById('t1-other').value = data.other;
+                processTool1();
+            } else if (toolId === 2) {
+                document.getElementById('t2-emotion').value = data.emotion;
+                document.getElementById('t2-sleep').value = data.sleep;
+                document.getElementById('t2-support').value = data.support;
+                document.getElementById('t2-therapy').value = data.therapy;
+                document.getElementById('t2-miss').value = data.miss;
+                document.getElementById('t2-resent').value = data.resent;
+                processTool2();
+            } else if (toolId === 3) {
+                document.getElementById('t3-frequency').value = data.frequency;
+                document.getElementById('t3-initiator').value = data.initiator;
+                document.getElementById('t3-trigger').value = data.trigger;
+                document.getElementById('t3-intimacy').value = data.intimacy;
+                document.getElementById('t3-desired').value = data.desired;
+                document.getElementById('t3-boundary').value = data.boundary;
+                processTool3();
+            } else if (toolId === 4) {
+                document.getElementById('t4-ages').value = data.ages;
+                document.getElementById('t4-living').value = data.living;
+                document.getElementById('t4-know').value = data.know;
+                document.getElementById('t4-conflict').value = data.conflict;
+                document.getElementById('t4-showing').value = data.showing;
+                processTool4();
+            } else if (toolId === 5) {
+                document.getElementById('t5-why').value = data.why;
+                document.getElementById('t5-changed').value = data.changed;
+                document.getElementById('t5-need-change').value = data.needChange;
+                document.getElementById('t5-fear-divorce').value = data.fearDivorce;
+                document.getElementById('t5-fear-stay').value = data.fearStay;
+                document.getElementById('t5-gut').value = data.gut;
+                processTool5();
+            }
+
+            showToast("Sample scenario loaded (Sample user data)");
+        }
+
+        // --- TOOL 1: TWO-HOUSEHOLD RESET LOGIC ---
+        function processTool1() {
+            const income = parseFloat(document.getElementById('t1-income').value) || 0;
+            const support = parseFloat(document.getElementById('t1-support').value) || 0;
+            const housing = parseFloat(document.getElementById('t1-housing').value) || 0;
+            const theirHousing = parseFloat(document.getElementById('t1-their-housing').value) || 0;
+            const sharedBills = parseFloat(document.getElementById('t1-shared-bills').value) || 0;
+            const legal = parseFloat(document.getElementById('t1-legal').value) || 0;
+            const other = parseFloat(document.getElementById('t1-other').value) || 0;
+
+            const outflows = housing + theirHousing + sharedBills + legal + other;
+            const netCashFlow = (income + support) - outflows;
+
+            const realNumberEl = document.getElementById('t1-real-number');
+            const badgeEl = document.getElementById('t1-margin-badge');
+            const listEl = document.getElementById('t1-attention-list');
+            const legalAdviceEl = document.getElementById('t1-legal-advice');
+
+            realNumberEl.textContent = `$${netCashFlow.toLocaleString()} / mo`;
+
+            if (netCashFlow > 200) {
+                badgeEl.textContent = "POSITIVE MARGIN";
+                badgeEl.className = "px-3 py-1.5 rounded-full font-bold text-xs bg-green-100 text-green-800";
+            } else if (netCashFlow >= 0) {
+                badgeEl.textContent = "NARROW MARGIN";
+                badgeEl.className = "px-3 py-1.5 rounded-full font-bold text-xs bg-amber-100 text-amber-800";
+            } else {
+                badgeEl.textContent = "NEGATIVE MARGIN";
+                badgeEl.className = "px-3 py-1.5 rounded-full font-bold text-xs bg-red-100 text-red-800";
+            }
+
+            let attentionItems = [];
+            if (housing > (income * 0.4)) {
+                attentionItems.push("Housing represents over 40% of income. Review long-term housing affordability.");
+            }
+            if (theirHousing > 0) {
+                attentionItems.push("Subsidizing spouse's housing costs without formal agreements impacts cash flow.");
+            }
+            if (sharedBills > 0) {
+                attentionItems.push("Shared debt/bills require clear accounting of who pays what during separation.");
+            }
+            if (attentionItems.length === 0) attentionItems.push("Transition expenses are currently balanced within cash flow.");
+
+            listEl.innerHTML = attentionItems.map(item => `<li>${escapeHTML(item)}</li>`).join('');
+
+            legalAdviceEl.textContent = netCashFlow < 0 ?
+                "Cash flow is currently in a negative margin. Consider obtaining advice from a qualified legal or financial professional regarding temporary financial status-quo arrangements." :
+                "Finances show positive/narrow margin for now. Maintain detailed records of all separation expenses.";
+
+            document.getElementById('output-tool1').classList.remove('hidden');
+
+            separationState.toolResults.money = { netCashFlow, margin: badgeEl.textContent };
+            if (!separationState.completedTools.includes('money')) separationState.completedTools.push('money');
+            saveState();
+            saveHistoryEntry("Two-Household Reset", `Cash Flow: $${netCashFlow}/mo (${badgeEl.textContent})`, { netCashFlow });
+        }
+
+        // --- TOOL 2: EMOTIONAL WEATHER LOGIC ---
+        function processTool2() {
+            const emotion = document.getElementById('t2-emotion').value;
+            const sleep = document.getElementById('t2-sleep').value;
+            const support = document.getElementById('t2-support').value;
+            const therapy = document.getElementById('t2-therapy').value;
+
+            const titleEl = document.getElementById('t2-weather-title');
+            const expEl = document.getElementById('t2-experiencing');
+            const attEl = document.getElementById('t2-attention');
+            const profEl = document.getElementById('t2-professional');
+
+            titleEl.textContent = `${emotion} with ${sleep} sleep pattern`;
+
+            expEl.textContent = `You are navigating a heavy emotional wave dominated by ${emotion.toLowerCase()}. Experiencing strong, contradictory feelings while support is ${support.toLowerCase()} is normal in early separation.`;
+
+            attEl.textContent = (sleep === "Barely sleeping" || sleep === "Broken") ?
+                "Disrupted sleep can compound decision fatigue and emotional intensity. Focus on basic physical rest before attempting major life choices." :
+                "Monitor sudden emotional shifts to prevent making permanent relationship decisions during acute emotional spikes.";
+
+            profEl.textContent = (therapy === "No" || therapy === "Considering it") ?
+                "Consider additional support from a therapist or support group if emotional distress feels overwhelming or persistent." :
+                "Continue working with your professional support network on boundary enforcement and emotional stabilization.";
+
+            document.getElementById('output-tool2').classList.remove('hidden');
+
+            separationState.toolResults.emotions = { emotion, sleep, support };
+            if (!separationState.completedTools.includes('emotions')) separationState.completedTools.push('emotions');
+            saveState();
+            saveHistoryEntry("Emotional Weather", `Weather: ${emotion} / Sleep: ${sleep}`, { emotion });
+        }
+
+        // --- TOOL 3: CONTACT COMPASS LOGIC ---
+        function processTool3() {
+            const frequency = document.getElementById('t3-frequency').value;
+            const trigger = document.getElementById('t3-trigger').value;
+            const desired = document.getElementById('t3-desired').value;
+            const boundary = document.getElementById('t3-boundary').value;
+
+            const patternTitle = document.getElementById('t3-pattern-title');
+            const drivingEl = document.getElementById('t3-driving');
+            const recBoundaryEl = document.getElementById('t3-recommended-boundary');
+            const scriptEl = document.getElementById('t3-script-text');
+
+            patternTitle.textContent = `${frequency.toUpperCase()} CONTACT PATTERN`;
+            drivingEl.textContent = `Contact driven primarily by ${trigger.toLowerCase()} can create high nervous-system tension. Establishing predictable communication channels helps reduce emotional escalation.`;
+
+            recBoundaryEl.textContent = escapeHTML(boundary);
+
+            scriptEl.textContent = `"I want us to communicate respectfully while we're figuring things out. For now, I'd like to stick to this boundary: ${boundary}. If it's not an emergency, let's keep communication concise."`;
+
+            document.getElementById('output-tool3').classList.remove('hidden');
+
+            separationState.toolResults.contact = { frequency, boundary };
+            if (!separationState.completedTools.includes('contact')) separationState.completedTools.push('contact');
+            saveState();
+            saveHistoryEntry("Contact Compass", `Contact: ${frequency} | Boundary: ${boundary.substring(0,20)}...`, { frequency });
+        }
+
+        // --- TOOL 4: KIDS IN THE MIDDLE LOGIC ---
+        function processTool4() {
+            const ages = document.getElementById('t4-ages').value;
+            const living = document.getElementById('t4-living').value;
+            const conflict = document.getElementById('t4-conflict').value;
+
+            document.getElementById('t4-out-ages').textContent = escapeHTML(ages);
+            const needEl = document.getElementById('t4-need-most');
+            const avoidEl = document.getElementById('t4-avoid-phrases');
+            const scriptEl = document.getElementById('t4-script-text');
+            const escalationEl = document.getElementById('t4-escalation');
+
+            needEl.textContent = `Children aged (${ages}) need age-appropriate honesty without adult details. They need reassurance that they did not cause the separation and that both parents love them.`;
+
+            avoidEl.innerHTML = `
+                <li>"Your father/mother is ruining our family."</li>
+                <li>"Ask them why they aren't helping us financially."</li>
+                <li>"You're the man/woman of the house now."</li>
+            `;
+
+            scriptEl.textContent = `"Mom and Dad are living in different places right now to figure out our next steps. This is an adult decision and it is 100% NOT your fault. We both love you infinitely."`;
+
+            escalationEl.textContent = "If co-parenting friction escalates: Use structured, written communication channels and consider a qualified family mediator or child specialist.";
+
+            document.getElementById('output-tool4').classList.remove('hidden');
+
+            separationState.toolResults.children = { ages, living };
+            if (!separationState.completedTools.includes('children')) separationState.completedTools.push('children');
+            saveState();
+            saveHistoryEntry("Kids in the Middle", `Ages: ${ages} | Living: ${living}`, { ages });
+        }
+
+        // --- TOOL 5: THE DECISION WINDOW LOGIC ---
+        function processTool5() {
+            const why = document.getElementById('t5-why').value;
+            const gut = document.getElementById('t5-gut').value;
+
+            const scriptEl = document.getElementById('t5-script-text');
+
+            scriptEl.textContent = `"We are at a crossroads. I propose a structured review period where we focus on stabilization, observe behavior, and meet with a professional before making a final decision."`;
+
+            document.getElementById('output-tool5').classList.remove('hidden');
+
+            separationState.toolResults.decision = { gut, why };
+            if (!separationState.completedTools.includes('decision')) separationState.completedTools.push('decision');
+            saveState();
+            saveHistoryEntry("Decision Window", `Gut direction: ${gut}`, { gut });
+        }
+
+        // --- SEPARATION MAP SYNTHESIS ENGINE ---
+        function updateSeparationMap() {
+            const res = separationState.toolResults;
+
+            // Money
+            const moneyStatus = document.getElementById('map-money-status');
+            const moneyDesc = document.getElementById('map-money-desc');
+            if (res.money) {
+                moneyStatus.textContent = res.money.margin;
+                moneyStatus.className = "text-[10px] font-bold px-2 py-0.5 bg-sage-light/30 text-sage-dark rounded-full";
+                moneyDesc.textContent = `Estimated Cash Flow: $${res.money.netCashFlow}/mo`;
+            }
+
+            // Emotions
+            const emoStatus = document.getElementById('map-emotions-status');
+            const emoDesc = document.getElementById('map-emotions-desc');
+            if (res.emotions) {
+                emoStatus.textContent = "LOGGED";
+                emoStatus.className = "text-[10px] font-bold px-2 py-0.5 bg-sage-light/30 text-sage-dark rounded-full";
+                emoDesc.textContent = `Primary: ${res.emotions.emotion} | Sleep: ${res.emotions.sleep}`;
+            }
+
+            // Contact
+            const contactStatus = document.getElementById('map-contact-status');
+            const contactDesc = document.getElementById('map-contact-desc');
+            if (res.contact) {
+                contactStatus.textContent = "BOUNDED";
+                contactStatus.className = "text-[10px] font-bold px-2 py-0.5 bg-sage-light/30 text-sage-dark rounded-full";
+                contactDesc.textContent = `Frequency: ${res.contact.frequency}`;
+            }
+
+            // Children
+            const childStatus = document.getElementById('map-children-status');
+            const childDesc = document.getElementById('map-children-desc');
+            if (res.children) {
+                childStatus.textContent = "FRAMEWORK SET";
+                childStatus.className = "text-[10px] font-bold px-2 py-0.5 bg-sage-light/30 text-sage-dark rounded-full";
+                childDesc.textContent = `Ages: ${res.children.ages} | Living: ${res.children.living}`;
+            }
+
+            // Decision
+            const decStatus = document.getElementById('map-decision-status');
+            const decDesc = document.getElementById('map-decision-desc');
+            if (res.decision) {
+                decStatus.textContent = "LANDSCAPE MAPPED";
+                decStatus.className = "text-[10px] font-bold px-2 py-0.5 bg-sage-light/30 text-sage-dark rounded-full";
+                decDesc.textContent = `Gut Direction: ${res.decision.gut}`;
+            }
+
+            // Cross-Module Synthesis Insight Engine
+            const synthesisText = document.getElementById('map-synthesis-text');
+            const priorityAction = document.getElementById('map-priority-action');
+
+            if (res.money && res.money.netCashFlow < 0 && res.emotions) {
+                synthesisText.textContent = "Financial negative margin may be compounding your emotional stress. Prioritize financial stabilization before attempting complex relationship negotiations.";
+                priorityAction.textContent = "Focus on auditing recurring separation expenses and establishing temporary financial predictability.";
+            } else if (res.contact && res.emotions && (res.emotions.emotion === "Anger" || res.emotions.emotion === "Grief")) {
+                synthesisText.textContent = "Frequent contact during peak emotional grief/anger can reset your emotional recovery clock. Enforce your structured contact boundary.";
+                priorityAction.textContent = "Implement a 24-hour response pause on non-urgent messages from your spouse.";
+            } else if (res.children && res.contact) {
+                synthesisText.textContent = "Separating child transition logistics from relationship discussions will significantly reduce parental conflict exposure for your kids.";
+                priorityAction.textContent = "Keep child communication strictly focused on schedules and routines.";
+            } else if (separationState.completedTools.length > 0) {
+                synthesisText.textContent = `You have completed ${separationState.completedTools.length} of 5 modules. Continue working through the remaining areas to build your total stability plan.`;
+                priorityAction.textContent = "Take the next right step in your least stable area.";
+            }
+        }
+
+        // --- RENDER HISTORY TABLE ---
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-tbody');
+            if (!tbody) return;
+
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HIST) || '[]');
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-gray-400 italic">No history entries saved yet.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = history.map(item => `
+                <tr class="hover:bg-gray-50/50">
+                    <td class="p-3 text-gray-400">${escapeHTML(item.date)}</td>
+                    <td class="p-3 font-semibold text-charcoal">${escapeHTML(item.tool)}</td>
+                    <td class="p-3 text-gray-600">${escapeHTML(item.summary)}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteHistoryEntry(${item.id})" class="text-red-500 hover:text-red-700 font-medium">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function deleteHistoryEntry(id) {
+            let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HIST) || '[]');
+            history = history.filter(item => item.id !== id);
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            renderHistoryTable();
+            showToast("Entry deleted.");
+        }
+
+        // --- INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderHistoryTable();
+            updateSeparationMap();
+
+            // Prompt safety check on first visit if unacknowledged
+            if (!separationState.safety.acknowledged) {
+                document.getElementById('safety-modal').classList.remove('hidden');
+            } else if (separationState.safety.status === 'YES') {
+                document.getElementById('safety-alert-banner').classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2679 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salary Reality Check™ — Tool Kartu Karir & Kompensasi Strategis</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* CSS RESET & VARIABLES */
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --midnight-blue: #1B263B;
+            --midnight-hover: #2B3A55;
+            --mint-green: #74C69D;
+            --mint-hover: #52B788;
+            --mint-light: #E8F5E9;
+            --bg-gradient: linear-gradient(135deg, #F0F4F8 0%, #E8F5E9 100%);
+            --text-dark: #1E293B;
+            --text-muted: #64748B;
+            --card-bg: #FFFFFF;
+            --border-color: #E2E8F0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --radius-xl: 1rem;
+            --radius-lg: 0.75rem;
+            --radius-md: 0.5rem;
+            --sidebar-width: 260px;
+            --transition: all 0.25s ease-in-out;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* LAYOUT STRUCTURE */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: #FFFFFF;
+            box-shadow: var(--shadow-md);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 1.25rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--midnight-blue);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--midnight-blue);
+            line-height: 1.2;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 0.75rem 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 0.85rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-align: left;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item button:hover {
+            background-color: #F8FAFC;
+            color: var(--midnight-blue);
+        }
+
+        .nav-item button.active {
+            background-color: #F1F5F9;
+            color: var(--midnight-blue);
+            border-left-color: var(--midnight-blue);
+            font-weight: 600;
+        }
+
+        .nav-item button i {
+            font-size: 1.05rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .nav-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 0.5rem 1.5rem;
+        }
+
+        .mode-selector-wrapper {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border-color);
+            background: #F8FAFC;
+        }
+
+        /* MOBILE HEADER & OVERLAY */
+        .mobile-header {
+            display: none;
+            background-color: #FFFFFF;
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.4rem;
+            color: var(--midnight-blue);
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 95;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* MAIN CONTENT AREA */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: var(--transition);
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .tool-panel {
+            display: none;
+        }
+
+        .tool-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* CARDS & UI COMPONENTS */
+        .card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-sm);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--midnight-blue);
+            margin-bottom: 0.25rem;
+        }
+
+        .page-subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* FORM CONTROLS */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--midnight-blue);
+            margin-bottom: 0.4rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.65rem 0.85rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: var(--text-dark);
+            background-color: #FFFFFF;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--midnight-blue);
+            box-shadow: 0 0 0 3px rgba(27, 38, 59, 0.1);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 0.25rem;
+        }
+
+        .radio-label, .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #F8FAFC;
+            padding: 0.5rem 0.85rem;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+
+        .radio-label:hover, .checkbox-label:hover {
+            background: #F1F5F9;
+        }
+
+        .radio-label input:checked + span,
+        .checkbox-label input:checked + span {
+            font-weight: 600;
+            color: var(--midnight-blue);
+        }
+
+        /* BUTTONS */
+        .btn-group {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: var(--radius-md);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--midnight-blue);
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--midnight-hover);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary {
+            background-color: #E2E8F0;
+            color: var(--midnight-blue);
+        }
+
+        .btn-secondary:hover {
+            background-color: #CBD5E1;
+        }
+
+        .btn-mint {
+            background-color: var(--mint-green);
+            color: var(--midnight-blue);
+        }
+
+        .btn-mint:hover {
+            background-color: var(--mint-hover);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+        }
+
+        .btn-outline:hover {
+            background: #F8FAFC;
+            color: var(--midnight-blue);
+            border-color: var(--midnight-blue);
+        }
+
+        .btn-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+
+        .btn-danger:hover {
+            background: #FCA5A5;
+            color: #7F1D1D;
+        }
+
+        .btn-sm {
+            padding: 0.35rem 0.65rem;
+            font-size: 0.8rem;
+            border-radius: var(--radius-md);
+        }
+
+        /* RESULTS DISPLAY & UNIFIED ARCHITECTURE */
+        .results-container {
+            margin-top: 1.5rem;
+            display: none;
+        }
+
+        .results-container.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .result-box {
+            background: #F8FAFC;
+            border-left: 4px solid var(--midnight-blue);
+            padding: 1.25rem;
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+            margin-bottom: 1.25rem;
+        }
+
+        .result-box.mint-border {
+            border-left-color: var(--mint-green);
+        }
+
+        .result-box.yellow-border {
+            border-left-color: #F59E0B;
+        }
+
+        .result-box.red-border {
+            border-left-color: #EF4444;
+        }
+
+        .result-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--midnight-blue);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .tag-green { background: #D1FAE5; color: #065F46; }
+        .tag-yellow { background: #FEF3C7; color: #92400E; }
+        .tag-red { background: #FEE2E2; color: #991B1B; }
+        .tag-blue { background: #DBEAFE; color: #1E40AF; }
+
+        /* UNIFIED RESULTS GRID */
+        .unified-results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        /* DASHBOARD GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+            margin-top: 1.5rem;
+        }
+
+        .dash-card {
+            background: var(--card-bg);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--mint-green);
+        }
+
+        .dash-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-lg);
+            background: var(--mint-light);
+            color: var(--midnight-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+
+        .dash-card h3 {
+            font-size: 1.1rem;
+            color: var(--midnight-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .dash-card p {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            flex: 1;
+        }
+
+        .dash-card .dash-link {
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--midnight-blue);
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        /* HISTORY ACCORDION & LIST */
+        .history-section {
+            margin-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .accordion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+            user-select: none;
+        }
+
+        .accordion-header h4 {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .accordion-content {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .accordion-content.active {
+            display: block;
+        }
+
+        .history-item {
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-item-info strong {
+            display: block;
+            color: var(--midnight-blue);
+        }
+
+        .history-item-info span {
+            display: block;
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        /* SCRIPT DISPLAY / COPYABLE BOX */
+        .script-box {
+            background: #1E293B;
+            color: #F8FAFC;
+            padding: 1.25rem;
+            border-radius: var(--radius-lg);
+            position: relative;
+            font-family: monospace, sans-serif;
+            font-size: 0.9rem;
+            white-space: pre-wrap;
+            margin: 0.5rem 0 1rem 0;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: #FFF;
+            border: none;
+            padding: 0.35rem 0.65rem;
+            border-radius: var(--radius-md);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* TABLE FORMATTING FOR SNAPSHOT & PLAN */
+        .plan-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+
+        .plan-table th, .plan-table td {
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        .plan-table th {
+            background-color: #F8FAFC;
+            color: var(--midnight-blue);
+            font-weight: 600;
+        }
+
+        /* TOAST NOTIFICATION */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--midnight-blue);
+            color: #FFFFFF;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            font-size: 0.9rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            z-index: 1000;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: var(--transition);
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* FOOTER */
+        footer {
+            margin-top: auto;
+            background: #FFFFFF;
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* PRINT STYLES */
+        @media print {
+            .sidebar, .mobile-header, .btn-group, .history-section, footer, .mode-selector-wrapper, .dash-link, .nav-links, .hamburger-btn, .toast {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .main-content {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #CCC !important;
+                page-break-inside: avoid;
+            }
+            body {
+                background: #FFF !important;
+                color: #000 !important;
+            }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .overlay.mobile-open {
+                display: block;
+                opacity: 1;
+            }
+
+            .main-wrapper {
+                margin-left: 0;
+            }
+
+            .main-content {
+                padding: 1.25rem 1rem;
+            }
+
+            .page-title {
+                font-size: 1.4rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER MOBILE -->
+    <header class="mobile-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-scale-balanced" style="color: var(--midnight-blue);"></i>
+            <span style="font-weight: 700; color: var(--midnight-blue);">Salary Reality Check™</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka Navigasi">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <div class="overlay" id="mobileOverlay"></div>
+
+    <div class="app-container">
+        <!-- SIDEBAR -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <h1>Salary Reality Check™</h1>
+            </div>
+            <ul class="nav-links">
+                <li class="nav-item">
+                    <button class="nav-btn active" data-tool="dashboard">
+                        <i class="fa-solid fa-chart-pie"></i> Dashboard
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="tool1">
+                        <i class="fa-solid fa-calculator"></i> Nilai Pasar
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="tool2">
+                        <i class="fa-solid fa-clipboard-check"></i> Kasus Kontribusi
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="tool3">
+                        <i class="fa-solid fa-comments"></i> Negosiasi
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="tool4">
+                        <i class="fa-solid fa-clock"></i> Waktu / Timing
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="tool5">
+                        <i class="fa-solid fa-compass"></i> Rencana B
+                    </button>
+                </li>
+                <div class="nav-divider"></div>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="reset7day">
+                        <i class="fa-solid fa-calendar-check"></i> Reset 7-Hari
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="careerPlan">
+                        <i class="fa-solid fa-file-contract"></i> Rencana Karir Saya
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="history">
+                        <i class="fa-solid fa-history"></i> Riwayat Saya
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-btn" data-tool="privacy">
+                        <i class="fa-solid fa-shield-halved"></i> Privasi & Data
+                    </button>
+                </li>
+            </ul>
+
+            <div class="mode-selector-wrapper">
+                <label for="productModeSelect" style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.3rem;">MODE PRODUK KOMERSIAL</label>
+                <select id="productModeSelect" class="form-control" style="font-size: 0.8rem; padding: 0.35rem 0.5rem;" onchange="changeProductMode(this.value)">
+                    <option value="complete">Salary Reality Check Lengkap</option>
+                    <option value="market">Salary Reality Check (Khusus Pasar)</option>
+                    <option value="contribution">Penyusun Kasus Kompensasi</option>
+                    <option value="negotiation">Toolkit Negosiasi Gaji</option>
+                    <option value="timing">Audit Waktu Kompensasi</option>
+                    <option value="planb">Pengungkit Karir & Perencana Keluar</option>
+                    <option value="7-day">Reset Kompensasi 7-Hari</option>
+                </select>
+            </div>
+        </aside>
+
+        <!-- MAIN WRAPPER -->
+        <div class="main-wrapper">
+            <main class="main-content">
+
+                <!-- DASHBOARD -->
+                <section id="dashboard" class="tool-panel active">
+                    <div class="card" style="background: linear-gradient(135deg, var(--midnight-blue) 0%, #2C3E50 100%); color: #FFF;">
+                        <span class="tag tag-green" style="margin-bottom: 0.75rem;">Sistem Operasi Karir Strategis</span>
+                        <h2 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem; color: #FFF;">Salary Reality Check™</h2>
+                        <p style="font-size: 1.05rem; opacity: 0.9; color: var(--mint-light);">Ketahui nilai Anda. Bangun argumen Anda. Ambil langkah Anda.</p>
+                    </div>
+
+                    <!-- PANDUAN ORIENTASI -->
+                    <div class="card">
+                        <h3 style="color: var(--midnight-blue); font-size: 1.1rem; margin-bottom: 0.5rem;"><i class="fa-solid fa-compass"></i> Orientasi Strategis & Panduan Alur Kerja</h3>
+                        <p style="font-size: 0.9rem; color: var(--text-dark); margin-bottom: 0.75rem;">
+                            Percakapan tentang gaji akan menjadi jauh lebih kuat jika Anda memisahkan antara tolok ukur pasar, kontribusi nyata Anda, kapan Anda memintanya, dan alternatif yang Anda miliki.
+                        </p>
+                        <ul style="font-size: 0.875rem; color: var(--text-muted); padding-left: 1.25rem; line-height: 1.6;">
+                            <li><strong>Mulai dengan Nilai Pasar</strong> jika Anda belum mengetahui posisi tolok ukur kompensasi Anda saat ini.</li>
+                            <li><strong>Mulai dengan Kasus Kontribusi</strong> jika Anda merasa kurang dihargai atau memegang tanggung jawab di luar jabatan Anda.</li>
+                            <li><strong>Gunakan Penyusun Skrip Negosiasi</strong> saat Anda siap menyusun strategi percakapan langsung.</li>
+                            <li><strong>Gunakan Penganalisis Waktu</strong> sebelum menjadwalkan rapat peninjauan formal dengan atasan Anda.</li>
+                            <li><strong>Gunakan Kalkulator Rencana B</strong> saat Anda membutuhkan pengungkit eksternal, opsi lain, atau jalur pertumbuhan alternatif.</li>
+                        </ul>
+                    </div>
+
+                    <!-- RINGKASAN KOMPENSASI SAYA -->
+                    <div class="card" id="dash-snapshot-card">
+                        <h3 style="color: var(--midnight-blue); font-size: 1.1rem; margin-bottom: 0.75rem;"><i class="fa-solid fa-chart-line"></i> Ringkasan Kompensasi Saya</h3>
+                        <div id="dash-snapshot-content">
+                            <p style="font-size: 0.875rem; color: var(--text-muted);">Belum ada riwayat alat yang dijalankan pada sesi ini. Selesaikan modul apa pun di bawah ini untuk menampilkan ringkasan eksekutif Anda.</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dash-card" onclick="switchTool('tool1')">
+                            <div class="dash-icon"><i class="fa-solid fa-calculator"></i></div>
+                            <h3>1. Estimator Nilai Pasar</h3>
+                            <p>Temukan kisaran gaji ilustratif berdasarkan peran, pengalaman, tipe lokasi, ukuran perusahaan, dan keahlian.</p>
+                            <div class="dash-link">Estimasi Nilai <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-card" onclick="switchTool('tool2')">
+                            <div class="dash-icon"><i class="fa-solid fa-clipboard-check"></i></div>
+                            <h3>2. Inventaris Kontribusi</h3>
+                            <p>Ubah pencapaian, perluasan tanggung jawab, dan nilai operasional menjadi bukti kompensasi yang tak terbantahkan.</p>
+                            <div class="dash-link">Bangun Inventaris <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-card" onclick="switchTool('tool3')">
+                            <div class="dash-icon"><i class="fa-solid fa-comments"></i></div>
+                            <h3>3. Penyusun Skrip Negosiasi</h3>
+                            <p>Susun percakapan kompensasi yang disesuaikan dengan gaya atasan, kesehatan perusahaan, dan pengungkit utama Anda.</p>
+                            <div class="dash-link">Susun Skrip <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-card" onclick="switchTool('tool4')">
+                            <div class="dash-icon"><i class="fa-solid fa-clock"></i></div>
+                            <h3>4. Penganalisis Waktu (Timing)</h3>
+                            <p>Tentukan apakah kinerja saat ini, tingkat stres manajemen, siklus anggaran, dan waktu mendukung pengajuan Anda.</p>
+                            <div class="dash-link">Analisis Waktu <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-card" onclick="switchTool('tool5')">
+                            <div class="dash-icon"><i class="fa-solid fa-compass"></i></div>
+                            <h3>5. Kalkulator Rencana B</h3>
+                            <p>Petakan pengungkit eksternal, kesiapan mobilitas, hambatan, dan jalur alternatif strategis jika jawabannya adalah tidak.</p>
+                            <div class="dash-link">Hitung Opsi <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+
+                        <div class="dash-card" onclick="switchTool('reset7day')">
+                            <div class="dash-icon"><i class="fa-solid fa-calendar-check"></i></div>
+                            <h3>Reset Kompensasi 7-Hari</h3>
+                            <p>Panduan langkah demi langkah melewati 5 modul untuk menghasilkan rencana aksi 30 hari yang lengkap.</p>
+                            <div class="dash-link">Mulai Reset <i class="fa-solid fa-arrow-right"></i></div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TOOL 1: ESTIMATOR NILAI PASAR -->
+                <section id="tool1" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Estimator Nilai Pasar</h2>
+                        <p class="page-subtitle">Solusi masalah: "Berapa gaji yang seharusnnya saya terima?"</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-tool1">
+                            <div class="form-group">
+                                <label for="t1-job">Jabatan / Peran Anda:</label>
+                                <input type="text" id="t1-job" class="form-control" placeholder="Contoh: Marketing Manager, Software Engineer" required>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="t1-exp">Pengalaman kerja:</label>
+                                    <select id="t1-exp" class="form-control">
+                                        <option value="0-2">0 - 2 tahun</option>
+                                        <option value="3-5">3 - 5 tahun</option>
+                                        <option value="6-10">6 - 10 tahun</option>
+                                        <option value="10+">10+ tahun</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t1-location">Tipe lokasi Anda:</label>
+                                    <select id="t1-location" class="form-control">
+                                        <option value="Major metro">Kota Besar (Biaya Hidup Tinggi)</option>
+                                        <option value="Mid-size city">Kota Menengah</option>
+                                        <option value="Remote">Remote / Jarak Jauh</option>
+                                        <option value="Small town">Kota Kecil</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t1-company">Ukuran perusahaan:</label>
+                                    <select id="t1-company" class="form-control">
+                                        <option value="Startup">Startup (< 50 karyawan)</option>
+                                        <option value="Small">Kecil (50-200 karyawan)</option>
+                                        <option value="Mid-size">Menengah (200-1000 karyawan)</option>
+                                        <option value="Enterprise">Enterprise (1000+ karyawan)</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t1-salary">Gaji tahunan Anda saat ini ($ / Rp):</label>
+                                    <input type="number" id="t1-salary" class="form-control" placeholder="Opsional, contoh: 60000">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t1-skills">Keahlian utama Anda (pisahkan dengan koma):</label>
+                                <textarea id="t1-skills" class="form-control" placeholder="Contoh: Analisis Data, Manajemen Tim, Python, Otomatisasi Pemasaran"></textarea>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Hitung Estimasi</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-tool1" class="results-container">
+                        <div class="card">
+                            <h3 style="color: var(--midnight-blue); margin-bottom: 1rem;">Laporan Valuasi Pasar</h3>
+                            
+                            <div class="result-box mint-border">
+                                <div class="result-title">ESTIMASI ILUSTRATIF BERBASIS ATURAN</div>
+                                <div id="t1-out-range" style="font-size: 1.8rem; font-weight: 700; color: var(--midnight-blue); margin: 0.5rem 0;"></div>
+                                <div id="t1-out-midpoint" style="font-size: 0.95rem; font-weight: 600; color: var(--text-dark); margin-bottom: 0.25rem;"></div>
+                                <div id="t1-out-position" style="font-size: 0.9rem; color: var(--text-muted);"></div>
+                            </div>
+
+                            <!-- UNIFIED DIAGNOSTIC ARCHITECTURE -->
+                            <div class="unified-results-grid">
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-camera"></i> RINGKASAN ANDA</div>
+                                    <div id="t1-uni-snapshot" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-circle-check"></i> HAL YANG SUDAH BAIK</div>
+                                    <div id="t1-uni-working" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-triangle-exclamation"></i> PERLU PERHATIAN</div>
+                                    <div id="t1-uni-attention" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-gears"></i> FAKTOR PENDORONG</div>
+                                    <div id="t1-uni-drivers" style="font-size: 0.875rem;"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-box mint-border">
+                                <div class="result-title"><i class="fa-solid fa-bullseye"></i> PRIORITAS & TINDAKAN UTAMA ANDA</div>
+                                <div id="t1-uni-priority" style="font-size: 0.9rem; margin-bottom: 0.5rem;"></div>
+                                <div id="t1-uni-nexttool" style="font-size: 0.85rem; font-weight: 600; color: var(--midnight-blue);"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">ANALISIS GAP / SELISIH</div>
+                                <div id="t1-out-gap" style="margin-top: 0.5rem;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">SINYAL NILAI KEAHLIAN</div>
+                                <ul id="t1-out-skills" style="margin-top: 0.5rem; padding-left: 1.25rem;"></ul>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">CHECKLIST VALIDASI RISET</div>
+                                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">
+                                    Estimasi ini adalah heuristik ilustratif berdasarkan parameter aturan internal. Validasikan dengan sumber langsung sebelum mengambil keputusan karir yang krusial:
+                                </p>
+                                <ul style="font-size: 0.9rem; padding-left: 1.25rem; line-height: 1.6;">
+                                    <li>Periksa Glassdoor & Indeed untuk melihat kisaran gaji spesifik perusahaan di lokasi Anda.</li>
+                                    <li>Bandingkan peran teknologi di Levels.fyi atau peran penjualan di RepVue.</li>
+                                    <li>Tinjau survei kompensasi tahunan industri (seperti Robert Half Salary Guide).</li>
+                                    <li>Lakukan wawancara informatif dengan rekan sejawat di peran serupa pada perusahaan pesaing.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="accordion-header" onclick="toggleHistory('tool1')">
+                            <h4><i class="fa-solid fa-history"></i> Riwayat Estimasi Terakhir</h4>
+                            <i class="fa-solid fa-chevron-down" id="acc-icon-tool1"></i>
+                        </div>
+                        <div class="accordion-content" id="history-tool1"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 2: INVENTARIS KONTRIBUSI -->
+                <section id="tool2" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Inventaris Kontribusi</h2>
+                        <p class="page-subtitle">Solusi masalah: "Saya butuh bukti bahwa saya layak mendapat gaji lebih tinggi."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-tool2">
+                            <div class="form-group">
+                                <label for="t2-achievements">Apa saja yang telah Anda capai dalam 12 bulan terakhir?</label>
+                                <textarea id="t2-achievements" class="form-control" placeholder="Jelaskan proyek utama yang selesai, target yang terlampaui..." required></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t2-responsibilities">Apakah Anda mengambil tanggung jawab di luar peran Anda?</label>
+                                <textarea id="t2-responsibilities" class="form-control" placeholder="Tugas yang dilakukan melebihi deskripsi pekerjaan saat ini..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t2-revenue">Berapa pendapatan atau penghematan yang telah Anda hasilkan? (Opsional)</label>
+                                <textarea id="t2-revenue" class="form-control" placeholder="Pengurangan biaya, klien baru, waktu yang dihemat..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t2-process">Apakah Anda melatih orang lain atau mengoptimalkan proses?</label>
+                                <textarea id="t2-process" class="form-control" placeholder="Mentoring, dokumentasi, alur kerja yang dioptimalkan..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="t2-impact">Apa yang akan terjadi jika Anda keluar dari perusahaan?</label>
+                                <textarea id="t2-impact" class="form-control" placeholder="Pengetahuan domain penting hilang, proyek terhambat..."></textarea>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-list-check"></i> Buat Inventaris Bukti</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-tool2" class="results-container">
+                        <div class="card">
+                            <h3 style="color: var(--midnight-blue); margin-bottom: 1rem;">Ringkasan Nilai & Dampak</h3>
+
+                            <!-- UNIFIED DIAGNOSTIC ARCHITECTURE -->
+                            <div class="unified-results-grid">
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-camera"></i> RINGKASAN ANDA</div>
+                                    <div id="t2-uni-snapshot" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-circle-check"></i> HAL YANG SUDAH BAIK</div>
+                                    <div id="t2-uni-working" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-triangle-exclamation"></i> PERLU PERHATIAN</div>
+                                    <div id="t2-uni-attention" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-gears"></i> FAKTOR PENDORONG</div>
+                                    <div id="t2-uni-drivers" style="font-size: 0.875rem;"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-box mint-border">
+                                <div class="result-title"><i class="fa-solid fa-bullseye"></i> PRIORITAS & TINDAKAN UTAMA ANDA</div>
+                                <div id="t2-uni-priority" style="font-size: 0.9rem; margin-bottom: 0.5rem;"></div>
+                                <div id="t2-uni-nexttool" style="font-size: 0.85rem; font-weight: 600; color: var(--midnight-blue);"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">DAFTAR BUKTI ANDA</div>
+                                <ul id="t2-out-evidence" style="padding-left: 1.25rem; line-height: 1.6;"></ul>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">PENERJEMAHAN DAMPAK</div>
+                                <p id="t2-out-translation" style="font-size: 0.95rem; line-height: 1.5;"></p>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">UJI "LALU KENAPA?" (SO WHAT?)</div>
+                                <div id="t2-out-sowhat" style="font-size: 0.95rem;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">CELA / GAP YANG PERLU DIISI</div>
+                                <div id="t2-out-gaps" style="font-size: 0.95rem;"></div>
+                            </div>
+
+                            <div class="result-box mint-border">
+                                <div class="result-title">
+                                    RINGKASAN EKSEKUTIF (SATU HALAMAN)
+                                    <button class="btn btn-sm btn-outline" onclick="copyToClipboard('t2-out-template')"><i class="fa-regular fa-copy"></i> Salin Ringkasan</button>
+                                </div>
+                                <div id="t2-out-template" class="script-box"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="accordion-header" onclick="toggleHistory('tool2')">
+                            <h4><i class="fa-solid fa-history"></i> Inventaris Tersimpan</h4>
+                            <i class="fa-solid fa-chevron-down" id="acc-icon-tool2"></i>
+                        </div>
+                        <div class="accordion-content" id="history-tool2"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 3: PENYUSUN SKRIP NEGOSIASI -->
+                <section id="tool3" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Penyusun Skrip Negosiasi</h2>
+                        <p class="page-subtitle">Solusi masalah: "Saya tidak tahu cara meminta kenaikan gaji."</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-tool3">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="t3-target">Target kenaikan gaji atau %:</label>
+                                    <input type="text" id="t3-target" class="form-control" placeholder="Contoh: 15% atau Rp 5.000.000" required>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t3-backup">Opsi cadangan jika ditolak:</label>
+                                    <select id="t3-backup" class="form-control">
+                                        <option value="Same amount later">Tinjau kembali 6 bulan lagi dengan target yang jelas</option>
+                                        <option value="More PTO">Tambahan Cuti Berbayar (PTO)</option>
+                                        <option value="Title change">Kenaikan Jabatan / Promosi</option>
+                                        <option value="Flexible hours">Kerja Remote / Jam Kerja Fleksibel</option>
+                                        <option value="Professional development">Tunjangan Pelatihan / Konferensi</option>
+                                        <option value="Nothing">Tidak ada opsi cadangan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Gaya pengambilan keputusan atasan Anda:</label>
+                                <div class="radio-group">
+                                    <label class="radio-label">
+                                        <input type="radio" name="t3-style" value="Needs data" checked>
+                                        <span>Berbasis Data & Analitis</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="t3-style" value="Needs consensus">
+                                        <span>Berbasis Konsensus & Fokus Tim</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="t3-style" value="Gut feel">
+                                        <span>Intuisi / Gambaran Besar</span>
+                                    </label>
+                                    <label class="radio-label">
+                                        <input type="radio" name="t3-style" value="Avoids conflict">
+                                        <span>Harmonis / Menghindari Konflik</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="t3-health">Kesehatan keuangan perusahaan:</label>
+                                    <select id="t3-health" class="form-control">
+                                        <option value="Growing">Tumbuh Cepat / Kinerja Kuat</option>
+                                        <option value="Stable">Stabil / Memenuhi Ekspektasi</option>
+                                        <option value="Struggling">Mengalami Kesulitan / Pemotongan Anggaran</option>
+                                        <option value="Unknown">Tidak Diketahui / Tidak Pasti</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t3-leverage">Pengungkit (Leverage) utama Anda:</label>
+                                    <select id="t3-leverage" class="form-control">
+                                        <option value="Market data">Data Pasar Terverifikasi</option>
+                                        <option value="Irreplaceable skills">Peran Krusial / Keahlian Langka</option>
+                                        <option value="Strong offer elsewhere">Tawaran Kerja dari Perusahaan Lain</option>
+                                        <option value="Willing to walk">Siap Mencari Peluang Lain</option>
+                                        <option value="Limited">Pencapaian Standar Terakhir</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Hasilkan Skrip</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-tool3" class="results-container">
+                        <div class="card">
+                            <h3 style="color: var(--midnight-blue); margin-bottom: 1rem;">Strategi Percakapan Terpersonalisasi</h3>
+
+                            <!-- UNIFIED DIAGNOSTIC ARCHITECTURE -->
+                            <div class="unified-results-grid">
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-camera"></i> RINGKASAN ANDA</div>
+                                    <div id="t3-uni-snapshot" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-circle-check"></i> HAL YANG SUDAH BAIK</div>
+                                    <div id="t3-uni-working" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-triangle-exclamation"></i> PERLU PERHATIAN</div>
+                                    <div id="t3-uni-attention" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-gears"></i> FAKTOR PENDORONG</div>
+                                    <div id="t3-uni-drivers" style="font-size: 0.875rem;"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-box mint-border">
+                                <div class="result-title"><i class="fa-solid fa-bullseye"></i> PRIORITAS & TINDAKAN UTAMA ANDA</div>
+                                <div id="t3-uni-priority" style="font-size: 0.9rem; margin-bottom: 0.5rem;"></div>
+                                <div id="t3-uni-nexttool" style="font-size: 0.85rem; font-weight: 600; color: var(--midnight-blue);"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">
+                                    SKRIP PEMBUKA (60 DETIK PERTAMA)
+                                    <button class="btn btn-sm btn-outline" onclick="copyToClipboard('t3-out-opening')"><i class="fa-regular fa-copy"></i> Salin</button>
+                                </div>
+                                <div id="t3-out-opening" class="script-box"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">
+                                    KALIMAT PENGAJUAN SPESIFIK
+                                    <button class="btn btn-sm btn-outline" onclick="copyToClipboard('t3-out-ask')"><i class="fa-regular fa-copy"></i> Salin</button>
+                                </div>
+                                <div id="t3-out-ask" class="script-box"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">JIKA MEREKA MENJAWAB YA</div>
+                                <div id="t3-out-yes" style="font-size: 0.95rem; line-height: 1.5;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">JIKA MEREKA MENJAWAB TIDAK (STRATEGI PENGALIHAN)</div>
+                                <div id="t3-out-no" style="font-size: 0.95rem;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">JIKA MEREKA MENGALIHKAN ATAU MENUNDA</div>
+                                <div id="t3-out-deflect" class="script-box"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">PANDUAN WAKTU PERCAKAPAN OPTIMAL</div>
+                                <p id="t3-out-timing" style="font-size: 0.95rem;"></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="accordion-header" onclick="toggleHistory('tool3')">
+                            <h4><i class="fa-solid fa-history"></i> Strategi Skrip Tersimpan</h4>
+                            <i class="fa-solid fa-chevron-down" id="acc-icon-tool3"></i>
+                        </div>
+                        <div class="accordion-content" id="history-tool3"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 4: PENGANALISIS WAKTU (TIMING ANALYZER) -->
+                <section id="tool4" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Penganalisis Waktu (Timing)</h2>
+                        <p class="page-subtitle">Solusi masalah: "Kapan momen yang tepat untuk meminta kenaikan gaji?"</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-tool4">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="t4-lastraise">Kapan kenaikan gaji terakhir Anda?</label>
+                                    <select id="t4-lastraise" class="form-control">
+                                        <option value="<6mo">< 6 bulan yang lalu</option>
+                                        <option value="6-12mo">6 - 12 bulan yang lalu</option>
+                                        <option value="1-2yr">1 - 2 tahun yang lalu</option>
+                                        <option value="2yr+">2+ tahun yang lalu</option>
+                                        <option value="Never">Belum pernah di perusahaan ini</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t4-perf">Status kinerja terkini:</label>
+                                    <select id="t4-perf" class="form-control">
+                                        <option value="Exceeded goals">Sangat melampaui target</option>
+                                        <option value="Met goals">Konsisten memenuhi target</option>
+                                        <option value="Mixed">Hasil bercampur / Bervariasi</option>
+                                        <option value="Struggling">Mengalami kesulitan / Di bawah target</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Agenda / Acara perusahaan mendatang:</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="t4-events" value="Performance review"> Penilaian Kinerja (Performance Review)
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="t4-events" value="Budget cycle"> Perencanaan Anggaran Tahunan
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="t4-events" value="Layoffs"> Restrukturisasi / Pemutusan Hubungan Kerja (PHK)
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="t4-events" value="Funding round"> Pendanaan / Akuisisi
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" name="t4-events" value="Nothing known"> Tidak Ada Agenda Khusus
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label for="t4-stress">Tingkat stres atasan Anda saat ini:</label>
+                                    <select id="t4-stress" class="form-control">
+                                        <option value="Low">Rendah / Tenang</option>
+                                        <option value="Normal">Stres operasional normal</option>
+                                        <option value="High">Stres tinggi / Sangat sibuk</option>
+                                        <option value="Crisis mode">Mode krisis / Sangat tertekan</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t4-personal">Faktor situasi pribadi:</label>
+                                    <select id="t4-personal" class="form-control">
+                                        <option value="Just had a win">Baru saja meraih pencapaian / proyek sukses</option>
+                                        <option value="Stable">Pekerjaan berjalan stabil</option>
+                                        <option value="Made a mistake">Baru saja melakukan kesalahan yang terlihat</option>
+                                        <option value="New to role">Baru di peran ini (< 90 hari)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-stopwatch"></i> Analisis Jendela Waktu</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-tool4" class="results-container">
+                        <div class="card">
+                            <h3 style="color: var(--midnight-blue); margin-bottom: 1rem;">Diagnosis Waktu (Timing)</h3>
+
+                            <!-- UNIFIED DIAGNOSTIC ARCHITECTURE -->
+                            <div class="unified-results-grid">
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-camera"></i> RINGKASAN ANDA</div>
+                                    <div id="t4-uni-snapshot" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-circle-check"></i> HAL YANG SUDAH BAIK</div>
+                                    <div id="t4-uni-working" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-triangle-exclamation"></i> PERLU PERHATIAN</div>
+                                    <div id="t4-uni-attention" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-gears"></i> FAKTOR PENDORONG</div>
+                                    <div id="t4-uni-drivers" style="font-size: 0.875rem;"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-box mint-border">
+                                <div class="result-title"><i class="fa-solid fa-bullseye"></i> PRIORITAS & TINDAKAN UTAMA ANDA</div>
+                                <div id="t4-uni-priority" style="font-size: 0.9rem; margin-bottom: 0.5rem;"></div>
+                                <div id="t4-uni-nexttool" style="font-size: 0.85rem; font-weight: 600; color: var(--midnight-blue);"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">
+                                    TINGKAT KESIAPAN 
+                                    <span id="t4-out-tag" class="tag"></span>
+                                </div>
+                                <div id="t4-out-scoretext" style="font-size: 1.1rem; font-weight: 600; margin-top: 0.5rem;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">HEURISTIK JENDELA WAKTU OPTIMAL</div>
+                                <p id="t4-out-window" style="font-size: 0.95rem;"></p>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">RENCANA AKSI</div>
+                                <div id="t4-out-plan" style="font-size: 0.95rem;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">FAKTOR RISIKO UTAMA</div>
+                                <ul id="t4-out-risks" style="padding-left: 1.25rem; font-size: 0.95rem; line-height: 1.5;"></ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="accordion-header" onclick="toggleHistory('tool4')">
+                            <h4><i class="fa-solid fa-history"></i> Audit Waktu Tersimpan</h4>
+                            <i class="fa-solid fa-chevron-down" id="acc-icon-tool4"></i>
+                        </div>
+                        <div class="accordion-content" id="history-tool4"></div>
+                    </div>
+                </section>
+
+                <!-- TOOL 5: KALKULATOR RENCANA B -->
+                <section id="tool5" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Kalkulator Rencana B</h2>
+                        <p class="page-subtitle">Solusi masalah: "Bagaimana jika mereka menolak? Apa saja pilihan saya?"</p>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-tool5">
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Apakah Anda bersedia pindah demi uang lebih besar?</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="t5-leave" value="Yes"> Ya</label>
+                                        <label class="radio-label"><input type="radio" name="t5-leave" value="Maybe" checked> Mungkin</label>
+                                        <label class="radio-label"><input type="radio" name="t5-leave" value="No"> Tidak</label>
+                                        <label class="radio-label"><input type="radio" name="t5-leave" value="Not sure"> Ragu-ragu</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t5-tenure">Berapa lama Anda bisa bertahan dengan gaji saat ini?</label>
+                                    <select id="t5-tenure" class="form-control">
+                                        <option value="Already looking">Sudah mulai mencari lowongan</option>
+                                        <option value="6mo">Maksimal 6 bulan</option>
+                                        <option value="1yr">Maksimal 1 tahun</option>
+                                        <option value="Indefinitely">Bisa bertahan lama jika diperlukan</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div class="form-group">
+                                    <label>Apakah Anda sudah menjalani wawancara di tempat lain?</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="t5-interview" value="Yes, have offers"> Ada penawaran aktif</label>
+                                        <label class="radio-label"><input type="radio" name="t5-interview" value="Yes, early stages" checked> Tahap awal wawancara</label>
+                                        <label class="radio-label"><input type="radio" name="t5-interview" value="No"> Belum ada wawancara</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t5-minsalary">Gaji eksternal minimal yang dapat diterima ($ / Rp):</label>
+                                    <input type="number" id="t5-minsalary" class="form-control" placeholder="Contoh: 75000">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Apa yang menahan Anda untuk tidak resign?</label>
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label"><input type="checkbox" name="t5-barriers" value="Fear of unknown"> Rasa takut pada ketidakpastian</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t5-barriers" value="Loyalty"> Loyalitas kepada tim</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t5-barriers" value="Lack of skills"> Keterbatasan keahlian</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t5-barriers" value="Location/family"> Kewajiban Lokasi / Keluarga</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t5-barriers" value="Benefits"> Tunjangan bagus / Cuti luas</label>
+                                    <label class="checkbox-label"><input type="checkbox" name="t5-barriers" value="Golden handcuffs"> Kepemilikan saham / Bonus tertahan</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-group">
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Hitung Opsi Karir</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-solid fa-flask"></i> Muat Skenario Contoh</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="results-tool5" class="results-container">
+                        <div class="card">
+                            <h3 style="color: var(--midnight-blue); margin-bottom: 1rem;">Matriks Opsi Strategis</h3>
+
+                            <!-- UNIFIED DIAGNOSTIC ARCHITECTURE -->
+                            <div class="unified-results-grid">
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-camera"></i> RINGKASAN ANDA</div>
+                                    <div id="t5-uni-snapshot" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-circle-check"></i> HAL YANG SUDAH BAIK</div>
+                                    <div id="t5-uni-working" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-triangle-exclamation"></i> PERLU PERHATIAN</div>
+                                    <div id="t5-uni-attention" style="font-size: 0.875rem;"></div>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title"><i class="fa-solid fa-gears"></i> FAKTOR PENDORONG</div>
+                                    <div id="t5-uni-drivers" style="font-size: 0.875rem;"></div>
+                                </div>
+                            </div>
+
+                            <div class="result-box mint-border">
+                                <div class="result-title"><i class="fa-solid fa-bullseye"></i> PRIORITAS & TINDAKAN UTAMA ANDA</div>
+                                <div id="t5-uni-priority" style="font-size: 0.9rem; margin-bottom: 0.5rem;"></div>
+                                <div id="t5-uni-nexttool" style="font-size: 0.85rem; font-weight: 600; color: var(--midnight-blue);"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">PETA OPSI</div>
+                                <div id="t5-out-options" style="font-size: 0.95rem; line-height: 1.6;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">ANALISIS RISIKO VS HASIL</div>
+                                <div id="t5-out-riskreward" style="font-size: 0.95rem;"></div>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">CHECKLIST PERSIAPAN</div>
+                                <ul id="t5-out-checklist" style="padding-left: 1.25rem; font-size: 0.95rem; line-height: 1.5;"></ul>
+                            </div>
+
+                            <div class="result-box">
+                                <div class="result-title">RENCANA KEAHLIAN & DAYA JUAL PASAR</div>
+                                <p id="t5-out-skillplan" style="font-size: 0.95rem;"></p>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                                <div class="result-box">
+                                    <div class="result-title">REKOMENDASI TIMELINE</div>
+                                    <p id="t5-out-timeline" style="font-size: 0.95rem; font-weight: 600; color: var(--midnight-blue);"></p>
+                                </div>
+                                <div class="result-box">
+                                    <div class="result-title">PERENCANAAN DANA DARURAT</div>
+                                    <p id="t5-out-cushion" style="font-size: 0.95rem; font-weight: 600; color: var(--midnight-blue);"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="accordion-header" onclick="toggleHistory('tool5')">
+                            <h4><i class="fa-solid fa-history"></i> Rencana Strategis Tersimpan</h4>
+                            <i class="fa-solid fa-chevron-down" id="acc-icon-tool5"></i>
+                        </div>
+                        <div class="accordion-content" id="history-tool5"></div>
+                    </div>
+                </section>
+
+                <!-- 7-DAY RESET SEQUENCE -->
+                <section id="reset7day" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Reset Kompensasi 7-Hari</h2>
+                        <p class="page-subtitle">Peta jalan terpandu hari-demi-hari untuk mengubah frustrasi kompensasi menjadi rencana aksi yang strategis.</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="margin-bottom: 1.5rem;">
+                            <span class="tag tag-blue" style="margin-bottom: 0.5rem;">Alur Kerja Terpandu</span>
+                            <h3 style="color: var(--midnight-blue); font-size: 1.2rem; margin-top: 0.25rem;">Peta Jalan Strategis Langkah Demi Langkah</h3>
+                        </div>
+
+                        <table class="plan-table">
+                            <thead>
+                                <tr>
+                                    <th>Hari</th>
+                                    <th>Fokus Utama</th>
+                                    <th>Aksi Inti</th>
+                                    <th>Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Hari 1</strong></td>
+                                    <td>Posisi Pasar</td>
+                                    <td>Tetapkan estimasi berbasis aturan dan selisih tolok ukur.</td>
+                                    <td><button class="btn btn-sm btn-outline" onclick="switchTool('tool1')">Buka Alat 1</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hari 2</strong></td>
+                                    <td>Bukti Kontribusi</td>
+                                    <td>Inventarisasi pencapaian dan lewati uji "Lalu Kenapa?".</td>
+                                    <td><button class="btn btn-sm btn-outline" onclick="switchTool('tool2')">Buka Alat 2</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hari 3</strong></td>
+                                    <td>Strategi Negosiasi</td>
+                                    <td>Penyusunan skrip disesuaikan dengan atasan dan strategi cadangan.</td>
+                                    <td><button class="btn btn-sm btn-outline" onclick="switchTool('tool3')">Buka Alat 3</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hari 4</strong></td>
+                                    <td>Audit Waktu</td>
+                                    <td>Evaluasi skor kesiapan dan jendela waktu yang tepat.</td>
+                                    <td><button class="btn btn-sm btn-outline" onclick="switchTool('tool4')">Buka Alat 4</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hari 5</strong></td>
+                                    <td>Opsi Alternatif</td>
+                                    <td>Petakan pengungkit eksternal dan kesiapan keluar dari karir.</td>
+                                    <td><button class="btn btn-sm btn-outline" onclick="switchTool('tool5')">Buka Alat 5</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hari 6</strong></td>
+                                    <td>Tinjauan Eksekutif</td>
+                                    <td>Tinjau Ringkasan Kompensasi Lintas-Alat Anda.</td>
+                                    <td><button class="btn btn-sm btn-outline" onclick="switchTool('dashboard')">Lihat Ringkasan</button></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Hari 7</strong></td>
+                                    <td>Rencana Aksi Final</td>
+                                    <td>Sintesiskan Rencana Aksi Kompensasi 30 Hari secara lengkap.</td>
+                                    <td><button class="btn btn-sm btn-primary" onclick="switchTool('careerPlan')">Lihat Rencana Karir</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- MY CAREER PLAN SYNTHESIS -->
+                <section id="careerPlan" class="tool-panel">
+                    <div class="page-header" style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 class="page-title">Rencana Realita Gaji Saya™</h2>
+                            <p class="page-subtitle">Sintesis Kompensasi Strategis Eksekutif</p>
+                        </div>
+                        <div class="btn-group" style="margin-top:0;">
+                            <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Ekspor PDF</button>
+                            <button class="btn btn-outline" onclick="copyToClipboard('career-plan-content')"><i class="fa-regular fa-copy"></i> Salin Rencana</button>
+                        </div>
+                    </div>
+
+                    <div class="card" id="career-plan-content">
+                        <div style="border-bottom: 2px solid var(--midnight-blue); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                            <h3 style="color: var(--midnight-blue); font-size: 1.4rem;">RENCANA REALITA GAJI EKSEKUTIF</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">Dihasilkan secara lokal melalui Sistem Operasi Salary Reality Check™</p>
+                        </div>
+
+                        <div id="synthesized-plan-output">
+                            <p style="font-size: 0.9rem; color: var(--text-muted); font-style: italic;">
+                                Jalankan alat secara individu (Nilai Pasar, Kasus Kontribusi, Negosiasi, Waktu, Rencana B) untuk mengisikan rencana sintesis eksekutif terpadu Anda.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- MY HISTORY PAGE -->
+                <section id="history" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Riwayat & Catatan Tersimpan Saya</h2>
+                        <p class="page-subtitle">Tinjau, ekspor, atau kelola analisis lokal tersimpan Anda.</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                            <h3 style="color: var(--midnight-blue); font-size: 1.1rem;">Riwayat Sesi Tersimpan</h3>
+                            <button class="btn btn-sm btn-danger" onclick="confirmClearAllHistory()"><i class="fa-solid fa-trash"></i> Hapus Semua Catatan</button>
+                        </div>
+                        <div id="unified-history-list"></div>
+                    </div>
+                </section>
+
+                <!-- PRIVACY & DATA -->
+                <section id="privacy" class="tool-panel">
+                    <div class="page-header">
+                        <h2 class="page-title">Privasi & Penyimpanan Lokal</h2>
+                        <p class="page-subtitle">Arsitektur privasi 100% di sisi klien (client-side).</p>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                            <i class="fa-solid fa-shield-halved" style="font-size: 2rem; color: var(--mint-green);"></i>
+                            <div>
+                                <h3 style="color: var(--midnight-blue); font-size: 1.1rem;">Keamanan Browser Lokal 100%</h3>
+                                <p style="font-size: 0.85rem; color: var(--text-muted);">Tanpa akun, tanpa pelacakan eksternal, tanpa server awan (cloud).</p>
+                            </div>
+                        </div>
+
+                        <p style="font-size: 0.9rem; color: var(--text-dark); line-height: 1.6; margin-bottom: 1rem;">
+                            Hasil perhitungan kisaran gaji, catatan kontribusi, skrip negosiasi, audit waktu, dan opsi karir Anda diproses sepenuhnya di dalam runtime browser lokal Anda.
+                            Analisis yang disimpan akan disimpan di browser ini menggunakan penyimpanan lokal (namespace `salaryreality_v2_`).
+                        </p>
+
+                        <div class="result-box yellow-border">
+                            <div class="result-title">PEMBERITAHUAN PENYIMPANAN PENTING</div>
+                            <p style="font-size: 0.85rem; color: var(--text-dark);">
+                                Menghapus riwayat/cookie browser Anda, menggunakan mode privat/incognito, atau berpindah ke perangkat lain akan mereset penyimpanan browser lokal. Untuk penyimpanan jangka panjang, gunakan tombol <strong>Cetak / Ekspor PDF</strong> atau <strong>Salin Ringkasan</strong> untuk menyimpan rencana karir Anda ke perangkat luar.
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- FOOTER -->
+            <footer>
+                Hanya untuk perencanaan karir, refleksi, dan persiapan negosiasi. Bukan merupakan saran keuangan, pekerjaan, atau hukum. Estimasi gaji adalah heuristik ilustratif berdasarkan parameter aturan dan harus divalidasi kembali dengan data pasar langsung sebelum mengambil keputusan karir yang besar.
+            </footer>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check" style="color: var(--mint-green);"></i>
+        <span id="toast-message">Berhasil disalin ke papan klip!</span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        /* -------------------------------------------------------------
+           CENTRAL STATE OBJECT & CONFIGURATION
+        ------------------------------------------------------------- */
+        let salaryRealityState = {
+            completedTools: [],
+            toolResults: {},
+            currentInputs: {},
+            historyMeta: {},
+            recommendations: [],
+            productMode: "complete",
+            lastUpdated: null
+        };
+
+        const STORAGE_KEY_STATE = 'salaryreality_v2_state';
+        const STORAGE_KEY_HISTORY = 'salaryreality_v2_history';
+
+        /* APP NAVIGATION & INITIALIZATION */
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initForms();
+            migrateLegacyHistory();
+            loadStateFromStorage();
+            renderAllHistories();
+            updateDashboardSnapshot();
+            updateCareerPlanView();
+        });
+
+        function initNavigation() {
+            const navBtns = document.querySelectorAll('.nav-btn');
+            const hamburgerBtn = document.getElementById('hamburgerBtn');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('mobileOverlay');
+
+            navBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const toolId = btn.getAttribute('data-tool');
+                    switchTool(toolId);
+                    closeMobileSidebar();
+                });
+            });
+
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('mobile-open');
+                overlay.classList.toggle('mobile-open');
+            });
+
+            overlay.addEventListener('click', closeMobileSidebar);
+        }
+
+        function switchTool(toolId) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+
+            const targetBtn = document.querySelector(`.nav-btn[data-tool="${toolId}"]`);
+            const targetPanel = document.getElementById(toolId);
+
+            if (targetBtn) targetBtn.classList.add('active');
+            if (targetPanel) targetPanel.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function closeMobileSidebar() {
+            document.getElementById('sidebar').classList.remove('mobile-open');
+            document.getElementById('mobileOverlay').classList.remove('mobile-open');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            const text = element.innerText || element.textContent;
+            
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Berhasil disalin ke papan klip!");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Berhasil disalin ke papan klip!");
+            } catch (err) {
+                showToast("Gagal menyalin teks.");
+            }
+            document.body.removeChild(textArea);
+        }
+
+        function toggleHistory(toolId) {
+            const content = document.getElementById(`history-${toolId}`);
+            const icon = document.getElementById(`acc-icon-${toolId}`);
+            if (!content) return;
+            content.classList.toggle('active');
+            if (content.classList.contains('active')) {
+                icon.className = 'fa-solid fa-chevron-up';
+            } else {
+                icon.className = 'fa-solid fa-chevron-down';
+            }
+        }
+
+        function escapeHTML(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        /* -------------------------------------------------------------
+           COMMERCIAL PRODUCT MODE CONTROL
+        ------------------------------------------------------------- */
+        function changeProductMode(mode) {
+            salaryRealityState.productMode = mode;
+            saveStateToStorage();
+
+            const navItems = document.querySelectorAll('.nav-links .nav-item');
+            navItems.forEach(item => {
+                const btn = item.querySelector('button');
+                if (!btn) return;
+                const tool = btn.getAttribute('data-tool');
+
+                if (mode === 'complete') {
+                    item.style.display = 'block';
+                } else if (mode === 'market') {
+                    item.style.display = (['dashboard', 'tool1', 'history', 'privacy'].includes(tool)) ? 'block' : 'none';
+                } else if (mode === 'contribution') {
+                    item.style.display = (['dashboard', 'tool2', 'history', 'privacy'].includes(tool)) ? 'block' : 'none';
+                } else if (mode === 'negotiation') {
+                    item.style.display = (['dashboard', 'tool3', 'history', 'privacy'].includes(tool)) ? 'block' : 'none';
+                } else if (mode === 'timing') {
+                    item.style.display = (['dashboard', 'tool4', 'history', 'privacy'].includes(tool)) ? 'block' : 'none';
+                } else if (mode === 'planb') {
+                    item.style.display = (['dashboard', 'tool5', 'history', 'privacy'].includes(tool)) ? 'block' : 'none';
+                } else if (mode === '7-day') {
+                    item.style.display = (['dashboard', 'reset7day', 'careerPlan', 'history', 'privacy'].includes(tool)) ? 'block' : 'none';
+                }
+            });
+
+            showToast(`Mode Produk: ${mode.toUpperCase()}`);
+        }
+
+        /* -------------------------------------------------------------
+           STORAGE & HISTORY MANAGEMENT (VERSIONED & MIGRATION)
+        ------------------------------------------------------------- */
+        function saveStateToStorage() {
+            try {
+                salaryRealityState.lastUpdated = new Date().toISOString();
+                localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(salaryRealityState));
+            } catch (e) {
+                console.warn("Tidak dapat menyimpan status ke localStorage", e);
+            }
+        }
+
+        function loadStateFromStorage() {
+            try {
+                const saved = localStorage.getItem(STORAGE_KEY_STATE);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    salaryRealityState = Object.assign(salaryRealityState, parsed);
+                    if (salaryRealityState.productMode) {
+                        const select = document.getElementById('productModeSelect');
+                        if (select) select.value = salaryRealityState.productMode;
+                        changeProductMode(salaryRealityState.productMode);
+                    }
+                }
+            } catch (e) {
+                console.warn("Tidak dapat memuat status dari localStorage", e);
+            }
+        }
+
+        function migrateLegacyHistory() {
+            try {
+                let v2History = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+                let legacyMigrated = false;
+
+                ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolKey => {
+                    const oldKey = `salary_history_${toolKey}`;
+                    const oldData = localStorage.getItem(oldKey);
+                    if (oldData) {
+                        const items = JSON.parse(oldData);
+                        if (Array.isArray(items)) {
+                            items.forEach(item => {
+                                v2History.push({
+                                    id: item.id || Date.now(),
+                                    tool: toolKey,
+                                    timestamp: item.timestamp || new Date().toLocaleString('id-ID'),
+                                    title: item.title || 'Catatan Hasil Migrasi',
+                                    summary: item.title || '',
+                                    inputs: item.data || {},
+                                    result: item.data || {},
+                                    completionStatus: 'Selesai'
+                                });
+                            });
+                        }
+                        localStorage.removeItem(oldKey);
+                        legacyMigrated = true;
+                    }
+                });
+
+                if (legacyMigrated) {
+                    localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(v2History));
+                }
+            } catch (e) {
+                console.warn("Migrasi riwayat mengalami kendala:", e);
+            }
+        }
+
+        function saveRecordToHistory(toolId, title, summary, inputs, result) {
+            try {
+                let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+                const record = {
+                    id: Date.now(),
+                    tool: toolId,
+                    timestamp: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'}),
+                    title: title,
+                    summary: summary,
+                    inputs: inputs,
+                    result: result,
+                    completionStatus: 'Selesai'
+                };
+
+                history.unshift(record);
+                if (history.length > 50) history = history.slice(0, 50); // Simpan maks 50
+
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+
+                if (!salaryRealityState.completedTools.includes(toolId)) {
+                    salaryRealityState.completedTools.push(toolId);
+                }
+                salaryRealityState.toolResults[toolId] = result;
+                saveStateToStorage();
+
+                renderAllHistories();
+                updateDashboardSnapshot();
+                updateCareerPlanView();
+            } catch (e) {
+                console.warn("Gagal menyimpan catatan riwayat", e);
+            }
+        }
+
+        function renderAllHistories() {
+            const history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+            
+            // Render accordion riwayat masing-masing alat
+            ['tool1', 'tool2', 'tool3', 'tool4', 'tool5'].forEach(toolId => {
+                const container = document.getElementById(`history-${toolId}`);
+                if (!container) return;
+
+                const filtered = history.filter(h => h.tool === toolId);
+                if (filtered.length === 0) {
+                    container.innerHTML = '<p style="font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem 0;">Belum ada riwayat kalkulasi tersimpan.</p>';
+                    return;
+                }
+
+                let html = `<div style="text-align: right; margin-bottom: 0.5rem;">
+                    <button class="btn btn-sm btn-outline" onclick="confirmClearToolHistory('${toolId}')"><i class="fa-solid fa-trash"></i> Hapus Riwayat ${toolId.toUpperCase()}</button>
+                </div>`;
+
+                filtered.forEach(item => {
+                    html += `
+                        <div class="history-item">
+                            <div class="history-item-info">
+                                <strong>${escapeHTML(item.title)}</strong>
+                                <span>${escapeHTML(item.timestamp)}</span>
+                            </div>
+                            <div class="history-actions">
+                                <button class="btn btn-sm btn-danger" onclick="confirmDeleteRecord(${item.id})"><i class="fa-solid fa-xmark"></i></button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                container.innerHTML = html;
+            });
+
+            // Render tab Riwayat utama
+            const unifiedContainer = document.getElementById('unified-history-list');
+            if (unifiedContainer) {
+                if (history.length === 0) {
+                    unifiedContainer.innerHTML = '<p style="font-size: 0.9rem; color: var(--text-muted);">Tidak ada catatan riwayat sesi tersimpan.</p>';
+                } else {
+                    let html = '';
+                    history.forEach(item => {
+                        html += `
+                            <div class="history-item">
+                                <div class="history-item-info">
+                                    <span class="tag tag-blue" style="display:inline-block; margin-bottom:0.2rem;">${escapeHTML(item.tool.toUpperCase())}</span>
+                                    <strong>${escapeHTML(item.title)}</strong>
+                                    <span>${escapeHTML(item.timestamp)}</span>
+                                </div>
+                                <div class="history-actions">
+                                    <button class="btn btn-sm btn-danger" onclick="confirmDeleteRecord(${item.id})"><i class="fa-solid fa-trash"></i> Hapus</button>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    unifiedContainer.innerHTML = html;
+                }
+            }
+        }
+
+        function confirmDeleteRecord(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus catatan tersimpan ini?")) {
+                let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+                history = history.filter(h => h.id !== id);
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+                renderAllHistories();
+                showToast("Catatan dihapus.");
+            }
+        }
+
+        function confirmClearToolHistory(toolId) {
+            if (confirm(`Apakah Anda yakin ingin menghapus semua riwayat untuk ${toolId.toUpperCase()}?`)) {
+                let history = JSON.parse(localStorage.getItem(STORAGE_KEY_HISTORY) || '[]');
+                history = history.filter(h => h.tool !== toolId);
+                localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(history));
+                renderAllHistories();
+                showToast("Riwayat alat berhasil dibersihkan.");
+            }
+        }
+
+        function confirmClearAllHistory() {
+            if (confirm("Apakah Anda yakin ingin menghapus SEMUA catatan dari seluruh alat? Tindakan ini tidak dapat dibatalkan.")) {
+                localStorage.removeItem(STORAGE_KEY_HISTORY);
+                salaryRealityState.completedTools = [];
+                salaryRealityState.toolResults = {};
+                saveStateToStorage();
+                renderAllHistories();
+                updateDashboardSnapshot();
+                updateCareerPlanView();
+                showToast("Semua riwayat berhasil dihapus.");
+            }
+        }
+
+        /* -------------------------------------------------------------
+           FORM INITIALIZATION & EVENT HANDLERS
+        ------------------------------------------------------------- */
+        function initForms() {
+            document.getElementById('form-tool1').addEventListener('submit', (e) => { e.preventDefault(); runTool1(); });
+            document.getElementById('form-tool2').addEventListener('submit', (e) => { e.preventDefault(); runTool2(); });
+            document.getElementById('form-tool3').addEventListener('submit', (e) => { e.preventDefault(); runTool3(); });
+            document.getElementById('form-tool4').addEventListener('submit', (e) => { e.preventDefault(); runTool4(); });
+            document.getElementById('form-tool5').addEventListener('submit', (e) => { e.preventDefault(); runTool5(); });
+        }
+
+        /* -------------------------------------------------------------
+           TOOL 1 LOGIC — MARKET VALUE ESTIMATOR
+        ------------------------------------------------------------- */
+        function loadSampleTool1() {
+            document.getElementById('t1-job').value = "Marketing Manager";
+            document.getElementById('t1-exp').value = "3-5";
+            document.getElementById('t1-location').value = "Major metro";
+            document.getElementById('t1-company').value = "Mid-size";
+            document.getElementById('t1-salary').value = 58000;
+            document.getElementById('t1-skills').value = "Analisis Data, Otomatisasi Pemasaran, Manajemen Kampanye, Kepemimpinan Tim";
+            runTool1();
+        }
+
+        function runTool1() {
+            const job = document.getElementById('t1-job').value;
+            const exp = document.getElementById('t1-exp').value;
+            const location = document.getElementById('t1-location').value;
+            const company = document.getElementById('t1-company').value;
+            const salary = parseFloat(document.getElementById('t1-salary').value) || null;
+            const skillsStr = document.getElementById('t1-skills').value;
+
+            // Deterministic Base Template
+            let base = 65000;
+            const jLower = job.toLowerCase();
+            if (jLower.includes('engineer') || jLower.includes('developer') || jLower.includes('data')) base = 85000;
+            if (jLower.includes('director') || jLower.includes('head') || jLower.includes('direktur') || jLower.includes('kepala')) base = 110000;
+            if (jLower.includes('coordinator') || jLower.includes('assistant') || jLower.includes('koordinator') || jLower.includes('asisten')) base = 48000;
+
+            let expMult = 1.0;
+            if (exp === '3-5') expMult = 1.25;
+            if (exp === '6-10') expMult = 1.55;
+            if (exp === '10+') expMult = 1.85;
+
+            let locMult = 1.0;
+            if (location === 'Major metro') locMult = 1.25;
+            if (location === 'Mid-size city') locMult = 1.05;
+            if (location === 'Small town') locMult = 0.90;
+
+            let compMult = 1.0;
+            if (company === 'Startup') compMult = 0.95;
+            if (company === 'Mid-size') compMult = 1.10;
+            if (company === 'Enterprise') compMult = 1.25;
+
+            const midEst = Math.round(base * expMult * locMult * compMult);
+            const lowEst = Math.round(midEst * 0.88);
+            const highEst = Math.round(midEst * 1.15);
+
+            document.getElementById('t1-out-range').innerText = `$${lowEst.toLocaleString()} — $${highEst.toLocaleString()} / tahun`;
+            document.getElementById('t1-out-midpoint').innerText = `Tolok Ukur Titik Tengah Hasil Kalkulasi: $${midEst.toLocaleString()}`;
+
+            let posTag = "BERADA DI DALAM KISARAN ESTIMASI";
+            let posText = `Gaji Anda sudah sesuai dengan standar pasar ilustratif.`;
+            let gapHtml = "";
+
+            if (salary) {
+                const diff = salary - midEst;
+                const pct = Math.round((diff / midEst) * 100);
+
+                if (salary < lowEst) {
+                    posTag = "DI BAWAH KISARAN ESTIMASI";
+                    posText = `Gaji Anda saat ini ($${salary.toLocaleString()}) berada di bawah kisaran ilustratif aplikasi ini.`;
+                    gapHtml = `<span class="tag tag-red">DI BAWAH KISARAN (selisih ~${Math.abs(pct)}%)</span><p style="margin-top:0.5rem; color:var(--text-dark);">Gaji Anda saat ini berada di bawah kisaran ilustratif aplikasi ini. Hal ini dapat menjadi alasan kuat untuk mengajukan peninjauan pasar, terutama jika tanggung jawab dan kinerja Anda mendukung perbandingan tersebut.</p>`;
+                } else if (salary >= lowEst && salary <= highEst) {
+                    posTag = "BERADA DI DALAM KISARAN ESTIMASI";
+                    posText = `Gaji Anda saat ini ($${salary.toLocaleString()}) berada di dalam batas normal pasar yang diperkirakan.`;
+                    gapHtml = `<span class="tag tag-green">BERADA DI DALAM KISARAN ESTIMASI</span><p style="margin-top:0.5rem; color:var(--text-dark);">Kompensasi Anda saat ini berada di dalam kisaran ilustratif aplikasi. Untuk pengajuan kenaikan yang lebih kuat, tekankan pada perluasan cakupan tugas, dampak yang terukur, spesialisasi, atau tanggung jawab tingkat promosi.</p>`;
+                } else {
+                    posTag = "DI ATAS KISARAN ESTIMASI";
+                    posText = `Gaji Anda saat ini ($${salary.toLocaleString()}) berada di atas estimasi ilustratif umum.`;
+                    gapHtml = `<span class="tag tag-blue">DI ATAS KISARAN ESTIMASI</span><p style="margin-top:0.5rem; color:var(--text-dark);">Kompensasi Anda berada di atas estimasi umum aplikasi ini. Kenaikan gaji berikutnya mungkin akan lebih mudah dijustifikasi melalui promosi jabatan, spesialisasi luar biasa, perluasan cakupan peran, atau posisi baru yang berbeda secara material.</p>`;
+                }
+            } else {
+                gapHtml = `<span class="tag tag-blue">KISARAN TOLOK UKUR DITETAPKAN</span><p style="margin-top:0.5rem;">Masukkan gaji Anda saat ini untuk menerima penilaian selisih (gap) terpersonalisasi.</p>`;
+            }
+
+            document.getElementById('t1-out-position').innerText = posText;
+            document.getElementById('t1-out-gap').innerHTML = gapHtml;
+
+            // Skill Premiums
+            const skills = skillsStr.split(',').map(s => s.trim()).filter(s => s.length > 0);
+            let skillHtml = "";
+            if (skills.length > 0) {
+                skills.forEach(sk => {
+                    skillHtml += `<li><strong>${escapeHTML(sk)}:</strong> Sinyal potensi nilai: Keahlian ini dapat memperkuat kasus kompensasi Anda apabila terbukti relevan dengan peran dan didukung oleh dampak terukur.</li>`;
+                });
+            } else {
+                skillHtml = "<li>Tambahkan keahlian spesifik yang relevan dengan peran seperti otomatisasi, analitik, keahlian teknis, pembuat pendapatan, kepemimpinan proyek, atau pengetahuan domain langka.</li>";
+            }
+            document.getElementById('t1-out-skills').innerHTML = skillHtml;
+
+            // Populate Unified Results Architecture
+            document.getElementById('t1-uni-snapshot').innerText = `${job} | ${exp} thn peng. | ${location} | ${company}`;
+            document.getElementById('t1-uni-working').innerText = skills.length > 0 ? `Berhasil mengidentifikasi ${skills.length} sinyal keahlian utama.` : "Parameter dasar peran telah diatur dengan jelas.";
+            document.getElementById('t1-uni-attention').innerText = salary ? (salary < lowEst ? "Gaji saat ini berada di bawah titik tengah kisaran." : "Gaji sudah berada pada atau di atas kisaran.") : "Belum ada gaji saat ini yang dimasukkan untuk kalkulasi gap yang tepat.";
+            document.getElementById('t1-uni-drivers').innerText = `Dasar Peran ($${base.toLocaleString()}) × Peng. (${expMult}) × Lokasi (${locMult}) × Ukuran Prshn (${compMult}).`;
+            
+            let priorityText = salary < lowEst ? "Bangun Kasus Kontribusi (Alat 2) untuk menyiapkan bukti penyesuaian pasar." : "Fokus pada pembuktian perluasan cakupan tugas dan dampak bisnis yang terukur.";
+            document.getElementById('t1-uni-priority').innerText = priorityText;
+            document.getElementById('t1-uni-nexttool').innerText = "REKOMENDASI ALAT BERIKUTNYA: Inventaris Kontribusi (Alat 2)";
+
+            document.getElementById('results-tool1').classList.add('active');
+
+            const resObj = { job, exp, location, company, salary, lowEst, midEst, highEst, posTag, skills };
+            saveRecordToHistory('tool1', `${job} (${location}): $${lowEst.toLocaleString()} - $${highEst.toLocaleString()}`, posTag, { job, exp, location, company, salary }, resObj);
+        }
+
+        /* -------------------------------------------------------------
+           TOOL 2 LOGIC — CONTRIBUTION INVENTORY
+        ------------------------------------------------------------- */
+        function loadSampleTool2() {
+            document.getElementById('t2-achievements').value = "Membangun dan meluncurkan sistem onboarding karyawan baru; menyederhanakan alur kerja penerimaan lintas departemen.";
+            document.getElementById('t2-responsibilities').value = "Mengelola hubungan vendor dan negosiasi ulang kontrak yang biasanya ditangani oleh Direktur Operasional.";
+            document.getElementById('t2-revenue').value = "Mengurangi biaya operasional sebesar 30% dan menghemat Rp 300.000.000 per tahun untuk lisensi perangkat lunak.";
+            document.getElementById('t2-process').value = "Melatih 3 karyawan baru dan membuat dokumentasi Prosedur Operasional Standar (SOP) untuk departemen.";
+            document.getElementById('t2-impact').value = "Alur kerja utama akan mengalami penundaan parah; pelatihan onboarding yang sedang berjalan akan terhenti.";
+            runTool2();
+        }
+
+        function runTool2() {
+            const ach = document.getElementById('t2-achievements').value;
+            const resp = document.getElementById('t2-responsibilities').value;
+            const rev = document.getElementById('t2-revenue').value;
+            const proc = document.getElementById('t2-process').value;
+            const imp = document.getElementById('t2-impact').value;
+
+            let bullets = [];
+            if (ach) bullets.push(`Pencapaian Utama: ${ach}`);
+            if (resp) bullets.push(`Perluasan Cakupan: ${resp}`);
+            if (rev) bullets.push(`Dampak Finansial / Efisiensi: ${rev}`);
+            if (proc) bullets.push(`Pengoptimalan Proses: ${proc}`);
+
+            let evidenceHtml = "";
+            bullets.forEach(b => {
+                evidenceHtml += `<li style="margin-bottom: 0.4rem;">${escapeHTML(b)}</li>`;
+            });
+            document.getElementById('t2-out-evidence').innerHTML = evidenceHtml || "<li>Belum ada pencapaian yang dimasukkan.</li>";
+
+            let translationText = "";
+            if (rev) {
+                translationText = `<strong>Nilai Terukur:</strong> Anda telah berdampak langsung pada kinerja operasional ("${escapeHTML(rev)}"). Dalam peninjauan kompensasi, penghematan terukur, pendapatan, efisiensi, pengurangan risiko, atau waktu yang dihemat akan sangat memperkuat posisi Anda.`;
+            } else {
+                translationText = "Dengan menghubungkan tanggung jawab harian secara langsung dengan hasil yang terukur, kontribusi Anda beralih dari sekadar tugas standar menjadi pertumbuhan perusahaan yang dapat dikuantifikasi.";
+            }
+            document.getElementById('t2-out-translation').innerHTML = translationText;
+
+            let sowhatPassed = false;
+            let sowhatText = "";
+            if (resp || rev) {
+                sowhatPassed = true;
+                sowhatText = `<span class="tag tag-green">LOLOS</span> <span style="margin-left:0.5rem; color:var(--text-dark);">Bukti Anda secara jelas menunjukkan nilai <em>di luar</em> cakupan tugas standar pekerjaan Anda.</span>`;
+            } else {
+                sowhatText = `<span class="tag tag-yellow">MODERAT</span> <span style="margin-left:0.5rem; color:var(--text-dark);">Argumen Anda saat ini masih bergantung pada tugas-tugas standar. Untuk membenarkan kenaikan gaji yang tinggi, tekankan penghematan biaya terukur, pendapatan, atau perluasan tanggung jawab.</span>`;
+            }
+            document.getElementById('t2-out-sowhat').innerHTML = sowhatText;
+
+            let gapsText = "Untuk memperkuat argumen Anda lebih jauh, prioritaskan pengumpulan: 1) Persentase peningkatan yang konkret, 2) Pujian/testimoni langsung dari pemangku kepentingan utama, 3) Metrik terukur atau efisiensi biaya.";
+            document.getElementById('t2-out-gaps').innerText = gapsText;
+
+            const template = `RINGKASAN KONTRIBUSI EKSEKUTIF
+
+1. GAMBARAN UMUM KONTRIBUSI TERAKHIR:
+- ${ach || 'Konsisten memberikan hasil berkualitas tinggi pada proyek-proyek utama.'}
+
+2. PERLUASAN TANGGUNG JAWAB & KEPEMIMPINAN:
+- ${resp || 'Mengambil kepemimpinan proyek tambahan serta koordinasi lintas fungsi.'}
+
+3. DAMPAK BISNIS & CREATING VALUE:
+- ${rev || 'Meningkatkan efisiensi dan kecepatan penyelesaian proyek pada operasional tim.'}
+
+4. PENINGKATAN PROSES & PENGEMBANGAN TIM:
+- ${proc || 'Membimbing anggota tim dan mendokumentasikan prosedur-prosedur penting.'}
+
+5. NILAI STRATEGIS BERKELANJUTAN:
+- ${imp || 'Memastikan stabilitas operasional dan pertumbuhan yang berkelanjutan.'}`;
+
+            document.getElementById('t2-out-template').innerText = template;
+
+            // Unified Results Architecture
+            document.getElementById('t2-uni-snapshot').innerText = `${bullets.length} dimensi kontribusi utama dicatat.`;
+            document.getElementById('t2-uni-working').innerText = sowhatPassed ? "Lolos uji 'Lalu Kenapa?' dengan perluasan cakupan/dampak finansial." : "Mendokumentasikan pencapaian dasar.";
+            document.getElementById('t2-uni-attention').innerText = rev ? "Data finansial terukur tersedia." : "Kurang memiliki angka pendapatan atau penghematan biaya secara langsung.";
+            document.getElementById('t2-uni-drivers').innerText = "Penerjemahan nilai didorong oleh perluasan cakupan peran dan dampak bisnis yang terukur.";
+            document.getElementById('t2-uni-priority').innerText = sowhatPassed ? "Bukti Anda sudah siap. Lanjutkan ke Penyusun Skrip Negosiasi (Alat 3) atau Penganalisis Waktu (Alat 4)." : "Kumpulkan setidaknya satu metrik konkret atau testimoni dari pemangku kepentingan.";
+            document.getElementById('t2-uni-nexttool').innerText = "REKOMENDASI ALAT BERIKUTNYA: Penyusun Skrip Negosiasi (Alat 3)";
+
+            document.getElementById('results-tool2').classList.add('active');
+
+            const resObj = { ach, resp, rev, proc, imp, sowhatPassed, template };
+            saveRecordToHistory('tool2', `Kasus Kontribusi (${bullets.length} item)`, sowhatPassed ? 'Bukti Kuat' : 'Bukti Moderat', { ach, resp, rev }, resObj);
+        }
+
+        /* -------------------------------------------------------------
+           TOOL 3 LOGIC — NEGOTIATION SCRIPT BUILDER
+        ------------------------------------------------------------- */
+        function loadSampleTool3() {
+            document.getElementById('t3-target').value = "15%";
+            document.getElementById('t3-backup').value = "Title change";
+            document.querySelector('input[name="t3-style"][value="Needs data"]').checked = true;
+            document.getElementById('t3-health').value = "Stable";
+            document.getElementById('t3-leverage').value = "Market data";
+            runTool3();
+        }
+
+        function runTool3() {
+            const target = document.getElementById('t3-target').value;
+            const backup = document.getElementById('t3-backup').value;
+            const style = document.querySelector('input[name="t3-style"]:checked').value;
+            const health = document.getElementById('t3-health').value;
+            const leverage = document.getElementById('t3-leverage').value;
+
+            let opening = "";
+            if (style === "Needs data") {
+                opening = `"Terima kasih telah meluangkan waktu hari ini. Saya ingin meninjau kompensasi saya relatif terhadap pencapaian kinerja terakhir dan tolok ukur pasar yang terverifikasi. Selama sebulan/setahun terakhir, peran saya telah berkembang pesat, dan saya telah menyiapkan ringkasan singkat mengenai kontribusi serta data pasar untuk kita bahas bersama."`;
+            } else if (style === "Needs consensus") {
+                opening = `"Terima kasih sudah berkenan bertemu. Saya sangat mengapresiasi perkembangan tim kita belakangan ini. Saya ingin meluangkan waktu sebentar untuk mendiskusikan perkembangan karir saya, hasil proyek terkini, dan bagaimana kita dapat menyelaraskan kompensasi saya dengan nilai lebih besar yang saya berikan kepada tim."`;
+            } else if (style === "Gut feel") {
+                opening = `"Terima kasih atas waktunya! Saya sangat bersemangat melihat arah perkembangan kita. Melihat kembali dampak yang telah saya berikan baru-baru ini, saya ingin mendiskusikan penyesuaian kompensasi saya agar sejalan dengan tanggung jawab saya yang terus bertambah."`;
+            } else {
+                opening = `"Terima kasih sudah meluangkan waktu untuk bertemu. Saya sangat menghargai dukungan Anda dalam perkembangan karir saya di sini. Saya ingin menjadwalkan waktu khusus ini untuk membahas peninjauan kompensasi rutin berdasarkan perluasan peran saya baru-baru ini."`;
+            }
+
+            const ask = `"Berdasarkan riset pasar dan perluasan cakupan tugas yang telah saya ambil, saya mengajukan penyesuaian sebesar ${target}. Hal ini mencerminkan tolok ukur industri saat ini untuk tingkat kinerja tersebut sekaligus nilai nyata yang terus saya berikan bagi perusahaan."`;
+
+            const yes = `<strong>Langkah Konfirmasi Langsung:</strong> Sampaikan rasa terima kasih yang tulus, lalu tindak lanjuti secara tertulis (email) dalam waktu 24 jam.<br><br>
+            <em>"Terima kasih banyak. Saya sangat menghargai pengakuan Anda atas kontribusi saya. Saya akan mengirimkan ringkasan singkat melalui email untuk mengonfirmasi detail ini (${escapeHTML(target)}) dan linimasa pemberlakuan resminya."</em>`;
+
+            let noPivot = "";
+            if (backup === "Same amount later") {
+                noPivot = `<strong>Strategi Pengalihan (Tinjauan Target):</strong> "Saya sangat memahami keterbatasan anggaran saat ini. Bisakah kita menyepakati 2-3 target kinerja spesifik dalam 6 bulan ke depan sehingga kita dapat menjadwalkan peninjauan kompensasi otomatis begitu target tersebut tercapai?"`;
+            } else if (backup === "More PTO") {
+                noPivot = `<strong>Strategi Pengalihan (Cuti Tambahan):</strong> "Saya memahami keterbatasan anggaran pokok saat ini. Karena penyesuaian gaji belum memungkinkan hari ini, apakah perusahaan terbuka untuk memberikan tambahan cuti berbayar (PTO) sebagai bentuk apresiasi atas beban kerja saya yang meningkat?"`;
+            } else if (backup === "Title change") {
+                noPivot = `<strong>Strategi Pengalihan (Kenaikan Jabatan):</strong> "Saya memahami batasan anggaran yang ada. Agar perkembangan karir saya tetap berjalan selaras, mungkinkah kita menyesuaikan gelar jabatan saya hari ini agar lebih mencerminkan tugas-tugas tingkat tinggi yang sedang saya jalankan?"`;
+            } else if (backup === "Flexible hours") {
+                noPivot = `<strong>Strategi Pengalihan (Fleksibilitas):</strong> "Saya mengerti dari sisi anggaran. Apakah kita bisa mendiskusikan fleksibilitas tambahan pada jam kerja atau jadwal remote sebagai bentuk keselarasan non-moneter?"`;
+            } else {
+                noPivot = `<strong>Strategi Pengalihan:</strong> "Saya mengerti. Kapan linimasa yang Anda perkirakan untuk pembukaan kembali peninjauan kompensasi, dan metrik utama apa yang harus saya fokuskan hingga saat itu tiba?"`;
+            }
+
+            const deflect = `"Saya memahami bahwa waktu saat ini sangat sibuk. Agar pembahasan ini tidak terlewat, bisakah kita meluangkan waktu 15 menit di kalender pada [Tanggal Spesifik 2-3 minggu ke depan] untuk mendiskusikan hal ini secara khusus?"`;
+
+            let timingText = "Mulailah percakapan ini dalam rapat 1-on-1 khusus, idealnya 1 hingga 2 bulan SEBELUM alokasi anggaran tahunan difinalisasi.";
+            if (health === "Struggling") {
+                timingText += "<br><em>Catatan: Mengingat kondisi keuangan perusahaan yang ketat, kemas pengajuan Anda secara tegas di sekitar ROI, penghematan biaya, efisiensi, atau nilai retensi penting.</em>";
+            }
+
+            document.getElementById('t3-out-opening').innerText = opening;
+            document.getElementById('t3-out-ask').innerText = ask;
+            document.getElementById('t3-out-yes').innerHTML = yes;
+            document.getElementById('t3-out-no').innerHTML = noPivot;
+            document.getElementById('t3-out-deflect').innerText = deflect;
+            document.getElementById('t3-out-timing').innerHTML = timingText;
+
+            // Unified Results Architecture
+            document.getElementById('t3-uni-snapshot').innerText = `Target: ${target} | Gaya: ${style} | Kesehatan Prshn: ${health}`;
+            document.getElementById('t3-uni-working').innerText = `Skrip pembuka yang disesuaikan dan rencana cadangan (${backup}) telah ditetapkan.`;
+            document.getElementById('t3-uni-attention').innerText = health === 'Struggling' ? "Tekanan keuangan perusahaan membutuhkan penyampaian berfokus pada ROI." : "Pastikan skrip dilatih agar terdengar alami.";
+            document.getElementById('t3-uni-drivers').innerText = `Strategi diselaraskan dengan model keputusan atasan bertipe ${style} dan pengungkit ${leverage}.`;
+            document.getElementById('t3-uni-priority').innerText = "Periksa ketepatan waktu percakapan Anda menggunakan Penganalisis Waktu (Alat 4) sebelum membuat jadwal.";
+            document.getElementById('t3-uni-nexttool').innerText = "REKOMENDASI ALAT BERIKUTNYA: Penganalisis Waktu / Timing (Alat 4)";
+
+            document.getElementById('results-tool3').classList.add('active');
+
+            const resObj = { target, backup, style, health, leverage, opening, ask, yes, noPivot, deflect };
+            saveRecordToHistory('tool3', `Skrip Kenaikan ${target} (${style})`, `Opsi Cadangan: ${backup}`, { target, backup, style }, resObj);
+        }
+
+        /* -------------------------------------------------------------
+           TOOL 4 LOGIC — TIMING ANALYZER
+        ------------------------------------------------------------- */
+        function loadSampleTool4() {
+            document.getElementById('t4-lastraise').value = "1-2yr";
+            document.getElementById('t4-perf').value = "Exceeded goals";
+            
+            const checkboxes = document.querySelectorAll('input[name="t4-events"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            document.querySelector('input[name="t4-events"][value="Budget cycle"]').checked = true;
+
+            document.getElementById('t4-stress').value = "Normal";
+            document.getElementById('t4-personal').value = "Just had a win";
+            runTool4();
+        }
+
+        function runTool4() {
+            const lastraise = document.getElementById('t4-lastraise').value;
+            const perf = document.getElementById('t4-perf').value;
+            const stress = document.getElementById('t4-stress').value;
+            const personal = document.getElementById('t4-personal').value;
+
+            const selectedEvents = Array.from(document.querySelectorAll('input[name="t4-events"]:checked')).map(cb => cb.value);
+
+            let score = 0;
+
+            if (lastraise === '1-2yr' || lastraise === '2yr+' || lastraise === 'Never') score += 3;
+            if (lastraise === '6-12mo') score += 1;
+            if (lastraise === '<6mo') score -= 3;
+
+            if (perf === 'Exceeded goals') score += 4;
+            if (perf === 'Met goals') score += 2;
+            if (perf === 'Struggling') score -= 5;
+
+            if (stress === 'Low') score += 2;
+            if (stress === 'Normal') score += 1;
+            if (stress === 'Crisis mode') score -= 4;
+
+            if (personal === 'Just had a win') score += 3;
+            if (personal === 'Made a mistake') score -= 3;
+
+            if (selectedEvents.includes('Layoffs')) score -= 4;
+            if (selectedEvents.includes('Budget cycle') || selectedEvents.includes('Performance review')) score += 2;
+
+            let tagClass = "tag-green";
+            let tagText = "LAMPU HIJAU";
+            let scoreText = "Jendela Waktu Sangat Mendukung — Probabilitas Tinggi untuk Diskusi Konstruktif";
+            let windowText = "Jadwalkan percakapan Anda dalam 1 hingga 3 minggu ke depan selagi pencapaian terbaru masih segar.";
+            let planText = "Siapkan Kasus Kontribusi (Alat 2), tinjau Skrip Negosiasi (Alat 3), dan ajukan rapat 1-on-1 khusus selama 30 menit.";
+
+            if (score >= 2 && score < 6) {
+                tagClass = "tag-yellow";
+                tagText = "LAMPU KUNING";
+                scoreText = "Jendela Waktu Moderat — Lanjutkan dengan Persiapan Strategis";
+                windowText = "Jendela waktu paling optimal adalah dalam 3 hingga 6 minggu. Gunakan waktu ini untuk mengumpulkan bukti kinerja yang lebih kuat.";
+                planText = "Fokus pada pencapaian satu hasil positif lagi atau tunggu hingga tingkat stres atasan mereda sebelum mengajukan permintaan resmi.";
+            } else if (score < 2) {
+                tagClass = "tag-red";
+                tagText = "LAMPU MERAH";
+                scoreText = "Jendela Waktu Berisiko Tinggi — Tunda dan Bangun Nilai Lebih Dahulu";
+                windowText = "Pertimbangkan untuk menunda 2 hingga 3 bulan sebelum memulai percakapan gaji secara formal.";
+                planText = "Fokus pada perbaikan celah kinerja, menstabilkan hasil kerja utama, atau menunggu hingga kondisi krisis anggaran saat ini berlalu.";
+            }
+
+            const tagElem = document.getElementById('t4-out-tag');
+            tagElem.className = `tag ${tagClass}`;
+            tagElem.innerText = tagText;
+
+            document.getElementById('t4-out-scoretext').innerText = scoreText;
+            document.getElementById('t4-out-window').innerText = windowText;
+            document.getElementById('t4-out-plan').innerText = planText;
+
+            let risks = [];
+            if (stress === 'Crisis mode' || stress === 'High') risks.push("Tingkat stres atasan yang tinggi dapat memicu penolakan bersikap defensif.");
+            if (selectedEvents.includes('Layoffs')) risks.push("Restrukturisasi perusahaan biasanya menciptakan pembekuan anggaran sementara yang ketat.");
+            if (lastraise === '<6mo') risks.push("Penyesuaian gaji yang terlalu baru dapat memicu penolakan kebijakan standar.");
+            if (perf === 'Mixed' || perf === 'Struggling') risks.push("Kinerja yang tidak konsisten melemahkan argumen penambahan gaji.");
+
+            if (risks.length === 0) risks.push("Tidak ada faktor risiko mendesak yang terdeteksi. Pertahankan persiapan profesional standar.");
+
+            let riskHtml = "";
+            risks.forEach(r => riskHtml += `<li>${r}</li>`);
+            document.getElementById('t4-out-risks').innerHTML = riskHtml;
+
+            // Unified Results Architecture
+            document.getElementById('t4-uni-snapshot').innerText = `Tingkat: ${tagText} (Skor: ${score}) | Kinerja: ${perf}`;
+            document.getElementById('t4-uni-working').innerText = score >= 6 ? "Kinerja kuat dan keselarasan linimasa yang sangat mendukung." : "Faktor risiko waktu teridentifikasi secara jelas.";
+            document.getElementById('t4-uni-attention').innerText = risks.length > 0 ? risks[0] : "Pertahankan persiapan profesional.";
+            document.getElementById('t4-uni-drivers').innerText = `Skor dihitung dari kenaikan gaji terakhir, pencapaian baru, tingkat stres atasan, dan agenda perusahaan.`;
+            document.getElementById('t4-uni-priority').innerText = score >= 6 ? "Pesan jadwal rapat 1-on-1 Anda dalam 1-3 minggu." : "Bangun opsi eksternal dengan Kalkulator Rencana B (Alat 5).";
+            document.getElementById('t4-uni-nexttool').innerText = "REKOMENDASI ALAT BERIKUTNYA: Kalkulator Rencana B (Alat 5)";
+
+            document.getElementById('results-tool4').classList.add('active');
+
+            const resObj = { score, tagText, scoreText, windowText, planText, risks };
+            saveRecordToHistory('tool4', `Audit Waktu: ${tagText}`, `Skor: ${score}`, { lastraise, perf, stress }, resObj);
+        }
+
+        /* -------------------------------------------------------------
+           TOOL 5 LOGIC — PLAN B CALCULATOR
+        ------------------------------------------------------------- */
+        function loadSampleTool5() {
+            document.querySelector('input[name="t5-leave"][value="Maybe"]').checked = true;
+            document.getElementById('t5-tenure').value = "1yr";
+            document.querySelector('input[name="t5-interview"][value="Yes, early stages"]').checked = true;
+            document.getElementById('t5-minsalary').value = 75000;
+
+            const checkboxes = document.querySelectorAll('input[name="t5-barriers"]');
+            checkboxes.forEach(cb => cb.checked = false);
+            document.querySelector('input[name="t5-barriers"][value="Fear of unknown"]').checked = true;
+            document.querySelector('input[name="t5-barriers"][value="Location/family"]').checked = true;
+
+            runTool5();
+        }
+
+        function runTool5() {
+            const leave = document.querySelector('input[name="t5-leave"]:checked').value;
+            const tenure = document.getElementById('t5-tenure').value;
+            const interview = document.querySelector('input[name="t5-interview"]:checked').value;
+            const minsalary = document.getElementById('t5-minsalary').value;
+            const barriers = Array.from(document.querySelectorAll('input[name="t5-barriers"]:checked')).map(cb => cb.value);
+
+            let optionText = "";
+            let stratTag = "";
+            if (interview === "Yes, have offers") {
+                stratTag = "MANFAATKAN PENGUNGKIT ATAU PINDAH SEKARANG";
+                optionText = "<strong>MANFAATKAN PENGUNGKIT ATAU PINDAH SEKARANG:</strong> Anda memegang pengungkit eksternal maksimal. Bandingkan penawaran eksternal dengan peluang internal menggunakan total kompensasi, bukan hanya gaji pokok.";
+            } else if (leave === "Yes" || tenure === "Already looking") {
+                stratTag = "PENCARIAN EKSTERNAL AKTIF";
+                optionText = "<strong>PENCARIAN EKSTERNAL AKTIF:</strong> Fokuskan energi utama pada lamaran kerja eksternal dan wawancara. Negosiasi internal saja kemungkinan besar tidak akan memenuhi target jangka panjang Anda.";
+            } else if (leave === "Maybe") {
+                stratTag = "PENDEKATAN JALUR GANDA";
+                optionText = "<strong>PENDEKATAN JALUR GANDA (NEGOSIASI & PERSIAPAN):</strong> Lakukan negosiasi internal menggunakan skrip Alat 3 sambil memperbarui resume dan portofolio secara diam-diam untuk menguji permintaan pasar eksternal.";
+            } else {
+                stratTag = "BANGUN & BERKEMBANG INTERNAL";
+                optionText = "<strong>BANGUN & BERKEMBANG INTERNAL:</strong> Fokus pada peningkatan keahlian internal dan manfaat non-moneter (jabatan, PTO) daripada berpindah dalam waktu dekat.";
+            }
+            document.getElementById('t5-out-options').innerHTML = optionText;
+
+            let rrText = `<strong>Bertahan & Bernegosiasi:</strong> Risiko transisi langsung yang rendah, menjaga relasi profesional yang sudah ada. Namun, kompensasi tetap tunduk pada batasan anggaran internal.<br>
+            <strong>Pindah ke Pasar Eksternal:</strong> Usaha pencarian kerja jangka pendek yang lebih besar. Kepindahan ke luar perusahaan terkadang bisa memberikan kenaikan gaji lebih tinggi daripada kenaikan internal standar, meskipun hasil akhirnya bervariasi berdasarkan peran dan pemberi kerja.`;
+            document.getElementById('t5-out-riskreward').innerHTML = rrText;
+
+            let checklist = [
+                "Perbarui resume dan portofolio dengan pencapaian terbaru dari Alat 2.",
+                "Aktifkan status 'Open to Work' di LinkedIn secara diam-diam (hanya terlihat oleh perekrut).",
+                "Kumpulkan sampel kerja atau laporan metrik terbaru yang secara sah diizinkan untuk Anda simpan.",
+                "Audit pengeluaran bulanan Anda untuk memahami kebutuhan keuangan dasar yang tepat."
+            ];
+            let checkHtml = "";
+            checklist.forEach(item => checkHtml += `<li style="margin-bottom:0.3rem;">${item}</li>`);
+            document.getElementById('t5-out-checklist').innerHTML = checkHtml;
+
+            let skillText = "Identifikasi 3 keahlian teratas yang muncul pada lowongan pekerjaan dengan target kompensasi (" + (minsalary ? `$${parseFloat(minsalary).toLocaleString()}` : "rate target Anda") + "). Luangkan waktu 2 jam/minggu untuk menutup celah keahlian tersebut.";
+            document.getElementById('t5-out-skillplan').innerText = skillText;
+
+            let timeline = "Persiapan langsung (0-30 hari), jendela eksekusi 60-90 hari.";
+            if (tenure === '1yr') timeline = "Horizon transisi strategis 3-6 bulan.";
+            if (tenure === 'Indefinitely') timeline = "Pencarian oportunistik (6+ bulan).";
+
+            document.getElementById('t5-out-timeline').innerText = timeline;
+            document.getElementById('t5-out-cushion').innerText = "Tabungan 3 hingga 6 bulan pengeluaran hidup dasar sebelum keluar tanpa paksaan (pertimbangan perencanaan umum).";
+
+            // Unified Results Architecture
+            document.getElementById('t5-uni-snapshot').innerText = `Strategi: ${stratTag} | Linimasa: ${tenure}`;
+            document.getElementById('t5-uni-working').innerText = interview !== 'No' ? "Kesiapan wawancara/opsi luar terkonfirmasi." : "Rencana opsi alternatif telah dipetakan.";
+            document.getElementById('t5-uni-attention').innerText = barriers.length > 0 ? `Hambatan teridentifikasi: ${barriers.join(', ')}.` : "Tidak ada hambatan utama yang dicatat.";
+            document.getElementById('t5-uni-drivers').innerText = "Posisi didorong oleh kesediaan berpindah, kesiapan wawancara, dan batas finansial dasar.";
+            document.getElementById('t5-uni-priority').innerText = "Sintesiskan semua modul ke dalam Rencana Karir Saya.";
+            document.getElementById('t5-uni-nexttool').innerText = "REKOMENDASI LANGKAH BERIKUTNYA: Tinjau Rencana Karir Saya";
+
+            document.getElementById('results-tool5').classList.add('active');
+
+            const resObj = { stratTag, leave, tenure, interview, minsalary, barriers, timeline };
+            saveRecordToHistory('tool5', `Rencana B: ${stratTag}`, `Linimasa: ${tenure}`, { leave, tenure, interview }, resObj);
+        }
+
+        /* -------------------------------------------------------------
+           DASHBOARD & CAREER PLAN SYNTHESIS UPDATES
+        ------------------------------------------------------------- */
+        function updateDashboardSnapshot() {
+            const container = document.getElementById('dash-snapshot-content');
+            if (!container) return;
+
+            const results = salaryRealityState.toolResults;
+            const completed = salaryRealityState.completedTools;
+
+            if (!completed || completed.length === 0) {
+                container.innerHTML = '<p style="font-size: 0.875rem; color: var(--text-muted);">Belum ada modul yang diselesaikan pada sesi ini. Selesaikan modul apa pun untuk menampilkan ringkasan di sini.</p>';
+                return;
+            }
+
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">';
+
+            if (results.tool1) {
+                html += `<div style="background:#F8FAFC; padding:0.75rem; border-radius:var(--radius-md); border-left:3px solid var(--midnight-blue);">
+                    <strong style="font-size:0.8rem; color:var(--text-muted); display:block;">ESTIMASI PASAR</strong>
+                    <span style="font-weight:700; color:var(--midnight-blue); font-size:0.95rem;">$${results.tool1.lowEst.toLocaleString()} - $${results.tool1.highEst.toLocaleString()}</span>
+                </div>`;
+            }
+            if (results.tool2) {
+                html += `<div style="background:#F8FAFC; padding:0.75rem; border-radius:var(--radius-md); border-left:3px solid var(--mint-green);">
+                    <strong style="font-size:0.8rem; color:var(--text-muted); display:block;">STATUS BUKTI</strong>
+                    <span style="font-weight:700; color:var(--midnight-blue); font-size:0.95rem;">${results.tool2.sowhatPassed ? 'Bukti Kontribusi Kuat' : 'Bukti Moderat'}</span>
+                </div>`;
+            }
+            if (results.tool3) {
+                html += `<div style="background:#F8FAFC; padding:0.75rem; border-radius:var(--radius-md); border-left:3px solid var(--midnight-blue);">
+                    <strong style="font-size:0.8rem; color:var(--text-muted); display:block;">TARGET NEGOSIASI</strong>
+                    <span style="font-weight:700; color:var(--midnight-blue); font-size:0.95rem;">${results.tool3.target} (Cadangan: ${results.tool3.backup})</span>
+                </div>`;
+            }
+            if (results.tool4) {
+                html += `<div style="background:#F8FAFC; padding:0.75rem; border-radius:var(--radius-md); border-left:3px solid #F59E0B;">
+                    <strong style="font-size:0.8rem; color:var(--text-muted); display:block;">KESIAPAN WAKTU</strong>
+                    <span style="font-weight:700; color:var(--midnight-blue); font-size:0.95rem;">${results.tool4.tagText}</span>
+                </div>`;
+            }
+            if (results.tool5) {
+                html += `<div style="background:#F8FAFC; padding:0.75rem; border-radius:var(--radius-md); border-left:3px solid var(--mint-green);">
+                    <strong style="font-size:0.8rem; color:var(--text-muted); display:block;">STRATEGI RENCANA B</strong>
+                    <span style="font-weight:700; color:var(--midnight-blue); font-size:0.95rem;">${results.tool5.stratTag}</span>
+                </div>`;
+            }
+
+            html += '</div>';
+            container.innerHTML = html;
+        }
+
+        function updateCareerPlanView() {
+            const container = document.getElementById('synthesized-plan-output');
+            if (!container) return;
+
+            const res = salaryRealityState.toolResults;
+            const completed = salaryRealityState.completedTools;
+
+            if (!completed || completed.length === 0) {
+                container.innerHTML = `<p style="font-size: 0.9rem; color: var(--text-muted); font-style: italic;">
+                    Jalankan alat-alat secara individu (Nilai Pasar, Kasus Kontribusi, Negosiasi, Waktu, Rencana B) untuk mengisikan rencana sintesis eksekutif terpadu Anda.
+                </p>`;
+                return;
+            }
+
+            let html = `<div style="display:flex; flex-direction:column; gap:1.25rem;">`;
+
+            // Section 1: Market Position
+            html += `<div>
+                <h4 style="color:var(--midnight-blue); border-bottom:1px solid var(--border-color); padding-bottom:0.3rem; margin-bottom:0.5rem;">1. TOLOK UKUR POSISI PASAR</h4>`;
+            if (res.tool1) {
+                html += `<p style="font-size:0.9rem;"><strong>Peran:</strong> ${escapeHTML(res.tool1.job)} | <strong>Kisaran Estimasi:</strong> $${res.tool1.lowEst.toLocaleString()} - $${res.tool1.highEst.toLocaleString()} / thn | <strong>Posisi:</strong> ${res.tool1.posTag}</p>`;
+            } else {
+                html += `<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada analisis Nilai Pasar yang dijalankan.</p>`;
+            }
+            html += `</div>`;
+
+            // Section 2: Value Case
+            html += `<div>
+                <h4 style="color:var(--midnight-blue); border-bottom:1px solid var(--border-color); padding-bottom:0.3rem; margin-bottom:0.5rem;">2. BUKTI KONTRIBUSI UTAMA</h4>`;
+            if (res.tool2) {
+                html += `<p style="font-size:0.9rem;"><strong>Status Nilai:</strong> ${res.tool2.sowhatPassed ? 'Tanggung jawab di luar peran terbukti' : 'Kontribusi standar dicatat'}</p>
+                <div class="script-box" style="font-size:0.8rem; margin-top:0.4rem;">${escapeHTML(res.tool2.template)}</div>`;
+            } else {
+                html += `<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada kasus kontribusi yang dibuat.</p>`;
+            }
+            html += `</div>`;
+
+            // Section 3: Conversation Strategy
+            html += `<div>
+                <h4 style="color:var(--midnight-blue); border-bottom:1px solid var(--border-color); padding-bottom:0.3rem; margin-bottom:0.5rem;">3. STRATEGI PERCAKAPAN NEGOSIASI</h4>`;
+            if (res.tool3) {
+                html += `<p style="font-size:0.9rem;"><strong>Target:</strong> ${escapeHTML(res.tool3.target)} | <strong>Opsi Cadangan:</strong> ${escapeHTML(res.tool3.backup)} | <strong>Gaya Atasan:</strong> ${escapeHTML(res.tool3.style)}</p>
+                <p style="font-size:0.85rem; margin-top:0.3rem;"><strong>Skrip Pembuka:</strong> <em>${escapeHTML(res.tool3.opening)}</em></p>`;
+            } else {
+                html += `<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada skrip negosiasi yang dibuat.</p>`;
+            }
+            html += `</div>`;
+
+            // Section 4: Timing & Readiness
+            html += `<div>
+                <h4 style="color:var(--midnight-blue); border-bottom:1px solid var(--border-color); padding-bottom:0.3rem; margin-bottom:0.5rem;">4. AUDIT WAKTU & KESIAPAN</h4>`;
+            if (res.tool4) {
+                html += `<p style="font-size:0.9rem;"><strong>Tingkat Kesiapan:</strong> ${res.tool4.tagText} | <strong>Rencana Aksi:</strong> ${res.tool4.planText}</p>`;
+            } else {
+                html += `<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada audit waktu yang dijalankan.</p>`;
+            }
+            html += `</div>`;
+
+            // Section 5: Plan B
+            html += `<div>
+                <h4 style="color:var(--midnight-blue); border-bottom:1px solid var(--border-color); padding-bottom:0.3rem; margin-bottom:0.5rem;">5. PENGUNGKIT EKSTERNAL & RENCANA B</h4>`;
+            if (res.tool5) {
+                html += `<p style="font-size:0.9rem;"><strong>Strategi:</strong> ${res.tool5.stratTag} | <strong>Linimasa Eksekusi:</strong> ${res.tool5.timeline}</p>`;
+            } else {
+                html += `<p style="font-size:0.85rem; color:var(--text-muted);">Belum ada kalkulasi Rencana B yang dilakukan.</p>`;
+            }
+            html += `</div>`;
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

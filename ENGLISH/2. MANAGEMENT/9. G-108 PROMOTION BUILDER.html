@@ -1,0 +1,1955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PromotionBuilder — Career Advancement & Elevation System</title>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* CSS RESET & VARS */
+        :root {
+            --emerald-dark: #1b4332;
+            --emerald: #2D6A4F;
+            --emerald-light: #52b788;
+            --emerald-subtle: #d8f3dc;
+            --gold: #D4A373;
+            --gold-light: #fefae0;
+            --bg-gradient: linear-gradient(135deg, #F1F8F5 0%, #FDF6EC 100%);
+            --card-bg: #FFFFFF;
+            --text-main: #212529;
+            --text-muted: #6c757d;
+            --border-color: #e9ecef;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+        }
+
+        /* LAYOUT STYLES */
+        #app-container {
+            display: flex;
+            flex: 1;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* SIDEBAR */
+        #sidebar {
+            width: var(--sidebar-width);
+            background: #ffffff;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .sidebar-header i {
+            font-size: 1.5rem;
+            color: var(--emerald);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--emerald-dark);
+            letter-spacing: -0.5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 1rem 0;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .nav-item {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: var(--emerald-subtle);
+            color: var(--emerald-dark);
+        }
+
+        .nav-item.active {
+            background: #f0f7f4;
+            color: var(--emerald);
+            border-left-color: var(--emerald);
+            font-weight: 600;
+        }
+
+        .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        /* MOBILE HEADER / HAMBURGER */
+        .mobile-header {
+            display: none;
+            background: #ffffff;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 900;
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            color: var(--emerald-dark);
+            cursor: pointer;
+        }
+
+        /* MAIN CONTENT AREA */
+        #main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .content-area {
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem;
+            flex: 1;
+        }
+
+        /* FOOTER */
+        footer {
+            background: #ffffff;
+            border-top: 1px solid var(--border-color);
+            padding: 1.25rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: auto;
+        }
+
+        /* CARDS & UI COMPONENTS */
+        .card {
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+            border: 1px solid var(--border-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .tool-header h2 {
+            font-size: 1.75rem;
+            color: var(--emerald-dark);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .tool-problem {
+            background: var(--gold-light);
+            border-left: 4px solid var(--gold);
+            padding: 0.75rem 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            font-size: 0.95rem;
+            color: #7c5227;
+            margin-bottom: 1.5rem;
+            font-style: italic;
+        }
+
+        /* FORM CONTROLS */
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            color: var(--emerald-dark);
+        }
+
+        input[type="text"], input[type="number"], select, textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            font-family: inherit;
+            font-size: 0.9rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fdfdfd;
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--emerald);
+            box-shadow: 0 0 0 3px rgba(45, 106, 79, 0.1);
+            background: #ffffff;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 0.25rem;
+        }
+
+        .radio-label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            font-weight: 400;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* BUTTONS */
+        .btn-container {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--emerald);
+            color: #ffffff;
+        }
+
+        .btn-primary:hover {
+            background: var(--emerald-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .btn-copy {
+            background: var(--gold-light);
+            color: #7c5227;
+            border: 1px solid var(--gold);
+            padding: 0.35rem 0.75rem;
+            font-size: 0.8rem;
+            border-radius: 0.375rem;
+        }
+
+        .btn-copy:hover {
+            background: var(--gold);
+            color: #ffffff;
+        }
+
+        /* DASHBOARD SPECIFIC */
+        .dashboard-hero {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding: 2rem 1rem;
+            background: var(--card-bg);
+            border-radius: 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .dashboard-hero h2 {
+            font-size: 2.25rem;
+            color: var(--emerald-dark);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-hero p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.25rem;
+        }
+
+        .dashboard-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
+            border-color: var(--emerald-light);
+        }
+
+        .dashboard-card .icon-wrapper {
+            width: 48px;
+            height: 48px;
+            border-radius: 0.5rem;
+            background: var(--emerald-subtle);
+            color: var(--emerald);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card h3 {
+            font-size: 1.1rem;
+            color: var(--emerald-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .dashboard-card p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .status-badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .status-badge.not-started { background: #e9ecef; color: #495057; }
+        .status-badge.complete { background: var(--emerald-subtle); color: var(--emerald-dark); }
+
+        /* UNIFIED RESULTS HIERARCHY */
+        .output-container {
+            margin-top: 2rem;
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid var(--emerald-subtle);
+            padding-bottom: 0.5rem;
+        }
+
+        .output-header h3 {
+            color: var(--emerald-dark);
+            font-size: 1.25rem;
+        }
+
+        .output-section {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .output-section-title {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .output-section-content {
+            font-size: 0.95rem;
+            color: var(--text-main);
+            white-space: pre-line;
+        }
+
+        .snapshot-card {
+            background: #f0f7f4;
+            border: 1px solid var(--emerald-light);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .one-priority-box {
+            background: #fefae0;
+            border-left: 4px solid var(--gold);
+            padding: 1rem;
+            border-radius: 0 0.5rem 0.5rem 0;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: #7c5227;
+        }
+
+        .next-tool-callout {
+            background: #ffffff;
+            border: 1px dashed var(--emerald);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        /* HISTORY SECTION / ACCORDION */
+        .history-accordion {
+            margin-top: 2.5rem;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1.5rem;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+
+        .history-header h4 {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .history-list {
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .history-item {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .history-item-title {
+            font-weight: 600;
+            color: var(--emerald-dark);
+        }
+
+        .history-item-date {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        /* TOAST NOTIFICATION */
+        #toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--emerald-dark);
+            color: #ffffff;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 2000;
+        }
+
+        #toast.show {
+            opacity: 1;
+        }
+
+        /* VISUAL MAPS (For Sponsor Strategy) */
+        .sponsor-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .sponsor-box {
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            border: 1px solid var(--border-color);
+            background: #f8f9fa;
+        }
+
+        .sponsor-box-title {
+            font-weight: 700;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .sponsor-box.deciders { border-color: #adb5bd; background: #e9ecef; }
+        .sponsor-box.advocates { border-color: var(--emerald-light); background: var(--emerald-subtle); }
+        .sponsor-box.neutrals { border-color: #ffe8cc; background: #fff4e6; }
+        .sponsor-box.blockers { border-color: #ffc9c9; background: #ffe3e3; }
+
+        /* PRINT STYLES */
+        @media print {
+            #sidebar, .mobile-header, .btn-container, .btn-copy, .history-accordion, footer, .next-tool-callout {
+                display: none !important;
+            }
+            #main-wrapper {
+                margin-left: 0 !important;
+            }
+            .content-area {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card, .output-section {
+                border: 1px solid #ccc !important;
+                box-shadow: none !important;
+                break-inside: avoid;
+            }
+        }
+
+        /* RESPONSIVE DESIGN */
+        @media (max-width: 768px) {
+            #sidebar {
+                transform: translateX(-100%);
+            }
+
+            #sidebar.open {
+                transform: translateX(0);
+            }
+
+            #main-wrapper {
+                margin-left: 0;
+            }
+
+            .mobile-header {
+                display: flex;
+            }
+
+            .content-area {
+                padding: 1.5rem 1rem;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.4);
+                z-index: 950;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+
+            .sponsor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container">
+        <!-- MOBILE HEADER -->
+        <div class="mobile-header">
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                <i class="fa-solid fa-chess-knight" style="color: var(--emerald); font-size: 1.25rem;"></i>
+                <span style="font-weight: 700; color: var(--emerald-dark);">PromotionBuilder</span>
+            </div>
+            <button class="hamburger-btn" id="hamburger-toggle" aria-label="Toggle menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+        <!-- FIXED SIDEBAR -->
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-chess-knight"></i>
+                <h1>PromotionBuilder</h1>
+            </div>
+            <ul class="nav-links">
+                <li><a class="nav-item active" data-tool="dashboard"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a class="nav-item" data-tool="gap"><i class="fa-solid fa-magnifying-glass-chart"></i> Gap Analysis</a></li>
+                <li><a class="nav-item" data-tool="impact"><i class="fa-solid fa-briefcase"></i> Impact Portfolio</a></li>
+                <li><a class="nav-item" data-tool="sponsor"><i class="fa-solid fa-users-viewfinder"></i> Sponsor Strategy</a></li>
+                <li><a class="nav-item" data-tool="conversation"><i class="fa-solid fa-comments"></i> Conversation</a></li>
+                <li><a class="nav-item" data-tool="planb"><i class="fa-solid fa-shield-halved"></i> Plan B Strategy</a></li>
+                <li style="border-top: 1px solid var(--border-color); margin-top: 0.5rem; padding-top: 0.5rem;">
+                    <a class="nav-item" data-tool="reset7"><i class="fa-solid fa-calendar-check"></i> 7-Day Promotion Reset</a>
+                </li>
+                <li><a class="nav-item" data-tool="strategy"><i class="fa-solid fa-award"></i> My Promotion Strategy</a></li>
+                <li><a class="nav-item" data-tool="history"><i class="fa-solid fa-clock-rotate-left"></i> My History</a></li>
+                <li><a class="nav-item" data-tool="privacy"><i class="fa-solid fa-user-shield"></i> Privacy & Data</a></li>
+            </ul>
+        </aside>
+
+        <!-- MAIN WRAPPER -->
+        <div id="main-wrapper">
+            <main class="content-area">
+
+                <!-- DASHBOARD -->
+                <div id="view-dashboard" class="tool-view">
+                    <div class="dashboard-hero">
+                        <h2>Promotion Builder System</h2>
+                        <p>Don't wait to be noticed. Build the strategic case they can't ignore.</p>
+                    </div>
+
+                    <!-- START HERE / ORIENTATION -->
+                    <div class="card" style="background: #f0f7f4; border-color: var(--emerald-light);">
+                        <h3 style="color: var(--emerald-dark); margin-bottom: 0.5rem;"><i class="fa-solid fa-compass"></i> Start Here & Orientation</h3>
+                        <p style="font-size: 0.9rem; color: #333; margin-bottom: 0.75rem;">
+                            Advancement requires aligning scope, undeniable evidence, executive sponsorship, tactical timing, and downside protection. Select a module below based on your current priority:
+                        </p>
+                        <ul style="font-size: 0.85rem; color: var(--text-muted); margin-left: 1.25rem; display: flex; flex-direction: column; gap: 0.25rem;">
+                            <li>• <strong>Gap Analysis:</strong> Unclear on what separates you from the target level? Start here.</li>
+                            <li>• <strong>Impact Portfolio:</strong> Need structured proof that you're already operating higher? Build your case.</li>
+                            <li>• <strong>Sponsor Strategy:</strong> Need key leaders advocating for you in closed calibration meetings? Map political leverage.</li>
+                            <li>• <strong>Conversation:</strong> Meeting approaching? Build scripts tailored to your manager's style.</li>
+                            <li>• <strong>Plan B Strategy:</strong> Facing delays or headcount holds? Construct your fallback & mobility plan.</li>
+                        </ul>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card" onclick="switchTool('gap')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-magnifying-glass-chart"></i></div>
+                                <h3>The Gap Analysis</h3>
+                                <p>Map skill, scope, and political gaps between your current role and the next level.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-gap">Not Started</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('impact')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-briefcase"></i></div>
+                                <h3>The Impact Portfolio</h3>
+                                <p>Assemble undeniable proof points, metrics, and evidence that you're operating higher.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-impact">Not Started</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('sponsor')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-users-viewfinder"></i></div>
+                                <h3>The Sponsor Strategy</h3>
+                                <p>Identify key decision-makers and build political capital so powerful advocates back you.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-sponsor">Not Started</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('conversation')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-comments"></i></div>
+                                <h3>The Conversation</h3>
+                                <p>Get exact scripts and tactical frameworks to initiate promotion talks with your manager.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-conversation">Not Started</span>
+                        </div>
+
+                        <div class="dashboard-card" onclick="switchTool('planb')">
+                            <div>
+                                <div class="icon-wrapper"><i class="fa-solid fa-shield-halved"></i></div>
+                                <h3>The Plan B Strategy</h3>
+                                <p>Construct a strategic fallback framework for deflections, pauses, or 'not ready' scenarios.</p>
+                            </div>
+                            <span class="status-badge not-started" id="badge-planb">Not Started</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOOL 1: GAP ANALYSIS -->
+                <div id="view-gap" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>The Gap Analysis</h2>
+                        <div class="tool-problem">"I don't know what actually separates me from the next level."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-gap">
+                            <div class="form-group">
+                                <label for="gap-current-title">Your current title:*</label>
+                                <input type="text" id="gap-current-title" placeholder="e.g., Senior Data Analyst">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-target-title">Target title:*</label>
+                                <input type="text" id="gap-target-title" placeholder="e.g., Analytics Manager">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-current-resp">Current responsibilities:</label>
+                                <textarea id="gap-current-resp" placeholder="What do you spend your day-to-day time doing?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-next-resp">What the next level does:</label>
+                                <textarea id="gap-next-resp" placeholder="What responsibilities do people in the target role own?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="gap-criteria">Company promotion criteria:</label>
+                                <select id="gap-criteria">
+                                    <option value="Clear and documented">Clear and documented</option>
+                                    <option value="Informal">Informal</option>
+                                    <option value="Political">Political</option>
+                                    <option value="Unknown">Unknown</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('gap')"><i class="fa-solid fa-bolt"></i> Generate Strategy</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('gap')"><i class="fa-solid fa-folder-open"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('gap')"><i class="fa-solid fa-arrow-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-gap" class="output-container"></div>
+                    <div id="history-gap" class="history-accordion"></div>
+                </div>
+
+                <!-- TOOL 2: IMPACT PORTFOLIO -->
+                <div id="view-impact" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>The Impact Portfolio</h2>
+                        <div class="tool-problem">"I need evidence that I'm already operating at the next level."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-impact">
+                            <div class="form-group">
+                                <label for="impact-led">Projects where you led without formal authority:*</label>
+                                <textarea id="impact-led" placeholder="Describe initiatives you took charge of..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-mentored">Times you mentored or trained others:</label>
+                                <textarea id="impact-mentored" placeholder="Who have you onboarded, coached, or guided?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-process">Process improvements you made:</label>
+                                <textarea id="impact-process" placeholder="What systems or workflows did you fix or speed up?"></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-revenue">Revenue or cost impact you had:</label>
+                                <textarea id="impact-revenue" placeholder="Dollars saved, revenue generated, client accounts retained..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="impact-cross">Cross-functional work you initiated:</label>
+                                <textarea id="impact-cross" placeholder="Projects involving other teams, departments, or external partners..."></textarea>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('impact')"><i class="fa-solid fa-bolt"></i> Build Portfolio</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('impact')"><i class="fa-solid fa-folder-open"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('impact')"><i class="fa-solid fa-arrow-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-impact" class="output-container"></div>
+                    <div id="history-impact" class="history-accordion"></div>
+                </div>
+
+                <!-- TOOL 3: SPONSOR STRATEGY -->
+                <div id="view-sponsor" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>The Sponsor Strategy</h2>
+                        <div class="tool-problem">"I need someone with influence to advocate for me behind closed doors."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-sponsor">
+                            <div class="form-group">
+                                <label for="sponsor-deciders">Who decides on promotions?</label>
+                                <textarea id="sponsor-deciders" placeholder="Names or titles of directors, VPs, committees..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sponsor-supports">Who already supports you?</label>
+                                <textarea id="sponsor-supports" placeholder="Managers, senior peers, cross-functional leads..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sponsor-neutral">Who is neutral?</label>
+                                <textarea id="sponsor-neutral" placeholder="People who know you slightly but haven't taken a stance..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="sponsor-resist">Who might resist?</label>
+                                <textarea id="sponsor-resist" placeholder="Peers vying for same role, skeptical leaders..."></textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Have you asked anyone to sponsor you?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="sponsor-asked" value="Yes"> Yes</label>
+                                    <label class="radio-label"><input type="radio" name="sponsor-asked" value="No" checked> No</label>
+                                    <label class="radio-label"><input type="radio" name="sponsor-asked" value="Not sure how"> Not sure how</label>
+                                </div>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('sponsor')"><i class="fa-solid fa-bolt"></i> Map Sponsor Strategy</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('sponsor')"><i class="fa-solid fa-folder-open"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('sponsor')"><i class="fa-solid fa-arrow-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-sponsor" class="output-container"></div>
+                    <div id="history-sponsor" class="history-accordion"></div>
+                </div>
+
+                <!-- TOOL 4: CONVERSATION -->
+                <div id="view-conversation" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>The Conversation</h2>
+                        <div class="tool-problem">"I need to tell my boss I want a promotion without sounding demanding."</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-conversation">
+                            <div class="form-group">
+                                <label for="conv-tenure">How long in current role?</label>
+                                <select id="conv-tenure">
+                                    <option value="<1yr">&lt; 1 year</option>
+                                    <option value="1-2yr">1 - 2 years</option>
+                                    <option value="2-3yr">2 - 3 years</option>
+                                    <option value="3yr+">3+ years</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Your boss's style:</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Data-driven" checked> Data-driven</label>
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Relationship-driven"> Relationship-driven</label>
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Avoidant"> Avoidant</label>
+                                    <label class="radio-label"><input type="radio" name="conv-style" value="Direct"> Direct</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="conv-health">Company financial health:</label>
+                                <select id="conv-health">
+                                    <option value="Growing">Growing / Expanding</option>
+                                    <option value="Stable">Stable</option>
+                                    <option value="Tight">Tight / Budget Cuts</option>
+                                    <option value="Unknown">Unknown</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="conv-leverage">Your leverage:</label>
+                                <select id="conv-leverage">
+                                    <option value="Strong track record">Strong track record</option>
+                                    <option value="Market demand">High market demand for your role</option>
+                                    <option value="Willingness to leave">Willingness to explore market</option>
+                                    <option value="Limited">Limited leverage currently</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('conversation')"><i class="fa-solid fa-bolt"></i> Generate Playbook</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('conversation')"><i class="fa-solid fa-folder-open"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('conversation')"><i class="fa-solid fa-arrow-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-conversation" class="output-container"></div>
+                    <div id="history-conversation" class="history-accordion"></div>
+                </div>
+
+                <!-- TOOL 5: PLAN B -->
+                <div id="view-planb" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>The Plan B Strategy</h2>
+                        <div class="tool-problem">"What if they say I'm not ready? What do I do then?"</div>
+                    </div>
+
+                    <div class="card">
+                        <form id="form-planb">
+                            <div class="form-group">
+                                <label for="planb-feedback">What feedback have you received?</label>
+                                <select id="planb-feedback">
+                                    <option value="You're ready">You're ready (just waiting on headcount/budget)</option>
+                                    <option value="Almost there">Almost there (1 or 2 small gaps)</option>
+                                    <option value="Need development">Need significant development</option>
+                                    <option value="No feedback">No clear feedback given</option>
+                                    <option value="Mixed">Mixed signals / conflicting feedback</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Are you willing to wait?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="3mo"> 3 months</label>
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="6mo" checked> 6 months</label>
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="1yr"> 1 year</label>
+                                    <label class="radio-label"><input type="radio" name="planb-wait" value="Not willing"> Not willing to wait</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Do you have external options?</label>
+                                <div class="radio-group">
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Yes"> Yes, active offers/talks</label>
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Exploring" checked> Passively exploring</label>
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="No"> No, haven't looked</label>
+                                    <label class="radio-label"><input type="radio" name="planb-options" value="Not yet"> Not yet, planning to start</label>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="planb-priority">What's your priority?</label>
+                                <select id="planb-priority">
+                                    <option value="Title">Title / Seniority</option>
+                                    <option value="Money">Money / Compensation</option>
+                                    <option value="Scope">Scope & Autonomy</option>
+                                    <option value="Recognition">Recognition & Respect</option>
+                                    <option value="Growth">Skill Growth & Development</option>
+                                </select>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="button" class="btn btn-primary" onclick="generateOutput('planb')"><i class="fa-solid fa-bolt"></i> Construct Plan B</button>
+                                <button type="button" class="btn btn-secondary" onclick="loadSample('planb')"><i class="fa-solid fa-folder-open"></i> Load Sample Scenario</button>
+                                <button type="button" class="btn btn-secondary" onclick="resetForm('planb')"><i class="fa-solid fa-arrow-rotate-left"></i> Start Over</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="output-planb" class="output-container"></div>
+                    <div id="history-planb" class="history-accordion"></div>
+                </div>
+
+                <!-- 7-DAY PROMOTION RESET -->
+                <div id="view-reset7" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>7-Day Promotion Reset</h2>
+                        <div class="tool-problem">A guided step-by-step sequence to prepare your full promotion case in 7 days.</div>
+                    </div>
+
+                    <div class="card">
+                        <div id="reset7-steps-container"></div>
+                    </div>
+                </div>
+
+                <!-- MY PROMOTION STRATEGY SYNTHESIS -->
+                <div id="view-strategy" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>My Promotion Strategy</h2>
+                        <div class="tool-problem">Synthesized executive summary across all completed modules.</div>
+                    </div>
+
+                    <div class="btn-container" style="margin-bottom: 1rem;">
+                        <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Print Strategy</button>
+                        <button class="btn btn-secondary" onclick="copyStrategyToClipboard()"><i class="fa-solid fa-copy"></i> Copy Executive Brief</button>
+                    </div>
+
+                    <div id="strategy-synthesis-container"></div>
+                </div>
+
+                <!-- MY HISTORY -->
+                <div id="view-history" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>My History</h2>
+                        <div class="tool-problem">Review, reload, or clear stored analyses across all system modules.</div>
+                    </div>
+
+                    <div class="btn-container" style="margin-bottom: 1.5rem;">
+                        <button class="btn btn-secondary" onclick="clearAllHistory()"><i class="fa-solid fa-trash"></i> Clear All System History</button>
+                    </div>
+
+                    <div id="unified-history-container"></div>
+                </div>
+
+                <!-- PRIVACY & DATA -->
+                <div id="view-privacy" class="tool-view" style="display: none;">
+                    <div class="tool-header">
+                        <h2>Privacy & Data Security</h2>
+                        <div class="tool-problem">100% Client-Side Architecture — Your career data never leaves your browser.</div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="color: var(--emerald-dark); margin-bottom: 1rem;"><i class="fa-solid fa-shield-halved"></i> Data Guarantee</h3>
+                        <p style="margin-bottom: 1rem;">
+                            PromotionBuilder is built completely using vanilla JavaScript and local browser storage (localStorage). 
+                            No accounts, login details, or career inputs are ever transmitted to an external server or third-party tracking system.
+                        </p>
+                        <h4 style="color: var(--emerald-dark); margin-bottom: 0.5rem;">Ethical Career Guidelines:</h4>
+                        <ul style="margin-left: 1.25rem; font-size: 0.9rem; color: var(--text-muted); display: flex; flex-direction: column; gap: 0.5rem;">
+                            <li>• <strong>Authorized Evidence Only:</strong> Only present accomplishments and project metrics you are explicitly authorized to share. Never export proprietary source code, confidential financial client lists, or internal IP.</li>
+                            <li>• <strong>No Unethical Leverage:</strong> Build leverage through genuine scope, leadership, and verified business outcomes—never through manufactured threats or false external offers.</li>
+                            <li>• <strong>Local Control:</strong> Clearing your browser storage or using private browsing mode will reset your saved history. You can clear your data at any time from the History menu.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- FOOTER -->
+            <footer>
+                For career advancement planning only. Not a guarantee of promotion. For company-specific promotion processes, consult your manager or HR.
+            </footer>
+        </div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast">Copied to clipboard!</div>
+
+    <script>
+        /* APP STATE & CENTRAL STORE */
+        let currentTool = 'dashboard';
+
+        let appState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        const STORAGE_KEY_STATE = 'promotion_builder_v2_state';
+        const STORAGE_KEY_HIST = 'promotion_builder_v2_history';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initNavigation();
+            initMobileMenu();
+            loadStateFromStorage();
+            migrateLegacyHistory();
+            updateDashboardBadges();
+            loadAllHistories();
+        });
+
+        /* NAVIGATION & MOBILE MENU */
+        function initNavigation() {
+            const navItems = document.querySelectorAll('.nav-item');
+            navItems.forEach(item => {
+                item.addEventListener('click', () => {
+                    const targetTool = item.getAttribute('data-tool');
+                    switchTool(targetTool);
+                    closeMobileMenu();
+                });
+            });
+        }
+
+        function switchTool(toolId) {
+            currentTool = toolId;
+            
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.toggle('active', el.getAttribute('data-tool') === toolId);
+            });
+
+            document.querySelectorAll('.tool-view').forEach(view => {
+                view.style.display = 'none';
+            });
+
+            const activeView = document.getElementById(`view-${toolId}`);
+            if(activeView) {
+                activeView.style.display = 'block';
+            }
+
+            if (toolId === 'strategy') {
+                renderStrategySynthesis();
+            } else if (toolId === 'reset7') {
+                render7DayReset();
+            } else if (toolId === 'history') {
+                renderUnifiedHistory();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function initMobileMenu() {
+            const toggle = document.getElementById('hamburger-toggle');
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+
+            toggle.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+
+            overlay.addEventListener('click', closeMobileMenu);
+        }
+
+        function closeMobileMenu() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebar-overlay').classList.remove('active');
+        }
+
+        /* STATE MANAGEMENT & LOCAL STORAGE */
+        function saveStateToStorage() {
+            appState.lastUpdated = new Date().toISOString();
+            localStorage.setItem(STORAGE_KEY_STATE, JSON.stringify(appState));
+            updateDashboardBadges();
+        }
+
+        function loadStateFromStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY_STATE);
+            if (saved) {
+                try {
+                    appState = JSON.parse(saved);
+                } catch(e) {
+                    console.error("State parse error", e);
+                }
+            }
+        }
+
+        function updateDashboardBadges() {
+            ['gap', 'impact', 'sponsor', 'conversation', 'planb'].forEach(tool => {
+                const badge = document.getElementById(`badge-${tool}`);
+                if (badge) {
+                    if (appState.completedTools && appState.completedTools.includes(tool)) {
+                        badge.className = 'status-badge complete';
+                        badge.innerText = 'Completed';
+                    } else {
+                        badge.className = 'status-badge not-started';
+                        badge.innerText = 'Not Started';
+                    }
+                }
+            });
+        }
+
+        /* SAMPLE DATA LOADERS */
+        function loadSample(tool) {
+            if (tool === 'gap') {
+                document.getElementById('gap-current-title').value = "Senior Data Analyst";
+                document.getElementById('gap-target-title').value = "Analytics Manager";
+                document.getElementById('gap-current-resp').value = "Executing ad-hoc queries, building dashboards, performing quantitative analysis on customer retention, presenting monthly findings to sub-teams.";
+                document.getElementById('gap-next-resp').value = "Leading data strategy across departments, mentoring junior analysts, allocating project resources, setting team roadmap, speaking directly with VP stakeholders.";
+                document.getElementById('gap-criteria').value = "Informal";
+            } else if (tool === 'impact') {
+                document.getElementById('impact-led').value = "Led client presentation when manager was out sick; stepped up to anchor quarterly business review with VP of Product.";
+                document.getElementById('impact-mentored').value = "Trained two new hires on sql environment and internal data pipelines; established onboarding documentation.";
+                document.getElementById('impact-process').value = "Automated monthly financial reporting script, saving 10 manual hours every single month.";
+                document.getElementById('impact-revenue').value = "Identified churn risk pattern early, saving a $200k key enterprise account.";
+                document.getElementById('impact-cross').value = "Initiated cross-functional sync with product engineering to fix logging gaps affecting core business metrics.";
+            } else if (tool === 'sponsor') {
+                document.getElementById('sponsor-deciders').value = "Director of Business Ops (Sarah) and VP of Analytics (Mark)";
+                document.getElementById('sponsor-supports').value = "Direct Manager (Dave - loves my execution)";
+                document.getElementById('sponsor-neutral').value = "Skip-level Director (Sarah - knows my name but rarely interacts with me directly)";
+                document.getElementById('sponsor-resist').value = "Peer Senior Analyst (Jason - feels competitive regarding team ownership)";
+                
+                const radios = document.getElementsByName('sponsor-asked');
+                radios.forEach(r => r.checked = (r.value === 'No'));
+            } else if (tool === 'conversation') {
+                document.getElementById('conv-tenure').value = "2-3yr";
+                
+                const radios = document.getElementsByName('conv-style');
+                radios.forEach(r => r.checked = (r.value === 'Data-driven'));
+
+                document.getElementById('conv-health').value = "Stable";
+                document.getElementById('conv-leverage').value = "Strong track record";
+            } else if (tool === 'planb') {
+                document.getElementById('planb-feedback').value = "Almost there";
+                
+                const waitRadios = document.getElementsByName('planb-wait');
+                waitRadios.forEach(r => r.checked = (r.value === '6mo'));
+
+                const optRadios = document.getElementsByName('planb-options');
+                optRadios.forEach(r => r.checked = (r.value === 'Exploring'));
+
+                document.getElementById('planb-priority').value = "Scope";
+            }
+            showToast("Sample scenario loaded (for demonstration only)");
+        }
+
+        function resetForm(tool) {
+            const form = document.getElementById(`form-${tool}`);
+            if (form) form.reset();
+            const output = document.getElementById(`output-${tool}`);
+            if (output) {
+                output.style.display = 'none';
+                output.innerHTML = '';
+            }
+            showToast("Form reset.");
+        }
+
+        /* STRATEGY ENGINE & GENERATORS */
+        function generateOutput(tool) {
+            let html = "";
+            let dataSummary = "";
+            let resultObj = {};
+
+            if (tool === 'gap') {
+                const current = escapeHtml(document.getElementById('gap-current-title').value.trim() || "Current Role");
+                const target = escapeHtml(document.getElementById('gap-target-title').value.trim() || "Target Role");
+                const cResp = escapeHtml(document.getElementById('gap-current-resp').value.trim() || "Standard execution duties.");
+                const nResp = escapeHtml(document.getElementById('gap-next-resp').value.trim() || "Strategic oversight, leadership, mentoring.");
+                const criteria = document.getElementById('gap-criteria').value;
+
+                if (!current || !target) {
+                    showToast("Please enter current and target titles.");
+                    return;
+                }
+
+                dataSummary = `${current} → ${target}`;
+                resultObj = { current, target, cResp, nResp, criteria };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Strategic Gap Plan</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Copy All</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Snapshot:</strong> Bridging from <em>${current}</em> to <em>${target}</em> under <strong>${criteria}</strong> criteria.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>WHAT'S WORKING & EXISTING STRENGTHS</span></div>
+                        <div class="output-section-content">You possess strong domain familiarity and core execution experience in <em>${current}</em>. You have established a solid foundation in day-to-day responsibilities.</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>WHAT NEEDS ATTENTION (THE GAP)</span></div>
+                        <div class="output-section-content">
+<strong>1. Shift from Execution to Strategy:</strong> Transition from doing operational work (${cResp.substring(0, 80)}...) to owning business outcomes and guiding team direction (${nResp.substring(0, 80)}...).
+<strong>2. Skill Shift Required:</strong> Elevate focus from technical execution to cross-functional influence, resource prioritization, and executive communication.
+<strong>3. Leadership Evidence Gap:</strong> Formalize proof that you already make decisions aligned with a <em>${target}</em> profile before receiving the title.</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>WHAT THIS MEANS (${criteria.toUpperCase()} CRITERIA)</span></div>
+                        <div class="output-section-content">
+${criteria === 'Informal' || criteria === 'Unknown' ? 
+`Because criteria are ${criteria.toLowerCase()}, promotion decisions rely heavily on **trusted consensus** among senior leadership. Key hidden factors: 1) Does leadership trust you with bad news? 2) Do senior peers seek your counsel? 3) Do you solve problems before your manager brings them to you?` : 
+`Although criteria are ${criteria.toLowerCase()}, checklists only secure a nomination. Promotions pass because decision-makers feel complete confidence that you won't fail in high-stakes scenarios.`}</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> YOUR ONE PRIORITY: Stop waiting for assignments. In your next 1-on-1, present a solution to a recurring team friction point rather than bringing status updates.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>PRACTICAL ACTION & TIMELINE</span></div>
+                        <div class="output-section-content">
+• <em>Month 1:</em> Align with manager on exact target competencies for <em>${target}</em>.
+• <em>Months 2–4:</em> Delegate standard operational tasks to own 1 high-visibility strategic project.
+• <em>Months 5–6:</em> Document results, align sponsors, and initiate formal promotion review.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Next Recommended Step:</strong> Build your proof points.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('impact')">Go to Impact Portfolio <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'impact') {
+                const led = escapeHtml(document.getElementById('impact-led').value.trim() || "Led key operational tasks autonomously.");
+                const mentored = escapeHtml(document.getElementById('impact-mentored').value.trim() || "Helped team members on work streams.");
+                const process = escapeHtml(document.getElementById('impact-process').value.trim() || "Streamlined internal operational efficiency.");
+                const revenue = escapeHtml(document.getElementById('impact-revenue').value.trim() || "Maintained project budget & timelines.");
+                const cross = escapeHtml(document.getElementById('impact-cross').value.trim() || "Collaborated across team lines.");
+
+                if (!led) {
+                    showToast("Please describe at least one project you led.");
+                    return;
+                }
+
+                dataSummary = "Impact Portfolio Summary";
+                resultObj = { led, mentored, process, revenue, cross };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Impact & Evidence Portfolio</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Copy All</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Snapshot:</strong> Evidence synthesized across leadership, process improvement, mentoring, and revenue/cost impact.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>THE LEADERSHIP EVIDENCE</span> <button class="btn btn-copy" onclick="copyText(\`${led.replace(/'/g, "\\'")}\`)"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">
+• **De Facto Leadership:** ${led}
+• **Talent Multiplier:** ${mentored}
+• **Operational Optimization:** ${process}
+• **Financial / Strategic Value:** ${revenue}
+• **Cross-Boundary Influence:** ${cross}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>WHAT THIS MEANS</span></div>
+                        <div class="output-section-content">Frame these accomplishments not as "doing extra tasks", but as a **permanent evolution of responsibilities**. You are no longer trying out higher duties—you are currently managing them successfully.</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> YOUR ONE PRIORITY: Package these raw accomplishments into an executive one-pager and share it with your manager prior to your review cycle.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>EXECUTIVE PROMOTION CASE ONE-PAGER</span> <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">
+<strong>PROMOTION CASE BRIEF</strong>
+• <strong>Executive Summary:</strong> Demonstrated readiness for formal advancement based on ongoing leadership and measurable business impact.
+• <strong>Key Business Contributions:</strong>
+  - Direct Financial / Strategic Impact: ${revenue}
+  - Process Optimization: ${process}
+• <strong>Leadership & Mentorship:</strong>
+  - Initiative & Scope: ${led}
+  - People Development: ${mentored}
+• <strong>Future Scope:</strong> Prepared to scale these capabilities across the broader business unit.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Next Recommended Step:</strong> Align key advocates behind closed doors.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('sponsor')">Go to Sponsor Strategy <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'sponsor') {
+                const deciders = escapeHtml(document.getElementById('sponsor-deciders').value.trim() || "Decision Makers");
+                const supports = escapeHtml(document.getElementById('sponsor-supports').value.trim() || "Direct Manager");
+                const neutral = escapeHtml(document.getElementById('sponsor-neutral').value.trim() || "Skip-level / Peers");
+                const resist = escapeHtml(document.getElementById('sponsor-resist').value.trim() || "Skeptical Peers");
+                const asked = getRadioVal('sponsor-asked') || "No";
+
+                dataSummary = `Deciders: ${deciders.substring(0, 20)}...`;
+                resultObj = { deciders, supports, neutral, resist, asked };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Sponsor Mapping & Strategy</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Copy All</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Snapshot:</strong> Stakeholder map established. Focus area: Converting Neutral stakeholders into active advocates.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>THE SPONSOR MAP</span></div>
+                        <div class="output-section-content">
+                            <div class="sponsor-grid">
+                                <div class="sponsor-box deciders">
+                                    <div class="sponsor-box-title">Deciders</div>
+                                    <div>${deciders}</div>
+                                </div>
+                                <div class="sponsor-box advocates">
+                                    <div class="sponsor-box-title">Advocates / Supporters</div>
+                                    <div>${supports}</div>
+                                </div>
+                                <div class="sponsor-box neutrals">
+                                    <div class="sponsor-box-title">Neutrals (Focus Here)</div>
+                                    <div>${neutral}</div>
+                                </div>
+                                <div class="sponsor-box blockers">
+                                    <div class="sponsor-box-title">Potential Blockers</div>
+                                    <div>${resist}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> YOUR ONE PRIORITY: Schedule a 20-minute advice chat with 1 key neutral stakeholder to share recent project wins and ask for guidance.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>THE SPONSOR ASK SCRIPT</span> <button class="btn btn-copy" onclick="copyText('I have been focused on growing my strategic impact across our projects. As I prepare for the next level, I would value your perspective on my work and advice on what senior leadership looks for when evaluating promotion readiness.')"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">
+"I have been focused on growing my strategic impact across our projects. As I prepare for the next level, I would value your perspective on my work and advice on what senior leadership looks for when evaluating promotion readiness. Would you be open to a 20-minute chat?"</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>UPDATE RHYTHM & SKIP-LEVEL STRATEGY</span></div>
+                        <div class="output-section-content">
+• <strong>Frequency:</strong> Connect every 6–8 weeks with brief 3-bullet project updates.
+• <strong>Skip-Level Access:</strong> Offer to present project retrospectives or metrics updates directly to neutral decision-makers to build personal executive rapport.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Next Recommended Step:</strong> Prepare your promotion talk.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('conversation')">Go to Conversation <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'conversation') {
+                const tenure = document.getElementById('conv-tenure').value;
+                const style = getRadioVal('conv-style') || "Data-driven";
+                const health = document.getElementById('conv-health').value;
+                const leverage = document.getElementById('conv-leverage').value;
+
+                dataSummary = `Style: ${style} | Leverage: ${leverage}`;
+                resultObj = { tenure, style, health, leverage };
+
+                let scriptOpening = "";
+                if (style === 'Data-driven') {
+                    scriptOpening = "I've compiled a brief recap of my key performance metrics and scope expansion over the past year. I'd like to spend 15 minutes reviewing these results and discussing the trajectory toward a formal promotion.";
+                } else if (style === 'Relationship-driven') {
+                    scriptOpening = "I really appreciate the mentorship and growth I've experienced on this team. Looking ahead, I'd love to align on how my evolving responsibilities match our team goals and what the path to the next title looks like.";
+                } else if (style === 'Avoidant') {
+                    scriptOpening = "I want to put a dedicated topic on our agenda for next week so we have time to prepare: aligning on my career milestones and setting clear criteria for my next level promotion.";
+                } else {
+                    scriptOpening = "I'm ready to take the next step in my career here. I'd like to discuss my recent impact, review my readiness for promotion, and establish a clear timeline for the transition.";
+                }
+
+                html = `
+                    <div class="output-header">
+                        <h3>Conversation Playbook</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Copy All</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Snapshot:</strong> Tailored for a <strong>${style}</strong> manager under <strong>${health}</strong> financial conditions.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>THE OPENING (FIRST 60 SECONDS)</span> <button class="btn btn-copy" onclick="copyText(\`${scriptOpening.replace(/'/g, "\\'")}\`)"><i class="fa-solid fa-copy"></i></button></div>
+                        <div class="output-section-content">"${scriptOpening}"</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> YOUR ONE PRIORITY: Request a dedicated 30-minute 1-on-1 meeting next week specifically focused on career progression.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>THE CASE & TIMING NOTES</span></div>
+                        <div class="output-section-content">
+• <strong>Tenure (${tenure}):</strong> Highlight operational consistency and sustained leadership.
+• <strong>Manager Adaptation (${style}):</strong> ${style === 'Data-driven' ? 'Focus strictly on concrete metrics, saved hours, and quantifiable ROI.' : 'Focus on team harmony, stakeholder feedback, and leadership trajectory.'}
+• <strong>Financial Context (${health}):</strong> ${health === 'Tight' ? 'Financials are tight. Pitch the official title/scope change now with a formal date for financial review next budget cycle.' : 'Financial conditions are favorable. Lock in promotion commitments 2-3 months before the formal budget cycle closes.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>RESPONSE SCRIPTS (YES / NO / DEFLECT)</span></div>
+                        <div class="output-section-content">
+• <strong>If YES:</strong> "Thank you for the support. To confirm details, can we establish key dates for HR submission and review next steps in our next 1-on-1?"
+• <strong>If NO:</strong> "I understand. What specific skill or outcome gaps do I need to demonstrate over the next 3–6 months to make this an absolute yes?"
+• <strong>If DEFLECT:</strong> "I appreciate that things are moving fast. Let's block 15 minutes in 3 weeks specifically to lock down these performance goals."</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Next Recommended Step:</strong> Prepare downside protection and fallback strategy.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('planb')">Go to Plan B Strategy <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            } else if (tool === 'planb') {
+                const feedback = document.getElementById('planb-feedback').value;
+                const wait = getRadioVal('planb-wait') || "6mo";
+                const options = getRadioVal('planb-options') || "Exploring";
+                const priority = document.getElementById('planb-priority').value;
+
+                dataSummary = `Feedback: ${feedback} | Priority: ${priority}`;
+                resultObj = { feedback, wait, options, priority };
+
+                html = `
+                    <div class="output-header">
+                        <h3>Plan B Framework</h3>
+                        <button class="btn btn-copy" onclick="copySectionText(this)"><i class="fa-solid fa-copy"></i> Copy All</button>
+                    </div>
+
+                    <div class="snapshot-card">
+                        <strong><i class="fa-solid fa-eye"></i> Snapshot:</strong> Fallback strategy tailored for feedback state ("${feedback}") with a ${wait} timeline.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>THE DEVELOPMENT PLAN & TITLE BRIDGE</span></div>
+                        <div class="output-section-content">
+• Based on feedback ("${feedback}"), establish 2 concrete deliverables for the next 90 days with bi-weekly micro-checkins.
+• <strong>Title Bridge:</strong> If financial adjustment is delayed, negotiate an interim functional title (e.g., <em>Lead Project Manager</em> or <em>Acting Team Lead</em>) to validate growing scope internally and externally.</div>
+                    </div>
+
+                    <div class="one-priority-box">
+                        <i class="fa-solid fa-star"></i> YOUR ONE PRIORITY: Update your resume and discreetly refresh your LinkedIn profile to understand baseline external market demand.
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>EXTERNAL LEVERAGE & CHECKPOINT SCHEDULE</span></div>
+                        <div class="output-section-content">
+• <strong>External Leverage:</strong> ${options === 'Yes' || options === 'Exploring' ? 'Keep external conversations warm. Real leverage comes from having genuine options, never threats.' : 'Discreetly test external market demand to establish your true baseline market value.'}
+• <strong>Timeline (${wait}):</strong> Day 30 re-evaluate milestone progress; Day 60 assess sponsor alignment; Day 90 / Deadline evaluate internal path against external market options.</div>
+                    </div>
+
+                    <div class="next-tool-callout">
+                        <div>
+                            <strong>Next Recommended Step:</strong> Synthesize your full strategy brief.
+                        </div>
+                        <button class="btn btn-primary" onclick="switchTool('strategy')">View Complete Strategy Brief <i class="fa-solid fa-arrow-right"></i></button>
+                    </div>
+                `;
+            }
+
+            const outputContainer = document.getElementById(`output-${tool}`);
+            outputContainer.innerHTML = html;
+            outputContainer.style.display = 'block';
+
+            // Update state
+            if (!appState.completedTools.includes(tool)) {
+                appState.completedTools.push(tool);
+            }
+            appState.toolResults[tool] = {
+                summary: dataSummary,
+                data: resultObj,
+                completedAt: new Date().toLocaleDateString()
+            };
+            saveStateToStorage();
+
+            saveToHistory(tool, dataSummary, html, resultObj);
+        }
+
+        /* LOCALSTORAGE & HISTORY MANAGEMENT */
+        function saveToHistory(toolId, summary, htmlContent, rawData) {
+            const history = getHistoryFromStorage();
+
+            const newItem = {
+                id: Date.now(),
+                tool: toolId,
+                date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute:'2-digit' }),
+                summary: summary,
+                content: htmlContent,
+                data: rawData
+            };
+
+            history.unshift(newItem);
+            if (history.length > 50) history.splice(50);
+
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            renderHistory(toolId);
+        }
+
+        function getHistoryFromStorage() {
+            const raw = localStorage.getItem(STORAGE_KEY_HIST);
+            if (!raw) return [];
+            try {
+                return JSON.parse(raw);
+            } catch(e) {
+                return [];
+            }
+        }
+
+        function renderHistory(toolId) {
+            const allHistory = getHistoryFromStorage();
+            const toolHistory = allHistory.filter(h => h.tool === toolId);
+            const container = document.getElementById(`history-${toolId}`);
+            if (!container) return;
+
+            if (toolHistory.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let html = `
+                <div class="history-header" onclick="toggleHistoryList('${toolId}')">
+                    <h4><i class="fa-solid fa-clock-rotate-left"></i> Previous History (${toolHistory.length})</h4>
+                    <i class="fa-solid fa-chevron-down" id="history-arrow-${toolId}"></i>
+                </div>
+                <div class="history-list" id="history-list-${toolId}">
+                    <div style="text-align: right; margin-bottom: 0.5rem;">
+                        <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="clearToolHistory('${toolId}')"><i class="fa-solid fa-trash"></i> Clear Tool History</button>
+                    </div>
+            `;
+
+            toolHistory.forEach(item => {
+                html += `
+                    <div class="history-item">
+                        <div>
+                            <div class="history-item-title">${escapeHtml(item.summary)}</div>
+                            <div class="history-item-date">${item.date}</div>
+                        </div>
+                        <div class="history-actions">
+                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" onclick="loadHistoryItem(${item.id})">Load</button>
+                            <button class="btn btn-secondary" style="padding: 0.25rem 0.5rem; font-size: 0.75rem; color: #dc3545;" onclick="deleteHistoryItem(${item.id})"><i class="fa-solid fa-xmark"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        function toggleHistoryList(toolId) {
+            const list = document.getElementById(`history-list-${toolId}`);
+            const arrow = document.getElementById(`history-arrow-${toolId}`);
+            if (list.style.display === 'block') {
+                list.style.display = 'none';
+                arrow.className = 'fa-solid fa-chevron-down';
+            } else {
+                list.style.display = 'block';
+                arrow.className = 'fa-solid fa-chevron-up';
+            }
+        }
+
+        function loadHistoryItem(itemId) {
+            const allHistory = getHistoryFromStorage();
+            const item = allHistory.find(h => h.id === itemId);
+
+            if (item) {
+                switchTool(item.tool);
+                const outputContainer = document.getElementById(`output-${item.tool}`);
+                outputContainer.innerHTML = item.content;
+                outputContainer.style.display = 'block';
+                showToast("History item loaded!");
+            }
+        }
+
+        function deleteHistoryItem(itemId) {
+            if (!confirm("Are you sure you want to delete this record?")) return;
+            let history = getHistoryFromStorage();
+            history = history.filter(h => h.id !== itemId);
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            loadAllHistories();
+            if (currentTool === 'history') renderUnifiedHistory();
+            showToast("Record deleted.");
+        }
+
+        function clearToolHistory(toolId) {
+            if (!confirm(`Clear history for ${toolId}?`)) return;
+            let history = getHistoryFromStorage();
+            history = history.filter(h => h.tool !== toolId);
+            localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(history));
+            renderHistory(toolId);
+            if (currentTool === 'history') renderUnifiedHistory();
+            showToast("Tool history cleared.");
+        }
+
+        function clearAllHistory() {
+            if (!confirm("Are you sure you want to clear ALL saved system history? This cannot be undone.")) return;
+            localStorage.removeItem(STORAGE_KEY_HIST);
+            localStorage.removeItem(STORAGE_KEY_STATE);
+            appState = { completedTools: [], toolResults: {}, lastUpdated: null };
+            updateDashboardBadges();
+            loadAllHistories();
+            if (currentTool === 'history') renderUnifiedHistory();
+            showToast("All system history cleared.");
+        }
+
+        function loadAllHistories() {
+            ['gap', 'impact', 'sponsor', 'conversation', 'planb'].forEach(renderHistory);
+        }
+
+        function migrateLegacyHistory() {
+            // Migrates old keys promotion_history_* if present
+            const tools = ['gap', 'impact', 'sponsor', 'conversation', 'planb'];
+            let migratedCount = 0;
+            let combined = getHistoryFromStorage();
+
+            tools.forEach(tool => {
+                const oldKey = `promotion_history_${tool}`;
+                const rawOld = localStorage.getItem(oldKey);
+                if (rawOld) {
+                    try {
+                        const parsed = JSON.parse(rawOld);
+                        parsed.forEach(item => {
+                            combined.push({
+                                id: item.id || Date.now() + Math.random(),
+                                tool: tool,
+                                date: item.date || new Date().toLocaleDateString(),
+                                summary: item.summary || "Legacy Analysis",
+                                content: item.content || "",
+                                data: {}
+                            });
+                            migratedCount++;
+                        });
+                        localStorage.removeItem(oldKey);
+                    } catch(e) {}
+                }
+            });
+
+            if (migratedCount > 0) {
+                localStorage.setItem(STORAGE_KEY_HIST, JSON.stringify(combined));
+            }
+        }
+
+        /* 7-DAY PROMOTION RESET RENDERER */
+        function render7DayReset() {
+            const container = document.getElementById('reset7-steps-container');
+            const days = [
+                { day: 1, title: "Day 1: Map Strategic Gap", desc: "Define current vs target role responsibilities and criteria.", tool: 'gap' },
+                { day: 2, title: "Day 2: Build Evidence Portfolio", desc: "Document projects led, process improvements, and revenue/cost impact.", tool: 'impact' },
+                { day: 3, title: "Day 3: Executive One-Pager", desc: "Synthesize achievements into a concise promotion case brief.", tool: 'impact' },
+                { day: 4, title: "Day 4: Sponsor Mapping", desc: "Identify key decision makers, supporters, and neutral leaders.", tool: 'sponsor' },
+                { day: 5, title: "Day 5: Conversation Playbook", desc: "Craft opening scripts tailored to your manager's style.", tool: 'conversation' },
+                { day: 6, title: "Day 6: Plan B & Fallback Strategy", desc: "Construct fallback options and title bridge alternatives.", tool: 'planb' },
+                { day: 7, title: "Day 7: Launch Promotion Campaign", desc: "Schedule the formal review and deploy your executive case.", tool: 'strategy' }
+            ];
+
+            let html = `<div style="display: flex; flex-direction: column; gap: 1rem;">`;
+            days.forEach(d => {
+                const isDone = appState.completedTools.includes(d.tool);
+                html += `
+                    <div style="background: #ffffff; border: 1px solid var(--border-color); border-radius: 0.5rem; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div style="font-weight: 700; color: var(--emerald-dark); font-size: 1rem;">${d.title}</div>
+                            <div style="font-size: 0.85rem; color: var(--text-muted);">${d.desc}</div>
+                        </div>
+                        <button class="btn ${isDone ? 'btn-secondary' : 'btn-primary'}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="switchTool('${d.tool}')">
+                            ${isDone ? '<i class="fa-solid fa-check" style="color: var(--emerald);"></i> Review' : 'Start Day ' + d.day}
+                        </button>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        /* STRATEGY SYNTHESIS RENDERER */
+        function renderStrategySynthesis() {
+            const container = document.getElementById('strategy-synthesis-container');
+            const res = appState.toolResults;
+
+            const gapData = res.gap ? res.gap.data : null;
+            const impactData = res.impact ? res.impact.data : null;
+            const sponsorData = res.sponsor ? res.sponsor.data : null;
+            const convData = res.conversation ? res.conversation.data : null;
+            const planbData = res.planb ? res.planb.data : null;
+
+            let html = `
+                <div class="card" id="printable-strategy-brief">
+                    <div style="text-align: center; border-bottom: 2px solid var(--emerald-subtle); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+                        <h2 style="color: var(--emerald-dark); font-size: 1.75rem;">EXECUTIVE PROMOTION STRATEGY BRIEF</h2>
+                        <p style="color: var(--text-muted); font-size: 0.9rem;">Comprehensive Advancement Plan & Evidence Brief</p>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; background: #f8f9fa; padding: 1rem; border-radius: 0.5rem;">
+                        <div><strong>Current Title:</strong> ${gapData ? gapData.current : 'Not Defined'}</div>
+                        <div><strong>Target Title:</strong> ${gapData ? gapData.target : 'Not Defined'}</div>
+                        <div><strong>Criteria Type:</strong> ${gapData ? gapData.criteria : 'Not Defined'}</div>
+                        <div><strong>Manager Style:</strong> ${convData ? convData.style : 'Not Defined'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>1. THE GAP ANALYSIS</span></div>
+                        <div class="output-section-content">${gapData ? `Transitioning from <strong>${gapData.current}</strong> to <strong>${gapData.target}</strong>.\nCurrent Focus: ${gapData.cResp}\nTarget Focus: ${gapData.nResp}` : 'Gap Analysis module not yet completed.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>2. KEY CONTRIBUTION & IMPACT EVIDENCE</span></div>
+                        <div class="output-section-content">${impactData ? `• <strong>De Facto Leadership:</strong> ${impactData.led}\n• <strong>Process Optimization:</strong> ${impactData.process}\n• <strong>Financial / Value Impact:</strong> ${impactData.revenue}\n• <strong>Talent Development:</strong> ${impactData.mentored}` : 'Impact Portfolio module not yet completed.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>3. SPONSOR & STAKEHOLDER ALIGNMENT</span></div>
+                        <div class="output-section-content">${sponsorData ? `• <strong>Key Deciders:</strong> ${sponsorData.deciders}\n• <strong>Primary Supporters:</strong> ${sponsorData.supports}\n• <strong>Focus Neutrals:</strong> ${sponsorData.neutral}` : 'Sponsor Strategy module not yet completed.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>4. CONVERSATION PLAYBOOK & TIMING</span></div>
+                        <div class="output-section-content">${convData ? `• <strong>Approach:</strong> Structured for ${convData.style} manager under ${convData.health} budget health.\n• <strong>Leverage Point:</strong> ${convData.leverage}` : 'Conversation module not yet completed.'}</div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-section-title"><span>5. DOWNSIDE PROTECTION & PLAN B</span></div>
+                        <div class="output-section-content">${planbData ? `• <strong>Feedback Context:</strong> ${planbData.feedback}\n• <strong>Timeline Commitment:</strong> Willing to evaluate path for ${planbData.wait}.\n• <strong>Core Priority:</strong> ${planbData.priority}` : 'Plan B module not yet completed.'}</div>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        function copyStrategyToClipboard() {
+            const el = document.getElementById('printable-strategy-brief');
+            if (el) {
+                copyText(el.innerText);
+            }
+        }
+
+        /* UNIFIED HISTORY RENDERER */
+        function renderUnifiedHistory() {
+            const container = document.getElementById('unified-history-container');
+            const allHistory = getHistoryFromStorage();
+
+            if (allHistory.length === 0) {
+                container.innerHTML = `<div class="card"><p style="color: var(--text-muted); text-align: center;">No saved history found.</p></div>`;
+                return;
+            }
+
+            let html = `<div style="display: flex; flex-direction: column; gap: 0.75rem;">`;
+            allHistory.forEach(item => {
+                html += `
+                    <div class="card" style="margin-bottom: 0; padding: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <span class="status-badge complete" style="margin-top: 0; margin-bottom: 0.25rem;">${item.tool.toUpperCase()}</span>
+                            <div style="font-weight: 700; color: var(--emerald-dark); font-size: 0.95rem;">${escapeHtml(item.summary)}</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">${item.date}</div>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem;" onclick="loadHistoryItem(${item.id})">View Analysis</button>
+                            <button class="btn btn-secondary" style="padding: 0.35rem 0.75rem; font-size: 0.8rem; color: #dc3545;" onclick="deleteHistoryItem(${item.id})"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        /* HELPERS & UTILITIES */
+        function getRadioVal(name) {
+            const radios = document.getElementsByName(name);
+            for (let r of radios) {
+                if (r.checked) return r.value;
+            }
+            return "";
+        }
+
+        function copyText(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast("Copied to clipboard!");
+                }).catch(() => {
+                    fallbackCopyText(text);
+                });
+            } else {
+                fallbackCopyText(text);
+            }
+        }
+
+        function fallbackCopyText(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("Copied to clipboard!");
+            } catch (err) {
+                showToast("Failed to copy text.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function copySectionText(btnElement) {
+            const section = btnElement.closest('.output-section') || btnElement.closest('.output-container');
+            if (section) {
+                const text = section.innerText.replace(/Copy All|Copy/g, '').trim();
+                copyText(text);
+            }
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2200);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+    </script>
+</body>
+</html>

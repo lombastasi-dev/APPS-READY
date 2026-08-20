@@ -1,0 +1,2329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Offer Comparator™ — Anti-FOMO Career Toolkit</title>
+    
+    <!-- Google Fonts & Font Awesome CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --slate-gray: #495057;
+            --slate-dark: #343a40;
+            --slate-light: #6c757d;
+            --sage-green: #81B29A;
+            --sage-dark: #64947d;
+            --sage-light: #f1f8f5;
+            --warning-orange: #E07A5F;
+            --warning-light: #FDF0ED;
+            --bg-gradient-start: #F8F9FA;
+            --bg-gradient-end: #F1F8F5;
+            --card-bg: #FFFFFF;
+            --border-color: #E9ECEF;
+            --text-main: #212529;
+            --text-muted: #6C757D;
+            --sidebar-width: 270px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.55;
+        }
+
+        /* App Layout */
+        .app-container {
+            display: flex;
+            flex: 1;
+            position: relative;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            box-shadow: 2px 0 10px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-header i {
+            font-size: 1.6rem;
+            color: var(--sage-green);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--slate-gray);
+            line-height: 1.2;
+        }
+
+        .nav-list {
+            list-style: none;
+            padding: 16px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+        }
+
+        .nav-item button {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 14px;
+            border: none;
+            background: transparent;
+            border-radius: 8px;
+            color: var(--slate-gray);
+            font-size: 0.92rem;
+            font-weight: 500;
+            cursor: pointer;
+            text-align: left;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item button i {
+            width: 20px;
+            text-align: center;
+            font-size: 0.95rem;
+            color: var(--slate-light);
+        }
+
+        .nav-item button:hover {
+            background-color: var(--sage-light);
+            color: var(--slate-dark);
+        }
+
+        .nav-item.active button {
+            background-color: var(--slate-gray);
+            color: #ffffff;
+        }
+
+        .nav-item.active button i {
+            color: var(--sage-green);
+        }
+
+        .nav-divider {
+            height: 1px;
+            background-color: var(--border-color);
+            margin: 8px 12px;
+        }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border-color);
+            padding: 12px 20px;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+        }
+
+        .mobile-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            color: var(--slate-gray);
+        }
+
+        .hamburger-btn {
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: var(--slate-gray);
+            cursor: pointer;
+            padding: 4px 8px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 95;
+        }
+
+        /* Main Content */
+        .main-wrapper {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content {
+            flex: 1;
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* Screen Management */
+        .screen {
+            display: none;
+        }
+        .screen.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* UI Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        /* Hero / Header Section */
+        .hero-section {
+            text-align: center;
+            padding: 28px 20px 20px 20px;
+            margin-bottom: 24px;
+        }
+
+        .hero-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--slate-gray);
+            margin-bottom: 8px;
+        }
+
+        .hero-tagline {
+            font-size: 1.1rem;
+            color: var(--slate-light);
+            font-weight: 400;
+        }
+
+        /* Dashboard Grid */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .dash-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dash-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: var(--sage-green);
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .dash-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.06);
+            border-color: rgba(129, 178, 154, 0.4);
+        }
+
+        .dash-card:hover::before {
+            opacity: 1;
+        }
+
+        .dash-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            background-color: var(--sage-light);
+            color: var(--sage-dark);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 16px;
+        }
+
+        .dash-card h3 {
+            font-size: 1.1rem;
+            color: var(--slate-gray);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .dash-card p {
+            font-size: 0.88rem;
+            color: var(--text-muted);
+            line-height: 1.45;
+        }
+
+        /* Banner Box */
+        .info-banner {
+            background-color: var(--sage-light);
+            border: 1px solid rgba(129, 178, 154, 0.4);
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin-bottom: 24px;
+            display: flex;
+            gap: 14px;
+            align-items: flex-start;
+        }
+
+        .info-banner i {
+            font-size: 1.3rem;
+            color: var(--sage-dark);
+            margin-top: 2px;
+        }
+
+        .info-banner h4 {
+            font-size: 0.98rem;
+            font-weight: 700;
+            color: var(--slate-dark);
+            margin-bottom: 4px;
+        }
+
+        .info-banner p {
+            font-size: 0.88rem;
+            color: var(--slate-gray);
+        }
+
+        /* Tool Headers */
+        .tool-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .tool-title-group h2 {
+            font-size: 1.6rem;
+            color: var(--slate-gray);
+            font-weight: 700;
+        }
+
+        .tool-problem {
+            font-size: 0.95rem;
+            color: var(--sage-dark);
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* Buttons & Controls */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: var(--sage-green);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--sage-dark);
+        }
+
+        .btn-secondary {
+            background-color: #E9ECEF;
+            color: var(--slate-gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: #DEE2E6;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--sage-green);
+            color: var(--sage-dark);
+        }
+
+        .btn-outline:hover {
+            background: var(--sage-light);
+        }
+
+        .btn-danger {
+            background-color: var(--warning-orange);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c85a3f;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+        }
+
+        .sample-badge {
+            display: inline-block;
+            background: #FFF3BF;
+            color: #744210;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--slate-gray);
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #CED4DA;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            color: var(--text-main);
+            background-color: #FFF;
+            transition: border-color 0.15s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--sage-green);
+            box-shadow: 0 0 0 3px rgba(129, 178, 154, 0.2);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .radio-group, .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 4px;
+        }
+
+        .radio-label, .checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 400;
+            cursor: pointer;
+            background: var(--bg-gradient-start);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .radio-label input, .checkbox-label input {
+            accent-color: var(--sage-green);
+        }
+
+        .form-actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            flex-wrap: wrap;
+        }
+
+        /* Analysis Output Cards */
+        .output-container {
+            margin-top: 32px;
+            display: none;
+        }
+
+        .output-container.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .output-header {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--slate-gray);
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--sage-green);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .analysis-card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            border-left: 4px solid var(--sage-green);
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+        }
+
+        .analysis-card.warning {
+            border-left-color: var(--warning-orange);
+            background-color: #FFFDFD;
+        }
+
+        .analysis-card.neutral {
+            border-left-color: var(--slate-light);
+        }
+
+        .analysis-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--slate-gray);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-body {
+            font-size: 0.92rem;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .disclosure-note {
+            font-size: 0.8rem;
+            color: var(--slate-light);
+            background: #F8F9FA;
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+        }
+
+        /* Comparison Tables & Matrix */
+        .comp-table-wrapper {
+            overflow-x: auto;
+        }
+
+        .comp-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 12px 0;
+            font-size: 0.9rem;
+        }
+
+        .comp-table th, .comp-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comp-table th {
+            background-color: var(--sage-light);
+            color: var(--slate-gray);
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .badge-low { background: #D8F3DC; color: #1B4332; }
+        .badge-medium { background: #FFF3BF; color: #744210; }
+        .badge-high { background: #FFD8A8; color: #78350F; }
+        .badge-very-high { background: #FFC9C9; color: #900C3F; }
+
+        /* Script Output Box */
+        .script-box {
+            background: #F8F9FA;
+            border: 1px solid #DEE2E6;
+            border-radius: 6px;
+            padding: 14px;
+            padding-right: 90px;
+            font-family: monospace, sans-serif;
+            font-size: 0.88rem;
+            color: #212529;
+            margin: 12px 0;
+            position: relative;
+            white-space: pre-wrap;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: white;
+            border: 1px solid #CED4DA;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--slate-gray);
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: var(--sage-light);
+            color: var(--sage-dark);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--slate-dark);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Accordion / History Section */
+        .history-section {
+            margin-top: 40px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+            padding: 8px 0;
+        }
+
+        .history-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--slate-light);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-content {
+            display: none;
+            margin-top: 12px;
+        }
+
+        .history-content.active {
+            display: block;
+        }
+
+        .history-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .history-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            gap: 12px;
+        }
+
+        .history-item-date {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        /* App Footer */
+        .app-footer {
+            margin-top: auto;
+            background-color: #FFFFFF;
+            border-top: 1px solid var(--border-color);
+            padding: 16px 24px;
+            text-align: center;
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        /* Print CSS */
+        @media print {
+            .sidebar, .mobile-header, .overlay, .form-actions, .copy-btn, .history-section, .btn, .app-footer {
+                display: none !important;
+            }
+            .main-wrapper {
+                margin-left: 0 !important;
+            }
+            .main-content {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ccc !important;
+                page-break-inside: avoid;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .mobile-header {
+                display: flex;
+            }
+            .overlay.active {
+                display: block;
+            }
+            .main-wrapper {
+                margin-left: 0;
+            }
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+            .hero-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Atas Seluler -->
+    <header class="mobile-header">
+        <div class="mobile-brand">
+            <i class="fa-solid fa-scale-balanced" style="color: var(--sage-green);"></i>
+            <span>Pembanding Penawaran™</span>
+        </div>
+        <button class="hamburger-btn" id="hamburgerBtn" aria-label="Buka Menu">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+    </header>
+
+    <!-- Overlay Navigasi -->
+    <div class="overlay" id="overlay"></div>
+
+    <div class="app-container">
+        <!-- Sidebar Navigasi -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <i class="fa-solid fa-scale-balanced"></i>
+                <h1>Pembanding<br><span style="font-weight:400; font-size:0.85rem; color:var(--slate-light);">Penawaran Kerja™</span></h1>
+            </div>
+            <nav style="flex: 1; overflow-y: auto;">
+                <ul class="nav-list">
+                    <li class="nav-item active">
+                        <button onclick="switchScreen('dashboard')">
+                            <i class="fa-solid fa-house"></i>
+                            <span>Dasbor</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('tool1')">
+                            <i class="fa-solid fa-calculator"></i>
+                            <span>1. Angka Finansial</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('tool2')">
+                            <i class="fa-solid fa-briefcase"></i>
+                            <span>2. Perbandingan Peran</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('tool3')">
+                            <i class="fa-solid fa-shield-halved"></i>
+                            <span>3. Penilai Risiko</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('tool4')">
+                            <i class="fa-solid fa-handshake"></i>
+                            <span>4. Counter-Offer</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('tool5')">
+                            <i class="fa-solid fa-compass"></i>
+                            <span>5. Keputusan Final</span>
+                        </button>
+                    </li>
+                    <div class="nav-divider"></div>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('career-plan')">
+                            <i class="fa-solid fa-file-invoice"></i>
+                            <span>Rencana Karier Saya</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('history')">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            <span>Riwayat Saya</span>
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <button onclick="switchScreen('privacy')">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>Privasi & Data</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Area Kerja Utama -->
+        <div class="main-wrapper">
+            <main class="main-content">
+
+                <!-- LAYAR DASBOR -->
+                <section id="dashboard" class="screen active">
+                    <div class="hero-section">
+                        <h2 class="hero-title">Pembanding Penawaran Kerja™</h2>
+                        <p class="hero-tagline">Bandingkan dengan jelas. Memutuskan dengan tenang. Melangkah dengan bijak.</p>
+                    </div>
+
+                    <div class="info-banner">
+                        <i class="fa-solid fa-lightbulb"></i>
+                        <div>
+                            <h4>Prinsip Anti-FOMO</h4>
+                            <p>Gaji pokok yang lebih tinggi tidak otomatis berarti langkah karier yang lebih baik, begitu pula bertahan tidak berarti Anda sepenuhnya aman. Gunakan sistem ini untuk mengevaluasi uang, realitas peran, risiko kerugian, posisi tawar negosiasi, dan kesesuaian akhir secara bertahap.</p>
+                        </div>
+                    </div>
+
+                    <div class="dash-grid">
+                        <div class="dash-card" onclick="switchScreen('tool1')">
+                            <div class="dash-icon"><i class="fa-solid fa-calculator"></i></div>
+                            <h3>Angka Finansial</h3>
+                            <p>Ungkap nilai efektif dari total paket di luar angka gaji pokok semata.</p>
+                        </div>
+
+                        <div class="dash-card" onclick="switchScreen('tool2')">
+                            <div class="dash-icon"><i class="fa-solid fa-briefcase"></i></div>
+                            <h3>Perbandingan Peran</h3>
+                            <p>Bandingkan pekerjaan yang akan Anda jalani sehari-hari, bukan sekadar judul jabatan.</p>
+                        </div>
+
+                        <div class="dash-card" onclick="switchScreen('tool3')">
+                            <div class="dash-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                            <h3>Penilai Risiko</h3>
+                            <p>Pahami risiko struktural relatif terhadap ketahanan dana darurat pribadi Anda.</p>
+                        </div>
+
+                        <div class="dash-card" onclick="switchScreen('tool4')">
+                            <div class="dash-icon"><i class="fa-solid fa-handshake"></i></div>
+                            <h3>Counter-Offer</h3>
+                            <p>Tentukan apakah bertahan layak diperjuangkan, atau apakah keluar secara baik-baik lebih tepat.</p>
+                        </div>
+
+                        <div class="dash-card" onclick="switchScreen('tool5')">
+                            <div class="dash-icon"><i class="fa-solid fa-compass"></i></div>
+                            <h3>Keputusan Final</h3>
+                            <p>Ubah keraguan menjadi langkah terencana menggunakan skrip komunikasi yang siap pakai.</p>
+                        </div>
+
+                        <div class="dash-card" onclick="switchScreen('career-plan')" style="border-color: var(--sage-green);">
+                            <div class="dash-icon" style="background-color: var(--slate-gray); color: #fff;"><i class="fa-solid fa-file-invoice"></i></div>
+                            <h3>Rencana Karier Saya</h3>
+                            <p>Rangkum semua analisis menjadi rencana keputusan terpadu yang siap dicetak.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ALAT 1: ANGKA FINANSIAL -->
+                <section id="tool1" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Alat 1: Angka Finansial</h2>
+                            <p class="tool-problem">"Gajinya lebih tinggi, tapi bagaimana dengan nilai total paketnya?"</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadSampleTool1()">
+                            <i class="fa-solid fa-flask"></i> Muat Skenario Contoh
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <form id="formTool1" onsubmit="analyzeTool1(event)">
+                            <div id="sampleBadgeT1" class="sample-badge" style="display:none;">Skenario contoh — ini bukan hasil pribadi Anda.</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="t1_curr_base">Gaji Pokok Saat Ini (Rp/thn)</label>
+                                    <input type="number" id="t1_curr_base" required min="0" placeholder="contoh: 120000000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_off_base">Gaji Pokok Penawaran (Rp/thn)</label>
+                                    <input type="number" id="t1_off_base" required min="0" placeholder="contoh: 150000000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_curr_benefits">Nilai Bonus / Tunjangan Tahunan Saat Ini (Rp)</label>
+                                    <input type="number" id="t1_curr_benefits" required min="0" placeholder="contoh: 15000000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_off_benefits">Nilai Bonus / Tunjangan Tahunan Penawaran (Rp)</label>
+                                    <input type="number" id="t1_off_benefits" required min="0" placeholder="contoh: 10000000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_curr_commute">Biaya Komuter Bulanan Saat Ini (Rp)</label>
+                                    <input type="number" id="t1_curr_commute" required min="0" placeholder="contoh: 500000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_off_commute">Biaya Komuter Bulanan Penawaran (Rp)</label>
+                                    <input type="number" id="t1_off_commute" required min="0" placeholder="contoh: 1200000">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_curr_401k">Rincian BPJS / Pensiun / Asuransi Saat Ini</label>
+                                    <input type="text" id="t1_curr_401k" required placeholder="contoh: BPJS Ketenagakerjaan Penuh + Swasta">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t1_off_401k">Rincian BPJS / Pensiun / Asuransi Penawaran</label>
+                                    <input type="text" id="t1_off_401k" required placeholder="contoh: BPJS Standar">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetTool1()"><i class="fa-solid fa-rotate-left"></i> Reset Form</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-chart-pie"></i> Analisis Kompensasi</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outTool1" class="output-container">
+                        <div class="output-header">
+                            <span>Ringkasan Kompensasi</span>
+                        </div>
+                        <div id="outTool1Content"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('t1')">
+                            <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat 1</span>
+                            <i class="fa-solid fa-chevron-down" id="t1_arrow"></i>
+                        </div>
+                        <div class="history-content" id="t1_history_content">
+                            <ul class="history-list" id="t1_history_list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ALAT 2: PERBANDINGAN PERAN -->
+                <section id="tool2" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Alat 2: Perbandingan Peran</h2>
+                            <p class="tool-problem">"Apakah pekerjaan ini benar-benar akan lebih baik sehari-hari?"</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadSampleTool2()">
+                            <i class="fa-solid fa-flask"></i> Muat Skenario Contoh
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <form id="formTool2" onsubmit="analyzeTool2(event)">
+                            <div id="sampleBadgeT2" class="sample-badge" style="display:none;">Skenario contoh — ini bukan hasil pribadi Anda.</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="t2_curr_title">Judul Peran Saat Ini</label>
+                                    <input type="text" id="t2_curr_title" required placeholder="contoh: Senior Analyst">
+                                </div>
+                                <div class="form-group">
+                                    <label for="t2_off_title">Judul Peran Penawaran</label>
+                                    <input type="text" id="t2_off_title" required placeholder="contoh: Senior Analyst">
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="t2_curr_day">Realitas Sehari-hari Saat Ini</label>
+                                    <textarea id="t2_curr_day" required placeholder="Tanggung jawab utama, tugas rutin, budaya kerja..."></textarea>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="t2_off_day">Ekspektasi Sehari-hari Penawaran</label>
+                                    <textarea id="t2_off_day" required placeholder="Ekspektasi tanggung jawab, otonomi, ritme kerja..."></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t2_curr_growth">Trajektori Pertumbuhan Saat Ini</label>
+                                    <select id="t2_curr_growth" required>
+                                        <option value="Jelas">Jelas</option>
+                                        <option value="Tidak Jelas">Tidak Jelas</option>
+                                        <option value="Stagnan">Stagnan</option>
+                                        <option value="Menurun">Menurun</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t2_off_growth">Trajektori Pertumbuhan Penawaran</label>
+                                    <select id="t2_off_growth" required>
+                                        <option value="Jelas">Jelas</option>
+                                        <option value="Tidak Jelas">Tidak Jelas</option>
+                                        <option value="Stagnan">Stagnan</option>
+                                        <option value="Menurun">Menurun</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t2_curr_mgr">Kualitas Atasan Saat Ini</label>
+                                    <select id="t2_curr_mgr" required>
+                                        <option value="Sangat Baik">Sangat Baik</option>
+                                        <option value="Baik">Baik</option>
+                                        <option value="Cukup">Cukup</option>
+                                        <option value="Buruk">Buruk</option>
+                                        <option value="Sangat Buruk">Sangat Buruk</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t2_off_mgr">Kualitas Atasan Penawaran</label>
+                                    <select id="t2_off_mgr" required>
+                                        <option value="Sangat Baik">Sangat Baik</option>
+                                        <option value="Baik">Baik</option>
+                                        <option value="Cukup">Cukup</option>
+                                        <option value="Buruk">Buruk</option>
+                                        <option value="Belum Diketahui">Belum Diketahui</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetTool2()"><i class="fa-solid fa-rotate-left"></i> Reset Form</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-layer-group"></i> Bandingkan Peran</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outTool2" class="output-container">
+                        <div class="output-header">
+                            <span>Matriks Peran & Evaluasi Pertumbuhan</span>
+                        </div>
+                        <div id="outTool2Content"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('t2')">
+                            <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat 2</span>
+                            <i class="fa-solid fa-chevron-down" id="t2_arrow"></i>
+                        </div>
+                        <div class="history-content" id="t2_history_content">
+                            <ul class="history-list" id="t2_history_list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ALAT 3: PENILAI RISIKO -->
+                <section id="tool3" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Alat 3: Penilai Risiko</h2>
+                            <p class="tool-problem">"Apa hal terburuk yang bisa terjadi jika saya mengambil penawaran ini?"</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadSampleTool3()">
+                            <i class="fa-solid fa-flask"></i> Muat Skenario Contoh
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <form id="formTool3" onsubmit="analyzeTool3(event)">
+                            <div id="sampleBadgeT3" class="sample-badge" style="display:none;">Skenario contoh — ini bukan hasil pribadi Anda.</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="t3_stage">Tahap Perusahaan Baru</label>
+                                    <select id="t3_stage" required>
+                                        <option value="Startup Awal">Startup Awal (Volatilitas Tinggi)</option>
+                                        <option value="Fase Pertumbuhan">Fase Pertumbuhan (Skalasi Cepat)</option>
+                                        <option value="Mapan / Korporasi">Mapan / Korporasi Besar</option>
+                                        <option value="Restrukturisasi">Restrukturisasi / Penurunan</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t3_nature">Sifat Peran Baru:</label>
+                                    <select id="t3_nature" required>
+                                        <option value="Peran Baru Dibuat">Peran Baru Dibuat</option>
+                                        <option value="Pengganti (Backfill)">Pengganti (Menggantikan posisi lama)</option>
+                                        <option value="Ekspansi Tim">Ekspansi Tim</option>
+                                        <option value="Restrukturisasi">Restrukturisasi / Reorganisasi</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t3_cushion">Dana Darurat Finansial Anda</label>
+                                    <select id="t3_cushion" required>
+                                        <option value="6+ bulan">6+ Bulan Biaya Hidup</option>
+                                        <option value="3–6 bulan">3–6 Bulan Biaya Hidup</option>
+                                        <option value="1–3 bulan">1–3 Bulan Biaya Hidup</option>
+                                        <option value="Kurang dari 1 bulan">Kurang dari 1 Bulan / Tidak Ada</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="t3_tolerance">Toleransi Risiko Anda</label>
+                                    <select id="t3_tolerance" required>
+                                        <option value="Tinggi">Tinggi (Nyaman dengan ketidakpastian)</option>
+                                        <option value="Sedang">Sedang (Pendekatan seimbang)</option>
+                                        <option value="Rendah">Rendah (Sangat mengutamakan stabilitas)</option>
+                                    </select>
+                                </div>
+                                <div class="form-group full-width">
+                                    <label for="t3_leaving">Hal yang Akan Anda Tinggalkan (Masa kerja, reputasi, fleksibilitas)</label>
+                                    <textarea id="t3_leaving" required placeholder="contoh: Masa kerja 3 tahun, jadwal fleksibel, hubungan baik dengan tim..."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetTool3()"><i class="fa-solid fa-rotate-left"></i> Reset Form</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-shield-cat"></i> Nilai Risiko Struktural</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outTool3" class="output-container">
+                        <div class="output-header">
+                            <span>Evaluasi Risiko Struktural</span>
+                        </div>
+                        <div id="outTool3Content"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('t3')">
+                            <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat 3</span>
+                            <i class="fa-solid fa-chevron-down" id="t3_arrow"></i>
+                        </div>
+                        <div class="history-content" id="t3_history_content">
+                            <ul class="history-list" id="t3_history_list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ALAT 4: STRATEGI COUNTER-OFFER -->
+                <section id="tool4" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Alat 4: Strategi Counter-Offer</h2>
+                            <p class="tool-problem">"Haruskah saya menggunakan penawaran ini untuk minta kenaikan gaji, atau langsung keluar?"</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadSampleTool4()">
+                            <i class="fa-solid fa-flask"></i> Muat Skenario Contoh
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <form id="formTool4" onsubmit="analyzeTool4(event)">
+                            <div id="sampleBadgeT4" class="sample-badge" style="display:none;">Skenario contoh — ini bukan hasil pribadi Anda.</div>
+                            <div class="form-grid">
+                                <div class="form-group full-width">
+                                    <label>Apakah Anda pernah meminta kenaikan gaji sebelumnya di tempat kerja saat ini?</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="t4_asked" value="Ya, dan disetujui" required> Ya, dan disetujui</label>
+                                        <label class="radio-label"><input type="radio" name="t4_asked" value="Ya, tetapi ditolak"> Ya, tetapi ditolak</label>
+                                        <label class="radio-label"><input type="radio" name="t4_asked" value="Belum pernah"> Belum pernah meminta</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t4_retention">Histori Retensi Perusahaan Saat Ini</label>
+                                    <select id="t4_retention" required>
+                                        <option value="Sangat berjuang mempertahankan talenta">Sangat berjuang mempertahankan talenta</option>
+                                        <option value="Kadang memberikan counter-offer">Kadang memberikan counter-offer</option>
+                                        <option value="Membiarkan karyawan keluar tanpa counter">Membiarkan karyawan keluar tanpa counter</option>
+                                        <option value="Tidak diketahui / Sulit diprediksi">Tidak diketahui / Sulit diprediksi</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Hubungan dengan Atasan Saat Ini</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="t4_boss" value="Kuat / Suportif" required> Kuat / Suportif</label>
+                                        <label class="radio-label"><input type="radio" name="t4_boss" value="Netral / Transaksional"> Netral / Transaksional</label>
+                                        <label class="radio-label"><input type="radio" name="t4_boss" value="Renggang / Sulit"> Renggang / Sulit</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label>Pendorong Utama Keinginan untuk Pindah (Pilih semua yang sesuai):</label>
+                                    <div class="checkbox-group">
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Kompensasi / Gaji"> Kompensasi / Gaji</label>
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Pertumbuhan Karier"> Pertumbuhan Karier</label>
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Budaya Perusahaan"> Budaya Perusahaan</label>
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Hubungan Atasan"> Hubungan dengan Atasan</label>
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Lokasi / Perjalanan"> Lokasi / Jarak Perjalanan</label>
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Keseimbangan Kerja-Hidup"> Keseimbangan Kerja-Hidup (WLB)</label>
+                                        <label class="checkbox-label"><input type="checkbox" name="t4_reasons" value="Rasa Bosan"> Rasa Bosan / Kurang Tantangan</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label>Apakah Anda akan bertahan jika perusahaan saat ini menyamai penawaran tersebut?</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="t4_stay" value="Ya, pasti bertahan" required> Ya, pasti bertahan</label>
+                                        <label class="radio-label"><input type="radio" name="t4_stay" value="Mungkin, dengan syarat tertentu"> Mungkin, dengan syarat tertentu</label>
+                                        <label class="radio-label"><input type="radio" name="t4_stay" value="Tidak, keputusan saya sudah bulat"> Tidak, keputusan saya sudah bulat</label>
+                                        <label class="radio-label"><input type="radio" name="t4_stay" value="Belum yakin"> Belum yakin</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetTool4()"><i class="fa-solid fa-rotate-left"></i> Reset Form</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-comments"></i> Hitung Strategi</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outTool4" class="output-container">
+                        <div class="output-header">
+                            <span>Posisi Tawar & Strategi Counter-Offer</span>
+                        </div>
+                        <div id="outTool4Content"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('t4')">
+                            <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat 4</span>
+                            <i class="fa-solid fa-chevron-down" id="t4_arrow"></i>
+                        </div>
+                        <div class="history-content" id="t4_history_content">
+                            <ul class="history-list" id="t4_history_list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ALAT 5: KEPUTUSAN FINAL -->
+                <section id="tool5" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Alat 5: Keputusan Final</h2>
+                            <p class="tool-problem">"Saya sudah memiliki semua informasi tetapi masih sulit memutuskan."</p>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="loadSampleTool5()">
+                            <i class="fa-solid fa-flask"></i> Muat Skenario Contoh
+                        </button>
+                    </div>
+
+                    <div class="card">
+                        <form id="formTool5" onsubmit="analyzeTool5(event)">
+                            <div id="sampleBadgeT5" class="sample-badge" style="display:none;">Skenario contoh — ini bukan hasil pribadi Anda.</div>
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label for="t5_gut">Firasat / Insting Awal Anda</label>
+                                    <select id="t5_gut" required>
+                                        <option value="Cenderung menerima penawaran">Cenderung menerima penawaran baru</option>
+                                        <option value="Cenderung bertahan">Cenderung bertahan di posisi sekarang</option>
+                                        <option value="Sangat cemas / bingung di kedua pilihan">Sangat cemas / bingung di kedua pilihan</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="t5_fear">Apa yang Paling Anda Takutkan?</label>
+                                    <select id="t5_fear" required>
+                                        <option value="Penyesalan">Penyesalan (Melewatkan potensi besar)</option>
+                                        <option value="Kerugian finansial">Kerugian Finansial atau Ketidakstabilan</option>
+                                        <option value="Memulai dari awal">Memulai Kembali / Kehilangan Reputasi</option>
+                                        <option value="Meninggalkan zona nyaman">Meninggalkan Zona Nyaman / Keakraban</option>
+                                        <option value="Kesan yang buruk">Memberikan Kesan yang Buruk</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="t5_friend">Jika seorang sahabat berada di posisi Anda, saran apa yang akan Anda berikan padanya?</label>
+                                    <textarea id="t5_friend" required placeholder="Tuliskan dengan jujur seolah menasihati seseorang yang Anda pedulikan..."></textarea>
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Apakah ada tenggat waktu mendesak untuk penawaran ini?</label>
+                                    <div class="radio-group">
+                                        <label class="radio-label"><input type="radio" name="t5_deadline" value="Mendesak (<48 jam)" required> Ya, mendesak (&lt; 48 jam)</label>
+                                        <label class="radio-label"><input type="radio" name="t5_deadline" value="Fleksibel standar"> Ya, fleksibel standar</label>
+                                        <label class="radio-label"><input type="radio" name="t5_deadline" value="Tidak ada tenggat ketat"> Tidak ada tenggat ketat</label>
+                                    </div>
+                                </div>
+
+                                <div class="form-group full-width">
+                                    <label for="t5_obvious">Satu informasi atau kondisi apa yang akan membuat keputusan ini menjadi sangat jelas?</label>
+                                    <textarea id="t5_obvious" required placeholder="contoh: Kepastian bahwa atasan langsung di tempat baru sangat suportif..."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" onclick="resetTool5()"><i class="fa-solid fa-rotate-left"></i> Reset Form</button>
+                                <button type="submit" class="btn btn-primary"><i class="fa-solid fa-check-double"></i> Sintesis Keputusan Akhir</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="outTool5" class="output-container">
+                        <div class="output-header">
+                            <span>Sintesis Keputusan & Skrip Komunikasi</span>
+                        </div>
+                        <div id="outTool5Content"></div>
+                    </div>
+
+                    <div class="history-section">
+                        <div class="history-header" onclick="toggleHistory('t5')">
+                            <span class="history-title"><i class="fa-solid fa-clock-rotate-left"></i> Riwayat Alat 5</span>
+                            <i class="fa-solid fa-chevron-down" id="t5_arrow"></i>
+                        </div>
+                        <div class="history-content" id="t5_history_content">
+                            <ul class="history-list" id="t5_history_list"></ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- RENCANA KARIER SAYA (LAPORAN SINTESIS) -->
+                <section id="career-plan" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Rencana Karier Saya</h2>
+                            <p class="tool-problem">Rangkuman hasil keputusan terpadu dari seluruh modul yang diselesaikan.</p>
+                        </div>
+                        <button class="btn btn-primary btn-sm" onclick="window.print()">
+                            <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+                        </button>
+                    </div>
+
+                    <div id="careerPlanContent">
+                        <!-- Konten Sintesis Dinamis yang Dihasilkan oleh JS -->
+                    </div>
+                </section>
+
+                <!-- LAYAR PENGELOLA RIWAYAT -->
+                <section id="history" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Riwayat Analisis Tersimpan</h2>
+                            <p class="tool-problem">Tinjau dan kelola hasil evaluasi yang tersimpan di seluruh alat.</p>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="clearAllHistory()">
+                            <i class="fa-solid fa-trash-can"></i> Hapus Semua Riwayat
+                        </button>
+                    </div>
+
+                    <div id="unifiedHistoryContent" class="card">
+                        <!-- Ditampilkan secara dinamis -->
+                    </div>
+                </section>
+
+                <!-- LAYAR PRIVASI -->
+                <section id="privacy" class="screen">
+                    <div class="tool-header">
+                        <div class="tool-title-group">
+                            <h2>Privasi & Penyimpanan Lokal</h2>
+                            <p class="tool-problem">Data karier sensitif Anda tetap 100% aman di perangkat Anda.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom:12px; color:var(--slate-gray);"><i class="fa-solid fa-shield-halved" style="color:var(--sage-green);"></i> Jaminan Keamanan Data</h3>
+                        <p style="margin-bottom:16px;">Job Offer Comparator™ beroperasi sepenuhnya di dalam peramban web lokal Anda. Tidak ada data formulir, rincian gaji, rinci peran, atau skrip komunikasi yang dikirimkan ke server eksternal, model AI, atau basis data pelacak mana pun.</p>
+                        
+                        <h4 style="margin-bottom:8px; color:var(--slate-gray);">Apa yang disimpan?</h4>
+                        <ul style="margin-left:20px; margin-bottom:16px; font-size:0.92rem; color:var(--text-main);">
+                            <li><code>joboffer_v2_state</code> — Input formulir aktif dan hasil kalkulasi terakhir.</li>
+                            <li><code>joboffer_v2_history</code> — Catatan evaluasi riwayat untuk pemulihan cepat.</li>
+                        </ul>
+
+                        <button class="btn btn-danger" onclick="clearAllHistory()"><i class="fa-solid fa-eraser"></i> Hapus Seluruh Data Aplikasi Lokal</button>
+                    </div>
+                </section>
+
+            </main>
+
+            <!-- Footer Responsif Global -->
+            <footer class="app-footer">
+                Hanya untuk panduan pengambilan keputusan karier. Bukan saran keuangan, pajak, atau hukum. Untuk peninjauan kontrak kerja, konsultasikan dengan pakar hukum ketenagakerjaan. Untuk keputusan finansial besar, konsultasikan dengan penasihat keuangan terlisensi.
+            </footer>
+        </div>
+    </div>
+
+    <!-- Notifikasi Toast -->
+    <div class="toast" id="toast">Berhasil disalin ke papan klip!</div>
+
+    <!-- Skrip Pemrograman Aplikasi -->
+    <script>
+        // Arsitektur State Pusat
+        let jobOfferState = {
+            completedTools: [],
+            toolResults: {},
+            lastUpdated: null
+        };
+
+        // Referensi DOM
+        const sidebar = document.getElementById('sidebar');
+        const hamburgerBtn = document.getElementById('hamburgerBtn');
+        const overlay = document.getElementById('overlay');
+        const toast = document.getElementById('toast');
+
+        // Toggle Navigasi
+        if (hamburgerBtn) {
+            hamburgerBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+                overlay.classList.toggle('active');
+            });
+        }
+
+        if (overlay) {
+            overlay.addEventListener('click', () => {
+                sidebar.classList.remove('open');
+                overlay.classList.remove('active');
+            });
+        }
+
+        function switchScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) targetScreen.classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const targetBtn = document.querySelector(`.nav-item button[onclick*="${screenId}"]`);
+            if (targetBtn && targetBtn.parentElement) {
+                targetBtn.parentElement.classList.add('active');
+            }
+
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (screenId === 'career-plan') renderCareerPlan();
+            if (screenId === 'history') renderUnifiedHistory();
+            if (screenId.startsWith('tool')) {
+                const toolKey = screenId.replace('tool', 't');
+                renderHistory(toolKey);
+            }
+        }
+
+        // Utilitas: Salin ke Papan Klip
+        function copyToClipboard(text) {
+            if (!navigator.clipboard) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                showToast("Berhasil disalin ke papan klip!");
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast("Berhasil disalin ke papan klip!");
+            }).catch(() => {
+                showToast("Gagal menyalin.");
+            });
+        }
+
+        function showToast(msg) {
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2200);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, function(m) {
+                return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
+            });
+        }
+
+        // Sinkronisasi State Penyimpanan Lokal
+        function saveState() {
+            try {
+                jobOfferState.lastUpdated = new Date().toISOString();
+                localStorage.setItem('joboffer_v2_state', JSON.stringify(jobOfferState));
+            } catch (e) {
+                console.error("Gagal menyimpan state", e);
+            }
+        }
+
+        function loadState() {
+            try {
+                const saved = localStorage.getItem('joboffer_v2_state');
+                if (saved) {
+                    jobOfferState = JSON.parse(saved);
+                }
+            } catch (e) {
+                console.error("Gagal memuat state", e);
+            }
+        }
+
+        function saveToHistory(toolId, summary, fullData) {
+            const key = `joboffer_v2_history_${toolId}`;
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+            
+            const newItem = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+                summary: summary,
+                data: fullData
+            };
+
+            history.unshift(newItem);
+            if (history.length > 25) history = history.slice(0, 25);
+
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory(toolId);
+        }
+
+        function renderHistory(toolId) {
+            const key = `joboffer_v2_history_${toolId}`;
+            const listEl = document.getElementById(`${toolId}_history_list`);
+            if (!listEl) return;
+
+            let history = [];
+            try {
+                history = JSON.parse(localStorage.getItem(key) || '[]');
+            } catch(e) { history = []; }
+
+            listEl.innerHTML = '';
+
+            if (history.length === 0) {
+                listEl.innerHTML = '<li class="history-item" style="color:var(--text-muted);">Belum ada riwayat tersimpan.</li>';
+                return;
+            }
+
+            history.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'history-item';
+                li.innerHTML = `
+                    <div>
+                        <strong>${escapeHtml(item.summary)}</strong>
+                        <div class="history-item-date">${item.date}</div>
+                    </div>
+                    <button class="btn btn-secondary btn-sm" onclick="deleteHistoryItem('${toolId}', ${item.id})">Hapus</button>
+                `;
+                listEl.appendChild(li);
+            });
+        }
+
+        function deleteHistoryItem(toolId, itemId) {
+            const key = `joboffer_v2_history_${toolId}`;
+            let history = [];
+            try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+            history = history.filter(i => i.id !== itemId);
+            localStorage.setItem(key, JSON.stringify(history));
+            renderHistory(toolId);
+            showToast("Item dihapus");
+        }
+
+        function toggleHistory(toolId) {
+            const content = document.getElementById(`${toolId}_history_content`);
+            const arrow = document.getElementById(`${toolId}_arrow`);
+            if (!content) return;
+            content.classList.toggle('active');
+            if (content.classList.contains('active')) {
+                if (arrow) arrow.className = 'fa-solid fa-chevron-up';
+            } else {
+                if (arrow) arrow.className = 'fa-solid fa-chevron-down';
+            }
+        }
+
+        function clearAllHistory() {
+            if (confirm("Apakah Anda yakin ingin menghapus semua riwayat dan data aplikasi? Tindakan ini tidak dapat dibatalkan.")) {
+                ['t1','t2','t3','t4','t5'].forEach(id => localStorage.removeItem(`joboffer_v2_history_${id}`));
+                localStorage.removeItem('joboffer_v2_state');
+                jobOfferState = { completedTools: [], toolResults: {}, lastUpdated: null };
+                alert("Semua riwayat aplikasi dan kemajuan tersimpan telah dibersihkan.");
+                location.reload();
+            }
+        }
+
+        /* ----------------------------------------------------
+           ALAT 1: ANGKA FINANSIAL
+        ---------------------------------------------------- */
+        function loadSampleTool1() {
+            document.getElementById('t1_curr_base').value = 120000000;
+            document.getElementById('t1_off_base').value = 150000000;
+            document.getElementById('t1_curr_benefits').value = 15000000;
+            document.getElementById('t1_off_benefits').value = 10000000;
+            document.getElementById('t1_curr_commute').value = 500000;
+            document.getElementById('t1_off_commute').value = 1200000;
+            document.getElementById('t1_curr_401k').value = "BPJS Ketenagakerjaan + Asuransi Swasta Penuh";
+            document.getElementById('t1_off_401k').value = "BPJS Standar";
+            document.getElementById('sampleBadgeT1').style.display = 'block';
+        }
+
+        function resetTool1() {
+            document.getElementById('formTool1').reset();
+            document.getElementById('outTool1').classList.remove('active');
+            document.getElementById('sampleBadgeT1').style.display = 'none';
+        }
+
+        function analyzeTool1(e) {
+            e.preventDefault();
+            const currBase = parseFloat(document.getElementById('t1_curr_base').value) || 0;
+            const offBase = parseFloat(document.getElementById('t1_off_base').value) || 0;
+            const currBen = parseFloat(document.getElementById('t1_curr_benefits').value) || 0;
+            const offBen = parseFloat(document.getElementById('t1_off_benefits').value) || 0;
+            const currCom = parseFloat(document.getElementById('t1_curr_commute').value) || 0;
+            const offCom = parseFloat(document.getElementById('t1_off_commute').value) || 0;
+            const curr401k = document.getElementById('t1_curr_401k').value;
+            const off401k = document.getElementById('t1_off_401k').value;
+
+            const currAnnualCommute = currCom * 12;
+            const offAnnualCommute = offCom * 12;
+
+            const currTotalNet = (currBase + currBen) - currAnnualCommute;
+            const offTotalNet = (offBase + offBen) - offAnnualCommute;
+
+            const baseDiff = offBase - currBase;
+            const netDiffAnnual = offTotalNet - currTotalNet;
+            const netDiffMonthly = Math.round(netDiffAnnual / 12);
+            const commDiffAnnual = offAnnualCommute - currAnnualCommute;
+
+            const breakEvenBaseline = currTotalNet + offAnnualCommute - offBen;
+
+            const resultData = {
+                currBase, offBase, currBen, offBen, currCom, offCom, curr401k, off401k,
+                currTotalNet, offTotalNet, baseDiff, netDiffAnnual, netDiffMonthly, commDiffAnnual, breakEvenBaseline
+            };
+
+            jobOfferState.toolResults.numbers = resultData;
+            if (!jobOfferState.completedTools.includes('numbers')) jobOfferState.completedTools.push('numbers');
+            saveState();
+
+            let html = `
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-scale-unbalanced"></i> PERBANDINGAN TOTAL KOMPENSASI</div>
+                    <div class="analysis-body">
+                        <div class="comp-table-wrapper">
+                            <table class="comp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Kategori</th>
+                                        <th>Peran Saat Ini</th>
+                                        <th>Penawaran Baru</th>
+                                        <th>Selisih</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Gaji Pokok</td>
+                                        <td>Rp${currBase.toLocaleString('id-ID')}</td>
+                                        <td>Rp${offBase.toLocaleString('id-ID')}</td>
+                                        <td><strong style="color: ${baseDiff >= 0 ? 'var(--sage-dark)' : 'var(--warning-orange)'};">${baseDiff >= 0 ? '+' : ''}Rp${baseDiff.toLocaleString('id-ID')}</strong></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Bonus & Nilai Tunjangan</td>
+                                        <td>Rp${currBen.toLocaleString('id-ID')}</td>
+                                        <td>Rp${offBen.toLocaleString('id-ID')}</td>
+                                        <td>Rp${(offBen - currBen).toLocaleString('id-ID')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Biaya Komuter Tahunan</td>
+                                        <td>Rp${currAnnualCommute.toLocaleString('id-ID')}</td>
+                                        <td>Rp${offAnnualCommute.toLocaleString('id-ID')}</td>
+                                        <td>-Rp${commDiffAnnual.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>Nilai Efektif Paket</strong></td>
+                                        <td><strong>Rp${currTotalNet.toLocaleString('id-ID')}</strong></td>
+                                        <td><strong>Rp${offTotalNet.toLocaleString('id-ID')}</strong></td>
+                                        <td><strong style="color: ${netDiffAnnual >= 0 ? 'var(--sage-dark)' : 'var(--warning-orange)'};">${netDiffAnnual >= 0 ? '+' : ''}Rp${netDiffAnnual.toLocaleString('id-ID')}/thn</strong></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card ${netDiffAnnual >= 0 ? '' : 'warning'}">
+                    <div class="analysis-title"><i class="fa-solid fa-sack-dollar"></i> PERBEDAAN RIIL</div>
+                    <div class="analysis-body">
+                        Angka gaji pokok pada judul penawaran dapat menyesatkan hingga sebesar <strong>Rp${Math.abs(baseDiff - netDiffAnnual).toLocaleString('id-ID')}</strong>. 
+                        Meskipun gaji pokok mengalami penyesuaian sebesar <strong>${baseDiff >= 0 ? '+' : ''}Rp${baseDiff.toLocaleString('id-ID')}</strong>, 
+                        setelah memperhitungkan penurunan nilai bonus dan peningkatan biaya perjalanan, penyesuaian paket bersih bulanan Anda sebelum pajak adalah sekitar 
+                        <strong>${netDiffMonthly >= 0 ? '+' : ''}Rp${netDiffMonthly.toLocaleString('id-ID')}/bulan</strong>.
+                    </div>
+                </div>
+
+                <div class="analysis-card neutral">
+                    <div class="analysis-title"><i class="fa-solid fa-bullseye"></i> BATAS IM PAS (BREAK-EVEN)</div>
+                    <div class="analysis-body">
+                        Untuk mempertahankan standar paket efektif Anda saat ini tanpa mengorbankan tunjangan atau menanggung biaya perjalanan ekstra, pekerjaan baru tersebut membutuhkan gaji pokok minimal sebesar <strong>Rp${breakEvenBaseline.toLocaleString('id-ID')}</strong>.
+                        ${curr401k !== off401k ? `<br><br><strong>Catatan Fasilitas Pensiun / BPJS:</strong> Perubahan dari <em>"${escapeHtml(curr401k)}"</em> menjadi <em>"${escapeHtml(off401k)}"</em> dapat memengaruhi akumulasi tabungan masa depan Anda.` : ''}
+                    </div>
+                </div>
+
+                <div class="analysis-card warning">
+                    <div class="analysis-title"><i class="fa-solid fa-ghost"></i> FAKTOR TERSEMBUNYI YANG BELUM TERNILAI</div>
+                    <div class="analysis-body">
+                        <ul>
+                            ${commDiffAnnual > 0 ? `<li><strong>Beban Perjalanan:</strong> Tambahan biaya perjalanan/bahan bakar sebesar Rp${commDiffAnnual.toLocaleString('id-ID')}/tahun + waktu perjalanan pribadi yang tidak terkompensasi.</li>` : ''}
+                            <li><strong>Hak Pensiun / Hak Saham:</strong> Pertimbangkan sisa insentif jangka panjang atau bonus tahunan yang hangus di perusahaan saat ini.</li>
+                            <li><strong>Manfaat Tak Terwujud:</strong> Perbedaan plafon asuransi kesehatan, kuota cuti tahunan, dan fleksibilitas waktu kerja tidak sepenuhnya tercermin dalam angka gaji pokok.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-comments-dollar"></i> SKRIP PATOKAN NEGOSIASI</div>
+                    <div class="analysis-body">
+                        Gunakan skrip ini untuk menjembatani celah finansial sebelum menandatangani kontrak:
+                        <div class="script-box">
+"Saya sangat tertarik dan sejalan dengan visi peran ini. Namun, setelah memperhitungkan biaya perjalanan yang lebih tinggi serta struktur tunjangan yang berbeda (Rp${offBen.toLocaleString('id-ID')} vs Rp${currBen.toLocaleString('id-ID')}), peningkatan finansial bersih yang saya terima menjadi lebih kecil dari perkiraan. Jika kita dapat menyesuaikan gaji pokok menjadi Rp${(offBase + Math.max(3000000, commDiffAnnual)).toLocaleString('id-ID')} atau menyertakan bonus awal (sign-on bonus) sebesar Rp${Math.max(3000000, commDiffAnnual + 2000000).toLocaleString('id-ID')}, saya siap menandatangani penawaran ini hari ini."
+<button class="copy-btn" onclick="copyToClipboard(this.parentElement.innerText.replace('Copy','').trim())">Salin Skrip</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="disclosure-note">
+                    <strong>Catatan Metodologi:</strong> Perhitungan ini mewakili Selisih Paket Efektif sebelum pajak murni berdasarkan nilai yang Anda masukkan. Kalkulasi tidak memperhitungkan pajak penghasilan riil (PPh 21), premi kesehatan spesifik, atau ekuitas yang belum vesting.
+                </div>
+            `;
+
+            document.getElementById('outTool1Content').innerHTML = html;
+            document.getElementById('outTool1').classList.add('active');
+
+            saveToHistory('t1', `Gaji Rp${currBase.toLocaleString('id-ID')} vs Rp${offBase.toLocaleString('id-ID')} (${netDiffAnnual >= 0 ? '+' : ''}Rp${netDiffAnnual.toLocaleString('id-ID')}/thn)`, resultData);
+        }
+
+        /* ----------------------------------------------------
+           ALAT 2: PERBANDINGAN PERAN
+        ---------------------------------------------------- */
+        function loadSampleTool2() {
+            document.getElementById('t2_curr_title').value = "Senior Analyst";
+            document.getElementById('t2_off_title').value = "Senior Analyst";
+            document.getElementById('t2_curr_day').value = "Laporan triwulanan yang berulang, spreadsheet manual, otonomi rendah, jam kerja 40 jam yang dapat diprediksi.";
+            document.getElementById('t2_off_day').value = "Proyek lintas fungsi strategis, teknologi data modern, visibilitas lebih tinggi, lingkungan kerja yang cepat.";
+            document.getElementById('t2_curr_growth').value = "Stagnan";
+            document.getElementById('t2_off_growth').value = "Jelas";
+            document.getElementById('t2_curr_mgr').value = "Cukup";
+            document.getElementById('t2_off_mgr').value = "Belum Diketahui";
+            document.getElementById('sampleBadgeT2').style.display = 'block';
+        }
+
+        function resetTool2() {
+            document.getElementById('formTool2').reset();
+            document.getElementById('outTool2').classList.remove('active');
+            document.getElementById('sampleBadgeT2').style.display = 'none';
+        }
+
+        function analyzeTool2(e) {
+            e.preventDefault();
+            const currTitle = document.getElementById('t2_curr_title').value;
+            const offTitle = document.getElementById('t2_off_title').value;
+            const currDay = document.getElementById('t2_curr_day').value;
+            const offDay = document.getElementById('t2_off_day').value;
+            const currGrowth = document.getElementById('t2_curr_growth').value;
+            const offGrowth = document.getElementById('t2_off_growth').value;
+            const currMgr = document.getElementById('t2_curr_mgr').value;
+            const offMgr = document.getElementById('t2_off_mgr').value;
+
+            const resultData = { currTitle, offTitle, currDay, offDay, currGrowth, offGrowth, currMgr, offMgr };
+            jobOfferState.toolResults.roleComparison = resultData;
+            if (!jobOfferState.completedTools.includes('roleComparison')) jobOfferState.completedTools.push('roleComparison');
+            saveState();
+
+            let html = `
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-table"></i> MATRIKS PERAN</div>
+                    <div class="analysis-body">
+                        <div class="comp-table-wrapper">
+                            <table class="comp-table">
+                                <thead>
+                                    <tr>
+                                        <th>Dimensi</th>
+                                        <th>Saat Ini: ${escapeHtml(currTitle)}</th>
+                                        <th>Penawaran: ${escapeHtml(offTitle)}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Trajektori Pertumbuhan</td>
+                                        <td><span class="badge badge-${currGrowth === 'Jelas' ? 'low' : 'high'}">${escapeHtml(currGrowth)}</span></td>
+                                        <td><span class="badge badge-${offGrowth === 'Jelas' ? 'low' : 'medium'}">${escapeHtml(offGrowth)}</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kualitas Atasan</td>
+                                        <td>${escapeHtml(currMgr)}</td>
+                                        <td>${escapeHtml(offMgr)} ${offMgr === 'Belum Diketahui' ? '<i class="fa-solid fa-triangle-exclamation" style="color:var(--warning-orange);" title="Risiko Belum Diketahui"></i>' : ''}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fokus Pekerjaan Harian</td>
+                                        <td>${escapeHtml(currDay)}</td>
+                                        <td>${escapeHtml(offDay)}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-arrow-up-right-dots"></i> CELAH PERTUMBUHAN</div>
+                    <div class="analysis-body">
+                        ${offGrowth === 'Jelas' && currGrowth !== 'Jelas' 
+                            ? "Peran yang ditawarkan menunjukkan arah kemajuan yang jelas. Bertahan di lingkungan yang stagnan berpotensi membatasi perkembangan keterampilan Anda dalam jangka panjang."
+                            : "Profil pertumbuhan terlihat setara. Pastikan Anda berpindah untuk ekspansi tanggung jawab yang nyata, bukan sekadar perpindahan lateral yang sejajar."}
+                    </div>
+                </div>
+
+                <div class="analysis-card warning">
+                    <div class="analysis-title"><i class="fa-solid fa-user-ninja"></i> KEKOSONGAN INFORMASI — KUALITAS ATASAN</div>
+                    <div class="analysis-body">
+                        ${offMgr === 'Belum Diketahui' 
+                            ? "<strong>Kualitas atasan adalah faktor utama dalam kepuasan kerja harian.</strong> Berpindah ke atasan yang belum diketahui menciptakan celah informasi. Sebelum menandatangani penawaran, mintalah sesi diskusi singkat dengan 1–2 calon rekan tim dan tanyakan: <em>'Bagaimana gaya kepemimpinan beliau saat di bawah tekanan tenggat waktu dan bagaimana prioritas dikelola?'</em>" 
+                            : `Beralih dari atasan berkarakter ${escapeHtml(currMgr)} ke atasan berkarakter ${escapeHtml(offMgr)}.`}
+                    </div>
+                </div>
+
+                <div class="analysis-card neutral">
+                    <div class="analysis-title"><i class="fa-solid fa-id-card"></i> JEBAKAN JUDUL JABATAN</div>
+                    <div class="analysis-body">
+                        ${currTitle.toLowerCase() === offTitle.toLowerCase() 
+                            ? "Judul jabatan identik. Fokuslah secara khusus pada cakupan tanggung jawab, hak pengambilan keputusan, dan teknologi yang digunakan, bukan sekadar gengsi judul." 
+                            : `Berpindah dari '${escapeHtml(currTitle)}' ke '${escapeHtml(offTitle)}'. Pastikan bahwa perubahan judul tersebut mencerminkan tanggung jawab pasar yang riil dan bukan inflasi jabatan untuk menutupi beban kerja berlebih.`}
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-hourglass-half"></i> UJI COBA 2 TAHUN</div>
+                    <div class="analysis-body">
+                        Dalam 24 bulan ke depan, peran mana yang membangun portofolio pencapaian lebih kuat untuk resume Anda? 
+                        <strong>${offGrowth === 'Jelas' ? 'Peran yang Ditawarkan' : 'Peran Saat Ini'}</strong> tampaknya berposisi lebih baik untuk pencapaian yang terukur.
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('outTool2Content').innerHTML = html;
+            document.getElementById('outTool2').classList.add('active');
+
+            saveToHistory('t2', `${currTitle} vs ${offTitle} (Pertumbuhan: ${offGrowth})`, resultData);
+        }
+
+        /* ----------------------------------------------------
+           ALAT 3: PENILAI RISIKO
+        ---------------------------------------------------- */
+        function loadSampleTool3() {
+            document.getElementById('t3_stage').value = "Fase Pertumbuhan";
+            document.getElementById('t3_nature').value = "Peran Baru Dibuat";
+            document.getElementById('t3_cushion').value = "3–6 bulan";
+            document.getElementById('t3_tolerance').value = "Sedang";
+            document.getElementById('t3_leaving').value = "Meninggalkan tim yang stabil, reputasi yang baik, jadwal kerja fleksibel, dan masa kerja 3 tahun.";
+            document.getElementById('sampleBadgeT3').style.display = 'block';
+        }
+
+        function resetTool3() {
+            document.getElementById('formTool3').reset();
+            document.getElementById('outTool3').classList.remove('active');
+            document.getElementById('sampleBadgeT3').style.display = 'none';
+        }
+
+        function analyzeTool3(e) {
+            e.preventDefault();
+            const stage = document.getElementById('t3_stage').value;
+            const nature = document.getElementById('t3_nature').value;
+            const cushion = document.getElementById('t3_cushion').value;
+            const tolerance = document.getElementById('t3_tolerance').value;
+            const leaving = document.getElementById('t3_leaving').value;
+
+            let riskScore = 0;
+            if (stage === 'Startup Awal') riskScore += 3;
+            if (stage === 'Fase Pertumbuhan') riskScore += 2;
+            if (stage === 'Restrukturisasi') riskScore += 4;
+
+            if (nature === 'Peran Baru Dibuat') riskScore += 2;
+            if (nature === 'Restrukturisasi') riskScore += 3;
+
+            if (cushion === 'Kurang dari 1 bulan') riskScore += 4;
+            if (cushion === '1–3 bulan') riskScore += 2;
+
+            if (tolerance === 'Rendah') riskScore += 2;
+
+            let badgeClass = 'badge-low';
+            let riskLevel = 'RENDAH';
+            if (riskScore >= 4) { riskLevel = 'SEDANG'; badgeClass = 'badge-medium'; }
+            if (riskScore >= 7) { riskLevel = 'TINGGI'; badgeClass = 'badge-high'; }
+            if (riskScore >= 9) { riskLevel = 'SANGAT TINGGI'; badgeClass = 'badge-very-high'; }
+
+            const resultData = { stage, nature, cushion, tolerance, leaving, riskLevel, riskScore };
+            jobOfferState.toolResults.riskAssessor = resultData;
+            if (!jobOfferState.completedTools.includes('riskAssessor')) jobOfferState.completedTools.push('riskAssessor');
+            saveState();
+
+            let html = `
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-gauge-high"></i> PROFIL RISIKO STRUKTURAL: <span class="badge ${badgeClass}">${riskLevel}</span></div>
+                    <div class="analysis-body">
+                        Profil risiko struktural Anda dinilai <strong>${riskLevel}</strong> berdasarkan tahap perusahaan sasaran (${escapeHtml(stage)}), konteks peran (${escapeHtml(nature)}), dan ketahanan dana darurat pribadi Anda (${escapeHtml(cushion)}).
+                        <div class="disclosure-note" style="margin-top:8px;">
+                            Klasifikasi ini mencerminkan faktor latar belakang struktural dan tidak memprediksi keberhasilan individu atau perusahaan secara pasti.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card warning">
+                    <div class="analysis-title"><i class="fa-solid fa-triangle-exclamation"></i> PERTIMBANGAN SKENARIO TERBURUK</div>
+                    <div class="analysis-body">
+                        ${nature === 'Peran Baru Dibuat' ? "Peran yang baru dibuat membawa risiko definisi tugas di mana indikator kinerja utama (KPI) dapat berubah seiring perkembangan prioritas manajemen." : ""}
+                        ${stage === 'Startup Awal' || stage === 'Restrukturisasi' ? "Volatilitas organisasi atau perubahan struktur dapat memengaruhi keselarasan strategis dalam rentang waktu 6–12 bulan." : "Berpindah ke organisasi baru menuntut pembentukan reputasi dan hubungan kerja dari awal kembali."}
+                    </div>
+                </div>
+
+                <div class="analysis-card neutral">
+                    <div class="analysis-title"><i class="fa-solid fa-life-ring"></i> RENCANA DANA DARURAT PRIBADI</div>
+                    <div class="analysis-body">
+                        Dengan ketahanan dana darurat sebesar <strong>${escapeHtml(cushion)}</strong>:
+                        ${cushion === 'Kurang dari 1 bulan' || cushion === '1–3 bulan' 
+                            ? "Bantalan finansial yang terbatas meningkatkan hambatan dalam masa transisi. Prioritaskan membangun tabungan darurat untuk mengantisipasi perubahan yang tidak terduga di awal." 
+                            : "Bantalan finansial Anda memberikan ruang yang memadai untuk menghadapi ketidakpastian masa transisi tanpa tekanan keuangan yang berat."}
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-calendar-check"></i> POLA PIKIR MASA PERCOBAAN 90 HARI</div>
+                    <div class="analysis-body">
+                        Anggap 90 hari pertama sebagai periode evaluasi dua arah. Jadwalkan diskusi berkala dengan atasan baru Anda untuk memastikan target kinerja, mengonfirmasi ekspektasi peran, dan mengatasi kendala penyesuaian secara dini.
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-brain"></i> REFLEKSI BIAYA PELUANG (OPPORTUNITY COST)</div>
+                    <div class="analysis-body">
+                        Anda mencatat hal yang ditinggalkan: <em>"${escapeHtml(leaving)}"</em>.<br><br>
+                        Evaluasi apakah keraguan Anda bersumber dari risiko operasional yang nyata, atau sekadar rasa enggan meninggalkan hal yang sudah akrab.
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('outTool3Content').innerHTML = html;
+            document.getElementById('outTool3').classList.add('active');
+
+            saveToHistory('t3', `Risiko: ${riskLevel} (${stage} / ${nature})`, resultData);
+        }
+
+        /* ----------------------------------------------------
+           ALAT 4: STRATEGI COUNTER-OFFER
+        ---------------------------------------------------- */
+        function loadSampleTool4() {
+            const askedBtns = document.getElementsByName('t4_asked');
+            for(let b of askedBtns) if(b.value === "Ya, tetapi ditolak") b.checked = true;
+
+            document.getElementById('t4_retention').value = "Kadang memberikan counter-offer";
+
+            const bossBtns = document.getElementsByName('t4_boss');
+            for(let b of bossBtns) if(b.value === "Netral / Transaksional") b.checked = true;
+
+            const reasonsBoxes = document.getElementsByName('t4_reasons');
+            for(let box of reasonsBoxes) {
+                box.checked = ["Kompensasi / Gaji", "Pertumbuhan Karier", "Hubungan Atasan"].includes(box.value);
+            }
+
+            const stayBtns = document.getElementsByName('t4_stay');
+            for(let b of stayBtns) if(b.value === "Belum yakin") b.checked = true;
+
+            document.getElementById('sampleBadgeT4').style.display = 'block';
+        }
+
+        function resetTool4() {
+            document.getElementById('formTool4').reset();
+            document.getElementById('outTool4').classList.remove('active');
+            document.getElementById('sampleBadgeT4').style.display = 'none';
+        }
+
+        function analyzeTool4(e) {
+            e.preventDefault();
+            const asked = document.querySelector('input[name="t4_asked"]:checked')?.value || 'Belum pernah';
+            const retention = document.getElementById('t4_retention').value;
+            const boss = document.querySelector('input[name="t4_boss"]:checked')?.value || 'Netral / Transaksional';
+            const stay = document.querySelector('input[name="t4_stay"]:checked')?.value || 'Belum yakin';
+
+            const selectedReasons = Array.from(document.querySelectorAll('input[name="t4_reasons"]:checked')).map(cb => cb.value);
+
+            let leverageLevel = "Sedang";
+            if (retention === 'Sangat berjuang mempertahankan talenta' && boss.includes('Kuat')) leverageLevel = "Kuat";
+            if (retention === 'Membiarkan karyawan keluar tanpa counter' || asked === 'Ya, tetapi ditolak') leverageLevel = "Terbatas";
+
+            const resultData = { asked, retention, boss, stay, selectedReasons, leverageLevel };
+            jobOfferState.toolResults.counterOffer = resultData;
+            if (!jobOfferState.completedTools.includes('counterOffer')) jobOfferState.completedTools.push('counterOffer');
+            saveState();
+
+            let html = `
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-chart-line"></i> POSISI TAWAR COUNTER-OFFER: <span class="badge ${leverageLevel === 'Kuat' ? 'badge-low' : 'badge-medium'}">Posisi Tawar ${leverageLevel}</span></div>
+                    <div class="analysis-body">
+                        Berdasarkan riwayat retensi perusahaan dan dinamika atasan Anda, posisi tawar Anda untuk mendapatkan tawaran tandingan (counter-offer) dinilai <strong>${leverageLevel}</strong>.
+                    </div>
+                </div>
+
+                <div class="analysis-card warning">
+                    <div class="analysis-title"><i class="fa-solid fa-triangle-exclamation"></i> UJI KEPUTUSAN BERTAHAN — MENYELESAIKAN MASALAH YANG TEPAT</div>
+                    <div class="analysis-body">
+                        Tawaran tandingan dapat menyelesaikan ketidaksesuaian gaji, tetapi jarang mengubah budaya kerja atau masalah kepemimpinan yang melatarbelakanginya.<br><br>
+                        ${selectedReasons.length > 0 ? "<strong>Pendorong Utama Anda:</strong> " + selectedReasons.map(r => `<em>${escapeHtml(r)}</em>`).join(', ') + ".<br>" : ""}
+                        Pertimbangkan apakah penyesuaian gaji internal benar-benar akan menyelesaikan alasan utama Anda ingin berpindah.
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-comments"></i> SKRIP DISKUSI AWAL DENGAN ATASAN</div>
+                    <div class="analysis-body">
+                        Jika Anda memilih untuk berdiskusi dengan atasan saat ini sebelum mengajukan pengunduran diri resmi:
+                        <div class="script-box">
+"Bapak/Ibu [Nama Atasan], terima kasih telah meluangkan waktu. Baru-baru ini saya menerima penawaran dari luar yang sejalan dengan fokus pengembangan karier saya di bidang ${selectedReasons.length > 0 ? selectedReasons.join(' dan ') : 'kemajuan profesional serta kompensasi'}. Sebagai bentuk rasa hormat terhadap tim, saya ingin menyampaikan hal ini secara terbuka saat saya mempertimbangkan opsi karier jangka panjang saya."
+<button class="copy-btn" onclick="copyToClipboard(this.parentElement.innerText.replace('Copy','').trim())">Salin Skrip</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card neutral">
+                    <div class="analysis-title"><i class="fa-solid fa-door-open"></i> TEMPLATE PENGUNDURAN DIRI YANG PROFESSIONAL</div>
+                    <div class="analysis-body">
+                        Jika Anda memutuskan untuk berpindah secara baik-baik:
+                        <div class="script-box">
+"Melalui surat ini, saya ingin menyampaikan pengunduran diri saya secara resmi dari posisi [Nama Jabatan]. Hari terakhir kerja saya adalah [Tanggal, sesuai dengan ketentuan notice period perusahaan]. Saya sangat berterima kasih atas kesempatan yang telah diberikan selama ini dan berkomitmen penuh untuk membantu proses transisi pekerjaan agar berjalan lancar."
+<button class="copy-btn" onclick="copyToClipboard(this.parentElement.innerText.replace('Copy','').trim())">Salin Skrip</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('outTool4Content').innerHTML = html;
+            document.getElementById('outTool4').classList.add('active');
+
+            saveToHistory('t4', `Posisi Tawar: ${leverageLevel} (Bertahan: ${stay})`, resultData);
+        }
+
+        /* ----------------------------------------------------
+           ALAT 5: KEPUTUSAN FINAL
+        ---------------------------------------------------- */
+        function loadSampleTool5() {
+            document.getElementById('t5_gut').value = "Sangat cemas / bingung di kedua pilihan";
+            document.getElementById('t5_fear').value = "Penyesalan";
+            document.getElementById('t5_friend').value = "Saya akan menyarankan mereka mengambil tawaran baru tersebut karena bertahan hanya karena rasa takut akan menyebabkan stagnasi karier.";
+            
+            const dBtns = document.getElementsByName('t5_deadline');
+            for(let b of dBtns) if(b.value === "Ya, fleksibel standar") b.checked = true;
+
+            document.getElementById('t5_obvious').value = "Kepastian bahwa atasan langsung di perusahaan baru memang suportif.";
+            document.getElementById('sampleBadgeT5').style.display = 'block';
+        }
+
+        function resetTool5() {
+            document.getElementById('formTool5').reset();
+            document.getElementById('outTool5').classList.remove('active');
+            document.getElementById('sampleBadgeT5').style.display = 'none';
+        }
+
+        function analyzeTool5(e) {
+            e.preventDefault();
+            const gut = document.getElementById('t5_gut').value;
+            const fear = document.getElementById('t5_fear').value;
+            const friend = document.getElementById('t5_friend').value;
+            const deadline = document.querySelector('input[name="t5_deadline"]:checked')?.value || 'Tidak ada tenggat ketat';
+            const obvious = document.getElementById('t5_obvious').value;
+
+            let recommendedDirection = "AMBIL PENAWARAN KERJA";
+            if (gut === 'Cenderung bertahan') recommendedDirection = "BERTAHAN DI PERAN SAAT INI";
+            if (gut === 'Sangat cemas / bingung di kedua pilihan') recommendedDirection = "CENDERUNG PINDAH (PIKIRKAN DAN LENGKAPI INFORMASI TERLEBIH DAHULU)";
+
+            const resultData = { gut, fear, friend, deadline, obvious, recommendedDirection };
+            jobOfferState.toolResults.decision = resultData;
+            if (!jobOfferState.completedTools.includes('decision')) jobOfferState.completedTools.push('decision');
+            saveState();
+
+            let html = `
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-balance-scale"></i> ARAH KEPUTUSAN: <span class="badge badge-low">${recommendedDirection}</span></div>
+                    <div class="analysis-body">
+                        Kecenderungan insting awal Anda adalah <strong>${escapeHtml(gut)}</strong>, dengan kekhawatiran utama berpusat pada <strong>${escapeHtml(fear)}</strong>.
+                        <div class="disclosure-note" style="margin-top:8px;">
+                            Hasil analisis ini merangkum input Anda sebagai bahan refleksi diri, bukan sebuah instruksi otomatis yang mengikat.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card warning">
+                    <div class="analysis-title"><i class="fa-solid fa-user-check"></i> UJI SARAN UNTUK ORANG LAIN</div>
+                    <div class="analysis-body">
+                        Anda menyatakan akan memberi saran berikut kepada sahabat Anda:<br>
+                        <em>"${escapeHtml(friend)}"</em><br><br>
+                        <strong>Analisis:</strong> Kita sering kali memberikan perspektif yang bijak dan berani kepada teman, namun bersikap terlalu hati-hati pada diri sendiri. Pertimbangkan apakah saran Anda kepada teman tersebut mencerminkan prioritas utama Anda yang sebenarnya.
+                    </div>
+                </div>
+
+                <div class="analysis-card neutral">
+                    <div class="analysis-title"><i class="fa-solid fa-puzzle-piece"></i> INFORMASI UTAMA YANG PERLU DIPERJELAS</div>
+                    <div class="analysis-body">
+                        Anda mencatat bahwa kondisi ini akan membuat pilihan menjadi jelas:<br>
+                        <em>"${escapeHtml(obvious)}"</em><br><br>
+                        <strong>Langkah Selanjutnya:</strong> Bisakah poin ini dipastikan melalui satu sesi komunikasi atau surel ke tim rekruter sebelum Anda mengambil keputusan akhir?
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-file-signature"></i> SKRIP PENERIMAAN PENAWARAN RESMI</div>
+                    <div class="analysis-body">
+                        Untuk menerima penawaran secara profesional:
+                        <div class="script-box">
+"Yang terhormat Bapak/Ibu [Nama Rekruter/Atasan], Saya sangat senang untuk menyampaikan penerimaan resmi atas penawaran posisi [Nama Peran] di [Nama Perusahaan]. Untuk memastikan proses transisi berjalan baik di perusahaan saya saat ini, saya mengajukan tanggal mulai bekerja pada [Tanggal]. Mohon informasi terkait langkah selanjutnya untuk proses onboarding."
+<button class="copy-btn" onclick="copyToClipboard(this.parentElement.innerText.replace('Copy','').trim())">Salin Skrip</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="analysis-card">
+                    <div class="analysis-title"><i class="fa-solid fa-envelope-open-text"></i> SKRIP PENOLAKAN PENAWARAN DENGAN SOPAN</div>
+                    <div class="analysis-body">
+                        Jika Anda memutuskan untuk menolak penawaran sambil menjaga hubungan baik:
+                        <div class="script-box">
+"Yang terhormat Bapak/Ibu [Nama Rekruter/Atasan], Terima kasih banyak atas kesempatan yang diberikan untuk bergabung dengan [Nama Perusahaan]. Setelah pertimbangan mendalam, saya memutuskan untuk tetap melanjutkan peran saya saat ini. Saya sangat terkesan dengan tim dan visi perusahaan Anda, dan berharap kita dapat bekerja sama di lain kesempatan."
+<button class="copy-btn" onclick="copyToClipboard(this.parentElement.innerText.replace('Copy','').trim())">Salin Skrip</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('outTool5Content').innerHTML = html;
+            document.getElementById('outTool5').classList.add('active');
+
+            saveToHistory('t5', `Arah Keputusan: ${recommendedDirection}`, resultData);
+        }
+
+        /* ----------------------------------------------------
+           RENCANA KARIER SAYA (LAPORAN SINTESIS)
+        ---------------------------------------------------- */
+        function renderCareerPlan() {
+            const planEl = document.getElementById('careerPlanContent');
+            if (!planEl) return;
+
+            const res = jobOfferState.toolResults;
+            const completedCount = jobOfferState.completedTools.length;
+
+            if (completedCount === 0) {
+                planEl.innerHTML = `
+                    <div class="card">
+                        <h3>Belum Ada Evaluasi yang Selesai</h3>
+                        <p style="margin-top:8px; color:var(--text-muted);">Selesaikan satu atau lebih alat pada bilah samping untuk membuat ringkasan rencana keputusan karier Anda.</p>
+                        <button class="btn btn-primary" style="margin-top:16px;" onclick="switchScreen('tool1')">Mulai Alat 1: Angka Finansial</button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = `
+                <div class="card">
+                    <h3 style="margin-bottom:16px; color:var(--slate-gray); border-bottom:2px solid var(--sage-green); padding-bottom:8px;">
+                        <i class="fa-solid fa-compass" style="color:var(--sage-green);"></i> Ringkasan Keputusan Terpadu
+                    </h3>
+                    
+                    <div class="form-grid" style="margin-bottom:20px;">
+                        <div>
+                            <strong>Evaluasi Selesai:</strong> ${completedCount} / 5 Alat
+                        </div>
+                        <div>
+                            <strong>Terakhir Diperbarui:</strong> ${jobOfferState.lastUpdated ? new Date(jobOfferState.lastUpdated).toLocaleDateString('id-ID') : 'Hari Ini'}
+                        </div>
+                    </div>
+
+                    ${res.numbers ? `
+                        <div class="analysis-card" style="margin-bottom:16px;">
+                            <div class="analysis-title"><i class="fa-solid fa-calculator"></i> Ringkasan Kompensasi</div>
+                            <div class="analysis-body">
+                                Selisih Gaji Pokok: <strong>${res.numbers.baseDiff >= 0 ? '+' : ''}Rp${res.numbers.baseDiff.toLocaleString('id-ID')}</strong><br>
+                                Selisih Paket Tahunan Efektif: <strong>${res.numbers.netDiffAnnual >= 0 ? '+' : ''}Rp${res.numbers.netDiffAnnual.toLocaleString('id-ID')}/thn</strong>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${res.roleComparison ? `
+                        <div class="analysis-card" style="margin-bottom:16px;">
+                            <div class="analysis-title"><i class="fa-solid fa-briefcase"></i> Ringkasan Peran & Pertumbuhan</div>
+                            <div class="analysis-body">
+                                Peran Saat Ini: ${escapeHtml(res.roleComparison.currTitle)} (Pertumbuhan ${escapeHtml(res.roleComparison.currGrowth)})<br>
+                                Peran Penawaran: ${escapeHtml(res.roleComparison.offTitle)} (Pertumbuhan ${escapeHtml(res.roleComparison.offGrowth)})<br>
+                                Status Atasan Baru: ${escapeHtml(res.roleComparison.offMgr)}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${res.riskAssessor ? `
+                        <div class="analysis-card" style="margin-bottom:16px;">
+                            <div class="analysis-title"><i class="fa-solid fa-shield-halved"></i> Ringkasan Risiko Struktural</div>
+                            <div class="analysis-body">
+                                Profil Risiko Struktural: <strong>${res.riskAssessor.riskLevel}</strong><br>
+                                Ketahanan Dana Darurat: ${escapeHtml(res.riskAssessor.cushion)}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${res.counterOffer ? `
+                        <div class="analysis-card" style="margin-bottom:16px;">
+                            <div class="analysis-title"><i class="fa-solid fa-handshake"></i> Ringkasan Strategi Counter-Offer</div>
+                            <div class="analysis-body">
+                                Posisi Tawar: <strong>${res.counterOffer.leverageLevel}</strong><br>
+                                Pendorong Utama: ${res.counterOffer.selectedReasons ? res.counterOffer.selectedReasons.join(', ') : 'Tidak ditentukan'}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${res.decision ? `
+                        <div class="analysis-card" style="margin-bottom:16px;">
+                            <div class="analysis-title"><i class="fa-solid fa-check-double"></i> Sintesis Keputusan</div>
+                            <div class="analysis-body">
+                                Arah Rekomendasi: <strong>${res.decision.recommendedDirection}</strong><br>
+                                Kondisi Utama yang Perlu Dipastikan: <em>"${escapeHtml(res.decision.obvious)}"</em>
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    <div style="margin-top:20px; text-align:right;">
+                        <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak Laporan Lengkap</button>
+                    </div>
+                </div>
+            `;
+
+            planEl.innerHTML = html;
+        }
+
+        /* ----------------------------------------------------
+           LAYAR RIWAYAT TERPADU
+        ---------------------------------------------------- */
+        function renderUnifiedHistory() {
+            const histEl = document.getElementById('unifiedHistoryContent');
+            if (!histEl) return;
+
+            const toolNames = {
+                t1: '1. Angka Finansial',
+                t2: '2. Perbandingan Peran',
+                t3: '3. Penilai Risiko',
+                t4: '4. Counter-Offer',
+                t5: '5. Keputusan Final'
+            };
+
+            let html = '';
+            let hasAny = false;
+
+            ['t1','t2','t3','t4','t5'].forEach(id => {
+                const key = `joboffer_v2_history_${id}`;
+                let history = [];
+                try { history = JSON.parse(localStorage.getItem(key) || '[]'); } catch(e){}
+
+                if (history.length > 0) {
+                    hasAny = true;
+                    html += `<h4 style="margin:16px 0 8px 0; color:var(--slate-gray);">${toolNames[id]}</h4>`;
+                    html += `<ul class="history-list" style="margin-bottom:16px;">`;
+                    history.forEach(item => {
+                        html += `
+                            <li class="history-item">
+                                <div>
+                                    <strong>${escapeHtml(item.summary)}</strong>
+                                    <div class="history-item-date">${item.date}</div>
+                                </div>
+                                <button class="btn btn-secondary btn-sm" onclick="deleteHistoryItem('${id}', ${item.id}); renderUnifiedHistory();">Hapus</button>
+                            </li>
+                        `;
+                    });
+                    html += `</ul>`;
+                }
+            });
+
+            if (!hasAny) {
+                histEl.innerHTML = '<p style="color:var(--text-muted);">Tidak ditemukan riwayat tersimpan di seluruh alat.</p>';
+            } else {
+                histEl.innerHTML = html;
+            }
+        }
+
+        // Inisialisasi Aplikasi
+        document.addEventListener('DOMContentLoaded', () => {
+            loadState();
+            renderHistory('t1');
+        });
+    </script>
+</body>
+</html>

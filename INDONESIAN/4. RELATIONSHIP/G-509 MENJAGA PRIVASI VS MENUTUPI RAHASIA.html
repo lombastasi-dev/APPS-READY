@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KEPERCAYAAN &amp; PRIVASI™ — Perangkat Hubungan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- RESET & ROOT --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --slate-blue: #457B9D;
+            --slate-blue-dark: #1D3557;
+            --slate-blue-light: #A8DADC;
+            --warm-rose: #E07A5F;
+            --warm-rose-light: #F4A261;
+            --bg-start: #F8F9FA;
+            --bg-end: #FEF1F0;
+            --card-bg: #FFFFFF;
+            --text-main: #2B2D42;
+            --text-muted: #6C757D;
+            --border-color: #E9ECEF;
+            --success: #2A9D8F;
+            --warning: #E76F51;
+            --radius-xl: 1rem;
+            --shadow-sm: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            --shadow-md: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.04);
+            --sidebar-width: 260px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        }
+        body {
+            font-family: var(--font);
+            background: linear-gradient(135deg, var(--bg-start) 0%, var(--bg-end) 100%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            display: flex;
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        /* --- APP LAYOUT --- */
+        .app-container { display: flex; width: 100%; min-height: 100vh; }
+        /* --- SIDEBAR --- */
+        .sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--card-bg);
+            border-right: 1px solid var(--border-color);
+            position: fixed; top:0; bottom:0; left:0;
+            z-index: 1000;
+            display: flex; flex-direction: column;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.3s ease;
+        }
+        .sidebar-header { padding: 1.5rem; display: flex; align-items: center; gap:0.75rem; border-bottom:1px solid var(--border-color); }
+        .sidebar-header i { font-size:1.5rem; color:var(--warm-rose); }
+        .sidebar-header h1 { font-size:1.15rem; font-weight:700; color:var(--slate-blue-dark); letter-spacing:-0.02em; }
+        .sidebar-nav { padding:1rem 0.75rem; flex-grow:1; overflow-y:auto; }
+        .nav-item {
+            display: flex; align-items: center; gap:0.85rem;
+            padding:0.85rem 1rem; color:var(--text-muted);
+            text-decoration:none; border-radius:0.5rem; margin-bottom:0.25rem;
+            font-size:0.95rem; font-weight:500; cursor:pointer;
+            transition: all 0.2s ease;
+        }
+        .nav-item:hover { background-color: rgba(69,123,157,0.08); color:var(--slate-blue); }
+        .nav-item.active { background-color:var(--slate-blue); color:#ffffff; }
+        .nav-item.active i { color:#ffffff; }
+        .nav-item i { font-size:1.1rem; width:1.25rem; text-align:center; }
+        /* --- MOBILE HEADER --- */
+        .mobile-header {
+            display: none;
+            position:fixed; top:0; left:0; right:0; height:60px;
+            background-color:var(--card-bg); border-bottom:1px solid var(--border-color);
+            padding:0 1.25rem; align-items:center; justify-content:space-between;
+            z-index:900; box-shadow:var(--shadow-sm);
+        }
+        .mobile-brand { display:flex; align-items:center; gap:0.5rem; font-weight:700; color:var(--slate-blue-dark); }
+        .mobile-toggle { background:none; border:none; font-size:1.35rem; color:var(--slate-blue); cursor:pointer; }
+        .overlay { display:none; position:fixed; inset:0; background-color:rgba(0,0,0,0.4); z-index:950; }
+        /* --- MAIN CONTENT --- */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex-grow:1;
+            padding:2.5rem 1.5rem;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            width: calc(100% - var(--sidebar-width));
+        }
+        .content-wrapper { width:100%; max-width:800px; display:flex; flex-direction:column; min-height:calc(100vh - 5rem); }
+        .view-section { display:none; animation:fadeIn 0.3s ease-in-out; }
+        .view-section.active { display:block; }
+        @keyframes fadeIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+        /* --- CARDS --- */
+        .card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.75rem; box-shadow:var(--shadow-sm); margin-bottom:1.5rem; border:1px solid rgba(0,0,0,0.03); }
+        .hero-title { font-size:2rem; font-weight:700; color:var(--slate-blue-dark); margin-bottom:0.5rem; line-height:1.2; }
+        .hero-tagline { font-size:1.05rem; color:var(--text-muted); margin-bottom:1.75rem; }
+        /* --- DASHBOARD GRID --- */
+        .dashboard-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(280px,1fr)); gap:1.25rem; margin-top:1rem; }
+        .dash-card { background-color:var(--card-bg); border-radius:var(--radius-xl); padding:1.5rem; box-shadow:var(--shadow-sm); border:1px solid var(--border-color); transition:all 0.25s ease; cursor:pointer; display:flex; flex-direction:column; height:100%; }
+        .dash-card:hover { transform:translateY(-3px); box-shadow:var(--shadow-md); border-color:var(--slate-blue-light); }
+        .dash-icon { width:48px; height:48px; border-radius:12px; background-color:rgba(69,123,157,0.1); color:var(--slate-blue); display:flex; align-items:center; justify-content:center; font-size:1.35rem; margin-bottom:1rem; }
+        .dash-card:nth-child(even) .dash-icon { background-color:rgba(224,122,95,0.1); color:var(--warm-rose); }
+        .dash-card h3 { font-size:1.1rem; font-weight:600; color:var(--slate-blue-dark); margin-bottom:0.5rem; }
+        .dash-card p { font-size:0.9rem; color:var(--text-muted); line-height:1.4; }
+        /* --- FORMS --- */
+        .form-group { margin-bottom:1.25rem; }
+        .form-label { display:block; font-size:0.925rem; font-weight:600; color:var(--slate-blue-dark); margin-bottom:0.4rem; }
+        .form-control, select, textarea { width:100%; padding:0.75rem 1rem; border:1px solid var(--border-color); border-radius:0.5rem; font-size:0.95rem; color:var(--text-main); background-color:#FAFAFA; transition:border-color 0.2s ease, background-color 0.2s ease; font-family:var(--font); }
+        .form-control:focus, select:focus, textarea:focus { outline:none; border-color:var(--slate-blue); background-color:#FFFFFF; }
+        textarea { resize:vertical; min-height:90px; }
+        .radio-group { display:flex; flex-wrap:wrap; gap:1rem; margin-top:0.35rem; }
+        .radio-label { display:flex; align-items:center; gap:0.4rem; font-size:0.9rem; color:var(--text-main); cursor:pointer; }
+        .slider-container { display:flex; align-items:center; gap:1rem; }
+        .slider-container input[type="range"] { flex-grow:1; accent-color:var(--slate-blue); }
+        .slider-value { font-weight:700; color:var(--slate-blue); min-width:2rem; text-align:center; background:rgba(69,123,157,0.1); padding:0.2rem 0.5rem; border-radius:0.25rem; }
+        .btn-group { display:flex; gap:0.75rem; margin-top:1.5rem; flex-wrap:wrap; }
+        .btn { padding:0.75rem 1.25rem; border-radius:0.5rem; font-weight:600; font-size:0.9rem; border:none; cursor:pointer; display:inline-flex; align-items:center; gap:0.5rem; transition:all 0.2s ease; font-family:var(--font); }
+        .btn-primary { background-color:var(--slate-blue); color:#ffffff; }
+        .btn-primary:hover { background-color:var(--slate-blue-dark); }
+        .btn-secondary { background-color:rgba(224,122,95,0.12); color:var(--warm-rose); }
+        .btn-secondary:hover { background-color:rgba(224,122,95,0.22); }
+        .btn-outline { background:transparent; border:1px solid var(--border-color); color:var(--text-muted); }
+        .btn-outline:hover { background-color:#F1F3F5; color:var(--text-main); }
+        .btn-sm { padding:0.4rem 0.75rem; font-size:0.8rem; }
+        .btn-danger { background-color:var(--warning); color:#fff; }
+        .btn-danger:hover { background-color:#c0392b; }
+        /* --- OUTPUT --- */
+        .output-container { margin-top:2rem; display:none; }
+        .output-container.active { display:block; }
+        .section-header-pill { display:inline-flex; align-items:center; gap:0.4rem; font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; padding:0.25rem 0.6rem; border-radius:0.25rem; background-color:rgba(69,123,157,0.12); color:var(--slate-blue-dark); margin-bottom:0.5rem; }
+        .result-block { background-color:#FAFAFA; border-left:4px solid var(--slate-blue); padding:1.25rem; border-radius:0 0.5rem 0.5rem 0; margin-bottom:1.25rem; }
+        .result-block.rose { border-left-color:var(--warm-rose); }
+        .result-block.success { border-left-color:var(--success); }
+        .result-block h4 { font-size:1rem; font-weight:600; color:var(--slate-blue-dark); margin-bottom:0.4rem; }
+        .result-block p, .result-block ul { font-size:0.925rem; color:var(--text-main); }
+        .result-block ul { padding-left:1.2rem; margin-top:0.4rem; }
+        .result-block li { margin-bottom:0.25rem; }
+        .script-box { background-color:#FFFFFF; border:1px dashed var(--slate-blue); padding:1rem; border-radius:0.5rem; position:relative; font-style:italic; color:var(--text-main); margin-top:0.5rem; font-size:0.925rem; }
+        .script-box .copy-btn { position:absolute; top:0.5rem; right:0.5rem; }
+        /* --- HISTORY --- */
+        .history-section { margin-top:2rem; border-top:1px solid var(--border-color); padding-top:1.5rem; }
+        .history-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; }
+        .history-title { font-size:1rem; font-weight:600; color:var(--text-muted); }
+        .history-item { border:1px solid var(--border-color); border-radius:0.5rem; margin-bottom:0.5rem; background-color:#FFFFFF; overflow:hidden; }
+        .history-item-header { padding:0.75rem 1rem; background-color:#FAFAFA; cursor:pointer; display:flex; justify-content:space-between; align-items:center; font-weight:500; font-size:0.875rem; }
+        .history-item-header:hover { background-color:#F1F3F5; }
+        .history-item-body { padding:1rem; display:none; border-top:1px solid var(--border-color); font-size:0.875rem; background-color:#FFFFFF; }
+        .history-item-body.open { display:block; }
+        /* --- TOAST --- */
+        .toast { position:fixed; bottom:2rem; right:2rem; background-color:var(--slate-blue-dark); color:#FFFFFF; padding:0.75rem 1.25rem; border-radius:0.5rem; box-shadow:var(--shadow-md); font-size:0.875rem; font-weight:500; display:flex; align-items:center; gap:0.5rem; opacity:0; transform:translateY(10px); transition:all 0.3s ease; pointer-events:none; z-index:2000; }
+        .toast.show { opacity:1; transform:translateY(0); }
+        /* --- FOOTER --- */
+        .footer { margin-top:auto; padding:2rem 0 1rem 0; text-align:center; font-size:0.8rem; color:var(--text-muted); border-top:1px solid rgba(0,0,0,0.05); }
+        .problem-frame { background-color:rgba(224,122,95,0.08); border-left:3px solid var(--warm-rose); padding:0.85rem 1.1rem; border-radius:0 0.5rem 0.5rem 0; font-size:0.9rem; color:var(--slate-blue-dark); margin-bottom:1.5rem; font-weight:500; }
+        .partner-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.25rem; margin-bottom:1rem; }
+        .partner-box { background:#FAFAFA; padding:1rem; border-radius:0.5rem; border:1px solid var(--border-color); }
+        .partner-title { font-size:0.85rem; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--slate-blue); margin-bottom:0.75rem; display:flex; align-items:center; gap:0.3rem; }
+        /* --- PRINT --- */
+        @media print {
+            .sidebar, .mobile-header, .overlay, .btn-group, .copy-btn, .history-section, .footer, .toast, .no-print { display:none !important; }
+            .main-content { margin-left:0 !important; width:100% !important; padding:0.5in !important; }
+            .card { box-shadow:none !important; border:1px solid #ddd !important; break-inside:avoid; }
+            .view-section { display:block !important; }
+            .view-section:not(.active) { display:none !important; }
+            #dashboard { display:block !important; }
+            .output-container { display:block !important; }
+        }
+        /* --- RESPONSIVE --- */
+        @media (max-width:900px) {
+            .sidebar { transform:translateX(-100%); }
+            .sidebar.mobile-open { transform:translateX(0); }
+            .mobile-header { display:flex; }
+            .main-content { margin-left:0; width:100%; padding-top:5rem; }
+            .overlay.mobile-open { display:block; }
+            .partner-grid { grid-template-columns:1fr; }
+        }
+        @media (max-width:480px) {
+            .hero-title { font-size:1.6rem; }
+            .card { padding:1.25rem; }
+            .dash-card { padding:1rem; }
+            .btn { padding:0.6rem 1rem; font-size:0.85rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="app-container">
+    <!-- MOBILE HEADER -->
+    <header class="mobile-header">
+        <div class="mobile-brand"><i class="fa-solid fa-shield-halved" style="color:var(--warm-rose);"></i><span>Kepercayaan &amp; Privasi</span></div>
+        <button class="mobile-toggle" id="mobileMenuBtn" aria-label="Toggle Menu"><i class="fa-solid fa-bars"></i></button>
+    </header>
+    <div class="overlay" id="sidebarOverlay"></div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header"><i class="fa-solid fa-shield-halved"></i><h1>Kepercayaan &amp; Privasi</h1></div>
+        <nav class="sidebar-nav">
+            <a class="nav-item active" data-target="dashboard"><i class="fa-solid fa-house"></i><span>Dasbor</span></a>
+            <a class="nav-item" data-target="tool1"><i class="fa-solid fa-map-location-dot"></i><span>Audit Batasan</span></a>
+            <a class="nav-item" data-target="tool2"><i class="fa-solid fa-comments"></i><span>Percakapan Transparansi</span></a>
+            <a class="nav-item" data-target="tool3"><i class="fa-solid fa-mobile-screen-button"></i><span>Protokol Ponsel &amp; Rekening</span></a>
+            <a class="nav-item" data-target="tool4"><i class="fa-solid fa-magnifying-glass"></i><span>Dekoder Kecurigaan</span></a>
+            <a class="nav-item" data-target="tool5"><i class="fa-solid fa-screwdriver-wrench"></i><span>Rencana Pemulihan</span></a>
+            <a class="nav-item" data-target="history"><i class="fa-solid fa-clock-rotate-left"></i><span>Riwayat Saya</span></a>
+            <a class="nav-item" data-target="privacy"><i class="fa-solid fa-lock"></i><span>Privasi</span></a>
+        </nav>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main-content">
+        <div class="content-wrapper">
+
+            <!-- DASHBOARD -->
+            <section id="dashboard" class="view-section active">
+                <div class="card">
+                    <h2 class="hero-title">Kepercayaan &amp; Privasi</h2>
+                    <p class="hero-tagline">Batasan yang sehat atau rahasia yang tersembunyi? Temukan garisnya bersama.</p>
+                    <p style="font-size:0.95rem; color:var(--text-main); margin-bottom:1rem;">
+                        Privasi adalah ruang sehat di mana identitas individu tetap hidup. Kerahasiaan adalah penyembunyian informasi yang secara langsung mempengaruhi kesejahteraan atau keselamatan pasangan Anda. Gunakan alat ini untuk menyelaraskan ekspektasi, menerjemahkan kecemasan, dan menavigasi transparansi digital.
+                    </p>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="dash-card" onclick="switchTab('tool1')"><div class="dash-icon"><i class="fa-solid fa-map-location-dot"></i></div><h3>Audit Batasan</h3><p>Petakan ekspektasi untuk ponsel, uang, lokasi, kehidupan sosial, dan riwayat pribadi.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool2')"><div class="dash-icon"><i class="fa-solid fa-comments"></i></div><h3>Percakapan Transparansi</h3><p>Terjemahkan permintaan akan keterbukaan atau privasi menjadi kebutuhan emosional di baliknya.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool3')"><div class="dash-icon"><i class="fa-solid fa-mobile-screen-button"></i></div><h3>Protokol Ponsel &amp; Rekening</h3><p>Tetapkan aturan jelas untuk perangkat dan keuangan tanpa mengubah hubungan menjadi pengawasan.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool4')"><div class="dash-icon"><i class="fa-solid fa-magnifying-glass"></i></div><h3>Dekoder Kecurigaan</h3><p>Pisahkan kekhawatiran berbasis fakta, pemicu pengkhianatan masa lalu, dan kecemasan akibat stres.</p></div>
+                    <div class="dash-card" onclick="switchTab('tool5')"><div class="dash-icon"><i class="fa-solid fa-screwdriver-wrench"></i></div><h3>Rencana Pemulihan</h3><p>Buat jalur bertahap menuju kepercayaan yang dapat diprediksi setelah kerahasiaan atau pengkhianatan.</p></div>
+                </div>
+            </section>
+
+            <!-- TOOL 1: BOUNDARY AUDIT -->
+            <section id="tool1" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Audit Batasan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem; color:var(--warm-rose);"></i><strong>Masalah:</strong> "Kami tidak tahu apa yang normal untuk dibagikan dan apa yang normal untuk tetap pribadi."</div>
+                    <form id="form-tool1">
+                        <div class="partner-grid">
+                            <div class="partner-box">
+                                <div class="partner-title"><i class="fa-solid fa-user"></i> Pasangan 1 (Anda)</div>
+                                <div class="form-group"><label class="form-label">Berbagi Sandi Ponsel</label><select id="t1_p1_phone"><option value="Sudah dibagikan">Sudah dibagikan</option><option value="Bersedia membagikan">Bersedia membagikan</option><option value="Pribadi tapi bukan rahasia">Pribadi tapi bukan rahasia</option><option value="Sepenuhnya pribadi">Sepenuhnya pribadi</option></select></div>
+                                <div class="form-group"><label class="form-label">Pelacakan Lokasi</label><select id="t1_p1_location"><option value="Saling melacak">Saling melacak</option><option value="Tersedia jika diminta">Tersedia jika diminta</option><option value="Hanya untuk keamanan">Hanya untuk keamanan/perjalanan</option><option value="Terasa mengganggu">Terasa mengganggu</option></select></div>
+                                <div class="form-group"><label class="form-label">Akses Media Sosial</label><select id="t1_p1_social"><option value="Akses penuh">Akses penuh / Login dibagikan</option><option value="Saling mengikuti">Saling mengikuti secara terbuka</option><option value="Pemeriksaan sesekali">Pemeriksaan sesekali</option><option value="Akun pribadi">Akun pribadi</option></select></div>
+                                <div class="form-group"><label class="form-label">Transparansi Pengeluaran</label><select id="t1_p1_spending"><option value="Setiap pembelian dibagikan">Setiap pembelian dibagikan</option><option value="Pembelian besar didiskusikan">Pembelian besar didiskusikan</option><option value="Keuangan terpisah">Keuangan terpisah, tanpa pertanyaan</option><option value="Beberapa pengeluaran tersembunyi">Beberapa pengeluaran diskresi tersembunyi</option></select></div>
+                                <div class="form-group"><label class="form-label">Komunikasi dengan Teman</label><select id="t1_p1_friends"><option value="Menceritakan semuanya">Menceritakan semuanya</option><option value="Menyebutkan teman dekat">Menyebutkan teman dekat/topik</option><option value="Pribadi tapi bukan rahasia">Obrolan pribadi, bukan rahasia</option><option value="Sepenuhnya pribadi">Sepenuhnya pribadi</option></select></div>
+                                <div class="form-group"><label class="form-label">Detail Hubungan Masa Lalu</label><select id="t1_p1_past"><option value="Pengungkapan penuh">Pengungkapan penuh</option><option value="Hanya garis besar">Hanya garis besar</option><option value="Hanya jika relevan">Hanya jika relevan</option><option value="Sepenuhnya pribadi">Sepenuhnya pribadi</option></select></div>
+                            </div>
+                            <div class="partner-box">
+                                <div class="partner-title"><i class="fa-solid fa-user-gear"></i> Pasangan 2</div>
+                                <div class="form-group"><label class="form-label">Berbagi Sandi Ponsel</label><select id="t1_p2_phone"><option value="Sudah dibagikan">Sudah dibagikan</option><option value="Bersedia membagikan">Bersedia membagikan</option><option value="Pribadi tapi bukan rahasia">Pribadi tapi bukan rahasia</option><option value="Sepenuhnya pribadi">Sepenuhnya pribadi</option></select></div>
+                                <div class="form-group"><label class="form-label">Pelacakan Lokasi</label><select id="t1_p2_location"><option value="Saling melacak">Saling melacak</option><option value="Tersedia jika diminta">Tersedia jika diminta</option><option value="Hanya untuk keamanan">Hanya untuk keamanan/perjalanan</option><option value="Terasa mengganggu">Terasa mengganggu</option></select></div>
+                                <div class="form-group"><label class="form-label">Akses Media Sosial</label><select id="t1_p2_social"><option value="Akses penuh">Akses penuh / Login dibagikan</option><option value="Saling mengikuti">Saling mengikuti secara terbuka</option><option value="Pemeriksaan sesekali">Pemeriksaan sesekali</option><option value="Akun pribadi">Akun pribadi</option></select></div>
+                                <div class="form-group"><label class="form-label">Transparansi Pengeluaran</label><select id="t1_p2_spending"><option value="Setiap pembelian dibagikan">Setiap pembelian dibagikan</option><option value="Pembelian besar didiskusikan">Pembelian besar didiskusikan</option><option value="Keuangan terpisah">Keuangan terpisah, tanpa pertanyaan</option><option value="Beberapa pengeluaran tersembunyi">Beberapa pengeluaran diskresi tersembunyi</option></select></div>
+                                <div class="form-group"><label class="form-label">Komunikasi dengan Teman</label><select id="t1_p2_friends"><option value="Menceritakan semuanya">Menceritakan semuanya</option><option value="Menyebutkan teman dekat">Menyebutkan teman dekat/topik</option><option value="Pribadi tapi bukan rahasia">Obrolan pribadi, bukan rahasia</option><option value="Sepenuhnya pribadi">Sepenuhnya pribadi</option></select></div>
+                                <div class="form-group"><label class="form-label">Detail Hubungan Masa Lalu</label><select id="t1_p2_past"><option value="Pengungkapan penuh">Pengungkapan penuh</option><option value="Hanya garis besar">Hanya garis besar</option><option value="Hanya jika relevan">Hanya jika relevan</option><option value="Sepenuhnya pribadi">Sepenuhnya pribadi</option></select></div>
+                            </div>
+                        </div>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-primary" onclick="analyzeTool1()"><i class="fa-regular fa-compass"></i> Analisis Kesesuaian</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadSampleTool1()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button>
+                            <button type="button" class="btn btn-outline" onclick="resetTool('tool1')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="output-tool1" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Analisis Audit Batasan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-map"></i> Peta Batasan Anda</div><p id="t1-out-map">Memetakan batasan individu...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-circle-check"></i> Zona Kesesuaian</div><p id="t1-out-alignment">Area di mana Anda sudah setuju...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Zona Konflik</div><p id="t1-out-conflict">Area di mana ekspektasi berbenturan...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-scale-balanced"></i> Normalisasi</div><p id="t1-out-normalizer">Konteks tentang keragaman hubungan...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> Pemeriksaan Bendera Merah</div><p id="t1-out-redflag">Evaluasi potensi masalah kerahasiaan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-flag"></i> Pemeriksaan Bendera Hijau</div><p id="t1-out-greenflag">Evaluasi fondasi kepercayaan inti...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-bullseye"></i> Satu Kesepakatan</div><p id="t1-out-agreement">Target prioritas percakapan Anda.</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t1-history-wrapper"><div class="history-header"><span class="history-title">Audit Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool1')">Hapus Riwayat</button></div><div id="t1-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 2: TRANSPARENCY TALK -->
+            <section id="tool2" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Percakapan Transparansi</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem; color:var(--warm-rose);"></i><strong>Masalah:</strong> "Saya ingin lebih terbuka. Mereka bilang saya terlalu mengontrol. Atau: Saya ingin privasi. Mereka bilang saya menyembunyikan sesuatu."</div>
+                    <form id="form-tool2">
+                        <div class="form-group"><label class="form-label">Transparansi apa yang lebih Anda inginkan?</label><textarea id="t2_want_transparency" placeholder="Misalnya: Mengetahui sandi, melihat pesan teks ponsel, bukti keuangan, detail lokasi..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa arti transparansi itu bagi Anda?</label><select id="t2_rep_transparency"><option value="Keamanan">Keamanan (Merasa aman dalam hubungan)</option><option value="Penghargaan">Penghargaan (Merasa dihargai dan dilibatkan)</option><option value="Keintiman">Keintiman (Kedekatan dan kebersamaan yang dalam)</option><option value="Kontrol">Kontrol (Mengelola kecemasan atau hasil)</option><option value="Penegasan">Penegasan (Menenangkan keraguan atau ketakutan)</option><option value="Keadilan">Keadilan (Keterbukaan yang setara di kedua sisi)</option></select></div>
+                        <div class="form-group"><label class="form-label">Privasi apa yang ingin Anda lindungi?</label><textarea id="t2_want_privacy" placeholder="Misalnya: Obrolan tanpa pengawasan dengan teman, rekening pribadi terpisah, waktu sendiri tanpa cek in..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa arti privasi itu bagi Anda?</label><select id="t2_rep_privacy"><option value="Otonomi">Otonomi (Merasa sebagai pribadi yang mandiri)</option><option value="Identitas">Identitas (Melestarikan siapa saya di luar pasangan)</option><option value="Kepercayaan">Kepercayaan (Dipercaya tanpa harus membuktikannya)</option><option value="Batasan">Batasan (Melindungi kepercayaan teman-teman saya)</option><option value="Normal">Normal (Cara saya dibesarkan / batasan bawaan saya)</option><option value="Takut dihakimi">Takut dihakimi (Takut disalahpahami/dikritik)</option></select></div>
+                        <div class="form-group"><label class="form-label">Apakah kepercayaan pernah dilanggar sebelumnya?</label><div class="radio-group"><label class="radio-label"><input type="radio" name="t2_trust_broken" value="Ya, oleh pasangan saat ini" checked> Ya, oleh pasangan saat ini</label><label class="radio-label"><input type="radio" name="t2_trust_broken" value="Ya, oleh mantan"> Ya, di hubungan masa lalu</label><label class="radio-label"><input type="radio" name="t2_trust_broken" value="Tidak"> Tidak ada pelanggaran besar</label><label class="radio-label"><input type="radio" name="t2_trust_broken" value="Tidak yakin"> Tidak jelas / Pelanggaran kecil</label></div></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool2()"><i class="fa-regular fa-comment"></i> Rangkai Percakapan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool2()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool2')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool2" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Transparansi &amp; Pembingkaian Ulang Kebutuhan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-heart"></i> Kebutuhan Transparansi</div><p id="t2-out-trans-need">Menganalisis permintaan...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-shield"></i> Kebutuhan Privasi</div><p id="t2-out-priv-need">Menganalisis resistensi...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-handshake"></i> Pembingkaian Ulang Percakapan</div><p id="t2-out-frame">Pembingkaian inti untuk validasi bersama...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-sliders"></i> Opsi Kompromi</div><div id="t2-out-compromise">Opsi jalan tengah...</div></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-stairs"></i> Rencana Transparansi Bertahap</div><p id="t2-out-gradual">Peta jalan bertahap...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-lock"></i> Jaminan Privasi</div><p id="t2-out-guarantee">Melindungi otonomi...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t2-history-wrapper"><div class="history-header"><span class="history-title">Percakapan Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool2')">Hapus Riwayat</button></div><div id="t2-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 3: PHONE & ACCOUNT PROTOCOL -->
+            <section id="tool3" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Protokol Ponsel &amp; Rekening</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem; color:var(--warm-rose);"></i><strong>Masalah:</strong> "Ponsel atau rekening bank kami telah menjadi medan pertempuran yang penuh ketegangan."</div>
+                    <form id="form-tool3">
+                        <div class="form-group"><label class="form-label">Aturan Perangkat Saat Ini</label><select id="t3_phone_rule"><option value="Ponsel terbuka">Ponsel terbuka (sandi dibagikan, akses bebas)</option><option value="Tanya dulu">Tanya dulu sebelum mengambil/melihat</option><option value="Pribadi">Sepenuhnya pribadi (tidak ada sandi dibagikan)</option><option value="Kami bertengkar soal ini">Kami secara aktif bertengkar soal aturan</option><option value="Salah satu mengintip">Salah satu pasangan memeriksa secara diam-diam / mengintip</option></select></div>
+                        <div class="form-group"><label class="form-label">Apa yang memicu konflik digital?</label><textarea id="t3_trigger" placeholder="Misalnya: Aplikasi tersembunyi ditemukan, pesan terhapus, tagihan tak terduga, pesan rahasia dengan mantan..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang membuat Anda merasa AMAN TANPA memeriksa ponsel mereka?</label><textarea id="t3_safe_without_check" placeholder="Misalnya: Pembaruan verbal langsung, ponsel diletakkan menghadap ke atas, kehadiran emosional, jawaban jujur saat ditanya..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang membuat Anda merasa DIPERCAYA bahkan jika mereka melihat perangkat Anda?</label><textarea id="t3_trusted_if_checked" placeholder="Misalnya: Konteks diberikan sebelum menghakimi, tidak menganggap keluhan pribadi teman di luar konteks, bertanya dengan hormat..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Akses Rekening Keuangan</label><select id="t3_financial_access"><option value="Semua bersama">Semua bersama (Rekening & kartu bersama)</option><option value="Bersama + terpisah">Rekening utama bersama + rekening pribadi terpisah</option><option value="Terpisah tapi terlihat">Rekening terpisah, saldo sepenuhnya terlihat</option><option value="Terpisah dan pribadi">Rekening terpisah dan detail pribadi</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool3()"><i class="fa-regular fa-file-lines"></i> Tetapkan Protokol</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool3()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool3')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool3" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Protokol Digital &amp; Keuangan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-mobile-retro"></i> Dinamika Perangkat</div><p id="t3-out-battle">Apa yang diwakili oleh perangkat...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-layer-group"></i> Tingkat Transparansi Digital</div><div id="t3-out-options">3 opsi untuk dipilih...</div></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-calendar-check"></i> Kesepakatan Cek In</div><p id="t3-out-checkin">Kesepakatan diskusi terstruktur...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-user-shield"></i> Mengintip &amp; Batasan</div><p id="t3-out-snooping">Menangani pemeriksaan yang tidak disepakati...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-wallet"></i> Kesesuaian Keuangan</div><p id="t3-out-financial">Struktur transparansi uang...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-rotate-right"></i> Ritual Pemulihan</div><p id="t3-out-ritual">Tindakan kepercayaan non-digital harian...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t3-history-wrapper"><div class="history-header"><span class="history-title">Protokol Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool3')">Hapus Riwayat</button></div><div id="t3-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 4: SUSPICION DECODER -->
+            <section id="tool4" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Dekoder Kecurigaan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem; color:var(--warm-rose);"></i><strong>Masalah:</strong> "Saya punya firasat buruk tapi saya tidak tahu apakah itu intuisi nyata atau ketidakamanan saya sendiri."</div>
+                    <form id="form-tool4">
+                        <div class="form-group"><label class="form-label">Apa yang terasa aneh secara spesifik?</label><textarea id="t4_off_description" placeholder="Misalnya: Ponsel diletakkan menghadap ke bawah, perubahan mendadak dalam kasih sayang, lembur tanpa pemberitahuan, perilaku menjauh..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Bukti konkret yang Anda miliki:</label><textarea id="t4_evidence_real" placeholder="Misalnya: Uang hilang tanpa penjelasan, cerita yang bertentangan, pesan genit yang terlihat... (Kosongkan jika tidak ada)"></textarea></div>
+                        <div class="form-group"><label class="form-label">Bukti yang tidak Anda miliki, tetapi Anda takuti:</label><textarea id="t4_evidence_feared" placeholder="Misalnya: Bagaimana jika mereka punya ponsel rahasia kedua? Bagaimana jika mereka bertemu seseorang dalam perjalanan dinas?"></textarea></div>
+                        <div class="form-group"><label class="form-label">Riwayat pengkhianatan Anda:</label><select id="t4_past_history"><option value="Pernah diselingkuhi">Saya pernah diselingkuhi / dikhianati di hubungan masa lalu</option><option value="Pernah selingkuh">Saya pernah selingkuh di masa lalu</option><option value="Tumbuh dengan perselingkuhan">Tumbuh dengan perselingkuhan/rahasia dalam keluarga asal</option><option value="Tidak ada riwayat">Tidak ada riwayat pengkhianatan besar secara pribadi</option><option value="Banyak pengkhianatan">Banyak pengkhianatan kompleks di masa lalu</option></select></div>
+                        <div class="form-group"><label class="form-label">Tingkat Stres Pribadi Saat Ini (1-10)</label><div class="slider-container"><input type="range" id="t4_stress_level" min="1" max="10" value="5" oninput="document.getElementById('stress_val').innerText=this.value"><span class="slider-value" id="stress_val">5</span></div></div>
+                        <div class="form-group"><label class="form-label">Apakah Anda sudah membicarakannya dengan mereka?</label><select id="t4_talked"><option value="Ya, secara langsung">Ya, mengangkatnya secara langsung dan tenang</option><option value="Ya, secara tidak langsung">Ya, membuat komentar pasif / komentar menyalahkan</option><option value="Tidak, saya menyelidiki">Tidak, saya menyelidiki / mengumpulkan fakta dulu</option><option value="Tidak, saya takut">Tidak, saya takut dengan reaksi mereka atau terlihat 'gila'</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool4()"><i class="fa-regular fa-brain"></i> Dekode Kecurigaan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool4()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool4')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool4" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Penilaian Kecurigaan</h3>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-brain"></i> Klasifikasi Kecurigaan</div><p id="t4-out-type">Menganalisis pola...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-scale-unbalanced"></i> Audit Bukti</div><p id="t4-out-evidence">Penilaian Fakta vs. Kecemasan...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-comment-dots"></i> Naskah Percakapan</div><p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:0.5rem;">Ungkapkan kekhawatiran tanpa memicu sikap defensif:</p><div class="script-box"><span id="t4-out-script">Konten naskah...</span><button class="btn btn-outline btn-sm copy-btn" onclick="copyToClipboard('t4-out-script')"><i class="fa-regular fa-copy"></i> Salin</button></div></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-hand"></i> Penghentian Penyelidikan</div><p id="t4-out-stop">Kapan pemeriksaan menjadi berbahaya...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-clipboard-question"></i> Pertanyaan Cek Diri</div><ul id="t4-out-selfcheck"></ul></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-user-doctor"></i> Dorongan Profesional</div><p id="t4-out-professional">Kapan harus mencari terapi...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t4-history-wrapper"><div class="history-header"><span class="history-title">Penilaian Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool4')">Hapus Riwayat</button></div><div id="t4-history-list"></div></div>
+            </section>
+
+            <!-- TOOL 5: REBUILD PLAN -->
+            <section id="tool5" class="view-section">
+                <div class="card">
+                    <h2 class="hero-title">Rencana Pemulihan</h2>
+                    <div class="problem-frame"><i class="fa-solid fa-circle-question" style="margin-right:0.4rem; color:var(--warm-rose);"></i><strong>Masalah:</strong> "Kerahasiaan atau pengkhianatan telah merusak kepercayaan. Kami membutuhkan jalan konkret kembali ke keamanan."</div>
+                    <form id="form-tool5">
+                        <div class="form-group"><label class="form-label">Apa yang disembunyikan / dikompromikan?</label><select id="t5_hidden_type"><option value="Pengeluaran">Pengeluaran rahasia atau hutang</option><option value="Komunikasi">Komunikasi tersembunyi / perselingkuhan emosional</option><option value="Kecanduan">Kebiasaan tersembunyi, perjudian, atau kecanduan</option><option value="Masa lalu">Kebohongan besar tentang latar belakang masa lalu</option><option value="Hubungan saat ini">Perselingkuhan fisik / affair</option><option value="Tidak ada spesifik">Tidak ada satu pelanggaran, jarak dan ketidakpercayaan umum</option></select></div>
+                        <div class="form-group"><label class="form-label">Bagaimana hal itu ditemukan?</label><select id="t5_discovery_method"><option value="Pengakuan">Pengakuan sukarela oleh pasangan</option><option value="Penemuan tidak sengaja">Penemuan tidak sengaja (menemukan tagihan, pesan muncul)</option><option value="Penyelidikan">Penyelidikan aktif / menangkap mereka</option><option value="Mereka memberi tahu saya secara tidak langsung">Pihak ketiga memberi tahu saya / petunjuk tidak langsung</option></select></div>
+                        <div class="form-group"><label class="form-label">Tingkat Kepercayaan Saat Ini (1 = Sepenuhnya Rusak, 10 = Solid)</label><div class="slider-container"><input type="range" id="t5_trust_level" min="1" max="10" value="3" oninput="document.getElementById('trust_val').innerText=this.value"><span class="slider-value" id="trust_val">3</span></div></div>
+                        <div class="form-group"><label class="form-label">Apa yang dibutuhkan pasangan yang terluka saat ini:</label><textarea id="t5_hurt_needs" placeholder="Misalnya: Jawaban lengkap atas pertanyaan, akses keuangan total, permintaan maaf yang tulus, kesabaran dengan perubahan suasana hati..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Apa yang dapat ditawarkan pasangan yang transparan saat ini:</label><textarea id="t5_trans_offer" placeholder="Misalnya: Akses terbuka ke aplikasi bank, cek in mingguan, berbagi lokasi selama 90 hari, memutuskan kontak..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Kesediaan untuk melakukan kerja pasangan:</label><select id="t5_couples_work"><option value="Ya">Ya, keduanya sepenuhnya berkomitmen</option><option value="Terbuka untuk itu">Terbuka untuk itu, tetapi ragu-ragu</option><option value="Tidak">Tidak, mengerjakannya secara pribadi saja</option><option value="Sudah melakukannya">Sudah bekerja dengan terapis</option></select></div>
+                        <div class="btn-group"><button type="button" class="btn btn-primary" onclick="analyzeTool5()"><i class="fa-regular fa-road"></i> Buat Peta Jalan</button><button type="button" class="btn btn-secondary" onclick="loadSampleTool5()"><i class="fa-regular fa-pen-to-square"></i> Muat Contoh</button><button type="button" class="btn btn-outline" onclick="resetTool('tool5')"><i class="fa-regular fa-rotate-left"></i> Mulai Ulang</button></div>
+                    </form>
+                </div>
+                <div id="output-tool5" class="output-container">
+                    <div class="card"><h3 class="hero-title" style="font-size:1.4rem;">Peta Jalan Pemulihan Kepercayaan</h3>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-heart-crack"></i> Penilaian Kerusakan</div><p id="t5-out-damage">Ikhtisar dampak...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-certificate"></i> Penawaran Transparansi</div><p id="t5-out-offer">Komitmen untuk akuntabilitas...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-eye"></i> Sistem Verifikasi</div><p id="t5-out-verification">Cara memverifikasi tanpa mengawasi...</p></div>
+                        <div class="result-block"><div class="section-header-pill"><i class="fa-solid fa-chart-line"></i> Rencana Kelulusan</div><p id="t5-out-graduation">Kembali menuju privasi yang sehat...</p></div>
+                        <div class="result-block rose"><div class="section-header-pill"><i class="fa-solid fa-triangle-exclamation"></i> Protokol Kambuh</div><p id="t5-out-relapse">Langkah-langkah jika kerahasiaan terulang...</p></div>
+                        <div class="result-block success"><div class="section-header-pill"><i class="fa-solid fa-clock"></i> Garis Waktu Pemulihan</div><p id="t5-out-timeline">Horizon pemulihan yang realistis...</p></div>
+                    </div>
+                </div>
+                <div class="history-section" id="t5-history-wrapper"><div class="history-header"><span class="history-title">Rencana Sebelumnya</span><button class="btn btn-outline btn-sm" onclick="clearHistory('tool5')">Hapus Riwayat</button></div><div id="t5-history-list"></div></div>
+            </section>
+
+            <!-- HISTORY VIEW -->
+            <section id="history" class="view-section">
+                <div class="card"><h2 class="hero-title">Riwayat Saya</h2><p class="hero-tagline">Semua analisis dan rencana Anda yang tersimpan.</p>
+                    <div id="history-combined-list"></div>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-danger btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Riwayat</button></div>
+                </div>
+            </section>
+
+            <!-- PRIVACY VIEW -->
+            <section id="privacy" class="view-section">
+                <div class="card"><h2 class="hero-title">Privasi</h2>
+                    <p style="margin-bottom:1rem;">Data Anda tetap berada di perangkat Anda. Tidak ada yang dikirim ke server mana pun.</p>
+                    <ul style="list-style:disc; padding-left:1.5rem; color:var(--text-muted);">
+                        <li>Semua masukan dan hasil disimpan hanya di penyimpanan lokal browser Anda.</li>
+                        <li>Tanpa akun, tanpa login, tanpa pelacakan, tanpa analitik.</li>
+                        <li>Anda dapat menghapus riwayat kapan saja menggunakan alat di atas.</li>
+                        <li>Aplikasi ini untuk refleksi dan perencanaan—bukan terapi atau diagnosis.</li>
+                    </ul>
+                    <div style="margin-top:1.5rem;"><button class="btn btn-outline btn-sm" onclick="clearAllHistory()"><i class="fa-regular fa-trash-can"></i> Hapus Semua Data Tersimpan</button></div>
+                </div>
+            </section>
+
+            <footer class="footer">Untuk hiburan dan refleksi semata. Bukan terapi atau nasihat profesional. Jika ada penipuan aktif, perselingkuhan, atau penyalahgunaan keuangan, carilah dukungan profesional.</footer>
+        </div>
+    </main>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><i class="fa-solid fa-check-circle" style="color:#2A9D8F;"></i><span id="toast-message">Disalin!</span></div>
+
+<!-- JAVASCRIPT -->
+<script>
+    // --- UTILITY FUNCTIONS ---
+    function escapeHTML(str) {
+        if (!str) return '';
+        return String(str).replace(/[&<>"]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            if (m === '"') return '&quot;';
+            return m;
+        });
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        document.getElementById('toast-message').innerText = msg;
+        toast.classList.add('show');
+        clearTimeout(toast._timer);
+        toast._timer = setTimeout(() => toast.classList.remove('show'), 2200);
+    }
+
+    function copyToClipboard(elementId) {
+        const el = document.getElementById(elementId);
+        const text = el ? el.innerText : '';
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => showToast('Disalin ke clipboard!')).catch(() => fallbackCopy(text));
+        } else {
+            fallbackCopy(text);
+        }
+    }
+    function fallbackCopy(text) {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        try { document.execCommand('copy'); showToast('Disalin!'); } catch(e) { showToast('Gagal menyalin'); }
+        document.body.removeChild(ta);
+    }
+
+    // --- NAVIGATION ---
+    document.querySelectorAll('.nav-item').forEach(item => {
+        item.addEventListener('click', function(e) {
+            const target = this.getAttribute('data-target');
+            switchTab(target);
+            closeMobileMenu();
+        });
+    });
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.nav-item').forEach(nav => {
+            nav.classList.toggle('active', nav.getAttribute('data-target') === tabId);
+        });
+        document.querySelectorAll('.view-section').forEach(section => {
+            section.classList.toggle('active', section.id === tabId);
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        if (tabId === 'history') renderCombinedHistory();
+        renderHistory(tabId);
+    }
+
+    // Mobile
+    const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+    const sidebar = document.getElementById('sidebar');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    mobileMenuBtn.addEventListener('click', () => { sidebar.classList.toggle('mobile-open'); sidebarOverlay.classList.toggle('mobile-open'); });
+    sidebarOverlay.addEventListener('click', closeMobileMenu);
+    function closeMobileMenu() { sidebar.classList.remove('mobile-open'); sidebarOverlay.classList.remove('mobile-open'); }
+
+    // --- LOCAL STORAGE HELPERS ---
+    function getHistory(toolId) {
+        const key = `trustprivacy_v2_history_${toolId}`;
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
+    }
+    function setHistory(toolId, data) {
+        const key = `trustprivacy_v2_history_${toolId}`;
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+    function saveToHistory(toolId, title, data) {
+        let history = getHistory(toolId);
+        history.unshift({ id: Date.now(), timestamp: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', {hour:'2-digit',minute:'2-digit'}), title: title, data: data });
+        if (history.length > 30) history = history.slice(0,30);
+        setHistory(toolId, history);
+        renderHistory(toolId);
+    }
+    function clearHistory(toolId) {
+        if (!confirm('Hapus semua riwayat untuk alat ini?')) return;
+        setHistory(toolId, []);
+        renderHistory(toolId);
+        showToast('Riwayat dihapus');
+    }
+    function clearAllHistory() {
+        if (!confirm('Hapus SEMUA riwayat Kepercayaan & Privasi?')) return;
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => setHistory(id, []));
+        renderCombinedHistory();
+        showToast('Semua riwayat dihapus');
+    }
+
+    function renderHistory(toolId) {
+        if (!['tool1','tool2','tool3','tool4','tool5'].includes(toolId)) return;
+        const container = document.getElementById(`${toolId}-history-list`);
+        if (!container) return;
+        const history = getHistory(toolId);
+        if (history.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat analisis tersimpan.</p>'; return; }
+        container.innerHTML = history.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function toggleHistoryItem(id) {
+        const body = document.getElementById(`hist-body-${id}`);
+        if (body) body.classList.toggle('open');
+    }
+
+    function renderCombinedHistory() {
+        const container = document.getElementById('history-combined-list');
+        if (!container) return;
+        let all = [];
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => {
+            const items = getHistory(id);
+            items.forEach(item => { all.push({ ...item, tool: id }); });
+        });
+        all.sort((a,b) => b.id - a.id);
+        if (all.length === 0) { container.innerHTML = '<p style="font-size:0.85rem; color:var(--text-muted); font-style:italic;">Tidak ada riwayat tersimpan.</p>'; return; }
+        container.innerHTML = all.map(item => `
+            <div class="history-item">
+                <div class="history-item-header" onclick="toggleHistoryItem(${item.id})">
+                    <span><strong>${escapeHTML(item.title)}</strong> — <small style="color:var(--text-muted);">${escapeHTML(item.timestamp)}</small></span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+                <div class="history-item-body" id="hist-body-${item.id}">${item.data}</div>
+            </div>
+        `).join('');
+    }
+
+    function resetTool(toolId) {
+        if (!confirm('Hapus masukan dan hasil saat ini untuk alat ini?')) return;
+        const map = { tool1: ['output-tool1'], tool2: ['output-tool2'], tool3: ['output-tool3'], tool4: ['output-tool4'], tool5: ['output-tool5'] };
+        (map[toolId] || []).forEach(id => document.getElementById(id)?.classList.remove('active'));
+        const form = document.getElementById(`form-${toolId}`);
+        if (form) form.reset();
+        showToast('Reset selesai');
+    }
+
+    // ========================================
+    // TOOL 1: BOUNDARY AUDIT
+    // ========================================
+    function loadSampleTool1() {
+        document.getElementById('t1_p1_phone').value='Bersedia membagikan';
+        document.getElementById('t1_p1_location').value='Tersedia jika diminta';
+        document.getElementById('t1_p1_social').value='Saling mengikuti';
+        document.getElementById('t1_p1_spending').value='Pembelian besar didiskusikan';
+        document.getElementById('t1_p1_friends').value='Menyebutkan teman dekat';
+        document.getElementById('t1_p1_past').value='Hanya garis besar';
+        document.getElementById('t1_p2_phone').value='Sepenuhnya pribadi';
+        document.getElementById('t1_p2_location').value='Terasa mengganggu';
+        document.getElementById('t1_p2_social').value='Akun pribadi';
+        document.getElementById('t1_p2_spending').value='Keuangan terpisah';
+        document.getElementById('t1_p2_friends').value='Sepenuhnya pribadi';
+        document.getElementById('t1_p2_past').value='Sepenuhnya pribadi';
+        showToast('Contoh dimuat: Benturan Privasi vs. Keterbukaan');
+    }
+
+    function analyzeTool1() {
+        const p1 = { phone: document.getElementById('t1_p1_phone').value, location: document.getElementById('t1_p1_location').value, social: document.getElementById('t1_p1_social').value, spending: document.getElementById('t1_p1_spending').value, friends: document.getElementById('t1_p1_friends').value, past: document.getElementById('t1_p1_past').value };
+        const p2 = { phone: document.getElementById('t1_p2_phone').value, location: document.getElementById('t1_p2_location').value, social: document.getElementById('t1_p2_social').value, spending: document.getElementById('t1_p2_spending').value, friends: document.getElementById('t1_p2_friends').value, past: document.getElementById('t1_p2_past').value };
+        const categories = [{id:'phone',label:'Akses Ponsel'},{id:'location',label:'Pelacakan Lokasi'},{id:'social',label:'Media Sosial'},{id:'spending',label:'Pengeluaran Keuangan'},{id:'friends',label:'Komunikasi Teman'},{id:'past',label:'Hubungan Masa Lalu'}];
+        let align=[], conflict=[];
+        categories.forEach(cat => {
+            if(p1[cat.id] === p2[cat.id]) align.push(`<strong>${cat.label}:</strong> Keduanya sepakat pada "${escapeHTML(p1[cat.id])}".`);
+            else conflict.push(`<strong>${cat.label}:</strong> Pasangan 1 lebih suka "${escapeHTML(p1[cat.id])}", Pasangan 2 lebih suka "${escapeHTML(p2[cat.id])}".`);
+        });
+        const mapHTML = `Pasangan 1 mendekati batasan dengan preferensi akses terbuka dan visibilitas bersama, sementara Pasangan 2 menekankan garis batas individu dan otonomi di beberapa kategori.`;
+        const alignHTML = align.length>0 ? `<ul>${align.map(a=>`<li>${a}</li>`).join('')}</ul>` : 'Tidak ada kecocokan pasti yang ditemukan. Gaya batasan Anda berbeda secara signifikan di sebagian besar kategori.';
+        const conflictHTML = conflict.length>0 ? `<ul>${conflict.map(c=>`<li>${c}</li>`).join('')}</ul>` : 'Tidak ada konflik besar! Preferensi batasan Anda selaras dengan baik.';
+        const normalizerHTML = `Hubungan berkembang di bawah berbagai gaya—dari visibilitas pintu terbuka total hingga otonomi individu yang tinggi. Benturan preferensi tidak berarti ketidakcocokan; itu hanya menunjukkan bahwa Anda tumbuh dengan definisi keamanan hubungan yang berbeda.`;
+        let redFlags=[];
+        if(p1.spending==='Beberapa pengeluaran diskresi tersembunyi' || p2.spending==='Beberapa pengeluaran diskresi tersembunyi') redFlags.push('Pengeluaran diskresi tersembunyi dapat menyebabkan keretakan keuangan rahasia.');
+        if(p1.phone==='Sepenuhnya pribadi' && p2.phone==='Sudah dibagikan') redFlags.push('Asimetri ekstrem dalam privasi ponsel dapat memicu dinamika pengawasan vs. penghindaran yang berkelanjutan.');
+        const redFlagHTML = redFlags.length>0 ? `<ul>${redFlags.map(r=>`<li>${r}</li>`).join('')}</ul>` : 'Tidak ada bendera merah sistemik langsung yang terdeteksi dalam pilihan yang dinyatakan. Perhatikan kerahasiaan keuangan.';
+        let greenFlags=[];
+        if(p1.spending==='Pembelian besar didiskusikan' || p2.spending==='Pembelian besar didiskusikan') greenFlags.push('Komitmen untuk mendiskusikan keputusan keuangan besar membangun stabilitas inti.');
+        if(align.length>=2) greenFlags.push('Anda memiliki konsensus dasar alami di setidaknya dua area kehidupan operasional.');
+        const greenFlagHTML = greenFlags.length>0 ? `<ul>${greenFlags.map(g=>`<li>${g}</li>`).join('')}</ul>` : 'Keterbukaan inti ada ketika kedua pasangan bersedia menyatakan preferensi mereka secara eksplisit tanpa rasa takut.';
+        const agreement = conflict.length>0 ? `Mulailah percakapan tentang: ${conflict[0].replace(/<[^>]+>/g,'').substring(0,60)}...` : 'Batasan Anda selaras—pertimbangkan cek in untuk mempertahankannya.';
+
+        document.getElementById('t1-out-map').innerHTML = mapHTML;
+        document.getElementById('t1-out-alignment').innerHTML = alignHTML;
+        document.getElementById('t1-out-conflict').innerHTML = conflictHTML;
+        document.getElementById('t1-out-normalizer').innerText = normalizerHTML;
+        document.getElementById('t1-out-redflag').innerHTML = redFlagHTML;
+        document.getElementById('t1-out-greenflag').innerHTML = greenFlagHTML;
+        document.getElementById('t1-out-agreement').innerText = agreement;
+        document.getElementById('output-tool1').classList.add('active');
+        const summary = `Ditemukan ${align.length} zona keselarasan dan ${conflict.length} zona konflik.`;
+        saveToHistory('tool1', 'Audit Batasan', `<p>${mapHTML}</p><br><strong>Konflik:</strong> ${conflictHTML}`);
+    }
+
+    // ========================================
+    // TOOL 2: TRANSPARENCY TALK
+    // ========================================
+    function loadSampleTool2() {
+        document.getElementById('t2_want_transparency').value = 'Saya ingin berbagi lokasi secara real-time dan sandi ponsel terbuka.';
+        document.getElementById('t2_rep_transparency').value = 'Keamanan';
+        document.getElementById('t2_want_privacy').value = 'Saya ingin obrolan pribadi tanpa pengawasan dengan teman dekat dan ruang pribadi.';
+        document.getElementById('t2_rep_privacy').value = 'Otonomi';
+        document.querySelector('input[name="t2_trust_broken"][value="Ya, oleh pasangan saat ini"]').checked = true;
+        showToast('Contoh dimuat: Permintaan transparansi pasca-pengkhianatan');
+    }
+
+    function analyzeTool2() {
+        const wantTrans = document.getElementById('t2_want_transparency').value || 'Keterbukaan umum';
+        const repTrans = document.getElementById('t2_rep_transparency').value;
+        const wantPriv = document.getElementById('t2_want_privacy').value || 'Ruang pribadi';
+        const repPriv = document.getElementById('t2_rep_privacy').value;
+        const trustBroken = document.querySelector('input[name="t2_trust_broken"]:checked')?.value || 'Tidak';
+
+        const transNeed = `Permintaan untuk "<em>${escapeHTML(wantTrans)}</em>" pada dasarnya bukan tentang kontrol—ini adalah upaya untuk menumbuhkan <strong>${repTrans.toUpperCase()}</strong>. Ketika kecemasan tinggi, visibilitas berfungsi sebagai landasan emosional.`;
+        const privNeed = `Resistensi seputar "<em>${escapeHTML(wantPriv)}</em>" jarang tentang memiliki sesuatu yang terlarang untuk disembunyikan—ini adalah perlindungan <strong>${repPriv.toUpperCase()}</strong>. Ketika visibilitas terasa dipaksakan, itu terdaftar sebagai hilangnya identitas.`;
+        const frame = `<strong>Pembingkaian ulang untuk percakapan:</strong> "Kami tidak berdebat tentang ponsel atau aplikasi lokasi. Kami mencoba menyeimbangkan kebutuhan sah Pasangan A akan ${repTrans} dengan kebutuhan sah Pasangan B akan ${repPriv}." Kedua kebutuhan dapat hidup berdampingan.`;
+        const compromise = `<ul><li><strong>Keterbukaan Terbatas Waktu:</strong> Setujui transparansi sementara seputar "${escapeHTML(wantTrans)}" selama 30-90 hari, dengan tanggal tinjauan terjadwal untuk mengurangi.</li><li><strong>Berbagi Berbasis Konteks:</strong> Bagikan pembaruan ringkasan (mis., "Saya pergi keluar dengan Alex") tanpa memerlukan pelacakan lokasi mikro atau pemantauan ponsel.</li><li><strong>Brankas Terlindungi:</strong> Jaga obrolan teman pribadi tetap pribadi sambil menawarkan visibilitas penuh ke acara kalender bersama dan catatan keuangan.</li></ul>`;
+        let gradual = trustBroken.includes('Ya') ? "Karena kepercayaan telah mengalami pelanggaran, mulailah di Level 1 (Transparansi Tinggi): Pembaruan sukarela dan akses bersama untuk membangun kembali keamanan emosional. Rencanakan kalibrasi bulanan untuk menilai apakah kecemasan telah cukup turun untuk pindah ke Level 2." : "Karena kepercayaan secara struktural utuh, fokuslah pada komunikasi proaktif daripada pemantauan. Bangun kepercayaan melalui keselarasan kata-tindakan yang konsisten daripada pengawasan digital.";
+        const guarantee = `Pasangan B mempertahankan hak mutlak atas catatan terapi tanpa pengawasan, kepercayaan keluarga pribadi, dan saluran kreatif individu. Transparansi tidak berarti penghapusan total batasan pribadi.`;
+
+        document.getElementById('t2-out-trans-need').innerHTML = transNeed;
+        document.getElementById('t2-out-priv-need').innerHTML = privNeed;
+        document.getElementById('t2-out-frame').innerHTML = frame;
+        document.getElementById('t2-out-compromise').innerHTML = compromise;
+        document.getElementById('t2-out-gradual').innerText = gradual;
+        document.getElementById('t2-out-guarantee').innerText = guarantee;
+        document.getElementById('output-tool2').classList.add('active');
+        saveToHistory('tool2', `Percakapan: ${repTrans} vs ${repPriv}`, `<p>${frame}</p><br>${compromise}`);
+    }
+
+    // ========================================
+    // TOOL 3: PHONE & ACCOUNT PROTOCOL
+    // ========================================
+    function loadSampleTool3() {
+        document.getElementById('t3_phone_rule').value = 'Salah satu mengintip';
+        document.getElementById('t3_trigger').value = 'Menemukan pesan terhapus dengan mantan rekan kerja larut malam.';
+        document.getElementById('t3_safe_without_check').value = 'Cek in verbal proaktif ketika rencana berubah dan ponsel diletakkan menghadap ke atas di meja.';
+        document.getElementById('t3_trusted_if_checked').value = 'Pasangan meminta izin sebelum melihat, dan mendengarkan penjelasan saya dengan tenang.';
+        document.getElementById('t3_financial_access').value = 'Terpisah tapi terlihat';
+        showToast('Contoh dimuat: Pesan terhapus & pola mengintip');
+    }
+
+    function analyzeTool3() {
+        const rule = document.getElementById('t3_phone_rule').value;
+        const trigger = document.getElementById('t3_trigger').value || 'Gesekan digital yang tidak jelas';
+        const safeWithout = document.getElementById('t3_safe_without_check').value || 'Komunikasi terbuka';
+        const trustedIf = document.getElementById('t3_trusted_if_checked').value || 'Pertanyaan yang hormat';
+        const financial = document.getElementById('t3_financial_access').value;
+
+        const battle = `Konflik perangkat yang dipicu oleh "<em>${escapeHTML(trigger)}</em>" telah mengubah ponsel pintar menjadi medan pertempuran proksi untuk keamanan emosional versus otonomi pribadi. Pola saat ini: "${rule}".`;
+        const options = `<ul><li><strong>Level 1 — Transparansi Penuh (Mode Pemulihan):</strong> Sandi dibagikan. Akses terbuka diizinkan, tetapi HARUS disertai dengan pemberitahuan verbal ("Hei, ambil ponselmu untuk mengecek x").</li><li><strong>Level 2 — Minta & Tunjukkan (Kepercayaan Standar):</strong> Sandi pribadi, tetapi jika pasangan merasa cemas, mereka dapat bertanya: "Bisakah kamu tunjukkan pesan terbarumu?" dan itu ditunjukkan bersama di tempat.</li><li><strong>Level 3 — Kemandirian Digital Penuh:</strong> Ponsel benar-benar pribadi. Keamanan dijaga melalui transparansi perilaku dunia nyata daripada akses perangkat.</li></ul>`;
+        const checkin = `Jadwalkan "Cek In Digital" mingguan selama 15 menit pada Minggu malam. Gunakan ruang khusus ini untuk mengajukan pertanyaan atau mendiskusikan kecemasan perangkat, mencegah pengawasan spontan harian atau pemeriksaan rahasia.`;
+        const snooping = `Mengintip tanpa persetujuan melanggar martabat dan menghasilkan rasa bersalah, sementara penghapusan rahasia pesan menghancurkan keamanan. Aturan: Jika salah satu pasangan merasa ingin mengintip, itu adalah pemicu otomatis untuk meminta sesi Level 2 "Tunjukkan Bersama" dalam waktu 12 jam.`;
+        const financialText = `Untuk struktur keuangan ("${financial}"): Pastikan kewajiban rumah tangga bersama sepenuhnya otomatis dan terlihat. Pertahankan tunjangan diskresi pribadi tanpa perlu audit baris per item individu.`;
+        const ritual = `<strong>Ritual Pemulihan Harian:</strong> Praktikkan 'Reuni Bebas Ponsel.' Habiskan 20 menit pertama setelah tiba di rumah dengan semua perangkat diletakkan di laci, terlibat dalam kontak mata langsung dan koneksi verbal.`;
+
+        document.getElementById('t3-out-battle').innerHTML = battle;
+        document.getElementById('t3-out-options').innerHTML = options;
+        document.getElementById('t3-out-checkin').innerText = checkin;
+        document.getElementById('t3-out-snooping').innerText = snooping;
+        document.getElementById('t3-out-financial').innerText = financialText;
+        document.getElementById('t3-out-ritual').innerHTML = ritual;
+        document.getElementById('output-tool3').classList.add('active');
+        saveToHistory('tool3', `Protokol: ${rule}`, `<p>${battle}</p><br>${options}`);
+    }
+
+    // ========================================
+    // TOOL 4: SUSPICION DECODER
+    // ========================================
+    function loadSampleTool4() {
+        document.getElementById('t4_off_description').value = 'Pasangan tampak menjauh, membawa ponsel ke kamar mandi setiap saat, dan bersikap defensif ketika ditanya tentang jam kerja.';
+        document.getElementById('t4_evidence_real').value = '';
+        document.getElementById('t4_evidence_feared').value = 'Takut ada perselingkuhan dengan rekan kerja baru atau aplikasi pesan rahasia.';
+        document.getElementById('t4_past_history').value = 'Pernah diselingkuhi';
+        document.getElementById('t4_stress_level').value = '8';
+        document.getElementById('stress_val').innerText = '8';
+        document.getElementById('t4_talked').value = "Tidak, saya menyelidiki";
+        showToast('Contoh dimuat: Kecemasan samar dengan riwayat trauma');
+    }
+
+    function analyzeTool4() {
+        const off = document.getElementById('t4_off_description').value || 'Perubahan energi yang samar';
+        const realEv = document.getElementById('t4_evidence_real').value.trim();
+        const fearedEv = document.getElementById('t4_evidence_feared').value || 'Tidak ada ketakutan spesifik';
+        const history = document.getElementById('t4_past_history').value;
+        const stress = parseInt(document.getElementById('t4_stress_level').value) || 5;
+        let typeTitle='', typeDesc='';
+        if(realEv.length>5) { typeTitle='Intuisi / Kecurigaan Berbasis Fakta'; typeDesc='Penilaian Anda berakar pada indikator konkret dan dapat diamati daripada proyeksi internal murni. Ini memerlukan percakapan langsung yang jelas.'; }
+        else if(history.includes('Pernah diselingkuhi') || history.includes('Banyak pengkhianatan')) { typeTitle='Respons Aktivasi Trauma / Kewaspadaan Berlebihan'; typeDesc='Karena riwayat pengkhianatan masa lalu dikombinasikan dengan stres tinggi, sistem saraf Anda memindai tanda-tanda bahaya. Perilaku yang tidak dapat dijelaskan secara otomatis dikategorikan sebagai ancaman bencana.'; }
+        else if(stress>=7) { typeTitle='Proyeksi Kecemasan Akibat Stres'; typeDesc='Stres dasar yang tinggi mengurangi toleransi emosional, menyebabkan penarikan pasangan yang normal atau kelelahan terasa seperti penipuan yang disengaja.'; }
+        else { typeTitle='Keterputasan Hubungan yang Ambigu'; typeDesc='Anda merasakan jarak emosional yang nyata, tetapi melompat ke kesimpulan tentang kerahasiaan. Masalah utamanya mungkin kelelahan atau keterputusan emosional.'; }
+
+        const evAudit = realEv.length>5 ? `<strong>Bukti Nyata:</strong> "${escapeHTML(realEv)}". <br><strong>Skenario yang Ditakuti:</strong> "${escapeHTML(fearedEv)}". <br><em>Fokuskan percakapan Anda secara eksklusif pada bukti nyata yang dapat diverifikasi daripada berspekulasi tentang skenario yang ditakuti.</em>` : `<strong>Bukti Nyata:</strong> Tidak ada yang diajukan. <br><strong>Skenario yang Ditakuti:</strong> "${escapeHTML(fearedEv)}". <br><em>Perhatikan bahwa tekanan Anda saat ini didorong oleh hasil yang ditakuti daripada bukti nyata.</em>`;
+        const script = `"Saya merasakan beberapa jarak emosional antara kita akhir-akhir ini, dan ketika saya melihat hal-hal seperti ${off.substring(0,30)}..., kecemasan saya melonjak. Saya tidak ingin membuat asumsi yang tidak adil atau mengintip. Bisakah kita bicara tentang bagaimana perasaan kita saat ini?"`;
+        const stopText = `Penyelidikan berhenti menjadi sehat saat Anda melampaui pencarian rahasia, pemasangan teknologi pelacakan, atau pemantauan ponsel terus menerus. Penyelidikan membangun siklus adiktif dari kewaspadaan berlebihan yang merusak harga diri.`;
+        const selfCheck = `<li>Apakah reaksi saya proporsional dengan apa yang sebenarnya ada di hadapan saya hari ini?</li><li>Apakah saya merespons pasangan saya saat ini, atau orang yang menyakiti saya di masa lalu?</li><li>Jika saya memeriksa ponsel mereka sekarang, apakah itu benar-benar akan menyembuhkan keraguan saya, atau saya hanya akan mencari hal berikutnya?</li>`;
+        const prof = (history.includes('Pernah diselingkuhi') || stress>=8) ? 'Sangat disarankan: Terapi individu untuk memproses trauma pengkhianatan masa lalu, atau konseling pasangan jika dialog langsung mengarah pada pembelokan segera atau pertahanan diri yang intens.' : 'Jika percakapan langsung terus menghasilkan kecemasan atau kepanikan tanpa resolusi, jadwalkan 2-3 sesi dengan terapis hubungan untuk memfasilitasi dialog terstruktur.';
+
+        document.getElementById('t4-out-type').innerHTML = `<strong>${typeTitle}:</strong> ${typeDesc}`;
+        document.getElementById('t4-out-evidence').innerHTML = evAudit;
+        document.getElementById('t4-out-script').innerText = script;
+        document.getElementById('t4-out-stop').innerText = stopText;
+        document.getElementById('t4-out-selfcheck').innerHTML = selfCheck;
+        document.getElementById('t4-out-professional').innerText = prof;
+        document.getElementById('output-tool4').classList.add('active');
+        saveToHistory('tool4', `Dekoder: ${typeTitle}`, `<p><strong>${typeTitle}</strong></p><p>${typeDesc}</p><br><code>${script}</code>`);
+    }
+
+    // ========================================
+    // TOOL 5: REBUILD PLAN
+    // ========================================
+    function loadSampleTool5() {
+        document.getElementById('t5_hidden_type').value = 'Pengeluaran';
+        document.getElementById('t5_discovery_method').value = 'Penemuan tidak sengaja';
+        document.getElementById('t5_trust_level').value = '3';
+        document.getElementById('trust_val').innerText = '3';
+        document.getElementById('t5_hurt_needs').value = 'Laporan bank lengkap 6 bulan terakhir, penjelasan jujur tentang hutang, dan kontrol atas anggaran bersama.';
+        document.getElementById('t5_trans_offer').value = 'Menunjukkan semua rekening, tinjauan anggaran mingguan, dan mengikuti kursus literasi keuangan.';
+        document.getElementById('t5_couples_work').value = 'Ya';
+        showToast('Contoh dimuat: Perbaikan pengeluaran keuangan rahasia');
+    }
+
+    function analyzeTool5() {
+        const hidden = document.getElementById('t5_hidden_type').value;
+        const discovery = document.getElementById('t5_discovery_method').value;
+        const trustLevel = document.getElementById('t5_trust_level').value;
+        const hurtNeeds = document.getElementById('t5_hurt_needs').value || 'Penegasan dan kejujuran';
+        const transOffer = document.getElementById('t5_trans_offer').value || 'Keterbukaan penuh';
+        const couplesWork = document.getElementById('t5_couples_work').value;
+
+        const damage = `Area pelanggaran: <strong>${hidden}</strong> (Ditemukan melalui ${discovery}). Tingkat Kepercayaan Saat Ini: <strong>${trustLevel}/10</strong>. Penemuan melalui ${discovery.toLowerCase()} menciptakan lapisan kejutan ekstra dibandingkan dengan pengakuan langsung. Perbaikan memerlukan tindakan transparan yang disengaja dari waktu ke waktu.`;
+        const offer = `Pasangan yang transparan harus beralih dari jawaban pasif ke transparansi aktif seputar: "<em>${escapeHTML(transOffer)}</em>". Komitmen: Berikan informasi yang akurat sebelum diminta, mengambil kepemilikan penuh tanpa meremehkan atau menuduh balik.`;
+        const verification = `Untuk memenuhi kebutuhan pasangan yang terluka ("<em>${escapeHTML(hurtNeeds)}</em>") tanpa menciptakan dinamika orang tua-anak permanen: Terapkan jendela verifikasi mingguan terjadwal. Pasangan yang terluka meninjau rekening/log terkait seminggu sekali selama waktu yang ditentukan ini, menghindari pengawasan harian yang tidak terduga.`;
+        const graduation = `<strong>Fase 1 (Bulan 1-3): Visibilitas Tinggi.</strong> Transparansi maksimum, cek in aktif, log bersama.<br><strong>Fase 2 (Bulan 4-6): Privasi Bersyarat.</strong> Cek in rutin turun menjadi dua mingguan; rekening individu mendapatkan kembali privasi dasar asalkan semua komitmen terpenuhi.<br><strong>Fase 3 (Bulan 6+): Otonomi Dipulihkan.</strong> Transisi dari verifikasi aktif kembali ke kepercayaan dasar standar dan saling menghormati.`;
+        const relapse = `Jika kerahasiaan terulang (mis., log terhapus, transaksi tersembunyi): Proses pemulihan kembali ke Fase 1 segera, dan intervensi profesional formal (terapi pasangan) menjadi wajib untuk mengevaluasi kelayakan hubungan.`;
+        const timeline = `Membangun kembali kepercayaan dari tingkat ${trustLevel}/10 biasanya memerlukan <strong>6 hingga 18 bulan</strong> dari keselarasan perilaku yang konsisten dan dapat diprediksi. Perbaikan cepat tidak ada, tetapi tindakan kecil yang stabil menghasilkan keamanan yang dalam dan tahan lama.`;
+
+        document.getElementById('t5-out-damage').innerHTML = damage;
+        document.getElementById('t5-out-offer').innerHTML = offer;
+        document.getElementById('t5-out-verification').innerHTML = verification;
+        document.getElementById('t5-out-graduation').innerHTML = graduation;
+        document.getElementById('t5-out-relapse').innerText = relapse;
+        document.getElementById('t5-out-timeline').innerHTML = timeline;
+        document.getElementById('output-tool5').classList.add('active');
+        saveToHistory('tool5', `Rencana Pemulihan: ${hidden} (${trustLevel}/10)`, `<p>${damage}</p><br><p>${graduation}</p>`);
+    }
+
+    // --- INIT ---
+    document.addEventListener('DOMContentLoaded', () => {
+        ['tool1','tool2','tool3','tool4','tool5'].forEach(id => renderHistory(id));
+    });
+</script>
+</body>
+</html>

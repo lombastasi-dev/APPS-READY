@@ -1,0 +1,2392 @@
+[cite: 1, 2]<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SoloLife OS™ — Sistem Operasi Pribadi untuk Hidup Mandiri dengan Baik</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* ==========================================================================
+       GAYA DASAR & VARIABEL
+       ========================================================================== */
+    :root {
+      --primary: #2E294E;
+      --primary-light: #413B6B;
+      --accent: #F4A261;
+      --accent-hover: #E76F51;
+      --bg-gradient: linear-gradient(135deg, #F8F7FF 0%, #FFF8F0 100%);
+      --surface: #FFFFFF;
+      --text: #2B2D42;
+      --text-muted: #6C757D;
+      --border: #E9ECEF;
+      --shadow-sm: 0 2px 8px rgba(46, 41, 78, 0.06);
+      --shadow-md: 0 8px 24px rgba(46, 41, 78, 0.08);
+      --radius-xl: 1rem;
+      --radius-lg: 0.75rem;
+      --radius-md: 0.5rem;
+      --sidebar-width: 270px;
+      --badge-green: #2A9D8F;
+      --badge-orange: #E76F51;
+      --badge-blue: #3A86EF;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      line-height: 1.6;
+    }
+
+    /* ==========================================================================
+       TATA LETAK & WADAH
+       ========================================================================== */
+    #app-container {
+      display: flex;
+      flex: 1;
+      position: relative;
+    }
+
+    /* Navigasi Bilah Samping (Sidebar) */
+    #sidebar {
+      width: var(--sidebar-width);
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      color: var(--accent);
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .brand-sub {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 1rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .nav-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      padding: 0.75rem 0.75rem 0.25rem;
+      margin-top: 0.25rem;
+    }
+
+    .nav-item button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-weight: 600;
+      font-family: inherit;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+
+    .nav-item button i {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    .nav-item button:hover {
+      background: rgba(46, 41, 78, 0.04);
+      color: var(--primary);
+    }
+
+    .nav-item.active button {
+      background: var(--primary);
+      color: #FFFFFF;
+    }
+
+    .nav-item.active button i {
+      color: var(--accent);
+    }
+
+    /* Area Konten Utama */
+    #main-content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      padding: 2.5rem 2rem 4rem;
+      max-width: 960px;
+      width: 100%;
+      margin-right: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header Seluler */
+    .mobile-header {
+      display: none;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.85rem 1.25rem;
+      z-index: 90;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .hamburger-btn {
+      background: none;
+      border: none;
+      font-size: 1.35rem;
+      color: var(--primary);
+      cursor: pointer;
+      padding: 0.25rem;
+    }
+
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 95;
+      backdrop-filter: blur(2px);
+    }
+
+    /* ==========================================================================
+       KARTU & KOMPONEN UI
+       ========================================================================== */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid rgba(0,0,0,0.04);
+      margin-bottom: 1.75rem;
+    }
+
+    .hero-card {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+      color: #FFFFFF;
+      padding: 3rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .hero-card h1 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+      line-height: 1.2;
+    }
+
+    .hero-card p {
+      font-size: 1.1rem;
+      color: rgba(255, 255, 255, 0.88);
+      max-width: 620px;
+      margin: 0 auto 1.5rem;
+    }
+
+    .hero-card .accent-tag {
+      display: inline-block;
+      background: rgba(244, 162, 97, 0.2);
+      color: var(--accent);
+      padding: 0.35rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 1rem;
+    }
+
+    /* Header Alat */
+    .tool-header {
+      margin-bottom: 2rem;
+    }
+
+    .tool-header h2 {
+      font-size: 1.75rem;
+      color: var(--primary);
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+
+    .problem-banner {
+      background: #FFF3EA;
+      border-left: 4px solid var(--accent);
+      padding: 1rem 1.25rem;
+      border-radius: 0 var(--radius-md) var(--radius-md) 0;
+      margin-top: 1rem;
+      color: #8C4A1A;
+      font-size: 0.95rem;
+      font-weight: 500;
+    }
+
+    /* Formulir */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    input[type="number"],
+    input[type="text"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      font-family: inherit;
+      font-size: 0.95rem;
+      color: var(--text);
+      background: #FAFAFC;
+      transition: all 0.2s ease;
+    }
+
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #FFFFFF;
+      box-shadow: 0 0 0 3px rgba(46, 41, 78, 0.1);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 90px;
+    }
+
+    .checkbox-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 0.75rem;
+      margin-top: 0.35rem;
+    }
+
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.9rem;
+      font-weight: 400;
+      cursor: pointer;
+      background: #FAFAFC;
+      padding: 0.6rem 0.8rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      transition: background 0.2s;
+    }
+
+    .checkbox-label:hover {
+      background: #F0EFF7;
+    }
+
+    .checkbox-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* Tombol */
+    .button-group {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.8rem 1.4rem;
+      border-radius: var(--radius-md);
+      font-weight: 600;
+      font-size: 0.9rem;
+      font-family: inherit;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      border: none;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-hover);
+      color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: #F0EFF7;
+      color: var(--primary);
+    }
+
+    .btn-secondary:hover {
+      background: #E2E0F0;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .btn-copy {
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 0.45rem 0.85rem;
+      font-size: 0.8rem;
+      border-radius: var(--radius-md);
+    }
+
+    .btn-copy:hover {
+      background: var(--primary-light);
+    }
+
+    .sample-disclaimer {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-style: italic;
+      margin-top: 0.5rem;
+    }
+
+    /* ==========================================================================
+       ARSITEKTUR HASIL & KELUARAN
+       ========================================================================== */
+    .output-container {
+      margin-top: 2rem;
+      display: none;
+    }
+
+    .output-container.active {
+      display: block;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-section {
+      background: #FAFAFC;
+      border-radius: var(--radius-lg);
+      padding: 1.35rem;
+      margin-bottom: 1.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .result-section.highlight-box {
+      background: #FFF8F0;
+      border-color: var(--accent);
+    }
+
+    .result-section h4 {
+      color: var(--primary);
+      font-size: 0.95rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .result-metric {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin: 0.3rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    .result-metric.surplus { color: #2A9D8F; }
+    .result-metric.deficit { color: #E76F51; }
+
+    .bullet-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .bullet-list li {
+      position: relative;
+      padding-left: 1.5rem;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .bullet-list li::before {
+      content: "•";
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 1.4rem;
+      position: absolute;
+      left: 0.3rem;
+      top: -0.2rem;
+    }
+
+    /* UI Kotak Salin */
+    .copy-box {
+      background: #FFFFFF;
+      border: 1.5px dashed var(--accent);
+      padding: 1rem;
+      border-radius: var(--radius-md);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 0.5rem;
+    }
+
+    .copy-box p {
+      font-style: italic;
+      font-size: 0.95rem;
+      color: #333;
+    }
+
+    .safety-notice {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background: #F0EFF7;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-md);
+      margin-top: 1rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+
+    /* Akordion Riwayat */
+    .history-section {
+      margin-top: 3rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+
+    .history-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .history-header h3 {
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .clear-history-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .history-item {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+    }
+
+    .history-summary {
+      padding: 0.85rem 1rem;
+      background: #FAFAFC;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      user-select: none;
+    }
+
+    .history-summary:hover {
+      background: #F0EFF7;
+    }
+
+    .history-content {
+      padding: 1.25rem;
+      display: none;
+      border-top: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .history-item.open .history-content {
+      display: block;
+    }
+
+    .history-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+
+    /* Grid Dasbor & Beranda */
+    .launcher-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .launcher-card {
+      background: var(--surface);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+      transition: all 0.25s ease;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      position: relative;
+    }
+
+    .launcher-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--accent);
+    }
+
+    .launcher-card .dash-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: #F0EFF7;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .launcher-card h3 {
+      font-size: 1.1rem;
+      color: var(--primary);
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .launcher-card p {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      margin-bottom: 1rem;
+    }
+
+    .launcher-card .card-action-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--accent-hover);
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* Lencana Status & Label Kualitatif */
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.65rem;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .badge-strong { background: #E6F4F1; color: var(--badge-green); }
+    .badge-attention { background: #FDE8E4; color: var(--badge-orange); }
+    .badge-rebuild { background: #FFF3EA; color: #C65100; }
+    .badge-emerging { background: #E8F0FE; color: var(--badge-blue); }
+
+    /* Matriks Penataan Ulang 7-Hari */
+    .reset-day-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .reset-day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .reset-day-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    /* Khusus Cetak */
+    @media print {
+      #sidebar, .mobile-header, .button-group, .history-section, .clear-history-btn, .btn, .nav-list {
+        display: none !important;
+      }
+      #main-content {
+        margin-left: 0 !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+      .card {
+        box-shadow: none !important;
+        border: 1px solid #ccc !important;
+      }
+      body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+      }
+    }
+
+    /* Notifikasi Toast */
+    #toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: var(--primary);
+      color: #FFFFFF;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+      z-index: 1000;
+    }
+
+    #toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Responsif */
+    @media (max-width: 768px) {
+      #sidebar { transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      .sidebar-overlay.open { display: block; }
+      .mobile-header { display: flex; }
+      #main-content { margin-left: 0; padding: 1.5rem 1rem 3rem; }
+      .hero-card { padding: 2rem 1.25rem; }
+      .hero-card h1 { font-size: 1.75rem; }
+      .form-grid { grid-template-columns: 1fr; }
+      .checkbox-group { grid-template-columns: 1fr; }
+      .copy-box { flex-direction: column; align-items: flex-start; }
+      .btn-copy { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Atas Seluler -->
+  <header class="mobile-header">
+    <div style="display: flex; align-items: center; gap: 0.5rem;">
+      <div class="brand-icon" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="fa-solid fa-compass"></i>
+      </div>
+      <div class="brand-title-wrap">
+        <span class="brand-title" style="font-size: 1rem;">SOLO LIFE OS™</span>
+      </div>
+    </div>
+    <button class="hamburger-btn" id="hamburger-btn" aria-label="Buka Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </header>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div id="app-container">
+    <!-- Navigasi Bilah Samping -->
+    <nav id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand-icon">
+          <i class="fa-solid fa-compass"></i>
+        </div>
+        <div class="brand-title-wrap">
+          <span class="brand-title">SOLO LIFE OS™</span>
+          <span class="brand-sub">Sistem Operasi Pribadi</span>
+        </div>
+      </div>
+      <ul class="nav-list">
+        <li class="nav-item active" data-tool="dashboard">
+          <button><i class="fa-solid fa-house"></i> Beranda</button>
+        </li>
+        <li class="nav-item" data-tool="start-here">
+          <button><i class="fa-solid fa-flag"></i> Mulai Di Sini</button>
+        </li>
+
+        <div class="nav-section-title">Keuangan</div>
+        <li class="nav-item" data-tool="budget">
+          <button><i class="fa-solid fa-wallet"></i> Anggaran Solo</button>
+        </li>
+
+        <div class="nav-section-title">Kehidupan Sehari-Hari</div>
+        <li class="nav-item" data-tool="rhythm">
+          <button><i class="fa-solid fa-clock"></i> Pembangun Ritme</button>
+        </li>
+
+        <div class="nav-section-title">Koneksi & Hubungan</div>
+        <li class="nav-item" data-tool="loneliness">
+          <button><i class="fa-solid fa-heart-pulse"></i> Navigasi Kesepian</button>
+        </li>
+        <li class="nav-item" data-tool="community">
+          <button><i class="fa-solid fa-people-group"></i> Pembangun Komunitas</button>
+        </li>
+
+        <div class="nav-section-title">Diri</div>
+        <li class="nav-item" data-tool="strength">
+          <button><i class="fa-solid fa-shield-halved"></i> Ketahanan Solo</button>
+        </li>
+
+        <div class="nav-section-title">Penataan Ulang & Sintesis</div>
+        <li class="nav-item" data-tool="reset">
+          <button><i class="fa-solid fa-calendar-check"></i> Reset Solo 7-Hari</button>
+        </li>
+        <li class="nav-item" data-tool="solo-plan">
+          <button><i class="fa-solid fa-diagram-project"></i> Rencana Solo Saya</button>
+        </li>
+
+        <div class="nav-section-title">Sistem</div>
+        <li class="nav-item" data-tool="history">
+          <button><i class="fa-solid fa-box-archive"></i> Riwayat Saya</button>
+        </li>
+        <li class="nav-item" data-tool="privacy">
+          <button><i class="fa-solid fa-lock"></i> Privasi & Data</button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Area Tampilan Utama -->
+    <main id="main-content">
+
+      <!-- TAMPILAN 1: BERANDA / DASBOR -->
+      <section id="view-dashboard" class="tool-view">
+        <div class="card hero-card">
+          <span class="accent-tag">SISTEM OPERASI PRIBADI</span>
+          <h1>SATU ORANG.<br>SATU KEHIDUPAN.<br>JALANI DENGAN INDAH.</h1>
+          <p>SOLO LIFE OS membantu Anda mengelola berbagai aspek hidup mandiri yang jarang diajarkan—keuangan, rutinitas, koneksi, komunitas, dan keyakinan untuk membangun hidup yang benar-benar sesuai untuk Anda.</p>
+          <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="switchView('start-here')"><i class="fa-solid fa-play"></i> Mulai Sekarang</button>
+            <button class="btn btn-secondary" onclick="switchView('reset')"><i class="fa-solid fa-calendar-week"></i> Mulai Reset 7-Hari</button>
+          </div>
+        </div>
+
+        <h3 style="color: var(--primary); font-weight: 800; font-size: 1.2rem; margin-bottom: 0.25rem;">APA YANG PALING ANDA BUTUHKAN SAAT INI?</h3>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">Pilih area yang paling banyak menimbulkan kendala dalam hidup mandiri Anda saat ini.</p>
+
+        <div class="launcher-grid">
+          <div class="launcher-card" onclick="switchView('budget')">
+            <div class="dash-icon"><i class="fa-solid fa-wallet"></i></div>
+            <h3>💰 Keuangan saya terasa lebih ketat dari seharusnya</h3>
+            <p>Kelola satu penghasilan untuk menopang hidup tanpa kecemasan finansial terus-menerus atau kebocoran pengeluaran solo.</p>
+            <div class="card-action-text">Mulai Anggaran Solo <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="launcher-card" onclick="switchView('rhythm')">
+            <div class="dash-icon"><i class="fa-solid fa-clock"></i></div>
+            <h3>⏰ Hari-hari saya tidak memiliki ritme yang jelas</h3>
+            <p>Rancang struktur yang terarah tanpa terasa kaku. Ubah akhir pekan yang hampa menjadi rutinitas yang menenangkan.</p>
+            <div class="card-action-text">Mulai Pembangun Ritme <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="launcher-card" onclick="switchView('loneliness')">
+            <div class="dash-icon"><i class="fa-solid fa-heart-pulse"></i></div>
+            <h3>❤️ Saya merasa kesepian atau terisolasi</h3>
+            <p>Identifikasi jenis koneksi yang tepat yang kurang bagi Anda dan dapatkan langkah aksi yang ringan.</p>
+            <div class="card-action-text">Mulai Navigasi Kesepian <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="launcher-card" onclick="switchView('community')">
+            <div class="dash-icon"><i class="fa-solid fa-people-group"></i></div>
+            <h3>🌎 Saya butuh lebih banyak orang dalam hidup saya</h3>
+            <p>Jangan sekadar bertemu orang baru. Temukan, masuki, dan bangun tempat-tempat rutin di mana Anda merasa diterima.</p>
+            <div class="card-action-text">Mulai Pembangun Komunitas <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="launcher-card" onclick="switchView('strength')">
+            <div class="dash-icon"><i class="fa-solid fa-shield-halved"></i></div>
+            <h3>🛡️ Saya ingin merasa lebih kuat hidup sendirian</h3>
+            <p>Ubah cara pandang tentang hidup sendiri, hilangkan stigma sosial, dan tumbuhkan kemandirian pribadi yang sejati.</p>
+            <div class="card-action-text">Mulai Ketahanan Solo <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+
+          <div class="launcher-card" onclick="switchView('reset')">
+            <div class="dash-icon"><i class="fa-solid fa-calendar-check"></i></div>
+            <h3>✨ Saya bingung harus mulai dari mana</h3>
+            <p>Ikuti panduan Reset Solo 7-Hari untuk menyelaraskan ke-5 area operasional utama secara sistematis.</p>
+            <div class="card-action-text">Mulai Reset 7-Hari <i class="fa-solid fa-arrow-right"></i></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 2: MULAI DI SINI -->
+      <section id="view-start-here" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-flag" style="color: var(--accent);"></i> Mulai Di Sini</h2>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--primary); font-size: 1.3rem; margin-bottom: 0.75rem;">Hidup sendiri memberi Anda kebebasan—namun kebebasan tanpa sistem bisa menjadi mahal, kacau, atau mengisolasi.</h3>
+          <p style="margin-bottom: 1.25rem;">SOLO LIFE OS dirancang sebagai sistem operasi praktis untuk membantu Anda membangun sistem tersebut langkah demi langkah. Hidup sendiri bukanlah ruang tunggu untuk sebuah hubungan; ini bisa menjadi gaya hidup yang terarah, mandiri, dan sangat memuaskan.</p>
+
+          <h4 style="color: var(--primary); font-weight: 700; margin-bottom: 0.75rem; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 0.05em;">LIMA AREA OPERASIONAL</h4>
+          
+          <div style="display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.75rem;">
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid var(--primary);">
+              <strong>1. Keuangan (Anggaran Solo):</strong> Apakah satu penghasilan Anda dapat menopang hidup dengan nyaman tanpa kecemasan terus-menerus?
+            </div>
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid var(--accent);">
+              <strong>2. Ritme (Pembangun Ritme):</strong> Apakah hari-hari dan akhir pekan Anda memiliki struktur yang cukup tanpa tergantung dorongan luar?
+            </div>
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #3A86EF;">
+              <strong>3. Koneksi (Navigasi Kesepian):</strong> Apakah kebutuhan emosional, fisik, dan percakapan Anda benar-benar terpenuhi?
+            </div>
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #2A9D8F;">
+              <strong>4. Komunitas (Pembangun Komunitas):</strong> Apakah Anda memiliki tempat dan kelompok rutin di mana Anda diterima sebagai orang dewasa?
+            </div>
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border-left: 4px solid #E76F51;">
+              <strong>5. Diri (Ketahanan Solo):</strong> Apakah Anda membangun kepercayaan diri dan kemandirian sejati, bukan sekadar bertahan hidup?
+            </div>
+          </div>
+
+          <p style="font-weight: 600; color: var(--primary); margin-bottom: 1rem;">Anda tidak perlu memperbaiki semuanya sekaligus. Mulailah dari satu area yang paling banyak menimbulkan kendala saat ini.</p>
+
+          <div class="button-group">
+            <button class="btn btn-primary" onclick="switchView('budget')"><i class="fa-solid fa-wallet"></i> Mulai Dari Keuangan</button>
+            <button class="btn btn-secondary" onclick="switchView('reset')"><i class="fa-solid fa-calendar-check"></i> Ikuti Panduan Reset 7-Hari</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 3: MODUL 1 - ANGGARAN SOLO -->
+      <section id="view-budget" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-wallet" style="color: var(--accent);"></i> Anggaran Solo</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> <strong>Tujuan:</strong> Membuat Satu Penghasilan Menopang Satu Kehidupan Tanpa Kecemasan Finansial Terus-Menerus.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-budget">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="b-income">Penghasilan bersih bulanan (Rp):</label>
+                <input type="number" id="b-income" required placeholder="8000000">
+              </div>
+              <div class="form-group">
+                <label for="b-rent">Tempat tinggal / sewa / KPR (Rp):</label>
+                <input type="number" id="b-rent" required placeholder="2500000">
+              </div>
+              <div class="form-group">
+                <label for="b-fixed">Biaya tetap bulanan (listrik, air, asuransi, HP) (Rp):</label>
+                <input type="number" id="b-fixed" required placeholder="800000">
+              </div>
+              <div class="form-group">
+                <label for="b-variable">Pengeluaran variabel (makan, transportasi, hiburan) (Rp):</label>
+                <input type="number" id="b-variable" required placeholder="2000000">
+              </div>
+              <div class="form-group">
+                <label for="b-subs">Total langganan bulanan (aplikasi/streaming) (Rp):</label>
+                <input type="number" id="b-subs" required placeholder="150000">
+              </div>
+              <div class="form-group">
+                <label for="b-debt">Pembayaran cicilan / utang minimum (Rp):</label>
+                <input type="number" id="b-debt" required placeholder="500000">
+              </div>
+              <div class="form-group">
+                <label for="b-savings">Tabungan bulanan saat ini (Rp):</label>
+                <input type="number" id="b-savings" required placeholder="500000">
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-calculator"></i> Hitung Keuangan Solo</button>
+              <button type="button" class="btn btn-secondary" onclick="loadSampleBudget()"><i class="fa-solid fa-folder-open"></i> Coba Contoh Skenario</button>
+              <button type="button" class="btn btn-outline" onclick="resetToolForm('budget')"><i class="fa-solid fa-rotate-left"></i> Reset Formulir</button>
+            </div>
+            <div class="sample-disclaimer" id="disclaimer-budget" style="display:none;">Contoh skenario dimuat — ini bukan hasil pribadi Anda.</div>
+          </form>
+
+          <div id="output-budget" class="output-container"></div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3>Log Anggaran Solo</h3>
+            <button class="clear-history-btn" onclick="clearToolHistory('budget')">Hapus Riwayat Anggaran</button>
+          </div>
+          <div id="history-budget" class="history-list"></div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 4: MODUL 2 - PEMBANGUN RITME -->
+      <section id="view-rhythm" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-clock" style="color: var(--accent);"></i> Pembangun Ritme</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> <strong>Tujuan:</strong> Merancang struktur tanpa kekakuan. Mengubah hari yang hampa menjadi kehidupan yang terarah.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-rhythm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="r-wake">Konsistensi jam bangun tidur:</label>
+                <input type="text" id="r-wake" placeholder="misal, 06.30 (Tidak teratur saat akhir pekan)" required>
+              </div>
+              <div class="form-group">
+                <label for="r-work">Jadwal / lokasi kerja:</label>
+                <input type="text" id="r-work" placeholder="misal, 08.00 - 17.00 (WFH 3 hari)" required>
+              </div>
+              <div class="form-group">
+                <label for="r-cook">Frekuensi masak sendiri per minggu:</label>
+                <input type="number" id="r-cook" placeholder="3" required>
+              </div>
+              <div class="form-group">
+                <label for="r-order">Frekuensi beli makanan/delivery per minggu:</label>
+                <input type="number" id="r-order" placeholder="11" required>
+              </div>
+              <div class="form-group">
+                <label for="r-exercise">Frekuensi olahraga / aktivitas fisik:</label>
+                <select id="r-exercise" required>
+                  <option value="Setiap hari">Setiap hari</option>
+                  <option value="3-4x seminggu">3-4x seminggu</option>
+                  <option value="Seminggu sekali">Seminggu sekali</option>
+                  <option value="Jarang">Jarang</option>
+                  <option value="Tidak pernah">Tidak pernah</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="r-social">Frekuensi kontak sosial:</label>
+                <select id="r-social" required>
+                  <option value="Setiap hari">Setiap hari</option>
+                  <option value="3-4x seminggu">3-4x seminggu</option>
+                  <option value="1-2x seminggu">1-2x seminggu</option>
+                  <option value="Jarang">Jarang</option>
+                  <option value="Tidak pernah">Tidak pernah</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="r-weekend">Pola akhir pekan:</label>
+                <select id="r-weekend" required>
+                  <option value="Terencana & seimbang">Terencana & seimbang</option>
+                  <option value="Spontan">Spontan</option>
+                  <option value="Sebagian besar sendiri">Sebagian besar sendiri</option>
+                  <option value="Tanpa struktur & kabur">Tanpa struktur & kabur</option>
+                  <option value="Hanya dihabiskan untuk tidur">Hanya dihabiskan untuk tidur</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="r-bedtime">Konsistensi jam tidur:</label>
+                <select id="r-bedtime" required>
+                  <option value="Konsisten">Konsisten</option>
+                  <option value="Bervariasi">Bervariasi</option>
+                  <option value="Malam berlebihan">Malam berlebihan</option>
+                  <option value="Tidak teratur">Tidak teratur</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-wand-magic-sparkles"></i> Susun Ritme Solo</button>
+              <button type="button" class="btn btn-secondary" onclick="loadSampleRhythm()"><i class="fa-solid fa-folder-open"></i> Coba Contoh Skenario</button>
+              <button type="button" class="btn btn-outline" onclick="resetToolForm('rhythm')"><i class="fa-solid fa-rotate-left"></i> Reset Formulir</button>
+            </div>
+            <div class="sample-disclaimer" id="disclaimer-rhythm" style="display:none;">Contoh skenario dimuat — ini bukan hasil pribadi Anda.</div>
+          </form>
+
+          <div id="output-rhythm" class="output-container"></div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3>Log Ritme</h3>
+            <button class="clear-history-btn" onclick="clearToolHistory('rhythm')">Hapus Riwayat Ritme</button>
+          </div>
+          <div id="history-rhythm" class="history-list"></div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 5: MODUL 3 - NAVIGASI KESEPIAN -->
+      <section id="view-loneliness" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-heart-pulse" style="color: var(--accent);"></i> Navigasi Kesepian</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> <strong>Tujuan:</strong> Mengidentifikasi jenis koneksi spesifik yang mungkin kurang dan mendapatkan langkah aksi yang realistis.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-loneliness">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="l-freq">Seberapa sering Anda merasa asing/terisolasi?</label>
+                <select id="l-freq" required>
+                  <option value="Jarang">Jarang</option>
+                  <option value="Beberapa kali sebulan">Beberapa kali sebulan</option>
+                  <option value="Seminggu sekali">Seminggu sekali</option>
+                  <option value="Setiap hari">Setiap hari</option>
+                  <option value="Hampir terus-menerus">Hampir terus-menerus</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="l-type">Jenis koneksi apa yang paling terasa kurang?</label>
+                <select id="l-type" required>
+                  <option value="Persetujuan teman / Teman sebaya">Pertemanan kasual / Teman sebaya</option>
+                  <option value="Dipahami secara mendalam">Dipahami & didengar secara mendalam</option>
+                  <option value="Rasa memiliki komunitas">Aktivitas bersama / Kelompok komunitas</option>
+                  <option value="Kehadiran fisik">Kehadiran fisik & kehangatan langsung</option>
+                  <option value="Intimasi romantis">Keintiman romantis</option>
+                  <option value="Kehadiran kasual tanpa tekanan">Kehadiran santai tanpa tekanan</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label for="l-tried">Apa yang sudah Anda coba sejauh ini?</label>
+                <textarea id="l-tried" placeholder="misal, Menjelajah media sosial, duduk di kafe sendirian, mengirim pesan ke teman lama..." required></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label>Hambatan koneksi saat ini (pilih semua yang sesuai):</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label"><input type="checkbox" name="l-barriers" value="Tidak ada waktu"> Tidak ada waktu</label>
+                  <label class="checkbox-label"><input type="checkbox" name="l-barriers" value="Kelelahan sosial"> Kelelahan sosial / Energi rendah</label>
+                  <label class="checkbox-label"><input type="checkbox" name="l-barriers" value="Kecemasan sosial"> Ragu bersosialisasi / Cemas</label>
+                  <label class="checkbox-label"><input type="checkbox" name="l-barriers" value="Tidak tahu harus ke mana"> Tidak tahu akses/tempatnya</label>
+                  <label class="checkbox-label"><input type="checkbox" name="l-barriers" value="Luka masa lalu"> Trauma/lelah hubungan masa lalu</label>
+                  <label class="checkbox-label"><input type="checkbox" name="l-barriers" value="Kecenderungan mengisolasi diri"> Kecenderungan mengisolasi diri</label>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label for="l-energy">Kapasitas energi sosial saat ini:</label>
+                <select id="l-energy" required>
+                  <option value="Tinggi">Tinggi (Siap keluar dan berinteraksi)</option>
+                  <option value="Sedang">Sedang (Bisa mengelola interaksi singkat/santai)</option>
+                  <option value="Rendah">Rendah (Lelah, butuh kendala sekecil mungkin)</option>
+                  <option value="Tidak ada saat ini">Tidak ada saat ini (Sangat lelah/kehabisan energi)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-compass"></i> Navigasi Kebutuhan Koneksi</button>
+              <button type="button" class="btn btn-secondary" onclick="loadSampleLoneliness()"><i class="fa-solid fa-folder-open"></i> Coba Contoh Skenario</button>
+              <button type="button" class="btn btn-outline" onclick="resetToolForm('loneliness')"><i class="fa-solid fa-rotate-left"></i> Reset Formulir</button>
+            </div>
+            <div class="sample-disclaimer" id="disclaimer-loneliness" style="display:none;">Contoh skenario dimuat — ini bukan hasil pribadi Anda.</div>
+          </form>
+
+          <div id="output-loneliness" class="output-container"></div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3>Log Koneksi</h3>
+            <button class="clear-history-btn" onclick="clearToolHistory('loneliness')">Hapus Riwayat Koneksi</button>
+          </div>
+          <div id="history-loneliness" class="history-list"></div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 6: MODUL 4 - PEMBANGUN KOMUNITAS -->
+      <section id="view-community" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-people-group" style="color: var(--accent);"></i> Pembangun Komunitas</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> <strong>Tujuan:</strong> Tidak Sekadar Bertemu Orang Baru. Bangun Tempat Di Mana Anda Diterima.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-community">
+            <div class="form-grid">
+              <div class="form-group full-width">
+                <label for="c-contacts">Jaringan kenalan saat ini (rekan kerja, tetangga, teman lama):</label>
+                <textarea id="c-contacts" placeholder="misal, Rekan kerja Sarah, teman kuliah Budi yang berjarak 30 menit, tetangga sebelah rumah..." required></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label for="c-interests">Minat atau hobi sejati Anda:</label>
+                <textarea id="c-interests" placeholder="misal, Permainan papan (board games), panjat tebing, jalan-jalan kota, novel fiksi ilmiah, keramik..." required></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label for="c-failed">Lingkungan sosial atau pendekatan yang belum berhasil bagi Anda:</label>
+                <textarea id="c-failed" placeholder="misal, Acara komunal besar isi 50 orang terasa melelahkan, kafe bising..." required></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label for="c-options">Pusat aktivitas fisik atau digital terdekat (toko independen, taman, perpustakaan, ruang kerja):</label>
+                <textarea id="c-options" placeholder="misal, Toko buku lokal berjarak 3 blok, tempat gym/panjat tebing, grup komunitas lokal..." required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="c-time">Waktu yang tersedia untuk membangun komunitas:</label>
+                <select id="c-time" required>
+                  <option value="<2 jam/minggu">&lt; 2 jam/minggu</option>
+                  <option value="2-5 jam/minggu">2 - 5 jam/minggu</option>
+                  <option value="5-10 jam/minggu">5 - 10 jam/minggu</option>
+                  <option value="10+ jam/minggu">10+ jam/minggu</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="c-comfort">Tingkat kenyamanan di lingkungan baru:</label>
+                <select id="c-comfort" required>
+                  <option value="Tinggi">Tinggi</option>
+                  <option value="Sedang">Sedang</option>
+                  <option value="Rendah">Rendah</option>
+                  <option value="Sangat rendah">Sangat rendah</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-network-wired"></i> Susun Strategi Komunitas</button>
+              <button type="button" class="btn btn-secondary" onclick="loadSampleCommunity()"><i class="fa-solid fa-folder-open"></i> Coba Contoh Skenario</button>
+              <button type="button" class="btn btn-outline" onclick="resetToolForm('community')"><i class="fa-solid fa-rotate-left"></i> Reset Formulir</button>
+            </div>
+            <div class="sample-disclaimer" id="disclaimer-community" style="display:none;">Contoh skenario dimuat — ini bukan hasil pribadi Anda.</div>
+          </form>
+
+          <div id="output-community" class="output-container"></div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3>Log Strategi Komunitas</h3>
+            <button class="clear-history-btn" onclick="clearToolHistory('community')">Hapus Riwayat Komunitas</button>
+          </div>
+          <div id="history-community" class="history-list"></div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 7: MODUL 5 - KETAHANAN SOLO -->
+      <section id="view-strength" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-shield-halved" style="color: var(--accent);"></i> Ketahanan Solo</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-exclamation"></i> <strong>Tujuan:</strong> Mengubah sudut pandang hidup mandiri, menghilangkan stigma sosial, dan menumbuhkan otonomi pribadi.
+          </div>
+        </div>
+
+        <div class="card">
+          <form id="form-strength">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="s-duration">Sudah berapa lama Anda tinggal sendiri?</label>
+                <select id="s-duration" required>
+                  <option value="<6 bulan">&lt; 6 bulan</option>
+                  <option value="6 bulan - 1 tahun">6 bulan - 1 tahun</option>
+                  <option value="1 - 2 tahun">1 - 2 tahun</option>
+                  <option value="2 - 5 tahun">2 - 5 tahun</option>
+                  <option value="5+ tahun">5+ tahun</option>
+                </select>
+              </div>
+              <div class="form-group full-width">
+                <label>Kondisi tempat tinggal sebelumnya (pilih semua yang sesuai):</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label"><input type="checkbox" name="s-past" value="Keluarga"> Rumah keluarga</label>
+                  <label class="checkbox-label"><input type="checkbox" name="s-past" value="Teman kos/kontrak"> Rumah bersama / Teman kos</label>
+                  <label class="checkbox-label"><input type="checkbox" name="s-past" value="Pasangan"> Pasangan / Mantan pasangan</label>
+                  <label class="checkbox-label"><input type="checkbox" name="s-past" value="Tidak pernah"> Selalu tinggal sendiri</label>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label for="s-enjoy">Apa yang paling Anda nikmati dari tinggal sendiri?</label>
+                <textarea id="s-enjoy" placeholder="misal, Ketenangan sempurna di pagi hari, bebas mengatur dekorasi, makan sesuai jadwal sendiri..." required></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label for="s-fear">Narasi atau tekanan apa yang Anda khawatirkan diproyeksikan orang lain kepada Anda?</label>
+                <textarea id="s-fear" placeholder="misal, Dianggap tidak bisa menjaga hubungan, dianggap kesepian atau tertinggal dalam hidup..." required></textarea>
+              </div>
+              <div class="form-group full-width">
+                <label for="s-advice">Apa yang akan Anda katakan kepada teman dekat yang merasa berkecil hati karena tinggal sendiri?</label>
+                <textarea id="s-advice" placeholder="misal, 'Kamu sedang membangun hidupmu dengan caramu sendiri—nikmati kebebasan dan ketenanganmu!'" required></textarea>
+              </div>
+            </div>
+
+            <div class="button-group">
+              <button type="submit" class="btn btn-primary"><i class="fa-solid fa-sparkles"></i> Buat Reframing & Batasan Pribadi</button>
+              <button type="button" class="btn btn-secondary" onclick="loadSampleStrength()"><i class="fa-solid fa-folder-open"></i> Coba Contoh Skenario</button>
+              <button type="button" class="btn btn-outline" onclick="resetToolForm('strength')"><i class="fa-solid fa-rotate-left"></i> Reset Formulir</button>
+            </div>
+            <div class="sample-disclaimer" id="disclaimer-strength" style="display:none;">Contoh skenario dimuat — ini bukan hasil pribadi Anda.</div>
+          </form>
+
+          <div id="output-strength" class="output-container"></div>
+        </div>
+
+        <div class="history-section">
+          <div class="history-header">
+            <h3>Log Ketahanan Solo</h3>
+            <button class="clear-history-btn" onclick="clearToolHistory('strength')">Hapus Riwayat Ketahanan</button>
+          </div>
+          <div id="history-strength" class="history-list"></div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 8: RESET SOLO 7-HARI -->
+      <section id="view-reset" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-calendar-check" style="color: var(--accent);"></i> Reset Solo 7-Hari</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-info"></i> Pengalaman terpandu hari demi hari untuk menyelaraskan keuangan, rutinitas, koneksi, komunitas, dan ketahanan pribadi Anda secara sistematis.
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span style="font-weight: 700; color: var(--primary);">PROGRES RESET</span>
+              <span id="reset-progress-text" style="font-weight: 700; color: var(--accent-hover);">0 / 7 Hari Selesai</span>
+            </div>
+            <div style="width: 100%; height: 10px; background: #E9ECEF; border-radius: 5px; overflow: hidden;">
+              <div id="reset-progress-bar" style="width: 0%; height: 100%; background: var(--accent); transition: width 0.3s ease;"></div>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 1: Klarifikasi Keuangan Anda</span>
+              <span id="badge-day-1" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Jalankan modul Anggaran Solo untuk menghitung Angka Solo bulanan Anda dan mengidentifikasi kebocoran penghasilan tunggal.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="switchView('budget')"><i class="fa-solid fa-arrow-right"></i> Selesaikan Hari 1 di Anggaran Solo</button>
+              <button class="btn btn-outline" onclick="markResetDay(1, true)">Tandai Selesai Manual</button>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 2: Perbaiki Ritme Harian Anda</span>
+              <span id="badge-day-2" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Gunakan Pembangun Ritme untuk menetapkan jam bangun, pola makan dasar, dan jalan penutup jam kerja.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="switchView('rhythm')"><i class="fa-solid fa-arrow-right"></i> Selesaikan Hari 2 di Pembangun Ritme</button>
+              <button class="btn btn-outline" onclick="markResetDay(2, true)">Tandai Selesai Manual</button>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 3: Pahami Kebutuhan Koneksi Anda</span>
+              <span id="badge-day-3" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Jalankan Navigasi Kesepian untuk mengenali apakah Anda membutuhkan hubungan pertemanan yang mendalam, kehadiran komunitas, atau kontak berenergi rendah.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="switchView('loneliness')"><i class="fa-solid fa-arrow-right"></i> Selesaikan Hari 3 di Navigasi Kesepian</button>
+              <button class="btn btn-outline" onclick="markResetDay(3, true)">Tandai Selesai Manual</button>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 4: Temukan Komunitas Anda</span>
+              <span id="badge-day-4" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Gunakan Pembangun Komunitas untuk memetakan pusat aktivitas fisik/digital dan menerapkan Aturan Tempat Kedua.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="switchView('community')"><i class="fa-solid fa-arrow-right"></i> Selesaikan Hari 4 di Pembangun Komunitas</button>
+              <button class="btn btn-outline" onclick="markResetDay(4, true)">Tandai Selesai Manual</button>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 5: Bangun Kepercayaan Diri Solo Anda</span>
+              <span id="badge-day-5" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Gunakan Ketahanan Solo untuk mengubah cara pandang terhadap stigma luar, melatih skrip batasan, dan merencanakan hadiah untuk rumah Anda.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="switchView('strength')"><i class="fa-solid fa-arrow-right"></i> Selesaikan Hari 5 di Ketahanan Solo</button>
+              <button class="btn btn-outline" onclick="markResetDay(5, true)">Tandai Selesai Manual</button>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 6: Rancang Pekan Solo Ideal Anda</span>
+              <span id="badge-day-6" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Gabungkan pemahaman Anda menjadi rencana mingguan yang seimbang antara pekerjaan, memasak, olahraga, dan waktu bersosialisasi.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-secondary" onclick="markResetDay(6, true)"><i class="fa-solid fa-check"></i> Selesaikan Hari 6</button>
+            </div>
+          </div>
+
+          <div class="reset-day-card">
+            <div class="reset-day-header">
+              <span class="reset-day-title">Hari 7: Sintesiskan ke dalam Rencana 30-Hari Anda</span>
+              <span id="badge-day-7" class="status-badge badge-attention">Menunggu</span>
+            </div>
+            <p style="font-size: 0.9rem; color: var(--text-muted);">Lihat Rencana Solo Saya yang terkonsolidasi dan tentukan prioritas tertinggi Anda saat ini.</p>
+            <div class="button-group" style="margin-top: 0.5rem;">
+              <button class="btn btn-primary" onclick="markResetDay(7, true); switchView('solo-plan');"><i class="fa-solid fa-diagram-project"></i> Lihat Rencana Terkonsolidasi</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 9: RENCANA SOLO SAYA -->
+      <section id="view-solo-plan" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-diagram-project" style="color: var(--accent);"></i> Rencana Solo Saya</h2>
+          <div class="problem-banner">
+            <i class="fa-solid fa-circle-check"></i> Sintesis operasional terkonsolidasi Anda dari kelima modul Solo Life OS.
+          </div>
+        </div>
+
+        <div id="solo-plan-container">
+          <!-- Diisi secara dinamis -->
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-primary" onclick="window.print()"><i class="fa-solid fa-print"></i> Cetak / Simpan Rencana ke PDF</button>
+          <button class="btn btn-secondary" onclick="compileSoloPlan()"><i class="fa-solid fa-arrows-rotate"></i> Perbarui Rencana Terkonsolidasi</button>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 10: RIWAYAT SAYA -->
+      <section id="view-history" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-box-archive" style="color: var(--accent);"></i> Riwayat Saya</h2>
+        </div>
+
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Tinjau dan kelola semua evaluasi tersimpan di perangkat Anda.</p>
+            <button class="btn btn-outline" onclick="clearAllGlobalHistory()"><i class="fa-solid fa-trash-can"></i> Hapus Semua Riwayat</button>
+          </div>
+
+          <div id="global-history-list" class="history-list"></div>
+        </div>
+      </section>
+
+      <!-- TAMPILAN 11: PRIVASI & KONTROL DATA -->
+      <section id="view-privacy" class="tool-view" style="display: none;">
+        <div class="tool-header">
+          <h2><i class="fa-solid fa-lock" style="color: var(--accent);"></i> Privasi & Data Lokal</h2>
+        </div>
+
+        <div class="card">
+          <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 0.75rem;">100% Di Perangkat & Privat</h3>
+          <p style="margin-bottom: 1rem;">SOLO LIFE OS™ dibangun tanpa ketergantungan pada server. Semua data input, riwayat evaluasi, progres reset, dan rencana terkonsolidasi tersimpan secara eksklusif di penyimpanan lokal peramban Anda (`localStorage`).</p>
+
+          <ul class="bullet-list" style="margin-bottom: 1.5rem;">
+            <li><strong>Tanpa Pengiriman Jaringan:</strong> Angka keuangan, perasaan, dan rencana pribadi Anda tidak pernah diunggah ke mana pun.</li>
+            <li><strong>Tanpa Akun Pengguna:</strong> Anda memiliki file dan data Anda secara lokal.</li>
+            <li><strong>Tanpa Pelacakan Analitik:</strong> Bebas dari skrip telemetri pihak ketiga.</li>
+          </ul>
+
+          <div style="background: #FAFAFC; padding: 1.25rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+            <h4 style="color: var(--primary); margin-bottom: 0.5rem; font-size: 1rem;">Pengelolaan Data</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Reset semua status tersimpan, progres reset, dan log riwayat dari sesi peramban ini.</p>
+            <button class="btn btn-secondary" onclick="purgeAllData()"><i class="fa-solid fa-power-off"></i> Bersihkan Semua Data Tersimpan</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Catatan Kaki Global -->
+  <footer>
+    SOLO LIFE OS™ — Sistem Operasi Pribadi untuk Hidup Mandiri dengan Baik.<br>
+    Aplikasi ini ditujukan untuk perencanaan dan refleksi pribadi, bukan sebagai saran keuangan, hukum, atau medis profesional.
+  </footer>
+
+  <!-- Elemen Notifikasi Toast -->
+  <div id="toast"><i class="fa-solid fa-check"></i> Berhasil disalin ke papan klip!</div>
+
+  <script>
+    /* ==========================================================================
+       MODE PRODUK & STATUS GLOBAL
+       ========================================================================== */
+    const PRODUCT_MODE = "complete"; 
+
+    const STATE_KEY = 'sololife_v2_state';
+    const HISTORY_KEY = 'sololife_v2_history';
+
+    let soloLifeState = {
+      completedTools: [],
+      toolResults: {},
+      resetProgress: {
+        completedDays: []
+      },
+      soloPlan: {},
+      lastUpdated: null
+    };
+
+    /* ==========================================================================
+       INISIALISASI
+       ========================================================================== */
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      initNavigation();
+      initMobileMenu();
+      loadAllHistories();
+      updateResetProgressUI();
+      compileSoloPlan();
+    });
+
+    function loadState() {
+      const saved = localStorage.getItem(STATE_KEY);
+      if (saved) {
+        try {
+          soloLifeState = Object.assign(soloLifeState, JSON.parse(saved));
+        } catch(e) {
+          console.error("Gagal memuat status data", e);
+        }
+      }
+    }
+
+    function saveState() {
+      soloLifeState.lastUpdated = new Date().toISOString();
+      localStorage.setItem(STATE_KEY, JSON.stringify(soloLifeState));
+    }
+
+    /* ==========================================================================
+       NAVIGASI & BANTUAN UI
+       ========================================================================== */
+    function initNavigation() {
+      const navItems = document.querySelectorAll('.nav-item');
+
+      navItems.forEach(item => {
+        item.addEventListener('click', () => {
+          const targetTool = item.getAttribute('data-tool');
+          switchView(targetTool);
+        });
+      });
+    }
+
+    function switchView(targetTool) {
+      const navItems = document.querySelectorAll('.nav-item');
+      const views = document.querySelectorAll('.tool-view');
+
+      navItems.forEach(n => {
+        if (n.getAttribute('data-tool') === targetTool) {
+          n.classList.add('active');
+        } else {
+          n.classList.remove('active');
+        }
+      });
+
+      views.forEach(view => {
+        if (view.id === `view-${targetTool}`) {
+          view.style.display = 'block';
+        } else {
+          view.style.display = 'none';
+        }
+      });
+
+      if (targetTool === 'solo-plan') {
+        compileSoloPlan();
+      } else if (targetTool === 'history') {
+        renderGlobalHistory();
+      }
+
+      closeMobileSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function initMobileMenu() {
+      const hamburger = document.getElementById('hamburger-btn');
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebar-overlay');
+
+      hamburger.addEventListener('click', () => {
+        sidebar.classList.toggle('open');
+        overlay.classList.toggle('open');
+      });
+
+      overlay.addEventListener('click', closeMobileSidebar);
+    }
+
+    function closeMobileSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebar-overlay').classList.remove('open');
+    }
+
+    function showToast(message = "Berhasil disalin!") {
+      const toast = document.getElementById('toast');
+      toast.innerHTML = `<i class="fa-solid fa-check"></i> ${escapeHTML(message)}`;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 2000);
+    }
+
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("Berhasil disalin ke papan klip!");
+      });
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return String(str).replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    function formatRupiah(val) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(val);
+    }
+
+    /* ==========================================================================
+       MANAJEMEN RIWAYAT LOCALSTORAGE
+       ========================================================================== */
+    function saveHistory(toolId, summaryText, fullDataHTML) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      
+      const newItem = {
+        id: Date.now(),
+        toolId: toolId,
+        date: new Date().toLocaleDateString('id-ID', { month: 'short', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
+        summary: summaryText,
+        data: fullDataHTML
+      };
+
+      history.unshift(newItem);
+      if (history.length > 50) history = history.slice(0, 50);
+
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      renderToolHistory(toolId);
+    }
+
+    function loadAllHistories() {
+      ['budget', 'rhythm', 'loneliness', 'community', 'strength'].forEach(renderToolHistory);
+    }
+
+    function renderToolHistory(toolId) {
+      const container = document.getElementById(`history-${toolId}`);
+      if (!container) return;
+
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]').filter(h => h.toolId === toolId);
+
+      if (history.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Belum ada catatan riwayat yang tersimpan.</p>`;
+        return;
+      }
+
+      container.innerHTML = history.map(item => `
+        <div class="history-item">
+          <div class="history-summary" onclick="toggleHistoryItem(this)">
+            <span>${escapeHTML(item.summary)}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">${item.date} <i class="fa-solid fa-chevron-down" style="margin-left: 0.5rem;"></i></span>
+          </div>
+          <div class="history-content">
+            ${item.data}
+            <div class="history-actions">
+              <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="deleteHistoryItem(${item.id}, '${toolId}')"><i class="fa-solid fa-trash"></i> Hapus Catatan</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderGlobalHistory() {
+      const container = document.getElementById('global-history-list');
+      if (!container) return;
+
+      const history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+
+      if (history.length === 0) {
+        container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted); font-style: italic;">Belum ada catatan riwayat dari modul apa pun.</p>`;
+        return;
+      }
+
+      container.innerHTML = history.map(item => `
+        <div class="history-item">
+          <div class="history-summary" onclick="toggleHistoryItem(this)">
+            <span><strong style="text-transform: uppercase; font-size: 0.75rem; color: var(--accent-hover); margin-right: 0.5rem;">[${item.toolId}]</strong> ${escapeHTML(item.summary)}</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal;">${item.date} <i class="fa-solid fa-chevron-down" style="margin-left: 0.5rem;"></i></span>
+          </div>
+          <div class="history-content">
+            ${item.data}
+            <div class="history-actions">
+              <button class="btn btn-outline" style="padding: 0.3rem 0.6rem; font-size: 0.75rem;" onclick="deleteHistoryItem(${item.id}, 'global')"><i class="fa-solid fa-trash"></i> Hapus Catatan</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function toggleHistoryItem(el) {
+      const item = el.parentElement;
+      item.classList.toggle('open');
+    }
+
+    function deleteHistoryItem(id, source) {
+      let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+      history = history.filter(h => h.id !== id);
+      localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+      if (source === 'global') {
+        renderGlobalHistory();
+      } else {
+        renderToolHistory(source);
+      }
+      showToast("Catatan telah dihapus.");
+    }
+
+    function clearToolHistory(toolId) {
+      if (confirm(`Hapus semua riwayat catatan untuk modul ini?`)) {
+        let history = JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        history = history.filter(h => h.toolId !== toolId);
+        localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+        renderToolHistory(toolId);
+        showToast("Riwayat modul berhasil dibersihkan.");
+      }
+    }
+
+    function clearAllGlobalHistory() {
+      if (confirm(`Hapus semua riwayat tersimpan di seluruh modul?`)) {
+        localStorage.removeItem(HISTORY_KEY);
+        renderGlobalHistory();
+        ['budget', 'rhythm', 'loneliness', 'community', 'strength'].forEach(renderToolHistory);
+        showToast("Semua riwayat dibersihkan.");
+      }
+    }
+
+    function resetToolForm(toolId) {
+      const form = document.getElementById(`form-${toolId}`);
+      if (form) form.reset();
+      const output = document.getElementById(`output-${toolId}`);
+      if (output) {
+        output.innerHTML = '';
+        output.classList.remove('active');
+      }
+      const disc = document.getElementById(`disclaimer-${toolId}`);
+      if (disc) disc.style.display = 'none';
+      showToast("Formulir di-reset.");
+    }
+
+    function purgeAllData() {
+      if (confirm("Apakah Anda yakin ingin menghapus semua data lokal? Tindakan ini tidak dapat dibatalkan.")) {
+        localStorage.removeItem(STATE_KEY);
+        localStorage.removeItem(HISTORY_KEY);
+        soloLifeState = { completedTools: [], toolResults: {}, resetProgress: { completedDays: [] }, soloPlan: {}, lastUpdated: null };
+        location.reload();
+      }
+    }
+
+    /* ==========================================================================
+       MODUL 1: LOGIKA ANGGARAN SOLO
+       ========================================================================== */
+    function loadSampleBudget() {
+      document.getElementById('b-income').value = 8500000;
+      document.getElementById('b-rent').value = 2800000;
+      document.getElementById('b-fixed').value = 850000;
+      document.getElementById('b-variable').value = 2200000;
+      document.getElementById('b-subs').value = 200000;
+      document.getElementById('b-debt').value = 500000;
+      document.getElementById('b-savings').value = 500000;
+      document.getElementById('disclaimer-budget').style.display = 'block';
+    }
+
+    document.getElementById('form-budget').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const income = parseFloat(document.getElementById('b-income').value) || 0;
+      const rent = parseFloat(document.getElementById('b-rent').value) || 0;
+      const fixed = parseFloat(document.getElementById('b-fixed').value) || 0;
+      const variable = parseFloat(document.getElementById('b-variable').value) || 0;
+      const subs = parseFloat(document.getElementById('b-subs').value) || 0;
+      const debt = parseFloat(document.getElementById('b-debt').value) || 0;
+      const savings = parseFloat(document.getElementById('b-savings').value) || 0;
+
+      const totalOutflow = rent + fixed + variable + subs + debt + savings;
+      const soloNumber = income - totalOutflow;
+      const rentRatio = income > 0 ? (rent / income) * 100 : 0;
+      const emergencyTarget = (rent + fixed) * 3;
+
+      let workingPoints = [];
+      let attentionPoints = [];
+
+      if (rentRatio <= 35) {
+        workingPoints.push(`Beban tempat tinggal berpusat pada ${rentRatio.toFixed(1)}% dari penghasilan bersih—masih berada dalam standar perencanaan.`);
+      } else {
+        attentionPoints.push(`Beban tempat tinggal menyerap ${rentRatio.toFixed(1)}% dari penghasilan bersih (acuan perencanaan menyarankan ≤35% demi ketahanan tunggal).`);
+      }
+
+      if (subs > 150000) attentionPoints.push(`Pengeluaran langganan sebesar ${formatRupiah(subs)}/bulan untuk layanan tunggal—potensi kebocoran berulang.`);
+      if (variable > income * 0.28) attentionPoints.push(`Pengeluaran variabel & kenyamanan (${formatRupiah(variable)}/bulan) menyerap porsi besar dari penghasilan tunggal.`);
+      if (workingPoints.length === 0) workingPoints.push("Penghasilan mampu menutup kewajiban tetap dasar.");
+
+      const resultHTML = `
+        <div class="result-section">
+          <h4>RINGKASAN ANDA — ANGKA SOLO</h4>
+          <div class="result-metric ${soloNumber >= 0 ? 'surplus' : 'deficit'}">
+            ${soloNumber >= 0 ? '+' : ''}${formatRupiah(soloNumber)} / bln
+          </div>
+          <p>${soloNumber >= 0 ? 'Arus kas bersih bulanan yang tersedia untuk memperkuat dana darurat atau tujuan pribadi Anda.' : 'Defisit bersih bulanan. Saat ini Anda menggunakan cadangan tabungan atau utang untuk menutup biaya hidup sendiri.'}</p>
+        </div>
+
+        <div class="result-section">
+          <h4>HAL YANG SUDAH BAIK</h4>
+          <ul class="bullet-list">
+            ${workingPoints.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="result-section">
+          <h4>HAL YANG PERLU PERHATIAN</h4>
+          <ul class="bullet-list">
+            ${attentionPoints.map(p => `<li>${p}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="result-section">
+          <h4>PENYEBAB DI BALIKNYA</h4>
+          <p>Rumah tangga tunggal menanggung 100% biaya sewa dan utilitas tanpa pembagian. Pengeluaran variabel yang tinggi sering kali mencerminkan pembelian kenyamanan saat energi terkuras akibat mengurus rumah sendirian.</p>
+        </div>
+
+        <div class="result-section highlight-box">
+          <h4>SATU PRIORITAS UTAMA ANDA</h4>
+          <p style="font-weight: 700; color: var(--primary);">"Batasi Beban Tempat Tinggal atau Imbangi Kebocoran Variabel Secara Sadar."</p>
+          <p style="font-size: 0.9rem; margin-top: 0.25rem;">Biaya tempat tinggal >35% masih bisa diterima jika diimbangi dengan pilihan pengeluaran variabel yang hemat dan terencana. Pahami sewa tempat tinggal sebagai pilihan sadar demi keamanan dan kemandirian.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>TIGA LAKUKAN KEUANGAN SOLO ANDA</h4>
+          <ul class="bullet-list">
+            <li><strong>1. Masak Jumlah Besar Protein/Karbohidrat:</strong> Masak persediaan 1 jenis protein serbaguna pada hari Minggu untuk menghemat biaya pesan makanan instan di malam hari.</li>
+            <li><strong>2. Rotasi Layanan Streaming:</strong> Gunakan hanya 1 layanan streaming aktif secara bergantian setiap bulan untuk menghemat pengeluaran.</li>
+            <li><strong>3. Bangun Dana Darurat Dasar 3-Bulan:</strong> Targetkan dana darurat dasar sebesar <strong>${formatRupiah(emergencyTarget)}</strong> (dihitung sebagai 3x biaya wajib: Sewa/KPR ${formatRupiah(rent)} + Biaya Tetap ${formatRupiah(fixed)}).</li>
+          </ul>
+        </div>
+
+        <div class="safety-notice">
+          <i class="fa-solid fa-shield"></i>
+          <span><strong>Catatan Perencanaan Keuangan:</strong> Patokan angka (seperti 35% untuk tempat tinggal atau dana darurat 3 bulan) adalah estimasi perencanaan untuk refleksi, bukan nasihat keuangan resmi. Target ideal bervariasi tergantung lokasi dan struktur utang Anda.</span>
+        </div>
+      `;
+
+      const outDiv = document.getElementById('output-budget');
+      outDiv.innerHTML = resultHTML;
+      outDiv.classList.add('active');
+
+      // Update State & History
+      soloLifeState.toolResults['budget'] = {
+        soloNumber,
+        rentRatio,
+        emergencyTarget,
+        statusLabel: soloNumber >= 0 ? 'Pondasi Kuat' : 'Perlu Perhatian'
+      };
+      if (!soloLifeState.completedTools.includes('budget')) soloLifeState.completedTools.push('budget');
+      markResetDay(1, false);
+      saveState();
+
+      saveHistory('budget', `Bersih Solo: ${soloNumber >= 0 ? '+' : ''}${formatRupiah(soloNumber)}/bln | Rasio Tempat Tinggal: ${rentRatio.toFixed(0)}%`, resultHTML);
+    });
+
+    /* ==========================================================================
+       MODUL 2: LOGIKA PEMBANGUN RITME
+       ========================================================================== */
+    function loadSampleRhythm() {
+      document.getElementById('r-wake').value = "Tidak teratur (06.30 - 09.30)";
+      document.getElementById('r-work').value = "08.00 - 17.00 (Hybrid / WFH)";
+      document.getElementById('r-cook').value = 2;
+      document.getElementById('r-order').value = 11;
+      document.getElementById('r-exercise').value = "Jarang";
+      document.getElementById('r-social').value = "1-2x seminggu";
+      document.getElementById('r-weekend').value = "Tanpa struktur & kabur";
+      document.getElementById('r-bedtime').value = "Bervariasi";
+      document.getElementById('disclaimer-rhythm').style.display = 'block';
+    }
+
+    document.getElementById('form-rhythm').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const wake = document.getElementById('r-wake').value;
+      const work = document.getElementById('r-work').value;
+      const cook = parseInt(document.getElementById('r-cook').value) || 0;
+      const order = parseInt(document.getElementById('r-order').value) || 0;
+      const exercise = document.getElementById('r-exercise').value;
+      const social = document.getElementById('r-social').value;
+      const weekend = document.getElementById('r-weekend').value;
+      const bedtime = document.getElementById('r-bedtime').value;
+
+      let working = [];
+      let attention = [];
+
+      if (cook >= 5) working.push("Aktivitas memasak sendiri memberikan asupan gizi yang stabil.");
+      if (exercise === 'Setiap hari' || exercise === '3-4x seminggu') working.push("Olahraga teratur menjaga energi harian Anda.");
+      if (cook < 4) attention.push("Ketergantungan tinggi pada makanan pesan-antar memicu fluktuasi energi dan pemborosan anggaran.");
+      if (bedtime !== 'Konsisten') attention.push("Jam tidur yang tidak teratur menyebabkan pergeseran rutinitas dan rasa lelah di siang hari.");
+      if (weekend === 'Tanpa struktur & kabur' || weekend === 'Hanya dihabiskan untuk tidur') attention.push("Akhir pekan tanpa struktur memicu kecemasan di hari Minggu dan rasa terisolasi.");
+
+      if (working.length === 0) working.push("Kesadaran akan batasan jadwal harian Anda.");
+
+      const resultHTML = `
+        <div class="result-section">
+          <h4>RINGKASAN RITME ANDA</h4>
+          <p><strong>Tingkat Stabilitas Rutinitas:</strong> ${attention.length <= 1 ? 'Pondasi Sangat Baik' : 'Membutuhkan Struktur'}</p>
+          <p style="font-size: 0.9rem; margin-top: 0.25rem;">Tanpa pasangan atau teman rumah untuk menentukan jadwal, rutinitas solo secara alami mudah goyah kecuali ditancapkan dengan sengaja.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>HAL YANG SUDAH BAIK</h4>
+          <ul class="bullet-list">
+            ${working.map(w => `<li>${w}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="result-section">
+          <h4>HAL YANG PERLU PERHATIAN</h4>
+          <ul class="bullet-list">
+            ${attention.map(a => `<li>${a}</li>`).join('')}
+          </ul>
+        </div>
+
+        <div class="result-section">
+          <h4>PENYEBAB DI BALIKNYA</h4>
+          <p>Tanpa ritual transisi yang jelas antara waktu kerja dan santai, ruang tempat tinggal menjadi lingkungan tanpa batas, sehingga fokus bekerja dan istirahat menjadi sama-sama sulit dilakukan.</p>
+        </div>
+
+        <div class="result-section highlight-box">
+          <h4>KEBIASAAN PRIORITAS UTAMA ANDA</h4>
+          <p style="font-weight: 700; color: var(--primary);">"Jalan Penutup Jam Kerja"</p>
+          <p style="font-size: 0.9rem; margin-top: 0.25rem;">Saat tinggal sendiri, batas kerja dan santai sering kabur di ruang yang sama. Jalan kaki 10 menit di luar ruangan tepat setelah selesai bekerja memberikan tanda fisik bahwa jam kerja telah berakhir.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>KERANGKA HARI SOLO IDEAL ANDA</h4>
+          <div style="background: #FFF; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+            <p><strong>06:30 WIB:</strong> Jangkar Pagi (Jam bangun tetap, terkena sinar matahari, 1 gelas air)</p>
+            <p><strong>08:00 WIB:</strong> Mulai Sesi Kerja</p>
+            <p><strong>12:00 WIB:</strong> Istirahat Makan Tanpa Gawai</p>
+            <p><strong>17:00 WIB:</strong> Jalan Penutup Jam Kerja (Ritual transisi fisik)</p>
+            <p><strong>19:00 WIB:</strong> Santap Malam Sederhana (Menu solo praktis 15 menit)</p>
+            <p><strong>22:00 WIB:</strong> Persiapan Tidur (Mematikan perangkat elektronik)</p>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h4>TEMPLATE RESET AKHIR PEKAN</h4>
+          <p><strong>Sabtu Pagi:</strong> Kegiatan penjangkar (Pasar/belanja, olahraga, atau minum kopi santai).</p>
+          <p><strong>Sabtu Siang:</strong> Waktu santai / hobi pribadi.</p>
+          <p><strong>Minggu Pagi:</strong> Penataan ulang lingkungan (Bersih-bersih rumah 1 jam, cuci pakaian, siapkan bahan makanan).</p>
+          <p><strong>Minggu Malam:</strong> Kontak sosial santai atau membaca buku dengan tenang.</p>
+        </div>
+      `;
+
+      const outDiv = document.getElementById('output-rhythm');
+      outDiv.innerHTML = resultHTML;
+      outDiv.classList.add('active');
+
+      soloLifeState.toolResults['rhythm'] = {
+        cook,
+        order,
+        weekendPattern: weekend,
+        statusLabel: attention.length <= 1 ? 'Pondasi Kuat' : 'Perlu Ditingkatkan'
+      };
+      if (!soloLifeState.completedTools.includes('rhythm')) soloLifeState.completedTools.push('rhythm');
+      markResetDay(2, false);
+      saveState();
+
+      saveHistory('rhythm', `Bangun: ${wake.substring(0, 15)} | Akhir Pekan: ${weekend}`, resultHTML);
+    });
+
+    /* ==========================================================================
+       MODUL 3: LOGIKA NAVIGASI KESEPIAN
+       ========================================================================== */
+    function loadSampleLoneliness() {
+      document.getElementById('l-freq').value = "Setiap hari";
+      document.getElementById('l-type').value = "Persetujuan teman / Teman sebaya";
+      document.getElementById('l-tried').value = "Menjelajah media sosial, duduk sendirian di kafe ramai.";
+      
+      const checkboxes = document.querySelectorAll('input[name="l-barriers"]');
+      checkboxes.forEach(cb => {
+        cb.checked = (cb.value === "Kelelahan sosial" || cb.value === "Kecemasan sosial");
+      });
+
+      document.getElementById('l-energy').value = "Rendah";
+      document.getElementById('disclaimer-loneliness').style.display = 'block';
+    }
+
+    document.getElementById('form-loneliness').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const freq = document.getElementById('l-freq').value;
+      const type = document.getElementById('l-type').value;
+      const tried = document.getElementById('l-tried').value;
+      const energy = document.getElementById('l-energy').value;
+
+      const scriptText = type === 'Persetujuan teman / Teman sebaya' 
+        ? "Halo! Lagi teringat kamu nih dan ingat tempat yang pernah kamu ceritakan. Semoga minggumu menyenangkan ya! Ada waktu luang untuk ngopi santai atau teleponan minggu depan?"
+        : "Halo! Sudah lama ya tidak ketemu. Rencananya akhir pekan ini aku mau jalan-santai di [Taman/Area sekitar], kalau kamu luang yuk ketemuan!";
+
+      const resultHTML = `
+        <div class="result-section">
+          <h4>RINGKASAN KONEKSI ANDA</h4>
+          <p><strong>Kebutuhan Teridentifikasi:</strong> ${type}</p>
+          <p style="font-size: 0.9rem; margin-top: 0.25rem;">Anda mungkin tidak kekurangan orang secara umum; Anda secara spesifik membutuhkan pemenuhan di area <em>${type.toLowerCase()}</em>.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>HAL YANG MUNGKIN BELUM TERPENUHI</h4>
+          <p>Kesepian adalah sinyal adaptif sosial—bukan kelemahan pribadi. Memaksa diri melakukan aktivitas sosial bertekanan tinggi saat kapasitas energi Anda "${energy}" justru akan memicu rasa cemas dan kebiasaan menghindar.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>AKSI ENERGI RENDAH (Kapasitas Minimal)</h4>
+          <p><strong>Pesan Suara Singkat:</strong> Kirim pesan suara (voice note) 2 menit ke teman dekat. Hangatnya suara memberikan koneksi yang berharga tanpa beban mengatur jadwal.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>AKSI ENERGI SEDANG (Kapasitas Cukup)</h4>
+          <p><strong>Kehadiran Bersama / Santai:</strong> Bekerja atau membaca di perpustakaan lokal atau meja kafe bersama orang lain tanpa tuntutan percakapan intens.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>AKSI ENERGI TINGGI (Saat Energi Pulih)</h4>
+          <p><strong>Kegiatan Berbasis Komunitas:</strong> Ikuti kelompok hobi atau olahraga terstruktur (misal: komunitas panjat tebing, board game, klub lari) di mana interaksi terjadi secara alami melalui aktivitas bersama.</p>
+        </div>
+
+        <div class="result-section highlight-box">
+          <h4>SKRIP PESAN YANG BISA DISALIN</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Kirim pesan ini untuk menyapa kembali teman Anda:</p>
+          <div class="copy-box">
+            <p id="script-text">"${scriptText}"</p>
+            <button class="btn btn-copy" onclick="copyToClipboard(document.getElementById('script-text').innerText)">
+              <i class="fa-solid fa-copy"></i> Salin Pesan
+            </button>
+          </div>
+        </div>
+      `;
+
+      const outDiv = document.getElementById('output-loneliness');
+      outDiv.innerHTML = resultHTML;
+      outDiv.classList.add('active');
+
+      soloLifeState.toolResults['loneliness'] = {
+        type,
+        energy,
+        freq,
+        statusLabel: freq === 'Jarang' ? 'Pondasi Kuat' : 'Perlu Perhatian'
+      };
+      if (!soloLifeState.completedTools.includes('loneliness')) soloLifeState.completedTools.push('loneliness');
+      markResetDay(3, false);
+      saveState();
+
+      saveHistory('loneliness', `Kebutuhan: ${type} | Energi: ${energy}`, resultHTML);
+    });
+
+    /* ==========================================================================
+       MODUL 4: LOGIKA PEMBANGUN KOMUNITAS
+       ========================================================================== */
+    function loadSampleCommunity() {
+      document.getElementById('c-contacts').value = "Pindah 6 bulan lalu. Kenal 2 rekan kerja dan 1 teman kuliah berjarak 40 menit.";
+      document.getElementById('c-interests').value = "Novel fiksi ilmiah, panjat tebing santai, board game, kopi lokal.";
+      document.getElementById('c-failed').value = "Pernah ikut acara kumpul jaringan 60 orang; terlalu bising dan canggung.";
+      document.getElementById('c-options').value = "Toko buku independen berjarak 4 blok, tempat panjat tebing, perpustakaan daerah.";
+      document.getElementById('c-time').value = "2-5 jam/minggu";
+      document.getElementById('c-comfort').value = "Rendah";
+      document.getElementById('disclaimer-community').style.display = 'block';
+    }
+
+    document.getElementById('form-community').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const contacts = document.getElementById('c-contacts').value;
+      const interests = document.getElementById('c-interests').value;
+      const time = document.getElementById('c-time').value;
+      const comfort = document.getElementById('c-comfort').value;
+
+      const resultHTML = `
+        <div class="result-section">
+          <h4>RINGKASAN KOMUNITAS ANDA</h4>
+          <p><strong>Lingkungan Optimal:</strong> Ruang aktivitas kelompok kecil berulang di mana interaksi dapat tumbuh secara alami.</p>
+        </div>
+
+        <div class="result-section">
+          <h4>TIGA TEMPAT UNTUK MEMULAI</h4>
+          <ul class="bullet-list">
+            <li><strong>1. Ruang Berbasis Minat:</strong> Klub buku di toko buku lokal, lokakarya khusus, atau komunitas hobi.</li>
+            <li><strong>2. Kelompok Keterampilan Rutin:</strong> Sesi latihan olahraga bersama, kelas kerajinan tangan, atau klub lari mingguan.</li>
+            <li><strong>3. Komunitas Digital Lokal:</strong> Grup diskusi lokal, forum hobi daerah, atau media sosial komunitas sekitar tempat tinggal.</li>
+          </ul>
+        </div>
+
+        <div class="result-section highlight-box">
+          <h4>RENCANA PERTEMUAN PERTAMA & SKRIP</h4>
+          <p style="font-size: 0.9rem; margin-bottom: 0.5rem;">Saat memulai percakapan di lokasi hobi, fokuslah pada aktivitas yang sedang dilakukan bersama:</p>
+          <div class="copy-box">
+            <p id="community-script">"Halo! Aku sudah beberapa minggu ini sering ke sini—kamu sendiri sudah lama ikut komunitas ini?"</p>
+            <button class="btn btn-copy" onclick="copyToClipboard(document.getElementById('community-script').innerText)">
+              <i class="fa-solid fa-copy"></i> Salin Skrip
+            </button>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h4>ATURAN TEMPAT KEDUA</h4>
+          <p>Daripada sekadar ajakan samar "kapan-kapan kita jalan yuk," ajukan ajakan spesifik yang terikat tempat atau acara tertentu: <em>"Aku rencana mau datang ke [Acara/Tempat] Kamis depan—kalau kamu luang, kabari ya!"</em> Ajakan yang jelas menurunkan kecanggungan secara signifikan.</p>
+        </div>
+      `;
+
+      const outDiv = document.getElementById('output-community');
+      outDiv.innerHTML = resultHTML;
+      outDiv.classList.add('active');
+
+      soloLifeState.toolResults['community'] = {
+        time,
+        comfort,
+        statusLabel: comfort === 'Tinggi' ? 'Pondasi Kuat' : 'Mulai Berkembang'
+      };
+      if (!soloLifeState.completedTools.includes('community')) soloLifeState.completedTools.push('community');
+      markResetDay(4, false);
+      saveState();
+
+      saveHistory('community', `Waktu: ${time} | Kenyamanan: ${comfort}`, resultHTML);
+    });
+
+    /* ==========================================================================
+       MODUL 5: LOGIKA KETAHANAN SOLO
+       ========================================================================== */
+    function loadSampleStrength() {
+      document.getElementById('s-duration').value = "6 bulan - 1 tahun";
+      
+      const checkboxes = document.querySelectorAll('input[name="s-past"]');
+      checkboxes.forEach(cb => {
+        cb.checked = (cb.value === "Pasangan" || cb.value === "Keluarga");
+      });
+
+      document.getElementById('s-enjoy').value = "Ketenangan minum kopi di pagi hari, bebas mengatur ruangan, makan apa saja yang diinginkan.";
+      document.getElementById('s-fear').value = "Dianggap tidak bisa menjaga hubungan atau dianggap kesepian oleh orang lain.";
+      document.getElementById('s-advice').value = "Tinggal sendiri adalah kesempatan luar biasa untuk mengenal diri sendiri—nikmati ketenanganmu.";
+      document.getElementById('disclaimer-strength').style.display = 'block';
+    }
+
+    document.getElementById('form-strength').addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      const duration = document.getElementById('s-duration').value;
+      const enjoy = document.getElementById('s-enjoy').value;
+      const fear = document.getElementById('s-fear').value;
+      const advice = document.getElementById('s-advice').value;
+
+      const boundaryResponse = "Saya sangat menikmati memiliki ruang tenang sendiri untuk istirahat—ini membuat waktu bersosialisasi dan fokus pribadi saya jadi jauh lebih berkualitas!";
+
+      const resultHTML = `
+        <div class="result-section">
+          <h4>REFRAMING (SUDUT PANDANG BARU)</h4>
+          <p style="font-size: 1.05rem; line-height: 1.6; color: var(--primary);">
+            Hidup mandiri bukanlah ruang tunggu menuju kehidupan yang "sebenarnya"—ini <strong>adalah</strong> kehidupan yang nyata, utuh, bernilai, dan Anda pegang kendalinya sendiri.
+          </p>
+        </div>
+
+        <div class="result-section">
+          <h4>KEUNGGULAN HIDUP SOLO ANDA</h4>
+          <ul class="bullet-list">
+            <li><strong>Otonomi Penuh Atas Ruang & Waktu:</strong> Kebebasan tanpa kompromi dalam mengelola tempat tinggal dan jadwal harian.</li>
+            <li><strong>Efisiensi Pengambilan Keputusan:</strong> Setiap pilihan gaya hidup selaras langsung dengan kebutuhan pribadi Anda tanpa gesekan kompromi.</li>
+            <li><strong>Kemandirian yang Tangguh:</strong> Mengelola rumah tangga sendiri membentuk kecakapan dan ketangguhan pribadi yang mendalam.</li>
+          </ul>
+        </div>
+
+        <div class="result-section">
+          <h4>PERUBAHAN NARASI PRIBADI</h4>
+          <p><strong>Narasi Lama:</strong> "${fear || "Seharusnya saya sudah bisa menyelesaikan hal ini sekarang."}"</p>
+          <p style="margin-top: 0.35rem;"><strong>Narasi Baru yang Lebih Baik:</strong> "Saya secara sadar membangun kehidupan mandiri yang stabil dan berkualitas, sehingga setiap komitmen atau hubungan di masa depan didasari oleh pilihan sadar, bukan rasa takut atau ketergantungan."</p>
+        </div>
+
+        <div class="result-section highlight-box">
+          <h4>SKRIP BATASAN PRIBADI</h4>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem;">Saat berhadapan dengan pertanyaan sosial yang terlalu mencampuri tentang hidup sendiri:</p>
+          <div class="copy-box">
+            <p id="boundary-script">"${boundaryResponse}"</p>
+            <button class="btn btn-copy" onclick="copyToClipboard(document.getElementById('boundary-script').innerText)">
+              <i class="fa-solid fa-copy"></i> Salin Batasan
+            </button>
+          </div>
+        </div>
+
+        <div class="result-section">
+          <h4>SATU HADIAH UNTUK DIRI SENDIRI MINGGU INI</h4>
+          <p>Berikan diri Anda <strong>satu bentuk kenyamanan untuk hunian Anda</strong> minggu ini: sprei yang nyaman, tanaman hias, pengharum ruangan kesukaan, atau memasak hidangan istimewa untuk diri sendiri.</p>
+        </div>
+      `;
+
+      const outDiv = document.getElementById('output-strength');
+      outDiv.innerHTML = resultHTML;
+      outDiv.classList.add('active');
+
+      soloLifeState.toolResults['strength'] = {
+        duration,
+        enjoy,
+        statusLabel: 'Pondasi Kuat'
+      };
+      if (!soloLifeState.completedTools.includes('strength')) soloLifeState.completedTools.push('strength');
+      markResetDay(5, false);
+      saveState();
+
+      saveHistory('strength', `Durasi Solo: ${duration} | Fokus: Otonomi`, resultHTML);
+    });
+
+    /* ==========================================================================
+       SISTEM RESET SOLO 7-HARI
+       ========================================================================== */
+    function markResetDay(dayNum, manualUserClick) {
+      if (!soloLifeState.resetProgress.completedDays.includes(dayNum)) {
+        soloLifeState.resetProgress.completedDays.push(dayNum);
+        saveState();
+      }
+      updateResetProgressUI();
+      if (manualUserClick) showToast(`Hari ${dayNum} ditandai selesai!`);
+    }
+
+    function updateResetProgressUI() {
+      const completed = soloLifeState.resetProgress.completedDays || [];
+      const count = completed.length;
+      
+      const pBar = document.getElementById('reset-progress-bar');
+      const pText = document.getElementById('reset-progress-text');
+
+      if (pBar) pBar.style.width = `${(count / 7) * 100}%`;
+      if (pText) pText.innerText = `${count} / 7 Hari Selesai`;
+
+      for (let i = 1; i <= 7; i++) {
+        const badge = document.getElementById(`badge-day-${i}`);
+        if (badge) {
+          if (completed.includes(i)) {
+            badge.className = 'status-badge badge-strong';
+            badge.innerText = 'Selesai';
+          } else {
+            badge.className = 'status-badge badge-attention';
+            badge.innerText = 'Menunggu';
+          }
+        }
+      }
+    }
+
+    /* ==========================================================================
+       RENCANA SOLO SAYA — MESIN SINTESIS
+       ========================================================================== */
+    function compileSoloPlan() {
+      const container = document.getElementById('solo-plan-container');
+      if (!container) return;
+
+      const r = soloLifeState.toolResults || {};
+
+      const b = r.budget;
+      const rh = r.rhythm;
+      const l = r.loneliness;
+      const c = r.community;
+      const s = r.strength;
+
+      // Menentukan Wawasan Lintas-Modul & Prioritas Utama
+      let crossInsights = [];
+      let primaryPriority = "Selesaikan evaluasi modul individu Anda untuk membuka prioritas terkonsolidasi lintas modul.";
+
+      if (b && rh && b.soloNumber < 0 && rh.order > 8) {
+        crossInsights.push("<strong>Kebocoran Keuangan + Ritme:</strong> Arus kas bersih dan frekuensi beli makanan luar Anda saling berkaitan. Memperbaiki ritme memasak akan membantu meringankan tekanan anggaran utama Anda.");
+      }
+
+      if (l && c && l.freq !== 'Jarang' && c.comfort === 'Rendah') {
+        crossInsights.push("<strong>Kebutuhan Koneksi + Komunitas:</strong> Kecemasan sosial dan rasa terisolasi menunjukkan sebaiknya hindari acara komunal besar. Fokuslah pada ruang aktivitas kelompok kecil yang santai dan berenergi rendah.");
+      }
+
+      if (b && b.soloNumber >= 0) {
+        primaryPriority = "Pertahankan surplus bulanan Anda saat ini dan alokasikan arus kas tersebut ke Dana Darurat Dasar 3-Bulan Anda.";
+      } else if (b && b.soloNumber < 0) {
+        primaryPriority = "Atasi kebocoran biaya variabel hidup sendiri dan pengeluaran makanan instan untuk menghilangkan defisit bersih bulanan.";
+      } else if (rh && rh.statusLabel === 'Perlu Ditingkatkan') {
+        primaryPriority = "Terapkan ritual Jalan Penutup Jam Kerja untuk memisahkan kehidupan rumah dengan pekerjaan secara jelas.";
+      }
+
+      container.innerHTML = `
+        <div class="card">
+          <h3 style="color: var(--primary); font-weight: 800; font-size: 1.2rem; margin-bottom: 1rem;">RINGKASAN KEHIDUPAN SOLO</h3>
+          
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">1. Keuangan</div>
+              <div style="margin-top: 0.35rem;"><span class="status-badge ${b ? (b.soloNumber >= 0 ? 'badge-strong' : 'badge-attention') : 'badge-emerging'}">${b ? b.statusLabel : 'Belum Dievaluasi'}</span></div>
+            </div>
+
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">2. Ritme</div>
+              <div style="margin-top: 0.35rem;"><span class="status-badge ${rh ? 'badge-strong' : 'badge-emerging'}">${rh ? rh.statusLabel : 'Belum Dievaluasi'}</span></div>
+            </div>
+
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">3. Koneksi</div>
+              <div style="margin-top: 0.35rem;"><span class="status-badge ${l ? (l.freq === 'Jarang' ? 'badge-strong' : 'badge-attention') : 'badge-emerging'}">${l ? l.statusLabel : 'Belum Dievaluasi'}</span></div>
+            </div>
+
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">4. Komunitas</div>
+              <div style="margin-top: 0.35rem;"><span class="status-badge ${c ? 'badge-strong' : 'badge-emerging'}">${c ? c.statusLabel : 'Belum Dievaluasi'}</span></div>
+            </div>
+
+            <div style="background: #FAFAFC; padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+              <div style="font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">5. Diri</div>
+              <div style="margin-top: 0.35rem;"><span class="status-badge ${s ? 'badge-strong' : 'badge-emerging'}">${s ? s.statusLabel : 'Belum Dievaluasi'}</span></div>
+            </div>
+          </div>
+
+          <div class="result-section highlight-box">
+            <h4>SATU HAL UTAMA UNTUK DIFOKUSKAN TERLEBIH DAHULU</h4>
+            <p style="font-size: 1.05rem; font-weight: 700; color: var(--primary);">${primaryPriority}</p>
+          </div>
+
+          ${crossInsights.length ? `
+            <div class="result-section">
+              <h4>WAWASAN LINTAS MODUL</h4>
+              <ul class="bullet-list">
+                ${crossInsights.map(ci => `<li>${ci}</li>`).join('')}
+              </ul>
+            </div>
+          ` : ''}
+
+          <div class="result-section">
+            <h4>RENCANA 30-HARI TERKONSOLIDASI ANDA</h4>
+            <ul class="bullet-list">
+              <li><strong>Target Keuangan:</strong> ${b ? `Pertahankan Arus Kas Bersih Solo (${b.soloNumber >= 0 ? '+' : ''}${formatRupiah(b.soloNumber)}/bln) dan alokasikan ke Target Dana Darurat ${formatRupiah(b.emergencyTarget)}.` : 'Jalankan modul Anggaran Solo untuk menetapkan target keuangan.'}</li>
+              <li><strong>Target Ritme:</strong> ${rh ? 'Terapkan Jalan Penutup Jam Kerja setiap hari dan seimbangkan rasio masak sendiri dengan pesan makanan.' : 'Jalankan modul Pembangun Ritme untuk menetapkan penjangkar rutinitas.'}</li>
+              <li><strong>Target Koneksi:</strong> ${l ? `Fokus pada kebutuhan ${l.type} menggunakan interaksi berenergi rendah/sedang.` : 'Jalankan modul Navigasi Kesepian.'}</li>
+              <li><strong>Target Komunitas:</strong> ${c ? 'Terapkan Aturan Tempat Kedua untuk mengubah 1 kenalan menjadi kontak aktivitas rutin.' : 'Jalankan modul Pembangun Komunitas.'}</li>
+              <li><strong>Target Diri:</strong> ${s ? 'Terapkan respons batasan pribadi dan berikan 1 kenyamanan untuk tempat tinggal minggu ini.' : 'Jalankan modul Ketahanan Solo.'}</li>
+            </ul>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
